@@ -33,30 +33,35 @@ process.on('exit', liberar);
 process.on('SIGINT', () => process.exit(130));
 const PORT = String(4173 + ranura.n * 10);
 
-const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+// Binarios invocados con Node, sin shell: en Windows la «|» de --grep se interpretaría como tubería.
+const N = process.execPath;
+const bin = {
+  tsc: 'node_modules/typescript/bin/tsc', eslint: 'node_modules/eslint/bin/eslint.js', vitest: 'node_modules/vitest/vitest.mjs',
+  vite: 'node_modules/vite/bin/vite.js', playwright: 'node_modules/@playwright/test/cli.js',
+};
 const pasos = [
-  ['1 typecheck', npx, ['tsc', '--noEmit', '-p', 'tsconfig.json']],
-  ['1 typecheck (workers)', npx, ['tsc', '--noEmit', '-p', 'tsconfig.worker.json']],
-  ['1 typecheck (pruebas y scripts)', npx, ['tsc', '--noEmit', '-p', 'tsconfig.node.json']],
-  ['2 lint', npx, ['eslint', '.']],
-  ['3 test:unit', npx, ['vitest', 'run']],
-  ['4 build', npx, ['vite', 'build']],
-  ['5 check-dist', process.execPath, ['scripts/check-dist.mjs']],
-  ['6 test:e2e:verify', npx, ['playwright', 'test', '--grep', '@cero-red|@humo']],
-  ['7 check-publico', process.execPath, ['scripts/check-publico.mjs']],
+  ['1 typecheck', N, [bin.tsc, '--noEmit', '-p', 'tsconfig.json']],
+  ['1 typecheck (workers)', N, [bin.tsc, '--noEmit', '-p', 'tsconfig.worker.json']],
+  ['1 typecheck (pruebas y scripts)', N, [bin.tsc, '--noEmit', '-p', 'tsconfig.node.json']],
+  ['2 lint', N, [bin.eslint, '.']],
+  ['3 test:unit', N, [bin.vitest, 'run']],
+  ['4 build', N, [bin.vite, 'build']],
+  ['5 check-dist', N, ['scripts/check-dist.mjs']],
+  ['6 test:e2e:verify', N, [bin.playwright, 'test', '--grep', '@cero-red|@humo']],
+  ['7 check-publico', N, ['scripts/check-publico.mjs']],
 ];
 if (FULL) {
-  pasos.push(['full e2e', npx, ['playwright', 'test']]);
-  pasos.push(['full cero red ×5', npx, ['playwright', 'test', 'tests/e2e/zero-network.spec.ts', '--repeat-each=5']]);
-  pasos.push(['full T-IV-01', process.execPath, ['scripts/check-invariantes.mjs']]);
+  pasos.push(['full e2e', N, [bin.playwright, 'test']]);
+  pasos.push(['full cero red ×5', N, [bin.playwright, 'test', 'tests/e2e/zero-network.spec.ts', '--repeat-each=5']]);
+  pasos.push(['full T-IV-01', N, ['scripts/check-invariantes.mjs']]);
 } else if (existsSync('scripts/check-invariantes.mjs')) {
-  pasos.push(['T-IV-01 (informa)', process.execPath, ['scripts/check-invariantes.mjs', '--informar']]);
+  pasos.push(['T-IV-01 (informa)', N, ['scripts/check-invariantes.mjs', '--informar']]);
 }
 
 const inicio = Date.now();
 for (const [nombre, cmd, args] of pasos) {
   const t = Date.now();
-  const r = spawnSync(cmd, args, { stdio: 'inherit', shell: process.platform === 'win32' && cmd !== process.execPath, env: { ...process.env, PORT } });
+  const r = spawnSync(cmd, args, { stdio: 'inherit', env: { ...process.env, PORT } });
   const s = ((Date.now() - t) / 1000).toFixed(1);
   if (r.status !== 0) { process.stderr.write(`\nverify: FALLA en «${nombre}» (${s} s)\n`); process.exit(1); }
   process.stdout.write(`verify: ✔ ${nombre} (${s} s)\n`);
