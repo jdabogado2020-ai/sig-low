@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "lib": ["ES2024", "WebWorker"], "types": ["vite/client"] },
+  "include": ["src/workers/**/*.ts", "src/sw.ts", "src/core/**/*.ts", "src/io/**/*.ts", "src/env.d.ts"],
+  "exclude": ["src/io/pdf-read.ts"]
+}
