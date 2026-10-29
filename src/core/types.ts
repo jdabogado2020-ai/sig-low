@@ -181,6 +181,9 @@ export interface RuleVerdict {
   nStart?: number; nEnd?: number;               // subtramo en la vista (radicados); por defecto, el grupo v
   type?: DetectableType;                        // cambia el tipo por defecto de la regla (R-RAD-02)
   confidence: Confidence; validator?: ValidatorResult; canonicalKey: string /* [M] */; labelId?: string;
+  // Cambio de contrato del integrador (regla 9, 29-oct): 7.2.0 dice que la salida de las reglas lleva `context`;
+  // runRules los copia a DetectionCandidate.
+  context?: DetectionCandidate['context']; role?: Role;
 }
 export interface RuleRegistry {
   /** Vuelve a ejecutar la regla `ruleId` sobre un remanente (7.11.2). */
