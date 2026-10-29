@@ -1,0 +1,59 @@
+{
+  "modulo": "_juguete",
+  "casos": [
+    {
+      "texto": "Demandante: Ana Ficticia, C.C. 1.000.000.001, domiciliada en Ciudad Ejemplo.",
+      "reglas": ["R-JUGUETE-01"],
+      "esperado": [
+        { "type": "CC", "texto": "1.000.000.001", "ruleId": "R-JUGUETE-01", "confidence": "alta", "canonicalKey": "CC:1000000001" }
+      ]
+    },
+    {
+      "texto": "Cédula C.C. 1.000.000.001 y de nuevo c.c. 2.000.000.002.",
+      "reglas": ["R-JUGUETE-01"],
+      "esperado": [
+        { "type": "CC", "texto": "1.000.000.001", "canonicalKey": "CC:1000000001" },
+        { "type": "CC", "texto": "2.000.000.002", "canonicalKey": "CC:2000000002" }
+      ]
+    },
+    {
+      "texto": "C.C. 1.000.​000.001",
+      "reglas": ["R-JUGUETE-01"],
+      "esperado": [
+        { "type": "CC", "texto": "1.000.​000.001", "canonicalKey": "CC:1000000001" }
+      ]
+    },
+    {
+      "texto": "Sin rótulo: 1.000.000.001 aparece solo.",
+      "reglas": ["R-JUGUETE-01"],
+      "negativo": true,
+      "esperado": []
+    },
+    {
+      "texto": "C.C. 1.000.000.001; pegados: XC.C. 3.000.000.003 y C.C.A. 2.000.000.002",
+      "reglas": ["R-JUGUETE-01"],
+      "esperado": [
+        { "type": "CC", "texto": "1.000.000.001" }
+      ]
+    },
+    {
+      "texto": "Cuenta de ahorros terminada en 0000, vigente.",
+      "reglas": ["R-JUGUETE-02"],
+      "esperado": [
+        { "type": "CUENTA", "texto": "0000", "ruleId": "R-JUGUETE-02", "confidence": "media", "canonicalKey": "CUENTA:0000" }
+      ]
+    },
+    {
+      "texto": "El expediente tiene 0000 folios.\nTarjeta\nterminada en 0000 en otra línea no cuenta.",
+      "reglas": ["R-JUGUETE-02"],
+      "negativo": true,
+      "esperado": []
+    },
+    {
+      "texto": "Fic-\nticia 0000 sin pista",
+      "parte": "pagina_pdf",
+      "negativo": true,
+      "esperado": []
+    }
+  ]
+}
