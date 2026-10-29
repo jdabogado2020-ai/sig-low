@@ -1,0 +1,41 @@
+{
+  "name": "sig-low",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Anonimizador local para equipos jurídicos (Colombia).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": { "node": ">=26.0.0" },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test:unit": "vitest run",
+    "build": "vite build",
+    "build:medicion": "vite build --mode medicion",
+    "check-dist": "node scripts/check-dist.mjs",
+    "test:e2e:verify": "playwright test --grep \"@cero-red|@humo\"",
+    "test:e2e": "playwright test",
+    "check-publico": "node scripts/check-publico.mjs",
+    "check-invariantes": "node scripts/check-invariantes.mjs",
+    "verify": "node scripts/verify.mjs",
+    "verify:full": "node scripts/verify.mjs --full",
+    "serve": "node tests/e2e/server.mjs"
+  },
+  "dependencies": {
+    "@huggingface/tokenizers": "0.2.0",
+    "@xmldom/xmldom": "0.9.12",
+    "fflate": "0.8.3",
+    "onnxruntime-web": "1.31.0-dev.20260914-8d85527a0",
+    "pdfjs-dist": "6.4.299",
+    "preact": "10.29.8"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "26.6.6",
+    "eslint": "10.13.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.0",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  }
+}
