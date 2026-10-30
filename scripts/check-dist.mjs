@@ -61,7 +61,7 @@ for (const p of archivos) {
   }
   const esPreact = /__html/.test(t) && /\.__k\b/.test(t);
   for (const [nombre, tope] of Object.entries(TOPES_PREACT)) {
-    const n = (t.match(new RegExp(`\b${nombre}\b`, 'g')) ?? []).length;
+    const n = (t.match(new RegExp(`\\b${nombre}\\b`, 'g')) ?? []).length;
     if (n && (!esPreact || n > tope)) hallazgos.push(`${r}: ${nombre} ×${n} fuera del fragmento de Preact o sobre el tope ${tope}`);
   }
 }
