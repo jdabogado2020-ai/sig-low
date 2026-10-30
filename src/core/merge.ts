@@ -58,7 +58,7 @@ const RE_NAME_SPLIT = new RegExp(`[\\s${HYPHENS}]+`, 'u');
 const RE_UPPER_INITIAL = /^\p{Lu}/u;
 const RE_WORD_SPLIT = /[\s\p{P}\p{S}]+/u;
 const RE_EDGE_LEFT = /^[\s\p{P}\p{S}]*/u;
-const RE_EDGE_RIGHT = /[\s\p{P}\p{S}]*$/u;
+const RE_EDGE_CHAR = /^[\s\p{P}\p{S}]$/u;
 const RE_LETTER_OR_DIGIT = /[\p{L}\p{N}]/u;
 
 /** R-MRG-01 · Unión por paréntesis (vista `reglas`). */
@@ -81,6 +81,21 @@ function widenStart(t: string, i: number): number {
 }
 function widenEnd(t: string, i: number): number {
   return i > 0 && i < t.length && isLow(t.charCodeAt(i)) && isHigh(t.charCodeAt(i - 1)) ? i + 1 : i;
+}
+/**
+ * Largo (en unidades UTF-16) del sufijo de blancos, signos y símbolos: lo mismo que `/[\s\p{P}\p{S}]*$/u`, pero
+ * recorriendo desde el final por puntos de código, en tiempo lineal (P0-6a, PB-2-r2). La expresión sin ancla al
+ * inicio probaba cada posición de una serie larga de blancos seguida de un carácter que no es borde (cuadrática:
+ * 30.000 blancos, ≈ 1,6 s). Un sustituto suelto no es borde, como en la expresión. Exportada para las pruebas.
+ */
+export function edgeRightLength(s: string): number {
+  let i = s.length;
+  while (i > 0) {
+    const j = i >= 2 && isLow(s.charCodeAt(i - 1)) && isHigh(s.charCodeAt(i - 2)) ? i - 2 : i - 1;
+    if (!RE_EDGE_CHAR.test(s.slice(j, i))) break;
+    i = j;
+  }
+  return s.length - i;
 }
 const cmpStr = (a: string | undefined, b: string | undefined): number => {
   const x = a ?? ''; const y = b ?? '';
@@ -175,7 +190,7 @@ export function resolveRemainder(part: Part, c: DetectionCandidate | MergedCandi
       if (countDigits(piece) >= 3) {
         // Sin blancos ni signos en los bordes; los dígitos nunca se recortan.
         const lead = (RE_EDGE_LEFT.exec(piece) as RegExpExecArray)[0].length;
-        const trail = (RE_EDGE_RIGHT.exec(piece.slice(lead)) as RegExpExecArray)[0].length;
+        const trail = edgeRightLength(piece.slice(lead));
         const ns = s0 + lead; const ne = e0 - trail;
         const core = text.slice(ns, ne);
         const prefix = KEY_PREFIX[base.type as DetectableType] ?? base.type;

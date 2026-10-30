@@ -1,6 +1,6 @@
 // T-MO-05 · Precedencia y solapamientos (plan 7.11.4), INV-R02, INV-R03 e INV-R04. Solo datos ficticios.
 import { describe, expect, it } from 'vitest';
-import { mergeCandidates, precedenceOf, RE_TRIM_LEFT, RE_TRIM_RIGHT, resolveRemainder } from '../../src/core/merge.ts';
+import { edgeRightLength, mergeCandidates, precedenceOf, RE_TRIM_LEFT, RE_TRIM_RIGHT, resolveRemainder } from '../../src/core/merge.ts';
 import { buildSearchView } from '../../src/core/normalize.ts';
 import type {
   CaseEntityId, Confidence, DataType, DetectionCandidate, DocId, LabelHit, MergeCandidatesFn, MergedCandidate, Part, PartId,
@@ -475,6 +475,25 @@ describe('T-MO-05 · normalización, remanentes y R-MRG-01', () => {
   });
 });
 
+/** Textos de todos los casos de este archivo (y la tabla de 7.10.7): se prueba cada subcadena por puntos de código. */
+const CASES = [
+  'Radicado 90001-31-03-999-2026-00123-00 del Juzgado', 'Calle 00 # 00-00 300 000 0001, Villa Ejemplo',
+  'Kilómetro 3 vía Villa Ejemplo, predio 3000000001', 'Pagó la Ferretería Ejemplo de Ana Ficticia ayer',
+  'NIT 41.000.001-7 del contratista', 'NIT 900.000.001-0 de la sociedad', 'proceso 90001310399920260012300 en curso',
+  'la suma de cuarenta y ocho millones de pesos ($48.000.000) por concepto',
+  'el catorce de marzo de dos mil veintiséis (14/03/2026) se radicó', 'Ana Ficticia Rojas Prueba declaró',
+  'Ana Ficticia Rojas identificada con', 'la Dra. Ana Ficticia Rojas firmó', 'Ana Ficticia Rojas firmó',
+  'consignar en la cuenta 1000000017 del banco', 'número 1000000025 sin contexto', 'cuenta 4000000000000002 pagada',
+  'correo ana.ficticia@ejemplo.test fin', 'firmó Ana Ficticia Rojas Prueba ayer', 'firmó Ana Ficticia Rojas-Prueba ayer',
+  'FIRMÓ ANA FICTICIA ROJAS PRUEBA AYER', 'pagó Ferretería Ejemplo Prueba ayer', 'Ana Ficticia Rojas de Prueba declaró',
+  'Ana Ficticia Rojas 2 declaró', 'Ana Ficticia Rojas, Prueba declaró', 'el Ingeniero Ana Ficticia firmó',
+  'testigos Ana Ficticia Pedro Ejemplo presentes', 'vecina Ana Ficticia Villa Ejemplo dijo', 'dijo Ana Ficticia Rojas Prueba hoy',
+  'Ana Ficticia Rojas Prueba vive en Villa Ejemplo', 'clave 𝐀𝐁 1000000033 y 😀😀 fin', 'cédula 1000000041 del actor',
+  'Calle 00 # 00-00 int 2 300 000 0001', 'Calle 00 # 00-00 30 sur', '[DEMANDANTE_1] Prueba firmó', 'por diez pesos ($10) netos',
+  'pagó diez pesos ( $10) m/cte fin', 'pagó diez pesos (en letras: $10 y ) fin', 'pagó diez pesos (​$10\n) fin',
+  'Dra. Ana Ficticia', 'la Ferretería Ejemplo,', 'señor Pedro Ejemplo de', '(Ana Rojas)', 'de', 'X', '2026', 'Delia Prueba', 'Ana',
+];
+
 describe('T-MO-05 · R-MOD-03 sin retroceso exponencial (P0-6a M-1, 7.10.7)', () => {
   /** R-MOD-03 del plan v1.1 antes de la corrección, con el `+` interno: solo de oráculo y solo con entradas cortas. */
   const FW_PLAN = 'de|del|la|las|los|el|lo|y|e|o|u|a|al|en|por|para|con|sin|su|sus|que|se|un|una|unos|unas|senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr|mrs|mr|ms';
@@ -521,25 +540,6 @@ describe('T-MO-05 · R-MOD-03 sin retroceso exponencial (P0-6a M-1, 7.10.7)', ()
     expect(r && span.slice(r.start, r.end)).toBe(want);
   });
 
-  /** Textos de todos los casos de este archivo (y la tabla de 7.10.7): se prueba cada subcadena por puntos de código. */
-  const CASES = [
-    'Radicado 90001-31-03-999-2026-00123-00 del Juzgado', 'Calle 00 # 00-00 300 000 0001, Villa Ejemplo',
-    'Kilómetro 3 vía Villa Ejemplo, predio 3000000001', 'Pagó la Ferretería Ejemplo de Ana Ficticia ayer',
-    'NIT 41.000.001-7 del contratista', 'NIT 900.000.001-0 de la sociedad', 'proceso 90001310399920260012300 en curso',
-    'la suma de cuarenta y ocho millones de pesos ($48.000.000) por concepto',
-    'el catorce de marzo de dos mil veintiséis (14/03/2026) se radicó', 'Ana Ficticia Rojas Prueba declaró',
-    'Ana Ficticia Rojas identificada con', 'la Dra. Ana Ficticia Rojas firmó', 'Ana Ficticia Rojas firmó',
-    'consignar en la cuenta 1000000017 del banco', 'número 1000000025 sin contexto', 'cuenta 4000000000000002 pagada',
-    'correo ana.ficticia@ejemplo.test fin', 'firmó Ana Ficticia Rojas Prueba ayer', 'firmó Ana Ficticia Rojas-Prueba ayer',
-    'FIRMÓ ANA FICTICIA ROJAS PRUEBA AYER', 'pagó Ferretería Ejemplo Prueba ayer', 'Ana Ficticia Rojas de Prueba declaró',
-    'Ana Ficticia Rojas 2 declaró', 'Ana Ficticia Rojas, Prueba declaró', 'el Ingeniero Ana Ficticia firmó',
-    'testigos Ana Ficticia Pedro Ejemplo presentes', 'vecina Ana Ficticia Villa Ejemplo dijo', 'dijo Ana Ficticia Rojas Prueba hoy',
-    'Ana Ficticia Rojas Prueba vive en Villa Ejemplo', 'clave 𝐀𝐁 1000000033 y 😀😀 fin', 'cédula 1000000041 del actor',
-    'Calle 00 # 00-00 int 2 300 000 0001', 'Calle 00 # 00-00 30 sur', '[DEMANDANTE_1] Prueba firmó', 'por diez pesos ($10) netos',
-    'pagó diez pesos ( $10) m/cte fin', 'pagó diez pesos (en letras: $10 y ) fin', 'pagó diez pesos (​$10\n) fin',
-    'Dra. Ana Ficticia', 'la Ferretería Ejemplo,', 'señor Pedro Ejemplo de', '(Ana Rojas)', 'de', 'X', '2026', 'Delia Prueba', 'Ana',
-  ];
-
   it('R-MOD-03 corregida da el mismo índice que la del plan en cada subcadena de los casos de merge.test.ts', () => {
     const diff: string[] = [];
     let n = 0;
@@ -575,6 +575,71 @@ describe('T-MO-05 · R-MOD-03 sin retroceso exponencial (P0-6a M-1, 7.10.7)', ()
     }
     expect(diff).toEqual([]);
     expect(trimmed).toBeGreaterThan(30);   // la muestra recorta por los dos lados, no solo casos triviales
+  });
+});
+
+describe('T-MO-05 · borde derecho del fragmento en tiempo lineal (P0-6a, PB-2-r2)', () => {
+  /** Expresión anterior del remanente de regla: solo de oráculo y solo con entradas cortas. */
+  const OLD_EDGE_RIGHT = /[\s\p{P}\p{S}]*$/u;
+  const oldEdge = (s: string): number => (OLD_EDGE_RIGHT.exec(s) as RegExpExecArray)[0].length;
+  const bestOf3 = (f: () => unknown): number => Math.min(...[0, 1, 2].map(() => {
+    const t0 = performance.now();
+    f();
+    return performance.now() - t0;
+  }));
+  const BLANKS = ' '.repeat(30000);
+
+  it.each([
+    ['blancos y una letra al final', `1000000017${BLANKS}x`, 0],
+    ['blancos hasta el final', `1000000017${BLANKS}`, 30000],
+    ['tabuladores, signos y emoji', `1000000017${'\t.😀'.repeat(10000)}`, 40000],
+  ])('edgeRightLength con 30.000 bordes (%s) tarda menos de 50 ms', (_n, s, want) => {
+    expect(bestOf3(() => edgeRightLength(s))).toBeLessThan(50);
+    expect(edgeRightLength(s)).toBe(want);
+  });
+
+  it('el fragmento de un remanente de regla con 30.000 blancos se resuelve en menos de 50 ms', () => {
+    const t = `CC 1000000017${BLANKS}x fin`;
+    const part = mkPart(t);
+    const c = mk(t, `1000000017${BLANKS}x`, { type: 'CC', ...r5, ruleId: 'R-CC-01', canonicalKey: 'CC:1000000017' });
+    expect(bestOf3(() => resolveRemainder(part, c, c.start, c.end, NO_RULES))).toBeLessThan(50);
+    const r = resolveRemainder(part, c, c.start, c.end, NO_RULES);
+    expect(r).toMatchObject({ start: c.start, end: c.end, fragment: true, confidence: 'baja' });
+    const trailing = mk(t, `1000000017${BLANKS}`, { type: 'CC', ...r5, ruleId: 'R-CC-01', canonicalKey: 'CC:1000000017' });
+    const r2 = resolveRemainder(part, trailing, trailing.start, trailing.end, NO_RULES);
+    expect(r2 && t.slice(r2.start, r2.end)).toBe('1000000017');
+  });
+
+  it('edgeRightLength da lo mismo que la expresión anterior en cada subcadena de los casos de merge.test.ts', () => {
+    const diff: string[] = [];
+    let n = 0;
+    for (const t of CASES) {
+      for (let i = 0; i < t.length; i++) {
+        for (let j = i + 1; j <= t.length; j++) {   // por unidades UTF-16: también corta pares sustitutos
+          const s = t.slice(i, j);
+          if (edgeRightLength(s) !== oldEdge(s)) diff.push(JSON.stringify(s));
+          n++;
+        }
+      }
+    }
+    expect(diff).toEqual([]);
+    expect(n).toBeGreaterThan(25000);
+  });
+
+  it('edgeRightLength da lo mismo que la expresión anterior en 300 cadenas aleatorias con semilla', () => {
+    let seed = 20261030;
+    const r = () => { seed = (Math.imul(seed, 1103515245) + 12345) >>> 0; return seed / 2 ** 32; };
+    const TOKENS = ['a', 'Z', '1', 'é', 'é', ' ', '\t', '\n', ' ', '​', '﻿', '.', ',', '-', '$', '+', '«', '»',
+      '😀', '𝐀', '\ud83d', '\ude00', '(', ')', '#', '/'];
+    const diff: string[] = [];
+    let edged = 0;
+    for (let k = 0; k < 300; k++) {
+      const s = Array.from({ length: Math.floor(r() * 14) }, () => TOKENS[Math.floor(r() * TOKENS.length)] as string).join('');
+      if (edgeRightLength(s) !== oldEdge(s)) diff.push(JSON.stringify(s));
+      if (oldEdge(s) > 0) edged++;
+    }
+    expect(diff).toEqual([]);
+    expect(edged).toBeGreaterThan(100);   // la muestra tiene bordes de verdad, no solo cadenas que terminan en letra
   });
 });
 
