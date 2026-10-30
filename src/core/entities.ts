@@ -159,9 +159,23 @@ function fullRadicadoKey(shortKey: string, fullKeys: readonly string[]): string 
 const ROTULO_TEMPLATE = 'documento de identidad';
 const TEMPLATE_M = '{m}';
 const hexOf = (id: string): string => id.slice(id.indexOf('_') + 1);
-/** La edición de tramo de una sugerencia o bandera reutiliza el sufijo aleatorio de su id: así una ida y vuelta
- *  (`especificar_documento`, INV-R10) deja el estado igual. No deriva del contenido (INV-G05). */
-const spanEditIdFor = (originId: string): SpanEditId => `edt_${hexOf(originId)}` as SpanEditId;
+/** La edición de tramo de una sugerencia reutiliza el sufijo aleatorio de su `sug_`: así la ida y vuelta de
+ *  `especificar_documento` (INV-R10) deja el estado igual. No deriva del contenido (INV-G05). Provisional (P0-6a B-7):
+ *  `Suggestion` no tiene dónde guardar un `edt` sacado una vez de IdSource, como `Flag.spanEditId`; pedido al integrador. */
+const suggestionEditId = (id: SuggestionId): SpanEditId => `edt_${hexOf(id)}` as SpanEditId;
+/** B-7 · `edt` de una bandera: sale de IdSource una sola vez y queda en `Flag.spanEditId`. Se descarta uno que ya use
+ *  otra edición o el de una sugerencia del estado; un IdSource que repite ids da null y no un bucle infinito. */
+function freshEditId(state: ReviewState, ids: IdSource): SpanEditId | null {
+  const taken = new Set<string>([...Object.keys(state.spanEdits), ...Object.keys(state.suggestions).map((x) => suggestionEditId(x as SuggestionId))]);
+  for (let i = 0; i < 8; i++) {
+    const id = ids.next('edt');
+    if (!taken.has(id)) return id as SpanEditId;
+  }
+  return null;
+}
+const sameOrigin = (a: SpanEdit, b: SpanEdit): boolean => (a.origin.kind === 'sugerencia'
+  ? b.origin.kind === 'sugerencia' && a.origin.suggestionId === b.origin.suggestionId
+  : b.origin.kind === 'bandera' && a.origin.flagId === b.origin.flagId);
 
 /** IdSource por defecto: 16 bytes de crypto.getRandomValues (6.1.4). */
 export const cryptoIds: IdSource = {
@@ -418,8 +432,11 @@ export function buildReviewState(doc: DocumentModel, merged: readonly MergedCand
 // Ediciones de tramo y sugerencias (6.4.5, 6.4.7)
 // ---------------------------------------------------------------------------------------------
 
-/** Edición de tramo: no corta a medias una detección no rechazada ni otra edición; cubre las contenidas. */
+/** Edición de tramo: no corta a medias una detección no rechazada ni otra edición; cubre las contenidas. Una edición de
+ *  otro origen con el mismo id nunca se omite en la comprobación ni se sobrescribe (B-7). */
 function placeSpanEdit(state: ReviewState, edit: SpanEdit): ReviewError | null {
+  const prev = state.spanEdits[edit.id];
+  if (prev !== undefined && !sameOrigin(prev, edit)) return 'SOLAPAMIENTO_PARCIAL';
   const bad = Object.values(state.detections).some((d) => d.status !== 'rechazada' && overlaps(spanOf(d), edit.span) && !contains(edit.span, spanOf(d)))
     || Object.values(state.spanEdits).some((s) => s.id !== edit.id && overlaps(s.span, edit.span));
   if (bad) return 'SOLAPAMIENTO_PARCIAL';
@@ -433,7 +450,7 @@ function removeSpanEdit(state: ReviewState, id: SpanEditId): void {
 }
 function applySpanSuggestion(state: ReviewState, s: Suggestion, o: SuggestionOption): ReviewError | null {
   if (s.target.kind !== 'tramo') return 'NO_ENCONTRADO';
-  const err = placeSpanEdit(state, { id: spanEditIdFor(s.id), span: s.target.span, originalText: s.originalText, text: o.template,
+  const err = placeSpanEdit(state, { id: suggestionEditId(s.id), span: s.target.span, originalText: s.originalText, text: o.template,
     origin: { kind: 'sugerencia', suggestionId: s.id } });
   if (err !== null) return err;
   s.status = 'aplicada'; s.chosenOptionId = o.id;
@@ -441,7 +458,9 @@ function applySpanSuggestion(state: ReviewState, s: Suggestion, o: SuggestionOpt
 }
 /** Deshace la aplicación de una sugerencia (edición de tramo, generalización o detección creada). */
 function unapplySuggestion(state: ReviewState, s: Suggestion): void {
-  removeSpanEdit(state, spanEditIdFor(s.id));
+  const id = suggestionEditId(s.id);
+  const o = state.spanEdits[id]?.origin;
+  if (o?.kind === 'sugerencia' && o.suggestionId === s.id) removeSpanEdit(state, id);   // nunca la de otro origen (B-7)
   for (const d of Object.values(state.detections)) {
     if (d.replacement.generalized?.suggestionId === s.id) delete d.replacement.generalized;
     if (d.suggestionId === s.id) delete state.detections[d.id];
@@ -700,7 +719,8 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
     case 'resolver_bandera': {
       const f = s.flags[a.flagId];
       if (f === undefined) return 'NO_ENCONTRADO';
-      if (f.spanEditId !== undefined) { removeSpanEdit(s, f.spanEditId); delete f.spanEditId; }
+      const prevEdit = f.spanEditId;
+      if (prevEdit !== undefined) { removeSpanEdit(s, prevEdit); delete f.spanEditId; }
       const linked = f.detectionId === undefined ? undefined : s.detections[f.detectionId];
       if (f.type === 'CITA_JURISPRUDENCIAL' && linked !== undefined) {
         if (a.resolution === 'mantener') setStatus(linked, 'rechazada', 'individual', 'CITA_JURISPRUDENCIAL');
@@ -715,7 +735,8 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
       } else if (a.resolution === 'reemplazar' && linked === undefined) {
         const text = a.text ?? f.options.find((o) => o.id === (a.optionId ?? f.options[0]?.id))?.template;
         if (text === undefined || text.includes(TEMPLATE_M)) return 'NO_ENCONTRADO';
-        const id = spanEditIdFor(f.id);
+        const id = prevEdit ?? freshEditId(s, ids);   // B-7: de IdSource una sola vez; se reutiliza al volver a reemplazar
+        if (id === null) return 'SOLAPAMIENTO_PARCIAL';
         const err = placeSpanEdit(s, { id, span: f.span, originalText: f.text, text, origin: { kind: 'bandera', flagId: f.id } });
         if (err !== null) return err;
         f.spanEditId = id;
