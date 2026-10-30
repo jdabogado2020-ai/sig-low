@@ -155,7 +155,10 @@ export interface DetectionCandidate {
   partId: PartId; start: number; end: number;
   type: DataType;                // FlagType solo si el detector emite una bandera
   role?: Role;
-  source: Exclude<DetectionSource, 'manual'>;
+  // Cambio de contrato del integrador (regla 9, 30-oct): admite 'manual' para que las detecciones manuales
+  // (precedencia 1, 6.2.4) pasen por mergeCandidates al reprocesar (7.11, pasada 3 de residuos). Los detectores
+  // de reglas, lista y modelo nunca emiten 'manual'.
+  source: DetectionSource;
   ruleId?: string;               // source 'regla'; ^R-[A-Z_]+-\d{2}$ (R-CC-01, R-RAD_ADMIN-01, R-RES-02; no R-cc-01 ni R-CC-001)
   caseEntityId?: CaseEntityId;   // source 'lista'
   variantClass?: VariantClass;   // source 'lista'
