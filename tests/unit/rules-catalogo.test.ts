@@ -28,11 +28,11 @@
 // ficticios; la cuenta la hace PA-7 al cerrar el catálogo, aquí solo se valida el formato de los ids.
 import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { buildSearchView } from '../../src/core/normalize';
-import { CUE_WINDOW, RULE_TIME_LIMIT_MS, runRules } from '../../src/core/rules/catalog';
+import { buildSearchView } from '../../src/core/normalize.ts';
+import { CUE_WINDOW, RULE_TIME_LIMIT_MS, runRules } from '../../src/core/rules/catalog.ts';
 import type {
   Confidence, DataType, DetectionCandidate, DetectableType, PartId, PartKind, RuleSpec, RuleVerdict,
-} from '../../src/core/types.local';
+} from '../../src/core/types.ts';
 
 const PART = 'prt_00000000000000000000000000000001' as PartId;
 const FIXTURES = new URL('../fixtures/reglas-ejemplos/', import.meta.url);
@@ -248,6 +248,18 @@ describe('T-MO-01 · runRules ejecuta RuleSpec sobre la vista reglas', () => {
     const todo = runRules(view, PART, [r], 2026);
     expect(todo).toHaveLength(6);
     expect(RULE_TIME_LIMIT_MS).toBe(250);
+  });
+
+  it('copia context y role del veredicto al candidato (7.2.0) y no los inventa si faltan', () => {
+    const view = buildSearchView('nació 12 y 34', 'reglas', 'cuerpo');
+    const r = regla('R-PRUEBA-10', 'FECHA', String.raw`(?<v>\d\d)`, (m) => (m[0] === '12'
+      ? { confidence: 'alta', canonicalKey: 'k1', context: 'nacimiento', role: 'PACIENTE' }
+      : { confidence: 'alta', canonicalKey: 'k2' }));
+    const [a, b] = runRules(view, PART, [r], 2026);
+    expect(a).toMatchObject({ context: 'nacimiento', role: 'PACIENTE' });
+    expect(b).toBeDefined();
+    expect(b !== undefined && 'context' in b).toBe(false);
+    expect(b !== undefined && 'role' in b).toBe(false);
   });
 
   it('los candidatos nunca cortan un par sustituto', () => {

@@ -1,12 +1,12 @@
 // Ejecutor del catálogo de reglas (PA-1, desvío D-03; plan 6.4.2 y 7.2.0).
 // TypeScript puro: sin DOM, sin red, sin registro. Los archivos de reglas (PA-2 a PA-7) exportan `rules: RuleSpec[]`
 // y este módulo los ejecuta sobre una vista `reglas` (6.1.2).
-import { toCanonicalSpan } from '../normalize';
+import { toCanonicalSpan } from '../normalize.ts';
 import type {
   Confidence, DetectionCandidate, LabelHit, PartId, RuleContext, RuleSpec, RuleVerdict, SearchView,
-} from '../types.local';
+} from '../types.ts';
 
-export type { RuleContext, RuleSpec, RuleVerdict } from '../types.local';
+export type { RuleContext, RuleSpec, RuleVerdict } from '../types.ts';
 
 /**
  * Tope de tiempo por regla y por parte: 250 ms acumulados entre el primer `exec` y el último.
@@ -92,6 +92,8 @@ function toCandidate(
     candidate.label = label;
   }
   if (verdict.validator !== undefined) candidate.validator = verdict.validator;
+  if (verdict.context !== undefined) candidate.context = verdict.context;
+  if (verdict.role !== undefined) candidate.role = verdict.role;
   return candidate;
 }
 

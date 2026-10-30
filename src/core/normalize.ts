@@ -8,7 +8,13 @@
 //   2. Uniones de saltos de línea (7.1.5) y transformación propia del perfil (7.1.3).
 // Todas las comprobaciones de la sección 7.1.5 se hacen sobre el flujo ya normalizado (después de eliminar
 // invisibles y convertir guiones), de modo que la vista `reglas` es idempotente (INV-S03).
-import type { NormalizationProfile, PartKind, SearchView } from './types.local';
+//
+// ADVERTENCIA PARA LAS REGLAS (PA-2 a PA-7): las uniones de saltos de 7.1.5 («1.000.⏎000», «03-⏎999») dependen de los
+// dígitos de ambos lados del salto. Un tramo de la vista que parta una racha de dígitos, o que arranque en el «-» o el
+// «.» pegado a ella, vuelve a un recorte canónico cuya vista ya no lo contiene (INV-S02 vale para tramos que no hacen
+// eso). Las expresiones del catálogo ya lo respetan con las fronteras NL/NR de 7.2.0; no capturen un tramo que
+// empiece en ese separador ni lo corten por dentro de una racha de dígitos.
+import type { NormalizationProfile, PartKind, SearchView } from './types.ts';
 
 // ---------------------------------------------------------------- tabla 7.1.2
 

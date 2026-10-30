@@ -2,8 +2,8 @@
 // Notación de las tablas (7.1.6): ⏎ = salto de línea; ⍽ = U+00A0; ⟨U+XXXX⟩ = el carácter real.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
-import { buildAlnumSearchView, buildSearchView, toCanonicalSpan } from '../../src/core/normalize';
-import type { NormalizationProfile, PartKind, SearchView } from '../../src/core/types.local';
+import { buildAlnumSearchView, buildSearchView, toCanonicalSpan } from '../../src/core/normalize.ts';
+import type { NormalizationProfile, PartKind, SearchView } from '../../src/core/types.ts';
 
 const dec = (s: string): string => s
   .replace(/⍽/gu, ' ')
