@@ -1,0 +1,550 @@
+{
+  "modulo": "contacto",
+  "casos": [
+    {
+      "texto": "Comunicarse al 300 000 0001.",
+      "reglas": ["R-TEL-01"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "300 000 0001", "ruleId": "R-TEL-01", "confidence": "media", "canonicalKey": "TEL:3000000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "+57 310 000 0001",
+      "reglas": ["R-TEL-01"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "+57 310 000 0001", "ruleId": "R-TEL-01", "confidence": "alta", "canonicalKey": "TEL:3100000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "(+57) 300-000-0001",
+      "reglas": ["R-TEL-01"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "(+57) 300-000-0001", "ruleId": "R-TEL-01", "confidence": "alta", "canonicalKey": "TEL:3000000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "3000000001",
+      "reglas": ["R-TEL-01"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "3000000001", "ruleId": "R-TEL-01", "confidence": "media", "canonicalKey": "TEL:3000000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "0057 3000000001",
+      "reglas": ["R-TEL-01"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "0057 3000000001", "ruleId": "R-TEL-01", "confidence": "alta", "canonicalKey": "TEL:3000000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "300.000.0001",
+      "reglas": ["R-TEL-01"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "300.000.0001", "ruleId": "R-TEL-01", "confidence": "media", "canonicalKey": "TEL:3000000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "300 000 00 01",
+      "reglas": ["R-TEL-01"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "300 000 00 01", "ruleId": "R-TEL-01", "confidence": "media", "canonicalKey": "TEL:3000000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "395 000 0001",
+      "reglas": ["R-TEL-01"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "395 000 0001", "ruleId": "R-TEL-01", "confidence": "baja", "canonicalKey": "TEL:3950000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "300 000 0001 ext. 12",
+      "reglas": ["R-TEL-01"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "300 000 0001 ext. 12", "ruleId": "R-TEL-01", "confidence": "media", "canonicalKey": "TEL:3000000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "1000000001",
+      "reglas": ["R-TEL-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "cédula"
+    },
+    {
+      "texto": "601 000 0001",
+      "reglas": ["R-TEL-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "fijo (R-TEL-02)"
+    },
+    {
+      "texto": "30000000001",
+      "reglas": ["R-TEL-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "11 dígitos"
+    },
+    {
+      "texto": "C.C. 3.000.000.001",
+      "reglas": ["R-TEL-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "agrupación de cédula o dinero"
+    },
+    {
+      "texto": "300000000100001",
+      "reglas": ["R-TEL-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "15 dígitos"
+    },
+    {
+      "texto": "(601) 000 0001",
+      "reglas": ["R-TEL-02"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "(601) 000 0001", "ruleId": "R-TEL-02", "confidence": "media", "canonicalKey": "TEL:6010000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "601 0000001",
+      "reglas": ["R-TEL-02"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "601 0000001", "ruleId": "R-TEL-02", "confidence": "media", "canonicalKey": "TEL:6010000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "6040000001",
+      "reglas": ["R-TEL-02"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "6040000001", "ruleId": "R-TEL-02", "confidence": "media", "canonicalKey": "TEL:6040000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "+57 601 000 0001",
+      "reglas": ["R-TEL-02"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "+57 601 000 0001", "ruleId": "R-TEL-02", "confidence": "alta", "canonicalKey": "TEL:6010000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Oficina: 608 000 0001",
+      "reglas": ["R-TEL-02"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "608 000 0001", "ruleId": "R-TEL-02", "confidence": "media", "canonicalKey": "TEL:6080000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "603 000 0001",
+      "reglas": ["R-TEL-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "el indicativo 603 no existe"
+    },
+    {
+      "texto": "609 0000001",
+      "reglas": ["R-TEL-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "indicativo inexistente"
+    },
+    {
+      "texto": "6010001",
+      "reglas": ["R-TEL-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "7 dígitos"
+    },
+    {
+      "texto": "60100000001",
+      "reglas": ["R-TEL-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "11 dígitos"
+    },
+    {
+      "texto": "Tel. 000 0001",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "000 0001", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:0000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "teléfono (1) 000 0001",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "(1) 000 0001", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:6010000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Línea gratuita 01 8000 00 0001",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "01 8000 00 0001", "ruleId": "R-TEL-03", "confidence": "baja", "canonicalKey": "TEL:8000000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "PBX: 601 000 0001 Ext. 102",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "601 000 0001 Ext. 102", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:6010000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "PBX 601 000 0001 ext: 102",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "601 000 0001 ext: 102", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:6010000001" }
+      ],
+      "nota": "positivo del laboratorio 07a; la clave corrige al laboratorio, que no quitaba la extensión con dos puntos"
+    },
+    {
+      "texto": "fijo 0000001",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "0000001", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:0000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Cel. +57 300 000 0001",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "+57 300 000 0001", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:3000000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Contacto: (4) 000 0002",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "(4) 000 0002", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:6040000002" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "teléfono de la entidad",
+      "reglas": ["R-TEL-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin número"
+    },
+    {
+      "texto": "Tel. 12345",
+      "reglas": ["R-TEL-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "5 dígitos"
+    },
+    {
+      "texto": "celular de gama alta",
+      "reglas": ["R-TEL-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin número"
+    },
+    {
+      "texto": "teléfono 123456789012",
+      "reglas": ["R-TEL-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "12 dígitos"
+    },
+    {
+      "texto": "Oficina principal (1) 000 0001",
+      "reglas": ["R-TEL-04"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "(1) 000 0001", "ruleId": "R-TEL-04", "confidence": "baja", "canonicalKey": "TEL:6010000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Bogotá D.C. +57 1 000 0002",
+      "reglas": ["R-TEL-04"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "+57 1 000 0002", "ruleId": "R-TEL-04", "confidence": "baja", "canonicalKey": "TEL:6010000002" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "(4) 000-0003",
+      "reglas": ["R-TEL-04"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "(4) 000-0003", "ruleId": "R-TEL-04", "confidence": "baja", "canonicalKey": "TEL:6040000003" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "0057 2 000 0004",
+      "reglas": ["R-TEL-04"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "0057 2 000 0004", "ruleId": "R-TEL-04", "confidence": "baja", "canonicalKey": "TEL:6020000004" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "1 000 0001",
+      "reglas": ["R-TEL-04"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin paréntesis ni prefijo"
+    },
+    {
+      "texto": "(9) 000 0001",
+      "reglas": ["R-TEL-04"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "indicativo inexistente"
+    },
+    {
+      "texto": "(1) 000 00",
+      "reglas": ["R-TEL-04"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "abonado incompleto"
+    },
+    {
+      "texto": "+57 300 000 0001",
+      "reglas": ["R-TEL-04"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "celular (R-TEL-01)"
+    },
+    {
+      "texto": "ana.ficticia@ejemplo.test",
+      "reglas": ["R-CORREO-01"],
+      "esperado": [
+        { "type": "CORREO", "texto": "ana.ficticia@ejemplo.test", "ruleId": "R-CORREO-01", "confidence": "alta", "canonicalKey": "CORREO:ana.ficticia@ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Escribir a CONTACTO@FERRETERIA-EJEMPLO.TEST.",
+      "reglas": ["R-CORREO-01"],
+      "esperado": [
+        { "type": "CORREO", "texto": "CONTACTO@FERRETERIA-EJEMPLO.TEST", "ruleId": "R-CORREO-01", "confidence": "alta", "canonicalKey": "CORREO:contacto@ferreteria-ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "juan_prueba+tutela@correo.ejemplo.test",
+      "reglas": ["R-CORREO-01"],
+      "esperado": [
+        { "type": "CORREO", "texto": "juan_prueba+tutela@correo.ejemplo.test", "ruleId": "R-CORREO-01", "confidence": "alta", "canonicalKey": "CORREO:juan_prueba+tutela@correo.ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "josé.ejemplo@ejemplo.test",
+      "reglas": ["R-CORREO-01"],
+      "esperado": [
+        { "type": "CORREO", "texto": "josé.ejemplo@ejemplo.test", "ruleId": "R-CORREO-01", "confidence": "alta", "canonicalKey": "CORREO:josé.ejemplo@ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "ana..ficticia@ejemplo.test",
+      "reglas": ["R-CORREO-01"],
+      "esperado": [
+        { "type": "CORREO", "texto": "ana..ficticia@ejemplo.test", "ruleId": "R-CORREO-01", "confidence": "media", "canonicalKey": "CORREO:ana..ficticia@ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "@ana.ficticia",
+      "reglas": ["R-CORREO-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin parte local"
+    },
+    {
+      "texto": "ana.ficticia@",
+      "reglas": ["R-CORREO-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin dominio"
+    },
+    {
+      "texto": "ana@ejemplo",
+      "reglas": ["R-CORREO-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin dominio de nivel superior"
+    },
+    {
+      "texto": "[CORREO_1]",
+      "reglas": ["R-CORREO-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "marcador"
+    },
+    {
+      "texto": "www.ejemplo.test",
+      "reglas": ["R-CORREO-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin @"
+    },
+    {
+      "texto": "ana@ejemplo.t",
+      "reglas": ["R-CORREO-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "dominio superior de 1 letra"
+    },
+    {
+      "texto": "escribir a ana.ficticia (arroba) ejemplo (punto) test",
+      "reglas": ["R-CORREO-02"],
+      "esperado": [
+        { "type": "CORREO", "texto": "ana.ficticia (arroba) ejemplo (punto) test", "ruleId": "R-CORREO-02", "confidence": "media", "canonicalKey": "CORREO:ana.ficticia@ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "ana.ficticia [arroba] ejemplo [punto] test",
+      "reglas": ["R-CORREO-02"],
+      "esperado": [
+        { "type": "CORREO", "texto": "ana.ficticia [arroba] ejemplo [punto] test", "ruleId": "R-CORREO-02", "confidence": "media", "canonicalKey": "CORREO:ana.ficticia@ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "ana.ficticia (arroba) ejemplo.test",
+      "reglas": ["R-CORREO-02"],
+      "esperado": [
+        { "type": "CORREO", "texto": "ana.ficticia (arroba) ejemplo.test", "ruleId": "R-CORREO-02", "confidence": "media", "canonicalKey": "CORREO:ana.ficticia@ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "ana.ficticia [at] ejemplo punto test",
+      "reglas": ["R-CORREO-02"],
+      "esperado": [
+        { "type": "CORREO", "texto": "ana.ficticia [at] ejemplo punto test", "ruleId": "R-CORREO-02", "confidence": "media", "canonicalKey": "CORREO:ana.ficticia@ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "prueba arroba ejemplo.test",
+      "reglas": ["R-CORREO-02"],
+      "esperado": [
+        { "type": "CORREO", "texto": "prueba arroba ejemplo.test", "ruleId": "R-CORREO-02", "confidence": "media", "canonicalKey": "CORREO:prueba@ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "ana(at)ejemplo.test",
+      "reglas": ["R-CORREO-02"],
+      "esperado": [
+        { "type": "CORREO", "texto": "ana(at)ejemplo.test", "ruleId": "R-CORREO-02", "confidence": "media", "canonicalKey": "CORREO:ana@ejemplo.test" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "la arroba es un símbolo",
+      "reglas": ["R-CORREO-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin dominio con punto"
+    },
+    {
+      "texto": "en (arroba) del texto",
+      "reglas": ["R-CORREO-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin dominio con punto"
+    },
+    {
+      "texto": "ana.ficticia@ejemplo.test",
+      "reglas": ["R-CORREO-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "correo normal (R-CORREO-01)"
+    },
+    {
+      "texto": "25 arroba de café",
+      "reglas": ["R-CORREO-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "unidad de peso"
+    },
+    {
+      "texto": "llave Bre-B: @anaficti1",
+      "reglas": ["R-BREB-01"],
+      "esperado": [
+        { "type": "CUENTA", "texto": "@anaficti1", "ruleId": "R-BREB-01", "confidence": "alta", "canonicalKey": "CUENTA:BREB:@anaficti1" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Llave Bre\u2011B @ferreteria.ejemplo",
+      "reglas": ["R-BREB-01"],
+      "esperado": [
+        { "type": "CUENTA", "texto": "@ferreteria.ejemplo", "ruleId": "R-BREB-01", "confidence": "alta", "canonicalKey": "CUENTA:BREB:@ferreteria.ejemplo" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "llave de pago Bre B @prueba_01",
+      "reglas": ["R-BREB-01"],
+      "esperado": [
+        { "type": "CUENTA", "texto": "@prueba_01", "ruleId": "R-BREB-01", "confidence": "alta", "canonicalKey": "CUENTA:BREB:@prueba_01" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "llave: @ana2026",
+      "reglas": ["R-BREB-01"],
+      "esperado": [
+        { "type": "CUENTA", "texto": "@ana2026", "ruleId": "R-BREB-01", "confidence": "media", "canonicalKey": "CUENTA:BREB:@ana2026" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "llave del inmueble",
+      "reglas": ["R-BREB-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin alias"
+    },
+    {
+      "texto": "Bre-B es un sistema",
+      "reglas": ["R-BREB-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin alias"
+    },
+    {
+      "texto": "@ana sin rótulo",
+      "reglas": ["R-BREB-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin rótulo"
+    },
+    {
+      "texto": "llave Bre-B: 3000000001",
+      "reglas": ["R-BREB-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "celular: lo toma R-TEL-01"
+    }
+  ]
+}

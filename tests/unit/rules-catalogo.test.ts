@@ -12,6 +12,7 @@
 //         "refYear": 2026,             // opcional: año de referencia que recibe `assess`; por defecto 2026
 //         "reglas": ["R-CC-01"],       // opcional: ejecuta solo esas reglas del módulo; por defecto, todas
 //         "negativo": true,            // opcional: el caso NO debe producir ningún candidato (`esperado` vacío)
+//         "nota": "…",                 // opcional: por qué es positivo o negativo (no se evalúa)
 //         "esperado": [                // candidatos en orden de posición; cada campo es opcional salvo `type` y `texto`
 //           { "type": "CC",            // DetectableType del candidato
 //             "texto": "1.000.000.001",// `Part.text.slice(start, end)` (INV-R01): el tramo canónico exacto
@@ -23,13 +24,17 @@
 //     ]
 //   }
 //
+// La DIVIPOLA de los validadores se configura con `data/divipola.json` si existe (PG-4) y, mientras no exista, con el
+// subconjunto ficticio `tests/fixtures/divipola-mini.json`.
+//
 // Se compara el total de candidatos y, en orden de posición (empates: orden de la regla), los campos presentes.
 // Regla del plan (10.0): cada `ruleId` (`^R-[A-Z_]+-\d{2}$`) debe terminar con al menos 4 positivos y 4 negativos
 // ficticios; la cuenta la hace PA-7 al cerrar el catálogo, aquí solo se valida el formato de los ids.
-import { readdirSync, readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { buildSearchView } from '../../src/core/normalize.ts';
 import { CUE_WINDOW, RULE_TIME_LIMIT_MS, runRules } from '../../src/core/rules/catalog.ts';
+import { configurarDivipola, divipolaCodes } from '../../src/core/validators/radicado.ts';
 import type {
   Confidence, DataType, DetectionCandidate, DetectableType, PartId, PartKind, RuleSpec, RuleVerdict,
 } from '../../src/core/types.ts';
@@ -111,6 +116,14 @@ function correr(texto: string, kind: PartKind, reglas: readonly RuleSpec[], refY
     .sort((a, b) => a.c.start - b.c.start || a.c.end - b.c.end || a.i - b.i)
     .map((x) => x.c);
 }
+
+beforeAll(() => {
+  const real = new URL('../../data/divipola.json', import.meta.url);
+  const mini = new URL('../fixtures/divipola-mini.json', import.meta.url);
+  const rows = JSON.parse(readFileSync(existsSync(real) ? real : mini, 'utf8')) as Array<{ dep: string; mun: string }>;
+  configurarDivipola(divipolaCodes(rows));
+  return () => configurarDivipola(null);
+});
 
 const archivos = readdirSync(FIXTURES).filter((f) => f.endsWith('.json')).sort();
 

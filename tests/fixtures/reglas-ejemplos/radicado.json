@@ -1,0 +1,555 @@
+{
+  "modulo": "radicado",
+  "casos": [
+    {
+      "texto": "a folio 12 11001-31-03-999-2026-00123-00 obra el auto",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001-31-03-999-2026-00123-00", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:11001310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "1 11001-31-03-999-2026-00123-00 Ana Ficticia Rojas",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001-31-03-999-2026-00123-00", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:11001310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "CUI 11001/60/00/999/2026/00123",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001/60/00/999/2026/00123", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:110016000999202600123" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "proceso 11001-31-03-999-2026-\n00123-00",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001-31-03-999-2026-\n00123-00", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:11001310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Radicado: 11001-31-03-999-2026-00123-00",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001-31-03-999-2026-00123-00", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:11001310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Proceso No. 11001400399920260000100",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001400399920260000100", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:11001400399920260000100" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "11001-00-00-000-2026-00000-00",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001-00-00-000-2026-00000-00", "ruleId": "R-RAD-01", "confidence": "media", "canonicalKey": "RAD:11001000000020260000000" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "CUI 110016000999202600001",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "110016000999202600001", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:110016000999202600001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "110016000999202600001",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "110016000999202600001", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:110016000999202600001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "11001 3103 999 2026 00123 00",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001 3103 999 2026 00123 00", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:11001310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Radicado 5001400399920250004500",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "5001400399920250004500", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:5001400399920250004500" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "radicado 99999-31-03-999-2026-00123-00",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "99999-31-03-999-2026-00123-00", "ruleId": "R-RAD-01", "confidence": "media", "canonicalKey": "RAD:99999310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "11001\u201331\u201303\u2013999\u20132026\u201300123\u201300",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001\u201331\u201303\u2013999\u20132026\u201300123\u201300", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:11001310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "25000-23-26-999-2012-00123-01",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "25000-23-26-999-2012-00123-01", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:25000232699920120012301" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "99999310399920260012300",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "99999310399920260012300", "ruleId": "R-RAD-01", "confidence": "baja", "canonicalKey": "RAD:99999310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "folio 12 11001310399920260012300",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001310399920260012300", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:11001310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Proceso 11001-31-03-999-2026-00123-00 2026-03-14",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001-31-03-999-2026-00123-00", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:11001310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Radicado 11001-31-03-999-2026-\n00123-00",
+      "parte": "pagina_pdf",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "11001-31-03-999-2026-\n00123-00", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:11001310399920260012300" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "11-001-40-04-001",
+      "reglas": ["R-RAD-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "12 dígitos: código de despacho"
+    },
+    {
+      "texto": "1.000.000.001",
+      "reglas": ["R-RAD-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "10 dígitos"
+    },
+    {
+      "texto": "Ley 1581 de 2012 y Decreto 1069 de 2015",
+      "reglas": ["R-RAD-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "normas"
+    },
+    {
+      "texto": "4111 1111 1111 1111",
+      "reglas": ["R-RAD-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "16 dígitos"
+    },
+    {
+      "texto": "110014003999202600001000000",
+      "reglas": ["R-RAD-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "27 dígitos en un solo grupo"
+    },
+    {
+      "texto": "Radicado No. 2026-00123",
+      "reglas": ["R-RAD-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "forma corta (R-RAD-02)"
+    },
+    {
+      "texto": "Ana Ficticia Rojas 41.000.001 300 000 0001 310 000 0002",
+      "reglas": ["R-RAD-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "cédula y teléfonos contiguos (tabla PDF)"
+    },
+    {
+      "texto": "fechas 14/03/2026 y 15/03/2026",
+      "reglas": ["R-RAD-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "fechas con barra"
+    },
+    {
+      "texto": "Radicado interno 2026-00123 de la EPS",
+      "reglas": ["R-RAD-02"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "2026-00123", "ruleId": "R-RAD-02", "confidence": "alta", "canonicalKey": "RAD:202600123" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "PQRSD No. 2026-00456",
+      "reglas": ["R-RAD-02"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "2026-00456", "ruleId": "R-RAD-02", "confidence": "alta", "canonicalKey": "RAD:202600456" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "radicado de salida 2026-00789",
+      "reglas": ["R-RAD-02"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "2026-00789", "ruleId": "R-RAD-02", "confidence": "alta", "canonicalKey": "RAD:202600789" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "solicitud No. 2025-12345 ante la EPS",
+      "reglas": ["R-RAD-02"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "2025-12345", "ruleId": "R-RAD-02", "confidence": "media", "canonicalKey": "RAD:202512345" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Rdo. 2026-00123",
+      "reglas": ["R-RAD-02"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "2026-00123", "ruleId": "R-RAD-02", "confidence": "alta", "canonicalKey": "RAD:202600123" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Rad. 2026-00123",
+      "reglas": ["R-RAD-02"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "2026-00123", "ruleId": "R-RAD-02", "confidence": "alta", "canonicalKey": "RAD:202600123" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "expediente 2025-1234",
+      "reglas": ["R-RAD-02"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "2025-1234", "ruleId": "R-RAD-02", "confidence": "alta", "canonicalKey": "RAD:20251234" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Proceso No. 2026-00045-00",
+      "reglas": ["R-RAD-02"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "2026-00045-00", "ruleId": "R-RAD-02", "confidence": "alta", "canonicalKey": "RAD:20260004500" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "radicado 2026 - 00123",
+      "reglas": ["R-RAD-02"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "2026 - 00123", "ruleId": "R-RAD-02", "confidence": "alta", "canonicalKey": "RAD:202600123" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Rad. 2031-00123",
+      "reglas": ["R-RAD-02"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "2031-00123", "ruleId": "R-RAD-02", "confidence": "media", "canonicalKey": "RAD:203100123" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Ley 1581 de 2012",
+      "reglas": ["R-RAD-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin rótulo"
+    },
+    {
+      "texto": "Rad. 2026-03-14",
+      "reglas": ["R-RAD-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "fecha: consecutivo de 2 dígitos"
+    },
+    {
+      "texto": "Rad. 26-00123",
+      "reglas": ["R-RAD-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "año de 2 dígitos"
+    },
+    {
+      "texto": "Decreto 2026-00123",
+      "reglas": ["R-RAD-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin rótulo de radicado"
+    },
+    {
+      "texto": "expediente T-760 de 2008",
+      "reglas": ["R-RAD-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sentencia"
+    },
+    {
+      "texto": "radicado No. 2026000001",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "2026000001", "ruleId": "R-RAD_ADMIN-01", "confidence": "alta", "canonicalKey": "RAD:2026000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Radicado MT No.: 20260000000001",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "20260000000001", "ruleId": "R-RAD_ADMIN-01", "confidence": "alta", "canonicalKey": "RAD:20260000000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "PQRSD No. E-2026-000123",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "E-2026-000123", "ruleId": "R-RAD_ADMIN-01", "confidence": "alta", "canonicalKey": "RAD:E2026000123" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "radicado SNR 50S2026EE00001",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "50S2026EE00001", "ruleId": "R-RAD_ADMIN-01", "confidence": "alta", "canonicalKey": "RAD:50S2026EE00001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "solicitud No. 2026000123",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "2026000123", "ruleId": "R-RAD_ADMIN-01", "confidence": "media", "canonicalKey": "RAD:2026000123" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "ticket 123456",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "123456", "ruleId": "R-RAD_ADMIN-01", "confidence": "media", "canonicalKey": "RAD:123456" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "radicación 0000123456",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "0000123456", "ruleId": "R-RAD_ADMIN-01", "confidence": "alta", "canonicalKey": "RAD:0000123456" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "radicado ante la Superintendencia",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin dígitos"
+    },
+    {
+      "texto": "Radicado No. 2026-00123",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "forma corta judicial (R-RAD-02)"
+    },
+    {
+      "texto": "radicado 11001-31-03-999-2026-00123-00",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "radicado judicial (R-RAD-01)"
+    },
+    {
+      "texto": "radicado el 14 de marzo",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sin número tras el rótulo"
+    },
+    {
+      "texto": "queja 12345",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "5 caracteres"
+    },
+    {
+      "texto": "Radicado: 2026-03-14",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "fecha"
+    },
+    {
+      "texto": "NI 123456",
+      "reglas": ["R-RAD_ADMIN-02"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "123456", "ruleId": "R-RAD_ADMIN-02", "confidence": "alta", "canonicalKey": "RAD:123456" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Radicado interno 654321",
+      "reglas": ["R-RAD_ADMIN-02"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "654321", "ruleId": "R-RAD_ADMIN-02", "confidence": "alta", "canonicalKey": "RAD:654321" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "N.I. 1.234",
+      "reglas": ["R-RAD_ADMIN-02"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "1.234", "ruleId": "R-RAD_ADMIN-02", "confidence": "alta", "canonicalKey": "RAD:1234" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "NÚMERO INTERNO: 98765",
+      "reglas": ["R-RAD_ADMIN-02"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "98765", "ruleId": "R-RAD_ADMIN-02", "confidence": "alta", "canonicalKey": "RAD:98765" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "ni 500 personas",
+      "reglas": ["R-RAD_ADMIN-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "\u00abni\u00bb en minúscula es conjunción"
+    },
+    {
+      "texto": "NI 12",
+      "reglas": ["R-RAD_ADMIN-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "2 dígitos"
+    },
+    {
+      "texto": "NIT 123456",
+      "reglas": ["R-RAD_ADMIN-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "rótulo de NIT"
+    },
+    {
+      "texto": "NI 123456789",
+      "reglas": ["R-RAD_ADMIN-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "9 dígitos"
+    },
+    {
+      "texto": "Expediente: T-9.000.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "ruleId": "R-RAD_ADMIN-03", "confidence": "media", "canonicalKey": "RAD:T9000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "expediente T-9.000.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "ruleId": "R-RAD_ADMIN-03", "confidence": "media", "canonicalKey": "RAD:T9000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Expediente D-99.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "D-99.001", "ruleId": "R-RAD_ADMIN-03", "confidence": "media", "canonicalKey": "RAD:D99001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "(T-8.000.001)",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "T-8.000.001", "ruleId": "R-RAD_ADMIN-03", "confidence": "baja", "canonicalKey": "RAD:T8000001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "exp. OG-900.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "OG-900.001", "ruleId": "R-RAD_ADMIN-03", "confidence": "media", "canonicalKey": "RAD:OG900001" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "T-9000002",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "T-9000002", "ruleId": "R-RAD_ADMIN-03", "confidence": "baja", "canonicalKey": "RAD:T9000002" }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Sentencia T-760 de 2008",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sentencia: sin puntos y \u2264 4 dígitos"
+    },
+    {
+      "texto": "C-748 de 2011",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sentencia"
+    },
+    {
+      "texto": "SU-214 de 2016",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sentencia"
+    },
+    {
+      "texto": "T-1234 de 2020",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "sentencia de 4 dígitos"
+    }
+  ]
+}
