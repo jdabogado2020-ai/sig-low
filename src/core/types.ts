@@ -263,7 +263,12 @@ export type ReviewError = 'NO_ENCONTRADO' | 'TRAMO_INVALIDO' | 'SOLAPAMIENTO_PAR
   | 'ROL_INCOMPATIBLE' | 'ROL_FIJADO_EN_ASUNTO' | 'TIPO_NO_PERMITIDO' | 'DEPARTAMENTO_SIN_ELEGIR';
 export type ReviewOutcome = { ok: true; state: ReviewState } | { ok: false; code: ReviewError };
 export type ApplyReviewActionFn = (state: ReviewState, action: ReviewAction,
-  ctx: { table: TableIndex; caseList: readonly CaseEntity[] }) => ReviewOutcome;
+  ctx: {
+    table: TableIndex; caseList: readonly CaseEntity[];
+    // Cambio de contrato del integrador (regla 9, 30-oct): `doc` para agregar_manual e incorporar_residuos
+    // (orden de lectura y validación del tramo); `ids` para crear detecciones y entidades. Sin ellos → TRAMO_INVALIDO.
+    doc?: DocumentModel; ids?: IdSource;
+  }) => ReviewOutcome;
 
 // ===== Sección 6.4.5 Sugerencias de generalización (bloque 11, línea 1286) =====
 export type SuggestionKind =
