@@ -7,8 +7,10 @@ import type {
 } from './types.ts';
 import { FLAG_TYPES, ORG_CLASSES } from './types.ts';
 import { buildSearchView, toCanonicalSpan } from './normalize.ts';
+import { orgKey, personKey, precedenceOf } from './entities.ts';
 
-type Precedence = MergedCandidate['precedence'];
+export { precedenceOf };
+
 
 // ---------------------------------------------------------------------------------------------
 // Catálogos
@@ -58,13 +60,6 @@ const RE_HUECO = /^[ \t]{0,2}\([ \t]{0,2}$/u;
 const RE_CIERRE = /^[ \t]{0,2}\)/u;
 const CIERRE_WINDOW = 256;
 
-/** R-LST-05 (sufijo societario final) y R-LST-06 (token de salud), vista `lista`: núcleo de la clave ORG (6.6.1). */
-const SUFIJO = String.raw`(?:s\. ?a\. ?s\.?|s ?a ?s|s\. ?a\.?|s ?a|ltda\.?|limitada|e\. ?s\. ?p\.?|esp|e\. ?s\. ?e\.?|e\. ?u\.?|(?:&|y) ?cia\.?(?: ?s\. ?en ?c\.?)?|s\. ?en ?c\.?(?: ?s\.?)?|s\. ?c\. ?a\.?|sociedad por acciones simplificada|sociedad anonima|empresa unipersonal)`;
-const RE_SUFIJO_FINAL = new RegExp(String.raw`(?:,? )(?:` + SUFIJO + String.raw`)$`, 'u');
-const SALUD = String.raw`(?<![\p{L}\p{N}])(?:e\. ?p\. ?s\.?|eps|i\. ?p\. ?s\.?|ips)(?![\p{L}\p{N}])`;
-const RE_SALUD_FIRST = new RegExp(SALUD, 'u');
-const RE_SALUD_ALL = new RegExp(SALUD, 'gu');   // solo con replace (no guarda estado entre llamadas)
-
 /** Vista `lista` (7.1.3) de un tramo. */
 const fold = (s: string, kind: PartKind): string => buildSearchView(s, 'lista', kind).text;
 
@@ -87,23 +82,6 @@ const cmpStr = (a: string | undefined, b: string | undefined): number => {
 };
 const overlaps = (a: { start: number; end: number }, s: number, e: number): boolean => a.start < e && s < a.end;
 const countDigits = (s: string): number => (s.match(/[0-9]/gu) ?? []).length;
-
-/** 6.2.4 · Precedencia según la fuente, el validador y el rótulo. */
-export function precedenceOf(c: Pick<MergedCandidate, 'source' | 'validator' | 'label'>): Precedence {
-  switch (c.source) {
-    case 'manual': return 1;
-    case 'lista': return 2;
-    case 'modelo': return 6;
-    case 'regla': {
-      const v = c.validator;
-      if (v !== undefined && v.passed) {
-        if (v.name === 'DV_NIT' || v.name === 'RADICADO' || v.name === 'CORREO') return 3;
-        if (v.name === 'LUHN' && c.label !== undefined) return 3;
-      }
-      return c.label !== undefined ? 4 : 5;
-    }
-  }
-}
 
 /** Desempates finales, después de los cinco criterios de 7.11.1 paso 3: hacen el orden total. */
 function tieBreak(a: MergedCandidate, b: MergedCandidate): number {
@@ -133,22 +111,9 @@ function withoutValidator(c: MergedCandidate): MergedCandidate {
   return copy;
 }
 
-// ---------------------------------------------------------------------------------------------
-// Claves de los remanentes del modelo (6.6.1, 7.12.1)
-// ---------------------------------------------------------------------------------------------
-
-function perKey(s: string, kind: PartKind): string {
-  return 'PER:' + fold(s, kind).replace(/[^\p{L}\p{N} -]+/gu, ' ').replace(/ +/gu, ' ').trim();
-}
-function orgKey(s: string, kind: PartKind): string {
-  let f = fold(s, kind).trim().replace(RE_SUFIJO_FINAL, '');
-  const h = RE_SALUD_FIRST.exec(f);
-  const clase = h === null ? '' : h[0].replace(/[^a-z]/gu, '') === 'eps' ? 'EPS:' : 'IPS:';
-  f = f.replace(RE_SALUD_ALL, ' ').replace(/[^\p{L}\p{N}& ]+/gu, ' ').replace(/ +/gu, ' ').trim();
-  return `ORG:${clase}${f}`;
-}
+/** Clave de un remanente del modelo (6.6.1, 7.12.1), con las funciones de clave de entities.ts. */
 function remainderKeyFromModel(c: MergedCandidate, s: string, kind: PartKind): string {
-  if (c.type === 'PERSONA') return perKey(s, kind);
+  if (c.type === 'PERSONA') return personKey(s, kind);
   if (ORG_SET.has(c.type)) return orgKey(s, kind);
   if (c.type === 'LUGAR') return 'LUGAR:' + fold(s, kind).trim();
   return c.canonicalKey;
