@@ -1,0 +1,1759 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C11",
+  "tipoDocumento": "derecho_peticion",
+  "fuente": "txt",
+  "archivo": "corpus/docs/C11.txt",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 3396,
+        "sha256": "342c7d6c0e1b19a4de872961210a63e418cc56b744a0e6aa3f6676cf283b304c"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": []
+  },
+  "listaDelCaso": [
+    {
+      "name": "Alejandro Ejemplo",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "EPS Bienestar Ficticio S.A.S.",
+      "role": "EPS"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C11-E01",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E02",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-08-16",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E03",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "LISTA:EPS Bienestar Ficticio S.A.S.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C11-E04",
+      "tipo": "CARGO",
+      "canonico": "CARGO:gerente general",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E05",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:angela maria ejemplo quintero",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E06",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "canonico": "DIR:AV PRUEBA 00B 00 1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E07",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 23 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E08",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Alejandro Ejemplo",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C11-E09",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:1000000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E10",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:AC 00B 00 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E11",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:san ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E12",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E13",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3200000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E14",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:0000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E15",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:alejandro.ejemplo@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E16",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E17",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1250000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E18",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:000000000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E19",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "canonico": "CUENTA:BREB:@ejemplo26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E20",
+      "tipo": "FECHA",
+      "canonico": "FECHA:1965-04-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E21",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~61 anos",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E22",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:inmobiliaria ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E23",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:800000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E24",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:patricia ejemplo cifuentes",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E25",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "canonico": "DIR:AC 0 0 1 O OF 502",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E26",
+      "tipo": "VALOR",
+      "canonico": "VALOR:148000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E27",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3180000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E28",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinadora de cartera",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E29",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:2026001078",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E30",
+      "tipo": "MENOR",
+      "canonico": "MENOR:test:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E31",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:gimnasio prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E32",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:prados de prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E33",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E34",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E35",
+      "tipo": "VALOR",
+      "canonico": "VALOR:3600000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E36",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1755 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E37",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1306 de 2009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E38",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-230 de 2020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E39",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-23",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E40",
+      "tipo": "VALOR",
+      "canonico": "VALOR:250000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E41",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E42",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25175311094320250000800",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E43",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 992 promiscuo municipal de soacha",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E44",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-09-03",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C11-A001",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 0,
+      "end": 8,
+      "texto": "Medellín",
+      "tipo": "MUNICIPIO",
+      "entidad": "C11-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C11-A002",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10,
+      "end": 20,
+      "texto": "16/08/2026",
+      "tipo": "FECHA",
+      "entidad": "C11-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C11-A003",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 30,
+      "end": 59,
+      "texto": "EPS Bienestar Ficticio S.A.S.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C11-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C11-A004",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 66,
+      "end": 81,
+      "texto": "gerente general",
+      "tipo": "CARGO",
+      "entidad": "C11-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C11-A005",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 84,
+      "end": 113,
+      "texto": "Ángela María Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C11-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C11-A006",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 125,
+      "end": 149,
+      "texto": "Av. Prueba 00B n.º 00-01",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "entidad": "C11-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C11-A007",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 151,
+      "end": 159,
+      "texto": "Medellín",
+      "tipo": "MUNICIPIO",
+      "entidad": "C11-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C11-A008",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 191,
+      "end": 230,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C11-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C11-A009",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 232,
+      "end": 256,
+      "texto": "Alejandro Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C11-A010",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 318,
+      "end": 331,
+      "texto": "1.000.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C11-A011",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 346,
+      "end": 371,
+      "texto": "Avenida Calle 00B # 00-03",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C11-A012",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 380,
+      "end": 391,
+      "texto": "San Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C11-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C11-A013",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 393,
+      "end": 399,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C11-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C11-A014",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 413,
+      "end": 429,
+      "texto": "+57 320 000 0002",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C11-A015",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 437,
+      "end": 445,
+      "texto": "000 0003",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C11-A016",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 454,
+      "end": 484,
+      "texto": "alejandro.ejemplo@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C11-A017",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 574,
+      "end": 592,
+      "texto": "15 de mayo de 2026",
+      "tipo": "FECHA",
+      "entidad": "C11-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C11-A018",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 616,
+      "end": 626,
+      "texto": "$1.250.000",
+      "tipo": "VALOR",
+      "entidad": "C11-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C11-A019",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 731,
+      "end": 743,
+      "texto": "000000000004",
+      "tipo": "CUENTA",
+      "entidad": "C11-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C11-A020",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 782,
+      "end": 792,
+      "texto": "@ejemplo26",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C11-A021",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 798,
+      "end": 812,
+      "texto": "Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C11-A022",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 822,
+      "end": 832,
+      "texto": "17/04/1965",
+      "tipo": "FECHA",
+      "entidad": "C11-E20",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C11-A023",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 838,
+      "end": 845,
+      "texto": "61 años",
+      "tipo": "FECHA",
+      "entidad": "C11-E21",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C11-A024",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 977,
+      "end": 1001,
+      "texto": "Alejandro Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C11-A025",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1049,
+      "end": 1077,
+      "texto": "INMOBILIARIA FICTICIA S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C11-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F51"
+      ]
+    },
+    {
+      "id": "C11-A026",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1087,
+      "end": 1100,
+      "texto": "800.000.005-9",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C11-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C11-A027",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1263,
+      "end": 1271,
+      "texto": "A. E. O.",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C11-A028",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1291,
+      "end": 1317,
+      "texto": "Patricia Ejemplo Cifuentes",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C11-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C11-A029",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1335,
+      "end": 1378,
+      "texto": "Avenida Calle 0 No. 0-01 Oeste, oficina 502",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C11-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C11-A030",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1412,
+      "end": 1421,
+      "texto": "$ 148.000",
+      "tipo": "VALOR",
+      "entidad": "C11-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C11-A031",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1467,
+      "end": 1479,
+      "texto": "318 000 0006",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C11-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C11-A032",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1529,
+      "end": 1558,
+      "texto": "Ángela María Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C11-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C11-A033",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1560,
+      "end": 1583,
+      "texto": "coordinadora de cartera",
+      "tipo": "CARGO",
+      "entidad": "C11-E28",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C11-A034",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1636,
+      "end": 1646,
+      "texto": "2026001078",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C11-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C11-A035",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1686,
+      "end": 1710,
+      "texto": "Alejandro Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C11-A036",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1780,
+      "end": 1788,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C11-E30",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C11-A037",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1800,
+      "end": 1815,
+      "texto": "Gimnasio Prueba",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C11-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C11-A038",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1841,
+      "end": 1857,
+      "texto": "Prados de Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C11-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C11-A039",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1861,
+      "end": 1867,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C11-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C11-A040",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1875,
+      "end": 1898,
+      "texto": "Av. Calle 00B n.º 00-03",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C11-A041",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1940,
+      "end": 1962,
+      "texto": "EPS Bienestar Ficticio",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C11-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C11-A042",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1973,
+      "end": 1982,
+      "texto": "000000007",
+      "tipo": "AFILIACION",
+      "entidad": "C11-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C11-A043",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2012,
+      "end": 2026,
+      "texto": "Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C11-A044",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2105,
+      "end": 2115,
+      "texto": "10/04/2026",
+      "tipo": "FECHA",
+      "entidad": "C11-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C11-A045",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2123,
+      "end": 2144,
+      "texto": "3.6 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C11-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C11-A046",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2200,
+      "end": 2224,
+      "texto": "Alejandro Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C11-A047",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2274,
+      "end": 2313,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C11-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C11-A048",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2351,
+      "end": 2367,
+      "texto": "Ley 1755 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C11-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C11-A049",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2435,
+      "end": 2451,
+      "texto": "Ley 1306 de 2009",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C11-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C11-A050",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2457,
+      "end": 2480,
+      "texto": "Sentencia T-230 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C11-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C11-A051",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2576,
+      "end": 2588,
+      "texto": "23 jun. 2026",
+      "tipo": "FECHA",
+      "entidad": "C11-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C11-A052",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2641,
+      "end": 2688,
+      "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
+      "tipo": "VALOR",
+      "entidad": "C11-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24"
+      ]
+    },
+    {
+      "id": "C11-A053",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2753,
+      "end": 2783,
+      "texto": "alejandro.ejemplo@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C11-A054",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2862,
+      "end": 2876,
+      "texto": "Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C11-A055",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2985,
+      "end": 2992,
+      "texto": "1 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C11-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C11-A056",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3035,
+      "end": 3062,
+      "texto": "Avenida Calle 00B No. 00-03",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C11-A057",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3064,
+      "end": 3070,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C11-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C11-A058",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3087,
+      "end": 3117,
+      "texto": "alejandro.ejemplo@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C11-A059",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3134,
+      "end": 3158,
+      "texto": "Alejandro Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C11-A060",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3164,
+      "end": 3174,
+      "texto": "1000000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C11-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C11-A061",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3247,
+      "end": 3276,
+      "texto": "25175 31 10 943 2025 00008 00",
+      "tipo": "RADICADO",
+      "entidad": "C11-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": []
+    },
+    {
+      "id": "C11-A062",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3285,
+      "end": 3326,
+      "texto": "Juzgado 992 Promiscuo Municipal de Soacha",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C11-E43",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C11-A063",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3320,
+      "end": 3326,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C11-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C11-A062",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C11-A064",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3340,
+      "end": 3350,
+      "texto": "2025-09-03",
+      "tipo": "FECHA",
+      "entidad": "C11-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

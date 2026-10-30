@@ -1,0 +1,1246 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C23",
+  "tipoDocumento": "correo_cliente",
+  "fuente": "txt",
+  "archivo": "corpus/docs/C23.txt",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 1637,
+        "sha256": "a9b956c3a68579d50a25658a5c76998c0812700abdacf75d3f5f99f8a312c0a2"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": []
+  },
+  "listaDelCaso": [
+    {
+      "name": "Mario Ejemplo De la Cruz",
+      "role": "CLIENTE"
+    },
+    {
+      "name": "Gloria Ejemplo",
+      "role": "DEMANDADO"
+    },
+    {
+      "name": "Tecnología Ficticia S.A.S.",
+      "role": "EMPRESA"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C23-E01",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "canonico": "LISTA:Mario Ejemplo De la Cruz",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C23-E02",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "canonico": "CORREO:mario.ejemplo@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E03",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:sergio prueba giraldo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E04",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "canonico": "CORREO:sergio.prueba@correo.ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E05",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-14",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E06",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:edgar ejemplo cuervo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E07",
+      "tipo": "CARGO",
+      "canonico": "CARGO:director medico",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E08",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:300-00000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E09",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E10",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:constanza ficticia ruiz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E11",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "canonico": "LISTA:Gloria Ejemplo",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C23-E12",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:es hijo de un congresista en ejercicio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E13",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Tecnología Ficticia S.A.S.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C23-E14",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:830000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E15",
+      "tipo": "VALOR",
+      "canonico": "VALOR:18500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E16",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-10-07",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E17",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:CL 00 BIS 00 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E18",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:los almendros de prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E19",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E20",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XYZ005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E21",
+      "tipo": "PLACA",
+      "canonico": "PLACA:ZZZ07A",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E22",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E23",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~44 anos",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E24",
+      "tipo": "FECHA",
+      "canonico": "FECHA:1980-06-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E25",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "canonico": "CC:1000000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E26",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:3160000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E27",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:0000012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E28",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "ORG:EPS:salud ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E29",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:enfermedad renal cronica estadio 5",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E30",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E31",
+      "tipo": "MENOR",
+      "canonico": "MENOR:fam:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E32",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25899400390020260001500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E33",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 996 civil municipal de palmira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C23-E34",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-04",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C23-A001",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4,
+      "end": 28,
+      "texto": "Mario Ejemplo De la Cruz",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C23-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02"
+      ]
+    },
+    {
+      "id": "C23-A002",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 30,
+      "end": 56,
+      "texto": "mario.ejemplo@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C23-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C23-A003",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 64,
+      "end": 78,
+      "texto": "Prueba Giraldo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C23-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C23-A004",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 80,
+      "end": 113,
+      "texto": "sergio.prueba@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "entidad": "C23-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C23-A005",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 130,
+      "end": 149,
+      "texto": "14 de abril de 2026",
+      "tipo": "FECHA",
+      "entidad": "C23-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C23-A006",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 195,
+      "end": 201,
+      "texto": "Sergio",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C23-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C23-A007",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 219,
+      "end": 239,
+      "texto": "édgar ejemplo cuervo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C23-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F52"
+      ]
+    },
+    {
+      "id": "C23-A008",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 241,
+      "end": 256,
+      "texto": "director médico",
+      "tipo": "CARGO",
+      "entidad": "C23-E07",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C23-A009",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 299,
+      "end": 305,
+      "texto": "Sergio",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C23-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C23-A010",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 343,
+      "end": 355,
+      "texto": "300-00000002",
+      "tipo": "MATRICULA",
+      "entidad": "C23-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C23-A011",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 366,
+      "end": 373,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C23-E09",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C23-A012",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 375,
+      "end": 390,
+      "texto": "Valle del Cauca",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C23-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C23-A013",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 438,
+      "end": 461,
+      "texto": "Constanza Ficticia Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C23-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C23-A014",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 482,
+      "end": 486,
+      "texto": "Cata",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C23-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C23-A015",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 509,
+      "end": 537,
+      "texto": "gloria inés ejemplo gonzález",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C23-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C23-A016",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 538,
+      "end": 576,
+      "texto": "es hijo de un congresista en ejercicio",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C23-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C23-A017",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 628,
+      "end": 635,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C23-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C23-A018",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 640,
+      "end": 659,
+      "texto": "Tecnología Ficticia",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C23-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C23-A019",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 665,
+      "end": 676,
+      "texto": "830000003-3",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C23-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C23-A020",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 688,
+      "end": 699,
+      "texto": "$18'500.000",
+      "tipo": "VALOR",
+      "entidad": "C23-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C23-A021",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 718,
+      "end": 728,
+      "texto": "07/10/2025",
+      "tipo": "FECHA",
+      "entidad": "C23-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C23-A022",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 795,
+      "end": 811,
+      "texto": "Ejemplo González",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C23-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C23-A023",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 858,
+      "end": 877,
+      "texto": "Cll. 00 Bis # 00-03",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C23-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C23-A024",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 889,
+      "end": 912,
+      "texto": "Los Almendros de Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C23-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C23-A025",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 934,
+      "end": 946,
+      "texto": "26 abr. 2026",
+      "tipo": "FECHA",
+      "entidad": "C23-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C23-A026",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 966,
+      "end": 973,
+      "texto": "XYZ-005",
+      "tipo": "PLACA",
+      "entidad": "C23-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C23-A027",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 985,
+      "end": 991,
+      "texto": "ZZZ07A",
+      "tipo": "PLACA",
+      "entidad": "C23-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C23-A028",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1012,
+      "end": 1022,
+      "texto": "09.05.2026",
+      "tipo": "FECHA",
+      "entidad": "C23-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C23-A029",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1043,
+      "end": 1050,
+      "texto": "44 años",
+      "tipo": "FECHA",
+      "entidad": "C23-E23",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C23-A030",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1060,
+      "end": 1070,
+      "texto": "1980-06-09",
+      "tipo": "FECHA",
+      "entidad": "C23-E24",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C23-A031",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1086,
+      "end": 1096,
+      "texto": "1000000010",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C23-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C23-A032",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1106,
+      "end": 1118,
+      "texto": "316 000 0011",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C23-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C23-A033",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1168,
+      "end": 1176,
+      "texto": "000 0012",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C23-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C23-A034",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1187,
+      "end": 1190,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C23-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F51"
+      ]
+    },
+    {
+      "id": "C23-A035",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1233,
+      "end": 1267,
+      "texto": "enfermedad renal crónica estadio 5",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C23-E29",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C23-A036",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1286,
+      "end": 1296,
+      "texto": "2026000014",
+      "tipo": "AFILIACION",
+      "entidad": "C23-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C23-A037",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1316,
+      "end": 1324,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C23-E31",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C23-A038",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1373,
+      "end": 1402,
+      "texto": "25899 40 03 900 2026 00015 00",
+      "tipo": "RADICADO",
+      "entidad": "C23-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": []
+    },
+    {
+      "id": "C23-A039",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1407,
+      "end": 1445,
+      "texto": "Juzgado 996 Civil Municipal de Palmira",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C23-E33",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C23-A040",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1438,
+      "end": 1445,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C23-E09",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C23-A039",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C23-A041",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1473,
+      "end": 1520,
+      "texto": "cuatro (4) de mayo de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C23-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C23-A042",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1545,
+      "end": 1569,
+      "texto": "mario ejemplo de la cruz",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C23-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F52"
+      ]
+    },
+    {
+      "id": "C23-A043",
+      "docId": "C23",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1574,
+      "end": 1592,
+      "texto": "(+57) 316-000-0011",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C23-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

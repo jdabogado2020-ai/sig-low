@@ -1,0 +1,1424 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C24",
+  "tipoDocumento": "correo_cliente",
+  "fuente": "txt",
+  "archivo": "corpus/docs/C24.txt",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 1974,
+        "sha256": "7bd0ad41661b61925988b6f8da6adc3afc7fcfcac171c9115e64ff4ef4580e82"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": []
+  },
+  "listaDelCaso": [
+    {
+      "name": "Mauricio Ficticio Rodríguez",
+      "role": "CLIENTE"
+    },
+    {
+      "name": "Martha Cecilia Ejemplo Ramírez",
+      "role": "DEMANDADO"
+    },
+    {
+      "name": "Inmobiliaria Ficticia S.A.S.",
+      "role": "EMPRESA"
+    },
+    {
+      "name": "Salud Integral Prueba EPS S.A.",
+      "role": "EPS"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C24-E01",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "canonico": "LISTA:Mauricio Ficticio Rodríguez",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C24-E02",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "canonico": "CORREO:mauricio.ficticio@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E03",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:luis eduardo ejemplo rodriguez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E04",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "canonico": "CORREO:luis.ejemplo@correo.ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E05",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-28",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E06",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Inmobiliaria Ficticia S.A.S.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C24-E07",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:901000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E08",
+      "tipo": "VALOR",
+      "canonico": "VALOR:18500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E09",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-11-28",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E10",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "canonico": "LISTA:Martha Cecilia Ejemplo Ramírez",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C24-E11",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:TV 00 0 3 N",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E12",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:los almendros de prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E13",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E14",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05266400396320230000200",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E15",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 996 civil municipal de envigado",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E16",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E17",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E18",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~44 anos",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E19",
+      "tipo": "FECHA",
+      "canonico": "FECHA:1984-06-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E20",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XXX006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E21",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XXX08D",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E22",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-23",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E23",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "canonico": "CC:1000000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E24",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:3210000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E25",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:0000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E26",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:alejandro ficticio gomez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E27",
+      "tipo": "CARGO",
+      "canonico": "CARGO:jefe de talento humano",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E28",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "LISTA:Salud Integral Prueba EPS S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C24-E29",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:enfermedad renal cronica estadio 5",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E30",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E31",
+      "tipo": "MENOR",
+      "canonico": "MENOR:fam:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E32",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:denuncio publicamente al gerente del hospital",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E33",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:000000000015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E34",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E35",
+      "tipo": "CUENTA",
+      "rol": "CONTACTO",
+      "canonico": "CUENTA:BREB:@ejemploabogados",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E36",
+      "tipo": "VALOR",
+      "canonico": "VALOR:2500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E37",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:01N-00000017",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E38",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:esperanza ficticia ruiz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E39",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:carmen rosa ejemplo valencia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C24-E40",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:967000019",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C24-A001",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4,
+      "end": 31,
+      "texto": "Mauricio Ficticio Rodríguez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C24-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C24-A002",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 33,
+      "end": 63,
+      "texto": "mauricio.ficticio@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C24-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C24-A003",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 71,
+      "end": 88,
+      "texto": "Ejemplo Rodríguez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C24-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C24-A004",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 90,
+      "end": 122,
+      "texto": "luis.ejemplo@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "entidad": "C24-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C24-A005",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 139,
+      "end": 158,
+      "texto": "28 de abril de 2026",
+      "tipo": "FECHA",
+      "entidad": "C24-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C24-A006",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 204,
+      "end": 208,
+      "texto": "Luis",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C24-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C24-A007",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 228,
+      "end": 239,
+      "texto": "Doña Gloria",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C24-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C24-A008",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 244,
+      "end": 265,
+      "texto": "Inmobiliaria Ficticia",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C24-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C24-A009",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 271,
+      "end": 282,
+      "texto": "901000001-6",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C24-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C24-A010",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 294,
+      "end": 316,
+      "texto": "18.5 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C24-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C24-A011",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 335,
+      "end": 345,
+      "texto": "28/11/2025",
+      "tipo": "FECHA",
+      "entidad": "C24-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C24-A012",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 412,
+      "end": 427,
+      "texto": "Ejemplo Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C24-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C24-A013",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 474,
+      "end": 496,
+      "texto": "Trans. 00 # 0-03 Norte",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C24-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C24-A014",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 508,
+      "end": 531,
+      "texto": "Los Almendros de Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C24-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C24-A015",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 553,
+      "end": 565,
+      "texto": "10 may. 2026",
+      "tipo": "FECHA",
+      "entidad": "C24-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C24-A016",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 595,
+      "end": 624,
+      "texto": "05266-40-03-963-2023-00002-00",
+      "tipo": "RADICADO",
+      "entidad": "C24-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": []
+    },
+    {
+      "id": "C24-A017",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 629,
+      "end": 668,
+      "texto": "Juzgado 996 Civil Municipal de Envigado",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C24-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C24-A018",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 660,
+      "end": 668,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C24-E16",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C24-A017",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C24-A019",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 696,
+      "end": 747,
+      "texto": "dieciocho (18) de mayo de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C24-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C24-A020",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 768,
+      "end": 775,
+      "texto": "44 años",
+      "tipo": "FECHA",
+      "entidad": "C24-E18",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C24-A021",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 785,
+      "end": 795,
+      "texto": "1984-06-09",
+      "tipo": "FECHA",
+      "entidad": "C24-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C24-A022",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 815,
+      "end": 822,
+      "texto": "XXX-006",
+      "tipo": "PLACA",
+      "entidad": "C24-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C24-A023",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 834,
+      "end": 840,
+      "texto": "XXX08D",
+      "tipo": "PLACA",
+      "entidad": "C24-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C24-A024",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 861,
+      "end": 871,
+      "texto": "23.05.2026",
+      "tipo": "FECHA",
+      "entidad": "C24-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C24-A025",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 887,
+      "end": 897,
+      "texto": "1000000009",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C24-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C24-A026",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 907,
+      "end": 919,
+      "texto": "321 000 0010",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C24-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C24-A027",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 969,
+      "end": 977,
+      "texto": "000 0011",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C24-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C24-A028",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 995,
+      "end": 1019,
+      "texto": "alejandro ficticio gómez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C24-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F52"
+      ]
+    },
+    {
+      "id": "C24-A029",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1021,
+      "end": 1043,
+      "texto": "jefe de talento humano",
+      "tipo": "CARGO",
+      "entidad": "C24-E27",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C24-A030",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1094,
+      "end": 1101,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C24-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C24-A031",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1118,
+      "end": 1121,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C24-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C24-A032",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1164,
+      "end": 1198,
+      "texto": "enfermedad renal crónica estadio 5",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C24-E29",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C24-A033",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1217,
+      "end": 1227,
+      "texto": "2026000013",
+      "tipo": "AFILIACION",
+      "entidad": "C24-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C24-A034",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1247,
+      "end": 1255,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C24-E31",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C24-A035",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1285,
+      "end": 1315,
+      "texto": "martha cecilia ejemplo ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C24-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C24-A036",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1316,
+      "end": 1361,
+      "texto": "denunció públicamente al gerente del hospital",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C24-E32",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C24-A037",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1446,
+      "end": 1458,
+      "texto": "000000000015",
+      "tipo": "CUENTA",
+      "entidad": "C24-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C24-A038",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1463,
+      "end": 1476,
+      "texto": "Banco Ejemplo",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C24-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C24-A039",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1490,
+      "end": 1506,
+      "texto": "@ejemploabogados",
+      "tipo": "CUENTA",
+      "rol": "CONTACTO",
+      "entidad": "C24-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C24-A040",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1512,
+      "end": 1519,
+      "texto": "$2.5 MM",
+      "tipo": "VALOR",
+      "entidad": "C24-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C24-A041",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1549,
+      "end": 1561,
+      "texto": "01N-00000017",
+      "tipo": "MATRICULA",
+      "entidad": "C24-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C24-A042",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1572,
+      "end": 1580,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C24-E16",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C24-A043",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1582,
+      "end": 1591,
+      "texto": "Antioquia",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C24-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C24-A044",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1639,
+      "end": 1662,
+      "texto": "Esperanza Ficticia Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C24-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C24-A045",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1683,
+      "end": 1690,
+      "texto": "el niño",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C24-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C24-A046",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1727,
+      "end": 1754,
+      "texto": "mauricio ficticio rodríguez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C24-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C24-A047",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1759,
+      "end": 1777,
+      "texto": "(+57) 321-000-0010",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C24-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C24-A048",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1851,
+      "end": 1867,
+      "texto": "Ejemplo Valencia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C24-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C24-A049",
+      "docId": "C24",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1880,
+      "end": 1889,
+      "texto": "967000019",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C24-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

@@ -1,0 +1,2418 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C22",
+  "tipoDocumento": "correo_cliente",
+  "fuente": "txt",
+  "archivo": "corpus/docs/C22.txt",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 3518,
+        "sha256": "932d96b0dd738920119168fca32c31d78a4d56c66055626b871a2b7e28380687"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": []
+  },
+  "listaDelCaso": [
+    {
+      "name": "Nicolás Ficticio Gómez",
+      "role": "CLIENTE"
+    },
+    {
+      "name": "Blanca Nubia Ejemplo Cuervo",
+      "role": "DEMANDADO"
+    },
+    {
+      "name": "Distribuidora Prueba y Cía. S. en C.",
+      "role": "EMPRESA"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C22-E01",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "canonico": "LISTA:Nicolás Ficticio Gómez",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C22-E02",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "canonico": "CORREO:nicolas.ficticio@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E03",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:camilo ejemplo acosta",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E04",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "canonico": "CORREO:camilo.ejemplo@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E05",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-04",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E06",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "ORG:EPS:bienestar ficticio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E07",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:leucemia linfoblastica aguda",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E08",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E09",
+      "tipo": "MENOR",
+      "canonico": "MENOR:fam:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E10",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000000400",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E11",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E12",
+      "tipo": "CUENTA",
+      "rol": "CONTACTO",
+      "canonico": "CUENTA:BREB:@ejemploabogados",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E13",
+      "tipo": "VALOR",
+      "canonico": "VALOR:2500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E14",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "canonico": "LISTA:Blanca Nubia Ejemplo Cuervo",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C22-E15",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:fue el primer paciente del departamento en recibir el trasplante",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E16",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:AV PRUEBA 00B BIS A 0A 0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E17",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:el remanso ficticio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E18",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-20",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E19",
+      "tipo": "PLACA",
+      "canonico": "PLACA:WWW006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E20",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XXX08D",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E21",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-08-02",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E22",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:3000000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E23",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-06",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E24",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Distribuidora Prueba y Cía. S. en C.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C22-E25",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:890000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E26",
+      "tipo": "VALOR",
+      "canonico": "VALOR:18500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E27",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-28",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E28",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "canonico": "CC:91000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E29",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:0000012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E30",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000001400",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E31",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:santiago ejemplo caicedo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E32",
+      "tipo": "CARGO",
+      "canonico": "CARGO:director administrativo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E33",
+      "tipo": "RADICADO",
+      "canonico": "RAD:68001400393420240001500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E34",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 996 civil municipal de chia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E35",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E36",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-28",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E37",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:los almendros de prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E38",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E39",
+      "tipo": "TELEFONO",
+      "rol": "CONTACTO",
+      "canonico": "TEL:3200000016",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E40",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-08",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E41",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-12-31",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E42",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:000000000018",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E43",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:01N-00000020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E44",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:olga lucia prueba de la cruz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E45",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:carcinoma ductal infiltrante de mama",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E46",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000022",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E47",
+      "tipo": "CARGO",
+      "canonico": "CARGO:alcalde municipal",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E48",
+      "tipo": "RADICADO",
+      "canonico": "RAD:11001410597020250002300",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E49",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 992 promiscuo municipal de itagui",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E50",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C22-E51",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-10-23",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C22-A001",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4,
+      "end": 26,
+      "texto": "Nicolás Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C22-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C22-A002",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 28,
+      "end": 61,
+      "texto": "nicolas.ficticio@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C22-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C22-A003",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 69,
+      "end": 83,
+      "texto": "Ejemplo Acosta",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A004",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 85,
+      "end": 116,
+      "texto": "camilo.ejemplo@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "entidad": "C22-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C22-A005",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 133,
+      "end": 151,
+      "texto": "4 de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C22-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C22-A006",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 197,
+      "end": 203,
+      "texto": "Camilo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A007",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 214,
+      "end": 217,
+      "texto": "EBF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C22-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A008",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 260,
+      "end": 288,
+      "texto": "leucemia linfoblástica aguda",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C22-E07",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C22-A009",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 307,
+      "end": 317,
+      "texto": "2026000002",
+      "tipo": "AFILIACION",
+      "entidad": "C22-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C22-A010",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 337,
+      "end": 345,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C22-E09",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C22-A011",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 417,
+      "end": 430,
+      "texto": "000-000004-00",
+      "tipo": "CUENTA",
+      "entidad": "C22-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C22-A012",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 435,
+      "end": 448,
+      "texto": "Banco Ejemplo",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C22-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A013",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 462,
+      "end": 478,
+      "texto": "@ejemploabogados",
+      "tipo": "CUENTA",
+      "rol": "CONTACTO",
+      "entidad": "C22-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C22-A014",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 484,
+      "end": 494,
+      "texto": "$2.500.000",
+      "tipo": "VALOR",
+      "entidad": "C22-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C22-A015",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 505,
+      "end": 532,
+      "texto": "blanca nubia ejemplo cuervo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C22-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C22-A016",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 533,
+      "end": 597,
+      "texto": "fue el primer paciente del departamento en recibir el trasplante",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C22-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C22-A017",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 696,
+      "end": 723,
+      "texto": "blanca nubia ejemplo cuervo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C22-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C22-A018",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 770,
+      "end": 801,
+      "texto": "Av. Prueba 00Bª Bis A n.º 0A-00",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C22-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C22-A019",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 813,
+      "end": 832,
+      "texto": "El Remanso Ficticio",
+      "tipo": "BARRIO",
+      "entidad": "C22-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C22-A020",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 854,
+      "end": 866,
+      "texto": "20 jul. 2026",
+      "tipo": "FECHA",
+      "entidad": "C22-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C22-A021",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 886,
+      "end": 893,
+      "texto": "WWW-006",
+      "tipo": "PLACA",
+      "entidad": "C22-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C22-A022",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 905,
+      "end": 911,
+      "texto": "XXX08D",
+      "tipo": "PLACA",
+      "entidad": "C22-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C22-A023",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 932,
+      "end": 942,
+      "texto": "02.08.2026",
+      "tipo": "FECHA",
+      "entidad": "C22-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C22-A024",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 967,
+      "end": 989,
+      "texto": "nicolás ficticio gómez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C22-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C22-A025",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 994,
+      "end": 1006,
+      "texto": "300 000 0009",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C22-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C22-A026",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1018,
+      "end": 1039,
+      "texto": "Camilo Ejemplo Acosta",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A027",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1041,
+      "end": 1072,
+      "texto": "camilo.ejemplo@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "entidad": "C22-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C22-A028",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1080,
+      "end": 1094,
+      "texto": "Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C22-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C22-A029",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1096,
+      "end": 1129,
+      "texto": "nicolas.ficticio@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C22-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C22-A030",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1145,
+      "end": 1163,
+      "texto": "6 de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C22-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C22-A031",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1213,
+      "end": 1221,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C22-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C22-A032",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1241,
+      "end": 1247,
+      "texto": "Fercho",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C22-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C22-A033",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1252,
+      "end": 1272,
+      "texto": "Distribuidora Prueba",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C22-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C22-A034",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1278,
+      "end": 1289,
+      "texto": "890000010-3",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C22-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C22-A035",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1301,
+      "end": 1312,
+      "texto": "$18.500.000",
+      "tipo": "VALOR",
+      "entidad": "C22-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C22-A036",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1331,
+      "end": 1341,
+      "texto": "28/05/2026",
+      "tipo": "FECHA",
+      "entidad": "C22-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C22-A037",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1357,
+      "end": 1367,
+      "texto": "91.000.011",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C22-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C22-A038",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1377,
+      "end": 1389,
+      "texto": "300-000-0009",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C22-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C22-A039",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1439,
+      "end": 1447,
+      "texto": "000 0012",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C22-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C22-A040",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1500,
+      "end": 1513,
+      "texto": "000-000014-00",
+      "tipo": "CUENTA",
+      "entidad": "C22-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C22-A041",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1518,
+      "end": 1531,
+      "texto": "Banco Ejemplo",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C22-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A042",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1545,
+      "end": 1561,
+      "texto": "@ejemploabogados",
+      "tipo": "CUENTA",
+      "rol": "CONTACTO",
+      "entidad": "C22-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C22-A043",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1567,
+      "end": 1577,
+      "texto": "$2.500.000",
+      "tipo": "VALOR",
+      "entidad": "C22-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C22-A044",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1595,
+      "end": 1619,
+      "texto": "santiago ejemplo caicedo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F52"
+      ]
+    },
+    {
+      "id": "C22-A045",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1621,
+      "end": 1644,
+      "texto": "director administrativo",
+      "tipo": "CARGO",
+      "entidad": "C22-E32",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C22-A046",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1687,
+      "end": 1693,
+      "texto": "Camilo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A047",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1731,
+      "end": 1760,
+      "texto": "68001 40 03 934 2024 00015 00",
+      "tipo": "RADICADO",
+      "entidad": "C22-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C22-A048",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1765,
+      "end": 1800,
+      "texto": "Juzgado 996 Civil Municipal de Chía",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C22-E34",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C22-A049",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1796,
+      "end": 1800,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C22-E35",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C22-A048",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C22-A050",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1828,
+      "end": 1881,
+      "texto": "veintiocho (28) de julio de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C22-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C22-A051",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1948,
+      "end": 1975,
+      "texto": "blanca nubia ejemplo cuervo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C22-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C22-A052",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2022,
+      "end": 2055,
+      "texto": "Avenida Prueba 00Bª Bis A # 0A-00",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C22-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C22-A053",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2067,
+      "end": 2090,
+      "texto": "Los Almendros de Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C22-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C22-A054",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2112,
+      "end": 2124,
+      "texto": "20 jul. 2026",
+      "tipo": "FECHA",
+      "entidad": "C22-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C22-A055",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2149,
+      "end": 2171,
+      "texto": "nicolás ficticio gómez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C22-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C22-A056",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2233,
+      "end": 2240,
+      "texto": "2 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C22-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C22-A057",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2257,
+      "end": 2278,
+      "texto": "Camilo Ejemplo Acosta",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A058",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2283,
+      "end": 2295,
+      "texto": "320 000 0016",
+      "tipo": "TELEFONO",
+      "rol": "CONTACTO",
+      "entidad": "C22-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C22-A059",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2307,
+      "end": 2329,
+      "texto": "Nicolás Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C22-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C22-A060",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2331,
+      "end": 2364,
+      "texto": "nicolas.ficticio@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C22-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C22-A061",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2372,
+      "end": 2386,
+      "texto": "Ejemplo Acosta",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A062",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2388,
+      "end": 2419,
+      "texto": "camilo.ejemplo@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "entidad": "C22-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C22-A063",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2439,
+      "end": 2457,
+      "texto": "8 de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C22-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C22-A064",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2505,
+      "end": 2511,
+      "texto": "Camilo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A065",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2531,
+      "end": 2539,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C22-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C22-A066",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2544,
+      "end": 2564,
+      "texto": "Distribuidora Prueba",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C22-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C22-A067",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2570,
+      "end": 2581,
+      "texto": "890000010-3",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C22-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C22-A068",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2593,
+      "end": 2604,
+      "texto": "$18'500.000",
+      "tipo": "VALOR",
+      "entidad": "C22-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C22-A069",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2623,
+      "end": 2633,
+      "texto": "31/12/2025",
+      "tipo": "FECHA",
+      "entidad": "C22-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C22-A070",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2686,
+      "end": 2698,
+      "texto": "000000000018",
+      "tipo": "CUENTA",
+      "entidad": "C22-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C22-A071",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2703,
+      "end": 2716,
+      "texto": "Banco Ejemplo",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C22-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A072",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2730,
+      "end": 2746,
+      "texto": "@ejemploabogados",
+      "tipo": "CUENTA",
+      "rol": "CONTACTO",
+      "entidad": "C22-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C22-A073",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2752,
+      "end": 2759,
+      "texto": "$2.5 MM",
+      "tipo": "VALOR",
+      "entidad": "C22-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C22-A074",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2789,
+      "end": 2801,
+      "texto": "01N-00000020",
+      "tipo": "MATRICULA",
+      "entidad": "C22-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C22-A075",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2812,
+      "end": 2816,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C22-E35",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C22-A076",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2818,
+      "end": 2830,
+      "texto": "Cundinamarca",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C22-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C22-A077",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2878,
+      "end": 2906,
+      "texto": "Olga Lucía Prueba De la Cruz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A078",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2927,
+      "end": 2934,
+      "texto": "mi mamá",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A079",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2957,
+      "end": 2960,
+      "texto": "EBF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C22-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A080",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3003,
+      "end": 3039,
+      "texto": "carcinoma ductal infiltrante de mama",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C22-E45",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C22-A081",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3058,
+      "end": 3068,
+      "texto": "2026000022",
+      "tipo": "AFILIACION",
+      "entidad": "C22-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C22-A082",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3088,
+      "end": 3096,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C22-E09",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C22-A083",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3133,
+      "end": 3157,
+      "texto": "santiago ejemplo caicedo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F52"
+      ]
+    },
+    {
+      "id": "C22-A084",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3159,
+      "end": 3176,
+      "texto": "alcalde municipal",
+      "tipo": "CARGO",
+      "entidad": "C22-E47",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C22-A085",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3219,
+      "end": 3225,
+      "texto": "Camilo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C22-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C22-A086",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3258,
+      "end": 3280,
+      "texto": "nicolás ficticio gómez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C22-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C22-A087",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3285,
+      "end": 3301,
+      "texto": "+57 300 000 0009",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C22-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C22-A088",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3369,
+      "end": 3398,
+      "texto": "11001-41-05-970-2025-00023-00",
+      "tipo": "RADICADO",
+      "entidad": "C22-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C22-A089",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3407,
+      "end": 3448,
+      "texto": "Juzgado 992 Promiscuo Municipal de Itagüí",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C22-E49",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C22-A090",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3442,
+      "end": 3448,
+      "texto": "Itagüí",
+      "tipo": "MUNICIPIO",
+      "entidad": "C22-E50",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C22-A089",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C22-A091",
+      "docId": "C22",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3462,
+      "end": 3472,
+      "texto": "23/10/2026",
+      "tipo": "FECHA",
+      "entidad": "C22-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

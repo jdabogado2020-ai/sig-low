@@ -1,0 +1,3113 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C28",
+  "tipoDocumento": "acta",
+  "fuente": "docx",
+  "archivo": "corpus/docs/C28.docx",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 4992,
+        "sha256": "f69cea4967f99e112d3cb0f4b34a202eb009b5f3ea0d447b5db841ee52b5d3b9"
+      },
+      {
+        "kind": "comentario",
+        "index": 1,
+        "longitud": 54,
+        "sha256": "a9401021b41efec00db273a1522d5075a969ec2d74598d0cb18b55412e74c3d1"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": [
+      "autores_revisiones",
+      "propiedades_aplicacion",
+      "propiedades_documento",
+      "propiedades_personalizadas"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Diego Armando Prueba García",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Patricia Ejemplo Cardona",
+      "role": "DEMANDADO"
+    },
+    {
+      "name": "Gilberto Prueba Quintero",
+      "role": "CONTACTO"
+    },
+    {
+      "name": "Seguros Prueba S.A.",
+      "role": "EMPRESA"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C28-E01",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:KR 0A BIS 0 3 E",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E02",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:11",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E03",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E04",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Seguros Prueba S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C28-E05",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:811000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E06",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1250000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E07",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Diego Armando Prueba García",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C28-E08",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:1000000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E09",
+      "tipo": "CARGO",
+      "canonico": "CARGO:representante legal",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E10",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "canonico": "LISTA:Patricia Ejemplo Cardona",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C28-E11",
+      "tipo": "CC",
+      "rol": "DEMANDADO",
+      "canonico": "CC:41000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E12",
+      "tipo": "CARGO",
+      "canonico": "CARGO:alcaldesa municipal",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E13",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "canonico": "LISTA:Gilberto Prueba Quintero",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C28-E14",
+      "tipo": "CC",
+      "rol": "CONTACTO",
+      "canonico": "CC:1000000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E15",
+      "tipo": "CARGO",
+      "canonico": "CARGO:gerente de la sucursal",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E16",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:nicolas ejemplo barrera",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E17",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:1000000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E18",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:ana lucia prueba londono",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E19",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:1000000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E20",
+      "tipo": "CARGO",
+      "canonico": "CARGO:directora medica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E21",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:diego.prueba@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E22",
+      "tipo": "CORREO",
+      "rol": "DEMANDADO",
+      "canonico": "CORREO:patricia.ejemplo@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E23",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3230000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E24",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDADO",
+      "canonico": "TEL:3130000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E25",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:cooperativa ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E26",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:20265002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E27",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:S2026000072",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E28",
+      "tipo": "VALOR",
+      "canonico": "VALOR:9000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E29",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E30",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000000900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E31",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E32",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:luz marina ejemplo moreno",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E33",
+      "tipo": "CARGO",
+      "canonico": "CARGO:conciliadora en derecho",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E34",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TP:000100",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E35",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:ferreteria ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E36",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:860000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E37",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:KR 00 0A 1 TO 4 AP 703",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E38",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05001400396720250001200",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E39",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 995 civil municipal de zipaquira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E40",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E41",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-10-08",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E42",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:hector fabio ficticio moreno",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E43",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:CL 0C 0A 3 OF 604",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E44",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:el mirador ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E45",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:denuncio publicamente al gerente del hospital",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E46",
+      "tipo": "VALOR",
+      "canonico": "VALOR:27500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E47",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:19",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E48",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:001-000013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E49",
+      "tipo": "VALOR",
+      "canonico": "VALOR:41000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E50",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-01-14",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E51",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 100 de 1993",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E52",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 1069 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E53",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia c-902 de 2008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E54",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:20265012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E55",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:S2026000082",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E56",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000001400",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E57",
+      "tipo": "RADICADO",
+      "canonico": "RAD:08001400395620220001500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E58",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:es hijo de un congresista en ejercicio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E59",
+      "tipo": "CARGO",
+      "canonico": "CARGO:presidenta de la junta",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E60",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:martha cecilia ficticia salazar",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E61",
+      "tipo": "CARGO",
+      "canonico": "CARGO:secretaria general",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E62",
+      "tipo": "CORREO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CORREO:martha.ficticia@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E63",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3510000016",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E64",
+      "tipo": "RADICADO",
+      "canonico": "RAD:11001400391020220001700",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E65",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 992 promiscuo municipal de sogamoso",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E66",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E67",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-01-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E68",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25899311094820200001800",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E69",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 993 civil del circuito de chia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E70",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-23",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C28-E71",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000211",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C28-A001",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 39,
+      "end": 63,
+      "texto": "Cra. 0A Bis N° 0-03 Este",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C28-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C28-A002",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 65,
+      "end": 71,
+      "texto": "Bogotá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C28-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A003",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 85,
+      "end": 124,
+      "texto": "diez (10) días del mes de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C28-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C28-A004",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 165,
+      "end": 184,
+      "texto": "Seguros Prueba S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C28-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A005",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 190,
+      "end": 203,
+      "texto": "811.000.001-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C28-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C28-A006",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 310,
+      "end": 378,
+      "texto": "mil millones doscientos cincuenta millones de pesos ($1.250.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C28-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23"
+      ]
+    },
+    {
+      "id": "C28-A007",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 453,
+      "end": 480,
+      "texto": "DIEGO ARMANDO PRUEBA GARCÍA",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A008",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 481,
+      "end": 494,
+      "texto": "1.000.000.002",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F06",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A009",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 495,
+      "end": 514,
+      "texto": "representante legal",
+      "tipo": "CARGO",
+      "entidad": "C28-E09",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A010",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 515,
+      "end": 539,
+      "texto": "Patricia Ejemplo Cardona",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A011",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 540,
+      "end": 548,
+      "texto": "41000003",
+      "tipo": "CC",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F06",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A012",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 549,
+      "end": 568,
+      "texto": "alcaldesa municipal",
+      "tipo": "CARGO",
+      "entidad": "C28-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A013",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 569,
+      "end": 593,
+      "texto": "Gilberto Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C28-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F33",
+        "F43"
+      ]
+    },
+    {
+      "id": "C28-A014",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 594,
+      "end": 604,
+      "texto": "1000000004",
+      "tipo": "CC",
+      "rol": "CONTACTO",
+      "entidad": "C28-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F06",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A015",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 605,
+      "end": 627,
+      "texto": "gerente de la sucursal",
+      "tipo": "CARGO",
+      "entidad": "C28-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A016",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 628,
+      "end": 651,
+      "texto": "Nicolás Ejemplo Barrera",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F33",
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A017",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 652,
+      "end": 665,
+      "texto": "1.000.000.005",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F06",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A018",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 666,
+      "end": 685,
+      "texto": "representante legal",
+      "tipo": "CARGO",
+      "entidad": "C28-E09",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A019",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 686,
+      "end": 710,
+      "texto": "Ana Lucía Prueba Londoño",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F33",
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A020",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 711,
+      "end": 721,
+      "texto": "1000000006",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F06",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A021",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 722,
+      "end": 738,
+      "texto": "directora médica",
+      "tipo": "CARGO",
+      "entidad": "C28-E20",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F33"
+      ]
+    },
+    {
+      "id": "C28-A022",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 783,
+      "end": 808,
+      "texto": "diego.prueba@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C28-A023",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 811,
+      "end": 844,
+      "texto": "patricia.ejemplo@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C28-A024",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 876,
+      "end": 888,
+      "texto": "323 000 0007",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F43"
+      ]
+    },
+    {
+      "id": "C28-A025",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 891,
+      "end": 909,
+      "texto": "(+57) 313-000-0008",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C28-A026",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 933,
+      "end": 960,
+      "texto": "Diego Armando Prueba García",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A027",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1011,
+      "end": 1030,
+      "texto": "Cooperativa Ejemplo",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C28-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A028",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1063,
+      "end": 1071,
+      "texto": "20265002",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C28-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C28-A029",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1096,
+      "end": 1109,
+      "texto": "S-2026-000072",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C28-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C28-A030",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1138,
+      "end": 1165,
+      "texto": "Diego Armando Prueba García",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A031",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1201,
+      "end": 1225,
+      "texto": "PATRICIA EJEMPLO CARDONA",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C28-A032",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1258,
+      "end": 1269,
+      "texto": "$ 9.000.000",
+      "tipo": "VALOR",
+      "entidad": "C28-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A033",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1285,
+      "end": 1339,
+      "texto": "veinticinco (25) de julio de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C28-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C28-A034",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1395,
+      "end": 1408,
+      "texto": "000-000009-00",
+      "tipo": "CUENTA",
+      "entidad": "C28-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C28-A035",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1413,
+      "end": 1431,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C28-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A036",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1461,
+      "end": 1486,
+      "texto": "Luz Marina Ejemplo Moreno",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A037",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1488,
+      "end": 1511,
+      "texto": "conciliadora en derecho",
+      "tipo": "CARGO",
+      "entidad": "C28-E33",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C28-A038",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1526,
+      "end": 1529,
+      "texto": "100",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F45"
+      ]
+    },
+    {
+      "id": "C28-A039",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1590,
+      "end": 1615,
+      "texto": "Ferretería Ejemplo S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C28-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A040",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1621,
+      "end": 1634,
+      "texto": "860.000.011-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C28-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F43"
+      ]
+    },
+    {
+      "id": "C28-A041",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1654,
+      "end": 1669,
+      "texto": "Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C28-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C28-A042",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1709,
+      "end": 1751,
+      "texto": "Kr. 00 No. 0A-01, torre 4, apartamento 703",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C28-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C28-A043",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1755,
+      "end": 1761,
+      "texto": "Bogotá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C28-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A044",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1804,
+      "end": 1833,
+      "texto": "05001-40-03-967-2025-00012-00",
+      "tipo": "RADICADO",
+      "entidad": "C28-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C28-A045",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1838,
+      "end": 1878,
+      "texto": "Juzgado 995 Civil Municipal de Zipaquirá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C28-E39",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C28-A046",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1869,
+      "end": 1878,
+      "texto": "Zipaquirá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C28-E40",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C28-A045",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C28-A047",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1907,
+      "end": 1955,
+      "texto": "ocho (8) de octubre de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C28-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C28-A048",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1960,
+      "end": 1988,
+      "texto": "Héctor Fabio Ficticio Moreno",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A049",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2028,
+      "end": 2055,
+      "texto": "Cl. 0C # 0A-03, oficina 604",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C28-A050",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2064,
+      "end": 2082,
+      "texto": "El Mirador Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C28-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C28-A051",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2090,
+      "end": 2097,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C28-A052",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2098,
+      "end": 2143,
+      "texto": "denunció públicamente al gerente del hospital",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C28-E45",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C28-A053",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2172,
+      "end": 2179,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C28-A054",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2253,
+      "end": 2275,
+      "texto": "27.5 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C28-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C28-A055",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2296,
+      "end": 2355,
+      "texto": "diecinueve (19) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C28-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C28-A056",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2401,
+      "end": 2411,
+      "texto": "001-000013",
+      "tipo": "MATRICULA",
+      "entidad": "C28-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C28-A057",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2416,
+      "end": 2443,
+      "texto": "Diego Armando Prueba García",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A058",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2458,
+      "end": 2472,
+      "texto": "Seguros Prueba",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C28-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A059",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2483,
+      "end": 2528,
+      "texto": "cuarenta y un millones de pesos ($41.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C28-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23"
+      ]
+    },
+    {
+      "id": "C28-A060",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2538,
+      "end": 2557,
+      "texto": "14 de enero de 2026",
+      "tipo": "FECHA",
+      "entidad": "C28-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C28-A061",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2573,
+      "end": 2597,
+      "texto": "Patricia Ejemplo Cardona",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43"
+      ]
+    },
+    {
+      "id": "C28-A062",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2701,
+      "end": 2716,
+      "texto": "Ley 100 de 1993",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C28-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C28-A063",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2721,
+      "end": 2741,
+      "texto": "Decreto 1069 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C28-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C28-A064",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2747,
+      "end": 2770,
+      "texto": "Sentencia C-902 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C28-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C28-A065",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2789,
+      "end": 2804,
+      "texto": "Ejemplo Cardona",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C28-A066",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2881,
+      "end": 2906,
+      "texto": "diego.prueba@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C28-A067",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2909,
+      "end": 2942,
+      "texto": "patricia.ejemplo@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C28-A068",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2974,
+      "end": 2986,
+      "texto": "323 000 0007",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C28-A069",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2989,
+      "end": 3007,
+      "texto": "(+57) 313-000-0008",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C28-A070",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3047,
+      "end": 3071,
+      "texto": "Patricia Ejemplo Cardona",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A071",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3117,
+      "end": 3136,
+      "texto": "Cooperativa Ejemplo",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C28-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A072",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3169,
+      "end": 3177,
+      "texto": "20265012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C28-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C28-A073",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3202,
+      "end": 3215,
+      "texto": "S-2026-000082",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C28-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C28-A074",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3221,
+      "end": 3245,
+      "texto": "PATRICIA EJEMPLO CARDONA",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C28-A075",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3278,
+      "end": 3289,
+      "texto": "$ 9.000.000",
+      "tipo": "VALOR",
+      "entidad": "C28-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A076",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3305,
+      "end": 3359,
+      "texto": "veinticinco (25) de julio de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C28-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C28-A077",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3415,
+      "end": 3428,
+      "texto": "000-000014-00",
+      "tipo": "CUENTA",
+      "entidad": "C28-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C28-A078",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3433,
+      "end": 3451,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C28-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A079",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3469,
+      "end": 3476,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C28-A080",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3549,
+      "end": 3574,
+      "texto": "Luz Marina Ejemplo Moreno",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A081",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3576,
+      "end": 3599,
+      "texto": "conciliadora en derecho",
+      "tipo": "CARGO",
+      "entidad": "C28-E33",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C28-A082",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3614,
+      "end": 3617,
+      "texto": "100",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F45"
+      ]
+    },
+    {
+      "id": "C28-A083",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3679,
+      "end": 3704,
+      "texto": "Ferretería Ejemplo S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C28-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A084",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3710,
+      "end": 3723,
+      "texto": "860.000.011-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C28-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C28-A085",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3743,
+      "end": 3758,
+      "texto": "Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C28-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C28-A086",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3798,
+      "end": 3838,
+      "texto": "Kr. 00 # 0A-01, torre 4, apartamento 703",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C28-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C28-A087",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3842,
+      "end": 3848,
+      "texto": "Bogotá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C28-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C28-A088",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3892,
+      "end": 3921,
+      "texto": "08001-40-03-956-2022-00015-00",
+      "tipo": "RADICADO",
+      "entidad": "C28-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C28-A089",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3926,
+      "end": 3966,
+      "texto": "Juzgado 995 Civil Municipal de Zipaquirá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C28-E39",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C28-A090",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3957,
+      "end": 3966,
+      "texto": "Zipaquirá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C28-E40",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C28-A089",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C28-A091",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3995,
+      "end": 4043,
+      "texto": "ocho (8) de octubre de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C28-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C28-A092",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4049,
+      "end": 4077,
+      "texto": "Héctor Fabio Ficticio Moreno",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A093",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4117,
+      "end": 4147,
+      "texto": "Cll. 0C n.º 0A-03, oficina 604",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C28-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C28-A094",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4156,
+      "end": 4174,
+      "texto": "El Mirador Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C28-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C28-A095",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4182,
+      "end": 4189,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C28-A096",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4190,
+      "end": 4228,
+      "texto": "es hijo de un congresista en ejercicio",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C28-E58",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C28-A097",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4257,
+      "end": 4281,
+      "texto": "Patricia Ejemplo Cardona",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C28-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43"
+      ]
+    },
+    {
+      "id": "C28-A098",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4345,
+      "end": 4370,
+      "texto": "Luz Marina Ejemplo Moreno",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A099",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4373,
+      "end": 4395,
+      "texto": "presidenta de la junta",
+      "tipo": "CARGO",
+      "entidad": "C28-E59",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C28-A100",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4396,
+      "end": 4427,
+      "texto": "Martha Cecilia Ficticia Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C28-A101",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4430,
+      "end": 4448,
+      "texto": "secretaria general",
+      "tipo": "CARGO",
+      "entidad": "C28-E61",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C28-A102",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4500,
+      "end": 4532,
+      "texto": "martha.ficticia@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F38"
+      ]
+    },
+    {
+      "id": "C28-A103",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4535,
+      "end": 4547,
+      "texto": "351 000 0016",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F38"
+      ]
+    },
+    {
+      "id": "C28-A104",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4607,
+      "end": 4636,
+      "texto": "11001/40/03/910/2022/00017/00",
+      "tipo": "RADICADO",
+      "entidad": "C28-E64",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C28-A105",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4645,
+      "end": 4688,
+      "texto": "Juzgado 992 Promiscuo Municipal de Sogamoso",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C28-E65",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C28-A106",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4680,
+      "end": 4688,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C28-E66",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C28-A105",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C28-A107",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4702,
+      "end": 4711,
+      "texto": "10-I-2025",
+      "tipo": "FECHA",
+      "entidad": "C28-E67",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C28-A108",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4738,
+      "end": 4767,
+      "texto": "25899-31-10-948-2020-00018-00",
+      "tipo": "RADICADO",
+      "entidad": "C28-E68",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C28-A109",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4776,
+      "end": 4814,
+      "texto": "Juzgado 993 Civil del Circuito de Chía",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C28-E69",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C28-A110",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4810,
+      "end": 4814,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C28-E40",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C28-A109",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C28-A111",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4828,
+      "end": 4838,
+      "texto": "23.04.2026",
+      "tipo": "FECHA",
+      "entidad": "C28-E70",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C28-A112",
+      "docId": "C28",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4889,
+      "end": 4908,
+      "texto": "4000 0000 0000 0211",
+      "tipo": "TARJETA",
+      "entidad": "C28-E71",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C28-A113",
+      "docId": "C28",
+      "parte": {
+        "kind": "comentario",
+        "index": 1
+      },
+      "start": 27,
+      "end": 40,
+      "texto": "811.000.001-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C28-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F36"
+      ]
+    },
+    {
+      "id": "C28-A114",
+      "docId": "C28",
+      "parte": {
+        "kind": "comentario",
+        "index": 1
+      },
+      "start": 45,
+      "end": 53,
+      "texto": "Ficticia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C28-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F36",
+        "F44",
+        "F51"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

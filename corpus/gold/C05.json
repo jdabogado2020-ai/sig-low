@@ -1,0 +1,4645 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C05",
+  "tipoDocumento": "tutela_salud",
+  "fuente": "txt",
+  "archivo": "corpus/docs/C05.txt",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 9940,
+        "sha256": "849a81c85beb6e39fcba4ea91cb85156788e29eee85b400935a305ec77c4d811"
+      }
+    ],
+    "advertencias": [
+      "CODIFICACION_ALTERNATIVA"
+    ],
+    "metadatos": []
+  },
+  "listaDelCaso": [
+    {
+      "name": "Andrés Ejemplo-Pineda",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Salud Integral Prueba EPS S.A.",
+      "role": "EPS"
+    },
+    {
+      "name": "Clínica de la Mujer Prueba S.A.",
+      "role": "IPS"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C05-E01",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 998 civil municipal de itagui",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E02",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E03",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Andrés Ejemplo-Pineda",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C05-E04",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "LISTA:Salud Integral Prueba EPS S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C05-E05",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "canonico": "LISTA:Clínica de la Mujer Prueba S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C05-E06",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:20000001",
+      "mismoTitular": [
+        "C05-E46"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C05-E07",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:santa prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E08",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:DG 00B 0 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E09",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 86 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E10",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 2591 de 1991",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E11",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-29",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E12",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000107",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E13",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:123001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E14",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:50S-00000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E15",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:rafael prueba ortiz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E16",
+      "tipo": "VALOR",
+      "canonico": "VALOR:650000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E17",
+      "tipo": "VALOR",
+      "canonico": "VALOR:12000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E18",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E19",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:1000000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E20",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:comercializadora ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E21",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:811000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E22",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:constanza prueba-rojas suarez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E23",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinadora de auditoria medica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E24",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000054",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E25",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:6050000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E26",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3170000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E27",
+      "tipo": "PLACA",
+      "canonico": "PLACA:WWW008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E28",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:papeleria ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E29",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:VEREDA EL TABLON FICTICIO",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E30",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E31",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000000900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E32",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "canonico": "CUENTA:BREB:@ejemplopineda1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E33",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2019-09-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E34",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E35",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1423500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E36",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:camilo ejemplo barrera",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E37",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:el remanso ficticio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E38",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:julian prueba mora",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E39",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:denuncio publicamente al gerente del hospital",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E40",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "canonico": "TEL:6070000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E41",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "canonico": "CORREO:juridica@salud-integral-prueba-eps.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E42",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-20",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E43",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:arturo prueba sanchez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E44",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TP:000102",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E45",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E46",
+      "tipo": "HC",
+      "rol": "DEMANDANTE",
+      "canonico": "HC:20000001",
+      "mismoTitular": [
+        "C05-E06"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C05-E47",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:fibrosis quistica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E48",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:e84.0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E49",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-04",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E50",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "canonico": "DIR:KR 0 BIS A 0A 0 IN 6",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E51",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:11",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E52",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-20",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E53",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000240",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E54",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:070-000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E55",
+      "tipo": "VALOR",
+      "canonico": "VALOR:48000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E56",
+      "tipo": "CARGO",
+      "canonico": "CARGO:alcaldesa municipal",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E57",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000150",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E58",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XXX016",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E59",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-760 de 2008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E60",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-171 de 2018",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E61",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 49 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E62",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1751 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E63",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 2015 de 2020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E64",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-597 de 1993",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E65",
+      "tipo": "CC",
+      "canonico": "NEG:t-9.000.001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E66",
+      "tipo": "RADICADO",
+      "canonico": "NEG:05001-31-03-943-2019-00017-00",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E67",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1564 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E68",
+      "tipo": "RADICADO",
+      "canonico": "NEG:110014003999",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E69",
+      "tipo": "CC",
+      "canonico": "NEG:8610",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E70",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia su-508 de 2020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E71",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-29",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E72",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:andres.ejemplo-pineda@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E73",
+      "tipo": "NIT",
+      "rol": "EPS",
+      "canonico": "NIT:811000018",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E74",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "canonico": "DIR:CL 0 BIS A 00 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E75",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "canonico": "CORREO:contacto@salud-integral-prueba-eps.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E76",
+      "tipo": "RADICADO",
+      "canonico": "RAD:5001400399420250001900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E77",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 990 de familia de itagui",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E78",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E79",
+      "tipo": "RADICADO",
+      "canonico": "RAD:15759400395720220002000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E80",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 992 promiscuo municipal de sogamoso",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E81",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E82",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E83",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25175410595920240002100",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E84",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 991 laboral del circuito de palmira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E85",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E86",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-14",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E87",
+      "tipo": "RADICADO",
+      "canonico": "RAD:760016000938202500022",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E88",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:mauricio ejemplo pena",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E89",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men23:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E90",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men23:rotulo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E91",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TI:1000000024",
+      "mismoTitular": [
+        "C05-E94"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C05-E92",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2019-02-14",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E93",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~7 anos de edad",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E94",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "HC:1000000024",
+      "mismoTitular": [
+        "C05-E91"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C05-E95",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:carmen rosa ejemplo barrera",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E96",
+      "tipo": "PPT",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PPT:7000026",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E97",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E98",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:hector fabio ficticio caicedo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E99",
+      "tipo": "MENOR",
+      "canonico": "MENOR:ext27:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E100",
+      "tipo": "DOCUMENTO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "DOCUMENTO:1000000028",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E101",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2019-07-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E102",
+      "tipo": "RADICADO",
+      "canonico": "RAD:11999410598720240003000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E103",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:alejandro ficticio acosta",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E104",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:167000032",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C05-E105",
+      "tipo": "RADICADO",
+      "canonico": "NEG:050014003997",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C05-A001",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6,
+      "end": 43,
+      "texto": "JUZGADO 998 CIVIL MUNICIPAL DE ITAGÜÍ",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C05-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C05-A002",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 37,
+      "end": 43,
+      "texto": "ITAGÜÍ",
+      "tipo": "MUNICIPIO",
+      "entidad": "C05-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C05-A001",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C05-A003",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 105,
+      "end": 140,
+      "texto": "ANDRÉS FELIPE EJEMPLO-PINEDA TORRES",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02"
+      ]
+    },
+    {
+      "id": "C05-A004",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 152,
+      "end": 182,
+      "texto": "SALUD INTEGRAL PRUEBA EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A005",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 194,
+      "end": 225,
+      "texto": "CLÍNICA DE LA MUJER PRUEBA S.A.",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C05-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A006",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 288,
+      "end": 323,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A007",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 362,
+      "end": 372,
+      "texto": "20.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C05-A008",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 405,
+      "end": 411,
+      "texto": "Itagüí",
+      "tipo": "MUNICIPIO",
+      "entidad": "C05-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C05-A009",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 436,
+      "end": 448,
+      "texto": "Santa Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C05-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C05-A010",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 456,
+      "end": 472,
+      "texto": "Dg. 00B No. 0-03",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C05-A011",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 563,
+      "end": 593,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A012",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 595,
+      "end": 598,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A013",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 724,
+      "end": 763,
+      "texto": "artículo 86 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C05-A014",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 769,
+      "end": 789,
+      "texto": "Decreto 2591 de 1991",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C05-A015",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 812,
+      "end": 831,
+      "texto": "29 de junio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C05-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C05-A016",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 854,
+      "end": 857,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A017",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 875,
+      "end": 888,
+      "texto": "E-2026-000107",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C05-A018",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 909,
+      "end": 915,
+      "texto": "123001",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C05-A019",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 957,
+      "end": 992,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A020",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1106,
+      "end": 1118,
+      "texto": "50S-00000002",
+      "tipo": "MATRICULA",
+      "entidad": "C05-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C05-A021",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1137,
+      "end": 1156,
+      "texto": "Rafael Prueba Ortiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A022",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1172,
+      "end": 1181,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C05-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C05-A023",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1210,
+      "end": 1245,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A024",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1324,
+      "end": 1344,
+      "texto": "12 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C05-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C05-A025",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1382,
+      "end": 1435,
+      "texto": "diez (10) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C05-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C05-A026",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1464,
+      "end": 1499,
+      "texto": "ANDRÉS FELIPE EJEMPLO-PINEDA TORRES",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02"
+      ]
+    },
+    {
+      "id": "C05-A027",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1552,
+      "end": 1571,
+      "texto": "Rafael Prueba Ortiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A028",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1595,
+      "end": 1608,
+      "texto": "1.000.000.003",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C05-A029",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1621,
+      "end": 1651,
+      "texto": "Comercializadora Ejemplo Ltda.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C05-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A030",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1657,
+      "end": 1670,
+      "texto": "811.000.004-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C05-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C05-A031",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1757,
+      "end": 1782,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A032",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1799,
+      "end": 1828,
+      "texto": "Constanza Prueba-Rojas Suárez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A033",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1854,
+      "end": 1886,
+      "texto": "coordinadora de auditoría médica",
+      "tipo": "CARGO",
+      "entidad": "C05-E23",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C05-A034",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2020,
+      "end": 2055,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A035",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2149,
+      "end": 2165,
+      "texto": "4000000000000054",
+      "tipo": "TARJETA",
+      "entidad": "C05-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C05-A036",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2211,
+      "end": 2232,
+      "texto": "Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A037",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2305,
+      "end": 2319,
+      "texto": "(605) 000 0006",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C05-A038",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2333,
+      "end": 2343,
+      "texto": "3170000007",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C05-A039",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2426,
+      "end": 2433,
+      "texto": "WWW-008",
+      "tipo": "PLACA",
+      "entidad": "C05-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C05-A040",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2451,
+      "end": 2463,
+      "texto": "Prueba Ortiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A041",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2489,
+      "end": 2507,
+      "texto": "Papelería Ficticia",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C05-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A042",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2577,
+      "end": 2602,
+      "texto": "vereda El Tablón Ficticio",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F14"
+      ]
+    },
+    {
+      "id": "C05-A043",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2623,
+      "end": 2629,
+      "texto": "Itagüí",
+      "tipo": "MUNICIPIO",
+      "entidad": "C05-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C05-A044",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2701,
+      "end": 2715,
+      "texto": "Ejemplo-Pineda",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A045",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2813,
+      "end": 2830,
+      "texto": "Banco Prueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C05-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A046",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2835,
+      "end": 2848,
+      "texto": "000-000009-00",
+      "tipo": "CUENTA",
+      "entidad": "C05-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C05-A047",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2869,
+      "end": 2884,
+      "texto": "@ejemplopineda1",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C05-A048",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2924,
+      "end": 2938,
+      "texto": "Ejemplo-Pineda",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A049",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2982,
+      "end": 3003,
+      "texto": "Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A050",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3009,
+      "end": 3034,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A051",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3057,
+      "end": 3067,
+      "texto": "09/09/2019",
+      "tipo": "FECHA",
+      "entidad": "C05-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C05-A052",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3088,
+      "end": 3097,
+      "texto": "000000010",
+      "tipo": "AFILIACION",
+      "entidad": "C05-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C05-A053",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3114,
+      "end": 3149,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A054",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3319,
+      "end": 3333,
+      "texto": "Ejemplo-Pineda",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A055",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3390,
+      "end": 3420,
+      "texto": "Comercializadora Ejemplo Ltda.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C05-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A056",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3439,
+      "end": 3507,
+      "texto": "un millón cuatrocientos veintitrés mil quinientos pesos ($1.423.500)",
+      "tipo": "VALOR",
+      "entidad": "C05-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23"
+      ]
+    },
+    {
+      "id": "C05-A057",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3571,
+      "end": 3585,
+      "texto": "Ejemplo-Pineda",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A058",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3687,
+      "end": 3709,
+      "texto": "Camilo Ejemplo Barrera",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A059",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3729,
+      "end": 3748,
+      "texto": "El Remanso Ficticio",
+      "tipo": "BARRIO",
+      "entidad": "C05-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C05-A060",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3773,
+      "end": 3779,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A061",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3831,
+      "end": 3845,
+      "texto": "Ejemplo-Pineda",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A062",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3846,
+      "end": 3891,
+      "texto": "denunció públicamente al gerente del hospital",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C05-E39",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C05-A063",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3956,
+      "end": 3991,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A064",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4072,
+      "end": 4075,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A065",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4081,
+      "end": 4102,
+      "texto": "607 000 0011 Ext. 102",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "entidad": "C05-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C05-A066",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4111,
+      "end": 4150,
+      "texto": "JURIDICA@SALUD-INTEGRAL-PRUEBA-EPS.TEST",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C05-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C05-A067",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4192,
+      "end": 4241,
+      "texto": "veinte (20) de abril de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C05-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C05-A068",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4253,
+      "end": 4274,
+      "texto": "Arturo Prueba Sánchez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A069",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4317,
+      "end": 4323,
+      "texto": "000102",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F45"
+      ]
+    },
+    {
+      "id": "C05-A070",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4374,
+      "end": 4384,
+      "texto": "2026000013",
+      "tipo": "AFILIACION",
+      "entidad": "C05-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C05-A071",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4408,
+      "end": 4443,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A072",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4509,
+      "end": 4519,
+      "texto": "20.000.001",
+      "tipo": "HC",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18"
+      ]
+    },
+    {
+      "id": "C05-A073",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4521,
+      "end": 4542,
+      "texto": "Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A074",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4565,
+      "end": 4582,
+      "texto": "fibrosis quística",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C05-E47",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C05-A075",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4591,
+      "end": 4596,
+      "texto": "E84.0",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C05-E48",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C05-A076",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4604,
+      "end": 4635,
+      "texto": "Clínica de la Mujer Prueba S.A.",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C05-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A077",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4653,
+      "end": 4688,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A078",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4772,
+      "end": 4798,
+      "texto": "Clínica de la Mujer Prueba",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C05-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A079",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4822,
+      "end": 4833,
+      "texto": "4 jul. 2026",
+      "tipo": "FECHA",
+      "entidad": "C05-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C05-A080",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4861,
+      "end": 4892,
+      "texto": "Kr. 0 Bis A # 0A-00, interior 6",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "entidad": "C05-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C05-A081",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4896,
+      "end": 4902,
+      "texto": "Bogotá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C05-E51",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C05-A082",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4942,
+      "end": 4956,
+      "texto": "Ejemplo-Pineda",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A083",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4986,
+      "end": 5005,
+      "texto": "20 de junio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C05-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C05-A084",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5028,
+      "end": 5031,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A085",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5049,
+      "end": 5062,
+      "texto": "E-2026-000240",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C05-A086",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5194,
+      "end": 5204,
+      "texto": "070-000014",
+      "tipo": "MATRICULA",
+      "entidad": "C05-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C05-A087",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5223,
+      "end": 5242,
+      "texto": "Rafael Prueba Ortiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A088",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5258,
+      "end": 5267,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C05-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C05-A089",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5314,
+      "end": 5338,
+      "texto": "Papelería Ficticia Ltda.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C05-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A090",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5376,
+      "end": 5423,
+      "texto": "cuarenta y ocho millones de pesos ($48.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C05-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23"
+      ]
+    },
+    {
+      "id": "C05-A091",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5467,
+      "end": 5502,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A092",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5576,
+      "end": 5606,
+      "texto": "COMERCIALIZADORA EJEMPLO LTDA.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C05-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A093",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5612,
+      "end": 5625,
+      "texto": "811 000 004-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C05-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C05-A094",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5637,
+      "end": 5649,
+      "texto": "Prueba Ortiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A095",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5715,
+      "end": 5729,
+      "texto": "Ejemplo-Pineda",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A096",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5798,
+      "end": 5823,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A097",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5840,
+      "end": 5869,
+      "texto": "Constanza Prueba-Rojas Suárez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A098",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5895,
+      "end": 5914,
+      "texto": "alcaldesa municipal",
+      "tipo": "CARGO",
+      "entidad": "C05-E56",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C05-A099",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6025,
+      "end": 6046,
+      "texto": "Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A100",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6138,
+      "end": 6154,
+      "texto": "4000000000000150",
+      "tipo": "TARJETA",
+      "entidad": "C05-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C05-A101",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6235,
+      "end": 6249,
+      "texto": "(605) 000 0006",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C05-A102",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6263,
+      "end": 6273,
+      "texto": "3170000007",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C05-A103",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6365,
+      "end": 6372,
+      "texto": "XXX-016",
+      "tipo": "PLACA",
+      "entidad": "C05-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C05-A104",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6390,
+      "end": 6402,
+      "texto": "Prueba Ortiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A105",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6428,
+      "end": 6446,
+      "texto": "Papelería Ficticia",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C05-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A106",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6529,
+      "end": 6552,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C05-A107",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6611,
+      "end": 6634,
+      "texto": "Sentencia T-171 de 2018",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C05-A108",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6709,
+      "end": 6748,
+      "texto": "artículo 49 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C05-A109",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6754,
+      "end": 6770,
+      "texto": "Ley 1751 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C05-A110",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6813,
+      "end": 6829,
+      "texto": "Ley 2015 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C05-A111",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6894,
+      "end": 6917,
+      "texto": "Sentencia T-597 de 1993",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E64",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C05-A112",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6950,
+      "end": 6961,
+      "texto": "T-9.000.001",
+      "tipo": "CC",
+      "entidad": "C05-E65",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C05-A113",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7105,
+      "end": 7134,
+      "texto": "05001-31-03-943-2019-00017-00",
+      "tipo": "RADICADO",
+      "entidad": "C05-E66",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "bandera_esperada": "CITA_JURISPRUDENCIAL",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F32"
+      ]
+    },
+    {
+      "id": "C05-A114",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7189,
+      "end": 7205,
+      "texto": "Ley 1564 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E67",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C05-A115",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7255,
+      "end": 7267,
+      "texto": "110014003999",
+      "tipo": "RADICADO",
+      "entidad": "C05-E68",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C05-A116",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7326,
+      "end": 7330,
+      "texto": "8610",
+      "tipo": "CC",
+      "entidad": "C05-E69",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C05-A117",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7424,
+      "end": 7447,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C05-A118",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7506,
+      "end": 7530,
+      "texto": "Sentencia SU-508 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C05-E70",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C05-A119",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7656,
+      "end": 7691,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A120",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7706,
+      "end": 7709,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A121",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7822,
+      "end": 7839,
+      "texto": "fibrosis quística",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C05-E47",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C05-A122",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7855,
+      "end": 7880,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A123",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7977,
+      "end": 7998,
+      "texto": "Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A124",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8026,
+      "end": 8052,
+      "texto": "Clínica de la Mujer Prueba",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C05-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A125",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8063,
+      "end": 8073,
+      "texto": "2026-07-29",
+      "tipo": "FECHA",
+      "entidad": "C05-E71",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C05-A126",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8119,
+      "end": 8122,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A127",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8155,
+      "end": 8171,
+      "texto": "Dg. 00B No. 0-03",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C05-A128",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8173,
+      "end": 8179,
+      "texto": "Itagüí",
+      "tipo": "MUNICIPIO",
+      "entidad": "C05-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C05-A129",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8181,
+      "end": 8190,
+      "texto": "Antioquia",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C05-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C05-A130",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8212,
+      "end": 8246,
+      "texto": "andres.ejemplo-pineda@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E72",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C05-A131",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8257,
+      "end": 8273,
+      "texto": "+57 317 000 0007",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C05-A132",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8289,
+      "end": 8319,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C05-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C05-A133",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8325,
+      "end": 8338,
+      "texto": "811.000.018-4",
+      "tipo": "NIT",
+      "rol": "EPS",
+      "entidad": "C05-E73",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C05-A134",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8346,
+      "end": 8369,
+      "texto": "Calle 0 Bis A n.º 00-03",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "entidad": "C05-E74",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C05-A135",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8378,
+      "end": 8417,
+      "texto": "contacto@salud-integral-prueba-eps.test",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C05-E75",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C05-A136",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8433,
+      "end": 8468,
+      "texto": "Andrés Felipe Ejemplo-Pineda Torres",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C05-A137",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8474,
+      "end": 8482,
+      "texto": "20000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C05-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C05-A138",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8486,
+      "end": 8492,
+      "texto": "Bogotá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C05-E51",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C05-A139",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8594,
+      "end": 8616,
+      "texto": "5001400399420250001900",
+      "tipo": "RADICADO",
+      "entidad": "C05-E76",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C05-A140",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8625,
+      "end": 8657,
+      "texto": "Juzgado 990 de Familia de Itagüí",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C05-E77",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C05-A141",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8651,
+      "end": 8657,
+      "texto": "Itagüí",
+      "tipo": "MUNICIPIO",
+      "entidad": "C05-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C05-A140",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C05-A142",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8671,
+      "end": 8680,
+      "texto": "5-VI-2026",
+      "tipo": "FECHA",
+      "entidad": "C05-E78",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C05-A143",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8695,
+      "end": 8724,
+      "texto": "15759/40/03/957/2022/00020/00",
+      "tipo": "RADICADO",
+      "entidad": "C05-E79",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C05-A144",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8733,
+      "end": 8776,
+      "texto": "Juzgado 992 Promiscuo Municipal de Sogamoso",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C05-E80",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C05-A145",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8768,
+      "end": 8776,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C05-E81",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C05-A144",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C05-A146",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8790,
+      "end": 8801,
+      "texto": "5 jul. 2026",
+      "tipo": "FECHA",
+      "entidad": "C05-E82",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C05-A147",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8828,
+      "end": 8857,
+      "texto": "25175/41/05/959/2024/00021/00",
+      "tipo": "RADICADO",
+      "entidad": "C05-E83",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C05-A148",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8866,
+      "end": 8909,
+      "texto": "Juzgado 991 Laboral del Circuito de Palmira",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C05-E84",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C05-A149",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8902,
+      "end": 8909,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C05-E85",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C05-A148",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C05-A150",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8923,
+      "end": 8933,
+      "texto": "2026-02-14",
+      "tipo": "FECHA",
+      "entidad": "C05-E86",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C05-A151",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8958,
+      "end": 8979,
+      "texto": "760016000938202500022",
+      "tipo": "RADICADO",
+      "entidad": "C05-E87",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F05"
+      ]
+    },
+    {
+      "id": "C05-A152",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8993,
+      "end": 9014,
+      "texto": "Mauricio Ejemplo Peña",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E88",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A153",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9016,
+      "end": 9024,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C05-E89",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C05-A154",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9043,
+      "end": 9047,
+      "texto": "T.I.",
+      "tipo": "MENOR",
+      "entidad": "C05-E90",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C05-A155",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9048,
+      "end": 9061,
+      "texto": "1.000.000.024",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E91",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F08",
+        "F50"
+      ]
+    },
+    {
+      "id": "C05-A156",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9072,
+      "end": 9082,
+      "texto": "14/02/2019",
+      "tipo": "FECHA",
+      "entidad": "C05-E92",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C05-A157",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9095,
+      "end": 9109,
+      "texto": "7 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C05-E93",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C05-A158",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9141,
+      "end": 9151,
+      "texto": "1000000024",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E94",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18"
+      ]
+    },
+    {
+      "id": "C05-A159",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9167,
+      "end": 9194,
+      "texto": "Carmen Rosa Ejemplo Barrera",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E95",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A160",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9268,
+      "end": 9275,
+      "texto": "7000026",
+      "tipo": "PPT",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E96",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09"
+      ]
+    },
+    {
+      "id": "C05-A161",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9304,
+      "end": 9314,
+      "texto": "17/07/2026",
+      "tipo": "FECHA",
+      "entidad": "C05-E97",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C05-A162",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9323,
+      "end": 9352,
+      "texto": "Héctor Fabio Ficticio Caicedo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E98",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A163",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9360,
+      "end": 9368,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C05-E99",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C05-A164",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9404,
+      "end": 9417,
+      "texto": "1.000.000.028",
+      "tipo": "DOCUMENTO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E100",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09",
+        "F50"
+      ]
+    },
+    {
+      "id": "C05-A165",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9428,
+      "end": 9447,
+      "texto": "18 de julio de 2019",
+      "tipo": "FECHA",
+      "entidad": "C05-E101",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F21",
+        "F47"
+      ]
+    },
+    {
+      "id": "C05-A166",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9494,
+      "end": 9500,
+      "texto": "Jericó",
+      "tipo": "MUNICIPIO",
+      "entidad": "C05-E81",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F26"
+      ]
+    },
+    {
+      "id": "C05-A167",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9502,
+      "end": 9508,
+      "texto": "Boyacá",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C05-E81",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C05-A168",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9588,
+      "end": 9617,
+      "texto": "11999-41-05-987-2024-00030-00",
+      "tipo": "RADICADO",
+      "entidad": "C05-E102",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C05-A169",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9700,
+      "end": 9715,
+      "texto": "Ficticio Acosta",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E103",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C05-A170",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9728,
+      "end": 9737,
+      "texto": "167000032",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C05-E104",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C05-A171",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9851,
+      "end": 9863,
+      "texto": "050014003997",
+      "tipo": "RADICADO",
+      "entidad": "C05-E105",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C05-A172",
+      "docId": "C05",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9890,
+      "end": 9894,
+      "texto": "8610",
+      "tipo": "CC",
+      "entidad": "C05-E69",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

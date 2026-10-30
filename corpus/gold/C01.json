@@ -1,0 +1,6837 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C01",
+  "tipoDocumento": "tutela_salud",
+  "fuente": "docx",
+  "archivo": "corpus/docs/C01.docx",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "encabezado",
+        "index": 1,
+        "longitud": 89,
+        "sha256": "69e0501c740c39f58c05c91a838cec4424ba368004cdf67c4e7ebab5b34b4539"
+      },
+      {
+        "kind": "encabezado",
+        "index": 2,
+        "longitud": 41,
+        "sha256": "e2d2c02e3d47133fb371148a5b0eef7d3f67546d803d3b06a2336a71b5bef0ca"
+      },
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 14123,
+        "sha256": "bc4eac55278eb09e089246dd7c2b9d0698fed26e3eb9dcdc2ea79bd34f10b8bc"
+      },
+      {
+        "kind": "pie",
+        "index": 1,
+        "longitud": 87,
+        "sha256": "445d162cde81c7fb6b5adc429fc4aab85e4117516860f9aafddc815a282c0f2f"
+      },
+      {
+        "kind": "nota_pie",
+        "index": 1,
+        "longitud": 64,
+        "sha256": "086cb31aaad9c621fe25d190c80e30d65ad695954f11f53ac601263323d16506"
+      },
+      {
+        "kind": "nota_pie",
+        "index": 2,
+        "longitud": 85,
+        "sha256": "8fc3414cc32688b47bb7dd8739e232dacc063b6257a37df9a74d5e459fee9f3e"
+      },
+      {
+        "kind": "comentario",
+        "index": 1,
+        "longitud": 101,
+        "sha256": "8d1253d9bd04dd836d79697c8a0a7016047907f2a2181a3f40f8fb49b61c1b24"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": [
+      "autores_revisiones",
+      "personas",
+      "propiedades_aplicacion",
+      "propiedades_documento"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Martha Ejemplo-Acosta",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Diana Carolina Prueba Cárdenas",
+      "role": "TESTIGO"
+    },
+    {
+      "name": "Vida y Salud Ejemplo EPS S.A.S.",
+      "role": "EPS"
+    },
+    {
+      "name": "Hospital Universitario Ficticio E.S.E.",
+      "role": "IPS"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C01-E01",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "LISTA:Vida y Salud Ejemplo EPS S.A.S.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C01-E02",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Martha Ejemplo-Acosta",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C01-E03",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 998 civil municipal de facatativa",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E04",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E05",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "canonico": "LISTA:Hospital Universitario Ficticio E.S.E.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C01-E06",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:5000001",
+      "mismoTitular": [
+        "C01-E37"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C01-E07",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:CL 00 00 0 OF 201 IN 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E08",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:altos del ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E09",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 86 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E10",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 2591 de 1991",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E11",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E12",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000000200",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E13",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "canonico": "CUENTA:BREB:@ejemploacosta1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E14",
+      "tipo": "PLACA",
+      "canonico": "PLACA:WWW003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E15",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:jose miguel ejemplo perez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E16",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:suministros ficticios",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E17",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-02",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E18",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000121",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E19",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:sobrevivio al incendio de la bodega que aparecio en la prensa nacional",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E20",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:100-000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E21",
+      "tipo": "VALOR",
+      "canonico": "VALOR:650000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E22",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E23",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E24",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:ejemplo norte",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E25",
+      "tipo": "VALOR",
+      "canonico": "VALOR:48000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E26",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:elizabeth ficticia-rodriguez gonzalez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E27",
+      "tipo": "CARGO",
+      "canonico": "CARGO:directora regional",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E28",
+      "tipo": "PERSONA",
+      "rol": "TESTIGO",
+      "canonico": "LISTA:Diana Carolina Prueba Cárdenas",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C01-E29",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:santa prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E30",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:marisol ficticia diaz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E31",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3240000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E32",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:martha.ejemplo-acosta@correo.ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E33",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-27",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E34",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:miguel angel ficticio rodriguez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E35",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TP:000096",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E36",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E37",
+      "tipo": "HC",
+      "rol": "DEMANDANTE",
+      "canonico": "HC:5000001",
+      "mismoTitular": [
+        "C01-E06"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C01-E38",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:esclerosis lateral amiotrofica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E39",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:g12.2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E40",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000085",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E41",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "canonico": "TEL:6010000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E42",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "canonico": "CORREO:servicioalcliente@vida-y-salud-ejemplo-eps.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E43",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-28",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E44",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "canonico": "DIR:KR 00B 00 1 E OF 604 IN 2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E45",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:08",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E46",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:distribuidora prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E47",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:830000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E48",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:VEREDA CHUSCAL EJEMPLO",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E49",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-01-16",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E50",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:EPS000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E51",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000001200",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E52",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XYZ013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E53",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E54",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000254",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E55",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:denuncio publicamente al gerente del hospital",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E56",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:01N-00000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E57",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1750000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E58",
+      "tipo": "VALOR",
+      "canonico": "VALOR:12000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E59",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E60",
+      "tipo": "CARGO",
+      "canonico": "CARGO:jefa de autorizaciones",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E61",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:el remanso ficticio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E62",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-13",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E63",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E64",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000168",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E65",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-16",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E66",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:1000000017",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E67",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2021-08-15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E68",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000018",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E69",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000001900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E70",
+      "tipo": "PLACA",
+      "canonico": "PLACA:WWW020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E71",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-03-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E72",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000387",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E73",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:123041",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E74",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:recibio amenazas del grupo armado que opera en la zona",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E75",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:01N-00000021",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E76",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:la prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E77",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-760 de 2008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E78",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-053 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E79",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 49 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E80",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1751 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E81",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1122 de 2007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E82",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia c-313 de 2014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E83",
+      "tipo": "CC",
+      "canonico": "NEG:t-9.000.001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E84",
+      "tipo": "RADICADO",
+      "canonico": "NEG:73001-31-03-943-2019-00022-00",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E85",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 361 de 1997",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E86",
+      "tipo": "RADICADO",
+      "canonico": "NEG:110014003999",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E87",
+      "tipo": "CC",
+      "canonico": "NEG:8610",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E88",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-171 de 2018",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E89",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-259 de 2019",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E90",
+      "tipo": "RADICADO",
+      "canonico": "NEG:68001-31-03-983-2019-00023-00",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E91",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E92",
+      "tipo": "NIT",
+      "rol": "EPS",
+      "canonico": "NIT:890000024",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E93",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "canonico": "DIR:AC 00 BIS 00 1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E94",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "canonico": "CORREO:juridica@vida-y-salud-ejemplo-eps.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E95",
+      "tipo": "RADICADO",
+      "canonico": "RAD:15759410596720220002700",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E96",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 990 de familia de bogota",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E97",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:11",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E98",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-03-03",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E99",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05360400393620200002800",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E100",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 991 laboral del circuito de soacha",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E101",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-03-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E102",
+      "tipo": "RADICADO",
+      "canonico": "RAD:73001410595120220002900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E103",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 993 civil del circuito de ibague",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E104",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:73",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E105",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-03-26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E106",
+      "tipo": "RADICADO",
+      "canonico": "RAD:730016000979202500030",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E107",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:mario ficticio ruiz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E108",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men31:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E109",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men31:rotulo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E110",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TI:1000000032",
+      "mismoTitular": [
+        "C01-E113"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C01-E111",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2013-08-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E112",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~13 anos de edad",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E113",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "HC:1000000032",
+      "mismoTitular": [
+        "C01-E110"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C01-E114",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:gustavo prueba ruiz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E115",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men33:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E116",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men33:rotulo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E117",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TI:12020600034",
+      "mismoTitular": [
+        "C01-E120"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C01-E118",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2012-02-06",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E119",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~14 anos de edad",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E120",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "HC:12020600034",
+      "mismoTitular": [
+        "C01-E117"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C01-E121",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:liliana ejemplo gonzalez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E122",
+      "tipo": "CE",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CE:1000036",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E123",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-20",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E124",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:wilson prueba bonilla",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E125",
+      "tipo": "PEP",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PEP:1000038890",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E126",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E127",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E128",
+      "tipo": "CC",
+      "canonico": "NEG:890301",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E129",
+      "tipo": "CC",
+      "canonico": "NEG:680001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E130",
+      "tipo": "CC",
+      "canonico": "NEG:67",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E131",
+      "tipo": "RADICADO",
+      "canonico": "RAD:15759400393020260002500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C01-E132",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3120000026",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C01-A001",
+      "docId": "C01",
+      "parte": {
+        "kind": "encabezado",
+        "index": 1
+      },
+      "start": 0,
+      "end": 31,
+      "texto": "VIDA Y SALUD EJEMPLO EPS S.A.S.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03",
+        "F34"
+      ]
+    },
+    {
+      "id": "C01-A002",
+      "docId": "C01",
+      "parte": {
+        "kind": "encabezado",
+        "index": 1
+      },
+      "start": 54,
+      "end": 89,
+      "texto": "MARTHA CECILIA EJEMPLO-ACOSTA ORTIZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02",
+        "F34"
+      ]
+    },
+    {
+      "id": "C01-A003",
+      "docId": "C01",
+      "parte": {
+        "kind": "encabezado",
+        "index": 2
+      },
+      "start": 10,
+      "end": 30,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F34",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A004",
+      "docId": "C01",
+      "parte": {
+        "kind": "encabezado",
+        "index": 2
+      },
+      "start": 38,
+      "end": 41,
+      "texto": "VSE",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F34"
+      ]
+    },
+    {
+      "id": "C01-A005",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6,
+      "end": 47,
+      "texto": "JUZGADO 998 CIVIL MUNICIPAL DE FACATATIVÁ",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C01-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C01-A006",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 37,
+      "end": 47,
+      "texto": "FACATATIVÁ",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C01-A005",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C01-A007",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 108,
+      "end": 143,
+      "texto": "MARTHA CECILIA EJEMPLO-ACOSTA ORTIZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02"
+      ]
+    },
+    {
+      "id": "C01-A008",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 155,
+      "end": 186,
+      "texto": "VIDA Y SALUD EJEMPLO EPS S.A.S.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A009",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 198,
+      "end": 236,
+      "texto": "HOSPITAL UNIVERSITARIO FICTICIO E.S.E.",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C01-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A010",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 298,
+      "end": 333,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A011",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 372,
+      "end": 381,
+      "texto": "5.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C01-A012",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 414,
+      "end": 424,
+      "texto": "Facatativá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C01-A013",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 432,
+      "end": 475,
+      "texto": "Calle 00 No. 00-00, oficina 201, interior 3",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C01-A014",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 484,
+      "end": 501,
+      "texto": "Altos del Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C01-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C01-A015",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 591,
+      "end": 622,
+      "texto": "Vida y Salud Ejemplo EPS S.A.S.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A016",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 624,
+      "end": 627,
+      "texto": "VSE",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A017",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 753,
+      "end": 792,
+      "texto": "artículo 86 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C01-A018",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 798,
+      "end": 818,
+      "texto": "Decreto 2591 de 1991",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C01-A019",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 909,
+      "end": 926,
+      "texto": "Banco Prueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C01-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A020",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 931,
+      "end": 944,
+      "texto": "000-000002-00",
+      "tipo": "CUENTA",
+      "entidad": "C01-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C01-A021",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 965,
+      "end": 980,
+      "texto": "@ejemploacosta1",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C01-A022",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1009,
+      "end": 1044,
+      "texto": "MARTHA CECILIA EJEMPLO-ACOSTA ORTIZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02"
+      ]
+    },
+    {
+      "id": "C01-A023",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1131,
+      "end": 1138,
+      "texto": "WWW-003",
+      "tipo": "PLACA",
+      "entidad": "C01-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C01-A024",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1156,
+      "end": 1169,
+      "texto": "Ejemplo Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A025",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1195,
+      "end": 1216,
+      "texto": "Suministros Ficticios",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C01-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A026",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1254,
+      "end": 1289,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A027",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1334,
+      "end": 1352,
+      "texto": "2 de abril de 2026",
+      "tipo": "FECHA",
+      "entidad": "C01-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C01-A028",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1375,
+      "end": 1378,
+      "texto": "VSE",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A029",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1396,
+      "end": 1409,
+      "texto": "E-2026-000121",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C01-A030",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1480,
+      "end": 1515,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A031",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1588,
+      "end": 1602,
+      "texto": "Ejemplo-Acosta",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A032",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1603,
+      "end": 1673,
+      "texto": "sobrevivió al incendio de la bodega que apareció en la prensa nacional",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C01-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C01-A033",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1759,
+      "end": 1773,
+      "texto": "Ejemplo-Acosta",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A034",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1854,
+      "end": 1864,
+      "texto": "100-000004",
+      "tipo": "MATRICULA",
+      "entidad": "C01-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C01-A035",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1883,
+      "end": 1908,
+      "texto": "José Miguel Ejemplo Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A036",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1924,
+      "end": 1933,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C01-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A037",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1983,
+      "end": 2018,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A038",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2093,
+      "end": 2103,
+      "texto": "$1.500.000",
+      "tipo": "VALOR",
+      "entidad": "C01-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A039",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2128,
+      "end": 2135,
+      "texto": "2 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C01-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C01-A040",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2155,
+      "end": 2168,
+      "texto": "Ejemplo Norte",
+      "tipo": "BARRIO",
+      "entidad": "C01-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C01-A041",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2172,
+      "end": 2182,
+      "texto": "Facatativá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C01-A042",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2210,
+      "end": 2238,
+      "texto": "Suministros Ficticios S.A.S.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C01-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A043",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2283,
+      "end": 2330,
+      "texto": "cuarenta y ocho millones de pesos ($48.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C01-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23"
+      ]
+    },
+    {
+      "id": "C01-A044",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2374,
+      "end": 2409,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A045",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2496,
+      "end": 2520,
+      "texto": "Vida y Salud Ejemplo EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A046",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2537,
+      "end": 2574,
+      "texto": "Elizabeth Ficticia-Rodríguez González",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A047",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2600,
+      "end": 2618,
+      "texto": "directora regional",
+      "tipo": "CARGO",
+      "entidad": "C01-E27",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C01-A048",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2724,
+      "end": 2759,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A049",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2897,
+      "end": 2932,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A050",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3027,
+      "end": 3057,
+      "texto": "Diana Carolina Prueba Cárdenas",
+      "tipo": "PERSONA",
+      "rol": "TESTIGO",
+      "entidad": "C01-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A051",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3077,
+      "end": 3089,
+      "texto": "Santa Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C01-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C01-A052",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3114,
+      "end": 3122,
+      "texto": "Ficticia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A053",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3183,
+      "end": 3195,
+      "texto": "324 000 0005",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11",
+        "F43"
+      ]
+    },
+    {
+      "id": "C01-A054",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3208,
+      "end": 3249,
+      "texto": "martha.ejemplo-acosta@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C01-A055",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3278,
+      "end": 3298,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A056",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3345,
+      "end": 3399,
+      "texto": "veintisiete (27) de abril de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C01-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C01-A057",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3411,
+      "end": 3442,
+      "texto": "Miguel Ángel Ficticio Rodríguez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A058",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3485,
+      "end": 3491,
+      "texto": "000096",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F45"
+      ]
+    },
+    {
+      "id": "C01-A059",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3549,
+      "end": 3559,
+      "texto": "2026000007",
+      "tipo": "AFILIACION",
+      "entidad": "C01-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C01-A060",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3578,
+      "end": 3592,
+      "texto": "Ejemplo-Acosta",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A061",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3680,
+      "end": 3689,
+      "texto": "5.000.001",
+      "tipo": "HC",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18"
+      ]
+    },
+    {
+      "id": "C01-A062",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3691,
+      "end": 3711,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A063",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3734,
+      "end": 3764,
+      "texto": "esclerosis lateral amiotrófica",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C01-E38",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C01-A064",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3773,
+      "end": 3778,
+      "texto": "G12.2",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C01-E39",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C01-A065",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3786,
+      "end": 3824,
+      "texto": "Hospital Universitario Ficticio E.S.E.",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C01-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A066",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3842,
+      "end": 3856,
+      "texto": "Ejemplo-Acosta",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A067",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3966,
+      "end": 3985,
+      "texto": "4000-0000-0000-0085",
+      "tipo": "TARJETA",
+      "entidad": "C01-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C01-A068",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4047,
+      "end": 4050,
+      "texto": "VSE",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A069",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4056,
+      "end": 4077,
+      "texto": "601 000 0009 Ext. 102",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "entidad": "C01-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F43"
+      ]
+    },
+    {
+      "id": "C01-A070",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4086,
+      "end": 4133,
+      "texto": "servicioalcliente@vida-y-salud-ejemplo-eps.test",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C01-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C01-A071",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4195,
+      "end": 4226,
+      "texto": "Hospital Universitario Ficticio",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C01-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A072",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4250,
+      "end": 4262,
+      "texto": "28 abr. 2026",
+      "tipo": "FECHA",
+      "entidad": "C01-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C01-A073",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4290,
+      "end": 4336,
+      "texto": "Cra. 00B # 00-01 Este, oficina 604, interior 2",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "entidad": "C01-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C01-A074",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4340,
+      "end": 4352,
+      "texto": "Barranquilla",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E45",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A075",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4392,
+      "end": 4412,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A076",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4456,
+      "end": 4492,
+      "texto": "DISTRIBUIDORA PRUEBA Y CÍA. S. EN C.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C01-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A077",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4498,
+      "end": 4511,
+      "texto": "830 000 010-5",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C01-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C01-A078",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4523,
+      "end": 4536,
+      "texto": "Ejemplo Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A079",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4602,
+      "end": 4637,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A080",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4716,
+      "end": 4738,
+      "texto": "vereda Chuscal Ejemplo",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F14"
+      ]
+    },
+    {
+      "id": "C01-A081",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4759,
+      "end": 4769,
+      "texto": "Facatativá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C01-A082",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4817,
+      "end": 4852,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A083",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4877,
+      "end": 4908,
+      "texto": "Vida y Salud Ejemplo EPS S.A.S.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A084",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4918,
+      "end": 4937,
+      "texto": "16 de enero de 2024",
+      "tipo": "FECHA",
+      "entidad": "C01-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C01-A085",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4967,
+      "end": 4977,
+      "texto": "EPS-000011",
+      "tipo": "AFILIACION",
+      "entidad": "C01-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C01-A086",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4996,
+      "end": 5016,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A087",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5142,
+      "end": 5159,
+      "texto": "Banco Prueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C01-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A088",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5164,
+      "end": 5177,
+      "texto": "000-000012-00",
+      "tipo": "CUENTA",
+      "entidad": "C01-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C01-A089",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5198,
+      "end": 5213,
+      "texto": "@ejemploacosta1",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C01-A090",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5229,
+      "end": 5249,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A091",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5358,
+      "end": 5365,
+      "texto": "XYZ-013",
+      "tipo": "PLACA",
+      "entidad": "C01-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C01-A092",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5383,
+      "end": 5396,
+      "texto": "Ejemplo Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A093",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5422,
+      "end": 5443,
+      "texto": "Suministros Ficticios",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C01-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A094",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5468,
+      "end": 5503,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A095",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5570,
+      "end": 5588,
+      "texto": "10 de mayo de 2026",
+      "tipo": "FECHA",
+      "entidad": "C01-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C01-A096",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5611,
+      "end": 5614,
+      "texto": "VSE",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A097",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5632,
+      "end": 5645,
+      "texto": "E-2026-000254",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C01-A098",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5737,
+      "end": 5751,
+      "texto": "Ejemplo-Acosta",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A099",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5752,
+      "end": 5797,
+      "texto": "denunció públicamente al gerente del hospital",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C01-E55",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C01-A100",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5862,
+      "end": 5882,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A101",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5998,
+      "end": 6010,
+      "texto": "01N-00000014",
+      "tipo": "MATRICULA",
+      "entidad": "C01-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C01-A102",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6029,
+      "end": 6054,
+      "texto": "José Miguel Ejemplo Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A103",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6070,
+      "end": 6079,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C01-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A104",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6105,
+      "end": 6125,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A105",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6240,
+      "end": 6250,
+      "texto": "$1.750.000",
+      "tipo": "VALOR",
+      "entidad": "C01-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A106",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6275,
+      "end": 6282,
+      "texto": "2 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C01-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C01-A107",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6302,
+      "end": 6319,
+      "texto": "Altos del Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C01-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C01-A108",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6323,
+      "end": 6333,
+      "texto": "Facatativá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C01-A109",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6352,
+      "end": 6387,
+      "texto": "MARTHA CECILIA EJEMPLO-ACOSTA ORTIZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02"
+      ]
+    },
+    {
+      "id": "C01-A110",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6471,
+      "end": 6491,
+      "texto": "12 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C01-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C01-A111",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6529,
+      "end": 6582,
+      "texto": "diez (10) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C01-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C01-A112",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6637,
+      "end": 6661,
+      "texto": "Vida y Salud Ejemplo EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A113",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6678,
+      "end": 6715,
+      "texto": "Elizabeth Ficticia-Rodríguez González",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A114",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6741,
+      "end": 6763,
+      "texto": "jefa de autorizaciones",
+      "tipo": "CARGO",
+      "entidad": "C01-E60",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C01-A115",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6866,
+      "end": 6901,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A116",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7092,
+      "end": 7122,
+      "texto": "Diana Carolina Prueba Cárdenas",
+      "tipo": "PERSONA",
+      "rol": "TESTIGO",
+      "entidad": "C01-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A117",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7142,
+      "end": 7161,
+      "texto": "El Remanso Ficticio",
+      "tipo": "BARRIO",
+      "entidad": "C01-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C01-A118",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7186,
+      "end": 7194,
+      "texto": "Ficticia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A119",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7256,
+      "end": 7272,
+      "texto": "+57 324 000 0005",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C01-A120",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7285,
+      "end": 7326,
+      "texto": "martha.ejemplo-acosta@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C01-A121",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7339,
+      "end": 7387,
+      "texto": "trece (13) de abril de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C01-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C01-A122",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7399,
+      "end": 7430,
+      "texto": "Miguel Ángel Ficticio Rodríguez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A123",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7473,
+      "end": 7479,
+      "texto": "000096",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F45"
+      ]
+    },
+    {
+      "id": "C01-A124",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7537,
+      "end": 7547,
+      "texto": "2026000015",
+      "tipo": "AFILIACION",
+      "entidad": "C01-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C01-A125",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7566,
+      "end": 7580,
+      "texto": "Ejemplo-Acosta",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A126",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7661,
+      "end": 7670,
+      "texto": "5.000.001",
+      "tipo": "HC",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18"
+      ]
+    },
+    {
+      "id": "C01-A127",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7672,
+      "end": 7692,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A128",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7715,
+      "end": 7745,
+      "texto": "esclerosis lateral amiotrófica",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C01-E38",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C01-A129",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7754,
+      "end": 7759,
+      "texto": "G12.2",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C01-E39",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C01-A130",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7767,
+      "end": 7805,
+      "texto": "Hospital Universitario Ficticio E.S.E.",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C01-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A131",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7833,
+      "end": 7847,
+      "texto": "Ejemplo-Acosta",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A132",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7941,
+      "end": 7960,
+      "texto": "4000 0000 0000 0168",
+      "tipo": "TARJETA",
+      "entidad": "C01-E64",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C01-A133",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8016,
+      "end": 8019,
+      "texto": "VSE",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A134",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8025,
+      "end": 8046,
+      "texto": "601 000 0009 Ext. 102",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "entidad": "C01-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F43"
+      ]
+    },
+    {
+      "id": "C01-A135",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8055,
+      "end": 8102,
+      "texto": "SERVICIOALCLIENTE@VIDA-Y-SALUD-EJEMPLO-EPS.TEST",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C01-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C01-A136",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8163,
+      "end": 8183,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A137",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8233,
+      "end": 8264,
+      "texto": "Hospital Universitario Ficticio",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C01-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A138",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8288,
+      "end": 8300,
+      "texto": "16 abr. 2026",
+      "tipo": "FECHA",
+      "entidad": "C01-E65",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C01-A139",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8328,
+      "end": 8373,
+      "texto": "Cr. 00B # 00-01 Este, oficina 604, interior 2",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "entidad": "C01-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C01-A140",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8377,
+      "end": 8389,
+      "texto": "Barranquilla",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E45",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A141",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8410,
+      "end": 8435,
+      "texto": "José Miguel Ejemplo Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A142",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8459,
+      "end": 8472,
+      "texto": "1.000.000.017",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E66",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C01-A143",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8485,
+      "end": 8521,
+      "texto": "Distribuidora Prueba y Cía. S. en C.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C01-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A144",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8527,
+      "end": 8540,
+      "texto": "830.000.010-5",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C01-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C01-A145",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8596,
+      "end": 8631,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A146",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8736,
+      "end": 8758,
+      "texto": "vereda Chuscal Ejemplo",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F14"
+      ]
+    },
+    {
+      "id": "C01-A147",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8779,
+      "end": 8789,
+      "texto": "Facatativá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C01-A148",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8848,
+      "end": 8868,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A149",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8874,
+      "end": 8898,
+      "texto": "Vida y Salud Ejemplo EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A150",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8921,
+      "end": 8931,
+      "texto": "15/08/2021",
+      "tipo": "FECHA",
+      "entidad": "C01-E67",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C01-A151",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8952,
+      "end": 8961,
+      "texto": "000000018",
+      "tipo": "AFILIACION",
+      "entidad": "C01-E68",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C01-A152",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8986,
+      "end": 9021,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A153",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9124,
+      "end": 9141,
+      "texto": "Banco Prueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C01-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A154",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9146,
+      "end": 9159,
+      "texto": "000-000019-00",
+      "tipo": "CUENTA",
+      "entidad": "C01-E69",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C01-A155",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9180,
+      "end": 9195,
+      "texto": "@ejemploacosta1",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C01-A156",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9250,
+      "end": 9256,
+      "texto": "WWW020",
+      "tipo": "PLACA",
+      "entidad": "C01-E70",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C01-A157",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9274,
+      "end": 9287,
+      "texto": "Ejemplo Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A158",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9313,
+      "end": 9334,
+      "texto": "Suministros Ficticios",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C01-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A159",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9356,
+      "end": 9374,
+      "texto": "5 de marzo de 2026",
+      "tipo": "FECHA",
+      "entidad": "C01-E71",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C01-A160",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9397,
+      "end": 9400,
+      "texto": "VSE",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A161",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9418,
+      "end": 9431,
+      "texto": "E-2026-000387",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E72",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C01-A162",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9452,
+      "end": 9458,
+      "texto": "123041",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E73",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C01-A163",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9512,
+      "end": 9526,
+      "texto": "Ejemplo-Acosta",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A164",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9527,
+      "end": 9581,
+      "texto": "recibió amenazas del grupo armado que opera en la zona",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C01-E74",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C01-A165",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9694,
+      "end": 9706,
+      "texto": "01N-00000021",
+      "tipo": "MATRICULA",
+      "entidad": "C01-E75",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C01-A166",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9725,
+      "end": 9750,
+      "texto": "José Miguel Ejemplo Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A167",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9766,
+      "end": 9775,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C01-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A168",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9814,
+      "end": 9828,
+      "texto": "Ejemplo-Acosta",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A169",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9921,
+      "end": 9931,
+      "texto": "$1.750.000",
+      "tipo": "VALOR",
+      "entidad": "C01-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A170",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9956,
+      "end": 9963,
+      "texto": "2 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C01-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C01-A171",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9983,
+      "end": 9992,
+      "texto": "La Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C01-E76",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C01-A172",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9996,
+      "end": 10006,
+      "texto": "Facatativá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C01-A173",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10042,
+      "end": 10062,
+      "texto": "12 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C01-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C01-A174",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10100,
+      "end": 10153,
+      "texto": "diez (10) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C01-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C01-A175",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10225,
+      "end": 10248,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E77",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C01-A176",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10307,
+      "end": 10330,
+      "texto": "Sentencia T-053 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E78",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C01-A177",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10404,
+      "end": 10443,
+      "texto": "artículo 49 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E79",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C01-A178",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10449,
+      "end": 10465,
+      "texto": "Ley 1751 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E80",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C01-A179",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10508,
+      "end": 10524,
+      "texto": "Ley 1122 de 2007",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E81",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C01-A180",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10588,
+      "end": 10611,
+      "texto": "Sentencia C-313 de 2014",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E82",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C01-A181",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10644,
+      "end": 10655,
+      "texto": "T-9.000.001",
+      "tipo": "CC",
+      "entidad": "C01-E83",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C01-A182",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10798,
+      "end": 10827,
+      "texto": "73001-31-03-943-2019-00022-00",
+      "tipo": "RADICADO",
+      "entidad": "C01-E84",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "bandera_esperada": "CITA_JURISPRUDENCIAL",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F32"
+      ]
+    },
+    {
+      "id": "C01-A183",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10882,
+      "end": 10897,
+      "texto": "Ley 361 de 1997",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E85",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C01-A184",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10946,
+      "end": 10958,
+      "texto": "110014003999",
+      "tipo": "RADICADO",
+      "entidad": "C01-E86",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C01-A185",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11017,
+      "end": 11021,
+      "texto": "8610",
+      "tipo": "CC",
+      "entidad": "C01-E87",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C01-A186",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11114,
+      "end": 11137,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E77",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C01-A187",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11196,
+      "end": 11219,
+      "texto": "Sentencia T-171 de 2018",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E88",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C01-A188",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11293,
+      "end": 11332,
+      "texto": "artículo 49 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E79",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C01-A189",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11338,
+      "end": 11354,
+      "texto": "Ley 1751 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E80",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C01-A190",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11397,
+      "end": 11412,
+      "texto": "Ley 361 de 1997",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E85",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C01-A191",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11476,
+      "end": 11499,
+      "texto": "Sentencia T-259 de 2019",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E89",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C01-A192",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11532,
+      "end": 11543,
+      "texto": "T-9.000.001",
+      "tipo": "CC",
+      "entidad": "C01-E83",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C01-A193",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11686,
+      "end": 11715,
+      "texto": "68001-31-03-983-2019-00023-00",
+      "tipo": "RADICADO",
+      "entidad": "C01-E90",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "bandera_esperada": "CITA_JURISPRUDENCIAL",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F32"
+      ]
+    },
+    {
+      "id": "C01-A194",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11770,
+      "end": 11785,
+      "texto": "Ley 361 de 1997",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E85",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C01-A195",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11861,
+      "end": 11896,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F33",
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A196",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11919,
+      "end": 11922,
+      "texto": "VSE",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F33"
+      ]
+    },
+    {
+      "id": "C01-A197",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12049,
+      "end": 12079,
+      "texto": "esclerosis lateral amiotrófica",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C01-E38",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F33"
+      ]
+    },
+    {
+      "id": "C01-A198",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12103,
+      "end": 12127,
+      "texto": "Vida y Salud Ejemplo EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F33"
+      ]
+    },
+    {
+      "id": "C01-A199",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12232,
+      "end": 12252,
+      "texto": "Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A200",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12280,
+      "end": 12311,
+      "texto": "Hospital Universitario Ficticio",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C01-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A201",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12322,
+      "end": 12332,
+      "texto": "2026-05-05",
+      "tipo": "FECHA",
+      "entidad": "C01-E91",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C01-A202",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12378,
+      "end": 12381,
+      "texto": "VSE",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A203",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12413,
+      "end": 12454,
+      "texto": "Calle 00 # 00-00, oficina 201, interior 3",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C01-A204",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12456,
+      "end": 12466,
+      "texto": "Facatativá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C01-A205",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12468,
+      "end": 12480,
+      "texto": "Cundinamarca",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C01-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A206",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12502,
+      "end": 12543,
+      "texto": "martha.ejemplo-acosta@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C01-A207",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12554,
+      "end": 12570,
+      "texto": "+57 324 000 0005",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C01-A208",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12586,
+      "end": 12617,
+      "texto": "Vida y Salud Ejemplo EPS S.A.S.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C01-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C01-A209",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12623,
+      "end": 12636,
+      "texto": "890.000.024-6",
+      "tipo": "NIT",
+      "rol": "EPS",
+      "entidad": "C01-E92",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C01-A210",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12644,
+      "end": 12668,
+      "texto": "Av. Calle 00 Bis # 00-01",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "entidad": "C01-E93",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C01-A211",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12677,
+      "end": 12715,
+      "texto": "juridica@vida-y-salud-ejemplo-eps.test",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C01-E94",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C01-A212",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12730,
+      "end": 12765,
+      "texto": "Martha Cecilia Ejemplo-Acosta Ortiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44"
+      ]
+    },
+    {
+      "id": "C01-A213",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12771,
+      "end": 12778,
+      "texto": "5000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C01-A214",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12782,
+      "end": 12794,
+      "texto": "Barranquilla",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E45",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A215",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12881,
+      "end": 12910,
+      "texto": "15759 41 05 967 2022 00027 00",
+      "tipo": "RADICADO",
+      "entidad": "C01-E95",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C01-A216",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12919,
+      "end": 12951,
+      "texto": "Juzgado 990 de Familia de Bogotá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C01-E96",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C01-A217",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12945,
+      "end": 12951,
+      "texto": "Bogotá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E97",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C01-A216",
+      "caracteristicas": [
+        "F54"
+      ]
+    },
+    {
+      "id": "C01-A218",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12965,
+      "end": 12975,
+      "texto": "03.03.2024",
+      "tipo": "FECHA",
+      "entidad": "C01-E98",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C01-A219",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13009,
+      "end": 13039,
+      "texto": "05-360-40-03-936-2020-00028-00",
+      "tipo": "RADICADO",
+      "entidad": "C01-E99",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C01-A220",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13048,
+      "end": 13090,
+      "texto": "Juzgado 991 Laboral del Circuito de Soacha",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C01-E100",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C01-A221",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13084,
+      "end": 13090,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C01-A220",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C01-A222",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13104,
+      "end": 13114,
+      "texto": "05.03.2025",
+      "tipo": "FECHA",
+      "entidad": "C01-E101",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C01-A223",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13135,
+      "end": 13165,
+      "texto": "73-001-41-05-951-2022-00029-00",
+      "tipo": "RADICADO",
+      "entidad": "C01-E102",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C01-A224",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13174,
+      "end": 13214,
+      "texto": "Juzgado 993 Civil del Circuito de Ibagué",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C01-E103",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C01-A225",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13208,
+      "end": 13214,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E104",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C01-A224",
+      "caracteristicas": [
+        "F54"
+      ]
+    },
+    {
+      "id": "C01-A226",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13228,
+      "end": 13238,
+      "texto": "26/03/2026",
+      "tipo": "FECHA",
+      "entidad": "C01-E105",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C01-A227",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13263,
+      "end": 13284,
+      "texto": "730016000979202500030",
+      "tipo": "RADICADO",
+      "entidad": "C01-E106",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F05"
+      ]
+    },
+    {
+      "id": "C01-A228",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13297,
+      "end": 13316,
+      "texto": "Mario Ficticio Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E107",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A229",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13318,
+      "end": 13326,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C01-E108",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C01-A230",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13345,
+      "end": 13349,
+      "texto": "T.I.",
+      "tipo": "MENOR",
+      "entidad": "C01-E109",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C01-A231",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13350,
+      "end": 13363,
+      "texto": "1.000.000.032",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E110",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F08",
+        "F50"
+      ]
+    },
+    {
+      "id": "C01-A232",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13374,
+      "end": 13394,
+      "texto": "10 de agosto de 2013",
+      "tipo": "FECHA",
+      "entidad": "C01-E111",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F21",
+        "F47"
+      ]
+    },
+    {
+      "id": "C01-A233",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13407,
+      "end": 13422,
+      "texto": "13 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C01-E112",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C01-A234",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13454,
+      "end": 13467,
+      "texto": "1.000.000.032",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E113",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18"
+      ]
+    },
+    {
+      "id": "C01-A235",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13480,
+      "end": 13499,
+      "texto": "Gustavo Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E114",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A236",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13501,
+      "end": 13509,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C01-E115",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C01-A237",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13528,
+      "end": 13531,
+      "texto": "NIP",
+      "tipo": "MENOR",
+      "entidad": "C01-E116",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C01-A238",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13532,
+      "end": 13543,
+      "texto": "12020600034",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E117",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F08",
+        "F50"
+      ]
+    },
+    {
+      "id": "C01-A239",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13554,
+      "end": 13564,
+      "texto": "06/02/2012",
+      "tipo": "FECHA",
+      "entidad": "C01-E118",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C01-A240",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13577,
+      "end": 13592,
+      "texto": "14 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C01-E119",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C01-A241",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13624,
+      "end": 13638,
+      "texto": "12.020.600.034",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E120",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18"
+      ]
+    },
+    {
+      "id": "C01-A242",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13653,
+      "end": 13677,
+      "texto": "Liliana Ejemplo González",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E121",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A243",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13709,
+      "end": 13718,
+      "texto": "1.000.036",
+      "tipo": "CE",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E122",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09"
+      ]
+    },
+    {
+      "id": "C01-A244",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13747,
+      "end": 13765,
+      "texto": "20 de mayo de 2026",
+      "tipo": "FECHA",
+      "entidad": "C01-E123",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C01-A245",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13779,
+      "end": 13800,
+      "texto": "Wilson Prueba Bonilla",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E124",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A246",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13846,
+      "end": 13859,
+      "texto": "1.000.038.890",
+      "tipo": "PEP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E125",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09"
+      ]
+    },
+    {
+      "id": "C01-A247",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13888,
+      "end": 13905,
+      "texto": "9 de mayo de 2026",
+      "tipo": "FECHA",
+      "entidad": "C01-E126",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C01-A248",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13951,
+      "end": 13962,
+      "texto": "Sabanalarga",
+      "tipo": "MUNICIPIO",
+      "entidad": "C01-E127",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F26"
+      ]
+    },
+    {
+      "id": "C01-A249",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13964,
+      "end": 13973,
+      "texto": "Antioquia",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C01-E127",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C01-A250",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 14040,
+      "end": 14046,
+      "texto": "890301",
+      "tipo": "CC",
+      "entidad": "C01-E128",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C01-A251",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 14062,
+      "end": 14068,
+      "texto": "680001",
+      "tipo": "CC",
+      "entidad": "C01-E129",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C01-A252",
+      "docId": "C01",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 14076,
+      "end": 14078,
+      "texto": "67",
+      "tipo": "CC",
+      "entidad": "C01-E130",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C01-A253",
+      "docId": "C01",
+      "parte": {
+        "kind": "pie",
+        "index": 1
+      },
+      "start": 20,
+      "end": 49,
+      "texto": "15759-40-03-930-2026-00025-00",
+      "tipo": "RADICADO",
+      "entidad": "C01-E131",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F34"
+      ]
+    },
+    {
+      "id": "C01-A254",
+      "docId": "C01",
+      "parte": {
+        "kind": "pie",
+        "index": 1
+      },
+      "start": 52,
+      "end": 87,
+      "texto": "MARTHA CECILIA EJEMPLO-ACOSTA ORTIZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02",
+        "F34"
+      ]
+    },
+    {
+      "id": "C01-A255",
+      "docId": "C01",
+      "parte": {
+        "kind": "nota_pie",
+        "index": 1
+      },
+      "start": 5,
+      "end": 28,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E77",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F35"
+      ]
+    },
+    {
+      "id": "C01-A256",
+      "docId": "C01",
+      "parte": {
+        "kind": "nota_pie",
+        "index": 1
+      },
+      "start": 47,
+      "end": 63,
+      "texto": "Ley 1751 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C01-E80",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F35"
+      ]
+    },
+    {
+      "id": "C01-A257",
+      "docId": "C01",
+      "parte": {
+        "kind": "nota_pie",
+        "index": 2
+      },
+      "start": 24,
+      "end": 55,
+      "texto": "Miguel Ángel Ficticio Rodríguez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F35",
+        "F51"
+      ]
+    },
+    {
+      "id": "C01-A258",
+      "docId": "C01",
+      "parte": {
+        "kind": "nota_pie",
+        "index": 2
+      },
+      "start": 72,
+      "end": 84,
+      "texto": "312 000 0026",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C01-E132",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F35"
+      ]
+    },
+    {
+      "id": "C01-A259",
+      "docId": "C01",
+      "parte": {
+        "kind": "comentario",
+        "index": 1
+      },
+      "start": 20,
+      "end": 29,
+      "texto": "5.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F36"
+      ]
+    },
+    {
+      "id": "C01-A260",
+      "docId": "C01",
+      "parte": {
+        "kind": "comentario",
+        "index": 1
+      },
+      "start": 42,
+      "end": 83,
+      "texto": "martha.ejemplo-acosta@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C01-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F36"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

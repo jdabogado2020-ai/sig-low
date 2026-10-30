@@ -1,0 +1,28 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C04",
+  "tipoDocumento": "tutela_salud",
+  "fuente": "pdf",
+  "archivo": "corpus/docs/C04.pdf",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [],
+    "advertencias": [
+      "PAGINA_SIN_TEXTO"
+    ],
+    "metadatos": [
+      "pdf_propiedades"
+    ],
+    "error": "PDF_SIN_CAPA_TEXTO"
+  },
+  "listaDelCaso": [],
+  "entidades": [],
+  "anotaciones": [],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

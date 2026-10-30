@@ -1,0 +1,139 @@
+{
+  "formato": "sig-low/gold-texto",
+  "v": 1,
+  "docId": "C30",
+  "partes": [
+    {
+      "kind": "cuerpo",
+      "index": 1,
+      "texto": "ACTA DE REUNIÓN N.º 005\nLugar: Trans. 0C No. 00-01 Este, Santiago de Cali\nFecha: a los veintidós (22) días del mes de julio de 2026\nHora: 09:30 a. m.\n\nSe reunieron los siguientes miembros del comité de seguimiento del contrato con Asesorías Legales Prueba:\n\nASISTENTES\nNombre\tC.C.\tCargo\nWILSON FICTICIO RUIZ\t1.000.000.001\tadministrador del conjunto\nFernando Ficticio Del Río\t21000002\tcoordinador de auditoría médica\nYolanda Ficticia Caicedo\t32000003\tdirectora médica\nLuz Marina Ejemplo Vargas\t42.000.004\tsecretaria de salud municipal\nGloria Inés Ejemplo Pérez\t1000000005\tcoordinadora de cartera\n\nDESARROLLO\n\n1. El valor total del acuerdo asciende a 27.5 millones de pesos, es decir, cerca de diecinueve (19) salarios mínimos legales mensuales vigentes, y se garantiza con el inmueble de matrícula 50N-00000006. Debe tenerse en cuenta que Ficticio Ruiz ha actuado siempre de buena fe.\n\n2. La empresa Inversiones Ficticias Ltda. (NIT 890.000.007-0), representada por Ficticia Caicedo, garantiza el pago; su sede está en la Avenida Calle 0A # 0-00, apartamento 703, oficina 303 de Santiago de Cali. Nada de lo anterior fue discutido por Fernando Ficticio Del Río en su momento.\n\n3. FERNANDO FICTICIO DEL RÍO propuso pagar en tres cuotas de $ 9.000.000, la primera el seis (6) de agosto de dos mil veintiséis (2026); las siguientes se consignarán en la cuenta de ahorros 000-000008-00 del Banco Ejemplo S.A. Sobre este punto Ficticio Del Río aportará las pruebas que se le requieran.\n\n4. Sobre la naturaleza del acuerdo, el conciliador citó Ley 222 de 1995, el Decreto 1069 de 2015 y la Sentencia C-902 de 2008.\n\n5. Las notificaciones se harán a wilson.ficticio@ejemplo.test y fernando.ficticio@correo.ejemplo.test; los teléfonos de contacto son 312 000 0009 y (+57) 323-000-0010. Así lo ha manifestado Wilson Ficticio Ruiz en varias ocasiones.\n\n6. El asunto se relaciona con el proceso 76001-40-03-995-2020-00011-00 del Juzgado 995 Civil Municipal de Soacha, que se suspenderá hasta el veinte (20) de octubre de dos mil veintiséis (2026). Sobre este punto W. F. R. aportará las pruebas que se le requieran.\n\n7. Wilson Ficticio Ruiz manifestó que Asesorías Legales Prueba le adeuda cuarenta y un millones de pesos M/CTE ($41.000.000) desde el 24 de noviembre de 2025.\n\n8. Se anexa constancia de la Aseguradora Ficticia S.A. con radicado administrativo No. 20265008 y consecutivo de salida S-2026-000078.\n\n9. Óscar Javier Ficticio Cardona declaró que presenció los hechos en la Avenida Ficticia 00 # 00-03, local 10, barrio Santa Prueba, y que Ficticio es hijo de un congresista en ejercicio.\n\n10. Se dejó constancia de que Paola Andrea Ficticia Salazar, directora del centro de conciliación, con T.P. No. 102, verificó la identidad de los comparecientes. Por esa razón FERNANDO FICTICIO DEL RÍO insiste en que lo ocurrido debe ser reparado.\n\n11. El valor total del acuerdo asciende a 27.5 millones de pesos, es decir, cerca de diecinueve (19) salarios mínimos legales mensuales vigentes, y se garantiza con el inmueble de matrícula 300-00000013. Así lo ha manifestado Ficticio Ruiz en varias ocasiones.\n\n12. La empresa Inversiones Ficticias Ltda. (NIT 890.000.007-0), representada por Ficticia Caicedo, garantiza el pago; su sede está en la Avenida Calle 0A # 0-00, apartamento 703, oficina 303 de Santiago de Cali. Sobre este punto Fernando Ficticio Del Río aportará las pruebas que se le requieran.\n\n13. FERNANDO FICTICIO DEL RÍO propuso pagar en tres cuotas de $ 9.000.000, la primera el seis (6) de agosto de dos mil veintiséis (2026); las siguientes se consignarán en la cuenta de ahorros 000-000014-00 del Banco Ejemplo S.A.\n\n14. Sobre la naturaleza del acuerdo, el conciliador citó Ley 1755 de 2015, el Decreto 1069 de 2015 y la Sentencia C-902 de 2008. Nada de lo anterior fue discutido por Fernando Ficticio Del Río en su momento.\n\n15. Las notificaciones se harán a wilson.ficticio@ejemplo.test y fernando.ficticio@correo.ejemplo.test; los teléfonos de contacto son 312 000 0009 y (+57) 323-000-0010. Por esa razón Ficticio Ruiz insiste en que lo ocurrido debe ser reparado.\n\n16. Por la querella penal asociada se citó el CUI 08001-60-00-968-2024-00015 y el de la denuncia previa 660016000990202000016, con número interno 654321.\n\nSe levanta la sesión y firman:\nPaola Andrea Ficticia Salazar – presidenta de la junta\nBlanca Nubia Ejemplo Valencia – secretaria general\n\nCONSTANCIAS ADICIONALES\n\n1. Actuaciones previas: la actuación 68276311093320250001700 ante el Juzgado 991 Laboral del Circuito de Soacha, iniciado el 01.02.2024.\n\n2. La vivienda queda en Sabanalarga, Casanare.\n\n3. Referencias administrativas sin datos personales: actividad económica CIIU 4111; código postal 250001.\n\nDocumento ficticio para pruebas de Sig-Low."
+    }
+  ],
+  "estructura": [
+    {
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "start": 269,
+          "end": 594,
+          "filas": 6,
+          "columnas": 3,
+          "celdas": [
+            {
+              "r": 0,
+              "c": 0,
+              "start": 269,
+              "end": 275
+            },
+            {
+              "r": 0,
+              "c": 1,
+              "start": 276,
+              "end": 280
+            },
+            {
+              "r": 0,
+              "c": 2,
+              "start": 281,
+              "end": 286
+            },
+            {
+              "r": 1,
+              "c": 0,
+              "start": 287,
+              "end": 307
+            },
+            {
+              "r": 1,
+              "c": 1,
+              "start": 308,
+              "end": 321
+            },
+            {
+              "r": 1,
+              "c": 2,
+              "start": 322,
+              "end": 348
+            },
+            {
+              "r": 2,
+              "c": 0,
+              "start": 349,
+              "end": 374
+            },
+            {
+              "r": 2,
+              "c": 1,
+              "start": 375,
+              "end": 383
+            },
+            {
+              "r": 2,
+              "c": 2,
+              "start": 384,
+              "end": 415
+            },
+            {
+              "r": 3,
+              "c": 0,
+              "start": 416,
+              "end": 440
+            },
+            {
+              "r": 3,
+              "c": 1,
+              "start": 441,
+              "end": 449
+            },
+            {
+              "r": 3,
+              "c": 2,
+              "start": 450,
+              "end": 466
+            },
+            {
+              "r": 4,
+              "c": 0,
+              "start": 467,
+              "end": 492
+            },
+            {
+              "r": 4,
+              "c": 1,
+              "start": 493,
+              "end": 503
+            },
+            {
+              "r": 4,
+              "c": 2,
+              "start": 504,
+              "end": 533
+            },
+            {
+              "r": 5,
+              "c": 0,
+              "start": 534,
+              "end": 559
+            },
+            {
+              "r": 5,
+              "c": 1,
+              "start": 560,
+              "end": 570
+            },
+            {
+              "r": 5,
+              "c": 2,
+              "start": 571,
+              "end": 594
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

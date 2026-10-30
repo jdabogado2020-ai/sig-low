@@ -1,0 +1,2472 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C12",
+  "tipoDocumento": "derecho_peticion",
+  "fuente": "txt",
+  "archivo": "corpus/docs/C12.txt",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 4907,
+        "sha256": "3ee2bf8bb61719e1e74e86742fa5a558ca9c7cf2986f1e2245171c82d3dc2a63"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": []
+  },
+  "listaDelCaso": [
+    {
+      "name": "Ángela María Prueba Vargas",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Salud Integral Prueba EPS S.A.",
+      "role": "EPS"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C12-E01",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:11",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E02",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-09-13",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E03",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "LISTA:Salud Integral Prueba EPS S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C12-E04",
+      "tipo": "CARGO",
+      "canonico": "CARGO:lider de servicio al usuario",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E05",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:viviana prueba beltran",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E06",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "canonico": "DIR:AV FICTICIA 00 00 0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E07",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 23 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E08",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Ángela María Prueba Vargas",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C12-E09",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:2000000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E10",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:CL 00 0 0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E11",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:ejemplo norte",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E12",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E13",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3510000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E14",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:angela.prueba@correo.ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E15",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:000000000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E16",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "canonico": "CUENTA:BREB:@prueba26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E17",
+      "tipo": "MENOR",
+      "canonico": "MENOR:test:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E18",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:panaderia ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E19",
+      "tipo": "FECHA",
+      "canonico": "FECHA:1965-04-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E20",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~61 anos",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E21",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:0000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E22",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:santa prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E23",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinadora de auditoria medica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E24",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:2026001065",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E25",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E26",
+      "tipo": "VALOR",
+      "canonico": "VALOR:2840000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E27",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:esperanza ficticia ruiz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E28",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "canonico": "DIR:KR 0 0 3 CS 13",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E29",
+      "tipo": "VALOR",
+      "canonico": "VALOR:148000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E30",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3160000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E31",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:constructora prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E32",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:860000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E33",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E34",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:055000000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E35",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-03",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E36",
+      "tipo": "MENOR",
+      "canonico": "MENOR:test:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E37",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:los almendros de prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E38",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E39",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E40",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:PQRSD2026000443",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E41",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1755 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E42",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1437 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E43",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-230 de 2020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E44",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 14 de la ley 1437 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E45",
+      "tipo": "CC",
+      "canonico": "NEG:3600",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E46",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-21",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E47",
+      "tipo": "VALOR",
+      "canonico": "VALOR:250000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E48",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E49",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05266401094420190000900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E50",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 993 civil del circuito de zipaquira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E51",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E52",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-12",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E53",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05266411092120240001000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E54",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 994 civil municipal de zipaquira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E55",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-06-20",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E56",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:ricardo ficticio perez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E57",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:6030000012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E58",
+      "tipo": "RADICADO",
+      "canonico": "RAD:73001410390819850001400",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E59",
+      "tipo": "CC",
+      "canonico": "NEG:6910",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C12-E60",
+      "tipo": "RADICADO",
+      "canonico": "NEG:110014003999",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C12-A001",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 0,
+      "end": 6,
+      "texto": "Bogotá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C12-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C12-A002",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 13,
+      "end": 37,
+      "texto": "13 de septiembre de 2026",
+      "tipo": "FECHA",
+      "entidad": "C12-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C12-A003",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 47,
+      "end": 77,
+      "texto": "SALUD INTEGRAL PRUEBA EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C12-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03"
+      ]
+    },
+    {
+      "id": "C12-A004",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 84,
+      "end": 112,
+      "texto": "líder de servicio al usuario",
+      "tipo": "CARGO",
+      "entidad": "C12-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C12-A005",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 115,
+      "end": 137,
+      "texto": "Viviana Prueba Beltrán",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C12-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C12-A006",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 149,
+      "end": 172,
+      "texto": "Av. Ficticia 00 # 00-00",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "entidad": "C12-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C12-A007",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 174,
+      "end": 180,
+      "texto": "Bogotá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C12-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C12-A008",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 212,
+      "end": 251,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C12-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C12-A009",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 253,
+      "end": 279,
+      "texto": "Ángela María Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C12-A010",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 341,
+      "end": 354,
+      "texto": "2.000.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C12-A011",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 369,
+      "end": 386,
+      "texto": "Calle 00 n.º 0-00",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C12-A012",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 395,
+      "end": 408,
+      "texto": "Ejemplo Norte",
+      "tipo": "BARRIO",
+      "entidad": "C12-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C12-A013",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 410,
+      "end": 418,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C12-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C12-A014",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 433,
+      "end": 445,
+      "texto": "351 000 0002",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C12-A015",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 455,
+      "end": 488,
+      "texto": "angela.prueba@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C12-A016",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 618,
+      "end": 630,
+      "texto": "000000000003",
+      "tipo": "CUENTA",
+      "entidad": "C12-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C12-A017",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 669,
+      "end": 678,
+      "texto": "@prueba26",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C12-A018",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 734,
+      "end": 742,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C12-E17",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C12-A019",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 754,
+      "end": 772,
+      "texto": "Panadería Ficticia",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C12-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C12-A020",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 801,
+      "end": 814,
+      "texto": "Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C12-A021",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 851,
+      "end": 864,
+      "texto": "Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C12-A022",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 874,
+      "end": 884,
+      "texto": "17/04/1965",
+      "tipo": "FECHA",
+      "entidad": "C12-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C12-A023",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 890,
+      "end": 897,
+      "texto": "61 años",
+      "tipo": "FECHA",
+      "entidad": "C12-E20",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C12-A024",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1021,
+      "end": 1051,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C12-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C12-A025",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1098,
+      "end": 1105,
+      "texto": "0000004",
+      "tipo": "AFILIACION",
+      "entidad": "C12-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C12-A026",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1138,
+      "end": 1152,
+      "texto": "Cll. 00 # 0-00",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C12-A027",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1161,
+      "end": 1173,
+      "texto": "Santa Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C12-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C12-A028",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1188,
+      "end": 1196,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C12-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C12-A029",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1236,
+      "end": 1242,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C12-A030",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1306,
+      "end": 1328,
+      "texto": "Viviana Prueba Beltrán",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C12-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C12-A031",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1330,
+      "end": 1362,
+      "texto": "coordinadora de auditoría médica",
+      "tipo": "CARGO",
+      "entidad": "C12-E23",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C12-A032",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1415,
+      "end": 1425,
+      "texto": "2026001065",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C12-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C12-A033",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1441,
+      "end": 1454,
+      "texto": "Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C12-A034",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1508,
+      "end": 1527,
+      "texto": "18 de junio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C12-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C12-A035",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1551,
+      "end": 1561,
+      "texto": "$2.840.000",
+      "tipo": "VALOR",
+      "entidad": "C12-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C12-A036",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1657,
+      "end": 1670,
+      "texto": "Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C12-A037",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1690,
+      "end": 1713,
+      "texto": "Esperanza Ficticia Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C12-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C12-A038",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1731,
+      "end": 1754,
+      "texto": "Cr. 0 No. 0-03, casa 13",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C12-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C12-A039",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1788,
+      "end": 1797,
+      "texto": "$ 148.000",
+      "tipo": "VALOR",
+      "entidad": "C12-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C12-A040",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1843,
+      "end": 1855,
+      "texto": "316-000-0005",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C12-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C12-A041",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1872,
+      "end": 1896,
+      "texto": "CONSTRUCTORA PRUEBA S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C12-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F51"
+      ]
+    },
+    {
+      "id": "C12-A042",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1906,
+      "end": 1919,
+      "texto": "860.000.006-4",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C12-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C12-A043",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2080,
+      "end": 2106,
+      "texto": "Ángela María Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C12-A044",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2202,
+      "end": 2220,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C12-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C12-A045",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2225,
+      "end": 2239,
+      "texto": "0550-0000-0007",
+      "tipo": "CUENTA",
+      "entidad": "C12-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C12-A046",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2270,
+      "end": 2280,
+      "texto": "2026-07-03",
+      "tipo": "FECHA",
+      "entidad": "C12-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C12-A047",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2299,
+      "end": 2312,
+      "texto": "Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C12-A048",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2368,
+      "end": 2376,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C12-E36",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C12-A049",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2388,
+      "end": 2412,
+      "texto": "Panadería Ficticia Ltda.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C12-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C12-A050",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2468,
+      "end": 2481,
+      "texto": "Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C12-A051",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2491,
+      "end": 2501,
+      "texto": "17/04/1965",
+      "tipo": "FECHA",
+      "entidad": "C12-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C12-A052",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2507,
+      "end": 2514,
+      "texto": "61 años",
+      "tipo": "FECHA",
+      "entidad": "C12-E20",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C12-A053",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2636,
+      "end": 2662,
+      "texto": "Ángela María Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C12-A054",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2730,
+      "end": 2753,
+      "texto": "Los Almendros de Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C12-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C12-A055",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2757,
+      "end": 2765,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C12-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C12-A056",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2773,
+      "end": 2790,
+      "texto": "Calle 00 n.º 0-00",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C12-A057",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2832,
+      "end": 2857,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C12-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C12-A058",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2868,
+      "end": 2877,
+      "texto": "000000008",
+      "tipo": "AFILIACION",
+      "entidad": "C12-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C12-A059",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2918,
+      "end": 2931,
+      "texto": "Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C12-A060",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2972,
+      "end": 3019,
+      "texto": "diez (10) de julio de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C12-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C12-A061",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3039,
+      "end": 3056,
+      "texto": "PQRSD-2026-000443",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C12-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C12-A062",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3129,
+      "end": 3135,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C12-A063",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3168,
+      "end": 3207,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C12-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C12-A064",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3245,
+      "end": 3261,
+      "texto": "Ley 1755 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C12-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C12-A065",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3329,
+      "end": 3345,
+      "texto": "Ley 1437 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C12-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C12-A066",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3351,
+      "end": 3374,
+      "texto": "Sentencia T-230 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C12-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C12-A067",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3448,
+      "end": 3482,
+      "texto": "artículo 14 de la Ley 1437 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C12-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C12-A068",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3500,
+      "end": 3504,
+      "texto": "3600",
+      "tipo": "CC",
+      "entidad": "C12-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C12-A069",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3604,
+      "end": 3616,
+      "texto": "21 jul. 2026",
+      "tipo": "FECHA",
+      "entidad": "C12-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C12-A070",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3669,
+      "end": 3716,
+      "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
+      "tipo": "VALOR",
+      "entidad": "C12-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24"
+      ]
+    },
+    {
+      "id": "C12-A071",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3781,
+      "end": 3814,
+      "texto": "angela.prueba@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C12-A072",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3893,
+      "end": 3906,
+      "texto": "Prueba Vargas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C12-A073",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4015,
+      "end": 4022,
+      "texto": "1 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C12-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C12-A074",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4065,
+      "end": 4080,
+      "texto": "Calle 00 # 0-00",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C12-A075",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4082,
+      "end": 4090,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C12-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C12-A076",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4107,
+      "end": 4140,
+      "texto": "angela.prueba@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C12-A077",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4157,
+      "end": 4183,
+      "texto": "ÁNGELA MARÍA PRUEBA VARGAS",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C12-A078",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4189,
+      "end": 4199,
+      "texto": "2000000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C12-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C12-A079",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4265,
+      "end": 4294,
+      "texto": "05266/40/10/944/2019/00009/00",
+      "tipo": "RADICADO",
+      "entidad": "C12-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C12-A080",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4303,
+      "end": 4346,
+      "texto": "Juzgado 993 Civil del Circuito de Zipaquirá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C12-E50",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C12-A081",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4337,
+      "end": 4346,
+      "texto": "Zipaquirá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C12-E51",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C12-A080",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C12-A082",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4360,
+      "end": 4370,
+      "texto": "12.04.2026",
+      "tipo": "FECHA",
+      "entidad": "C12-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C12-A083",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4385,
+      "end": 4414,
+      "texto": "05266-41-10-921-2024-00010-00",
+      "tipo": "RADICADO",
+      "entidad": "C12-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C12-A084",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4423,
+      "end": 4463,
+      "texto": "Juzgado 994 Civil Municipal de Zipaquirá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C12-E54",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C12-A085",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4454,
+      "end": 4463,
+      "texto": "Zipaquirá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C12-E51",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C12-A084",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C12-A086",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4477,
+      "end": 4487,
+      "texto": "2025-06-20",
+      "tipo": "FECHA",
+      "entidad": "C12-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C12-A087",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4542,
+      "end": 4556,
+      "texto": "Ficticio Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C12-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C12-A088",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4562,
+      "end": 4574,
+      "texto": "603 000 0012",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C12-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C12-A089",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4675,
+      "end": 4704,
+      "texto": "73001-41-03-908-1985-00014-00",
+      "tipo": "RADICADO",
+      "entidad": "C12-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C12-A090",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4824,
+      "end": 4828,
+      "texto": "6910",
+      "tipo": "CC",
+      "entidad": "C12-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C12-A091",
+      "docId": "C12",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4849,
+      "end": 4861,
+      "texto": "110014003999",
+      "tipo": "RADICADO",
+      "entidad": "C12-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

@@ -1,0 +1,2819 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C18",
+  "tipoDocumento": "contrato",
+  "fuente": "docx",
+  "archivo": "corpus/docs/C18.docx",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 5264,
+        "sha256": "7cee7a9d94506bd1473ac2b7eab96b40f2510dbf7242f4a0e4ac288c115b9dc9"
+      },
+      {
+        "kind": "pie",
+        "index": 1,
+        "longitud": 107,
+        "sha256": "cf9f4d6af95b5d6dadfc88446b5f1690e7bf68d7e7702cba68d4854218e87871"
+      },
+      {
+        "kind": "nota_pie",
+        "index": 1,
+        "longitud": 69,
+        "sha256": "1b5cae779ef7c6ccd361b99a6a4a4a939730aaf7785b73e15b71b279f8150208"
+      },
+      {
+        "kind": "comentario",
+        "index": 1,
+        "longitud": 62,
+        "sha256": "d899c1c36cde3d6a49dbe22b7bebf44ff22b80f8912fc37776526d1d799d4dce"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": [
+      "autores_revisiones",
+      "propiedades_aplicacion",
+      "propiedades_documento"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Agroindustrias Ejemplo S.A.",
+      "role": "EMPRESA"
+    },
+    {
+      "name": "Leonardo Prueba",
+      "role": "CLIENTE"
+    },
+    {
+      "name": "Henry Ficticio Herrera",
+      "role": "CONTACTO"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C18-E01",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E02",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E03",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Agroindustrias Ejemplo S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C18-E04",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:830000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E05",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:KR 0 00 0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E06",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:elizabeth ficticia valencia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E07",
+      "tipo": "CARGO",
+      "canonico": "CARGO:director regional",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E08",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:21000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E09",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "canonico": "LISTA:Leonardo Prueba",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C18-E10",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "canonico": "CC:4000003",
+      "mismoTitular": [
+        "C18-E14"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C18-E11",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:KR 0 0A 0 OF 502 CS 11",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E12",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:los almendros de prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E13",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E14",
+      "tipo": "NIT",
+      "rol": "CLIENTE",
+      "canonico": "NIT:4000003",
+      "mismoTitular": [
+        "C18-E10"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C18-E15",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 222 de 1995",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E16",
+      "tipo": "VALOR",
+      "canonico": "VALOR:36000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E17",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E18",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2027-01-22",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E19",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:aseguradora ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E20",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:811000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E21",
+      "tipo": "VALOR",
+      "canonico": "VALOR:4500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E22",
+      "tipo": "CARGO",
+      "canonico": "CARGO:gerente general",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E23",
+      "tipo": "CC",
+      "canonico": "NEG:t-8.100.002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E24",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "canonico": "CORREO:contacto@agroindustrias-ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E25",
+      "tipo": "TELEFONO",
+      "rol": "EMPRESA",
+      "canonico": "TEL:6010000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E26",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "canonico": "CORREO:leonardo.prueba@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E27",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:3120000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E28",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "canonico": "LISTA:Henry Ficticio Herrera",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C18-E29",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:AT00000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E30",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:servicios publicos ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E31",
+      "tipo": "NIT",
+      "rol": "PROVEEDOR",
+      "canonico": "NIT:890000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E32",
+      "tipo": "VALOR",
+      "canonico": "VALOR:20000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E33",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2027-08-30",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E34",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000000900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E35",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E36",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1581 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E37",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 1074 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E38",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "canonico": "CORREO:datospersonales@agroindustrias-ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E39",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:5",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E40",
+      "tipo": "VALOR",
+      "canonico": "VALOR:3000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E41",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 997 civil municipal de envigado",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E42",
+      "tipo": "CC",
+      "rol": "CONTACTO",
+      "canonico": "CC:1000000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E43",
+      "tipo": "TELEFONO",
+      "rol": "CONTACTO",
+      "canonico": "TEL:3150000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E44",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:500238",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E45",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:C2026000094",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E46",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:natalia prueba salazar",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E47",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinadora de auditoria medica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E48",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:52000012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E49",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3230000013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E50",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05360400395020220001500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E51",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 992 promiscuo municipal de ibague",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E52",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:73",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E53",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-10-19",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E54",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05360410395320210001600",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E55",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 994 civil municipal de facatativa",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E56",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E57",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-09-19",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E58",
+      "tipo": "RADICADO",
+      "canonico": "RAD:15759410399120240001700",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E59",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 993 civil del circuito de soacha",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E60",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-06-04",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E61",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:alvaro ficticio franco",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E62",
+      "tipo": "NIT",
+      "rol": "OTRA_PERSONA",
+      "canonico": "NIT:79000019",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E63",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 1546 del codigo civil",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E64",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia c-153 de 1993",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C18-E65",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TP:000104",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C18-A001",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 65,
+      "end": 81,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C18-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A002",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 89,
+      "end": 134,
+      "texto": "veintiséis (26) días del mes de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C18-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C18-A003",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 170,
+      "end": 197,
+      "texto": "Agroindustrias Ejemplo S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C18-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A004",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 216,
+      "end": 229,
+      "texto": "830.000.001-9",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C18-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C18-A005",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 248,
+      "end": 267,
+      "texto": "Carrera 0 No. 00-00",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C18-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C18-A006",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 271,
+      "end": 287,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C18-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A007",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 317,
+      "end": 344,
+      "texto": "Elizabeth Ficticia Valencia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C18-A008",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 375,
+      "end": 392,
+      "texto": "director regional",
+      "tipo": "CARGO",
+      "entidad": "C18-E07",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C18-A009",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 418,
+      "end": 428,
+      "texto": "21.000.002",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C18-A010",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 495,
+      "end": 518,
+      "texto": "Leonardo Prueba Sánchez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C18-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C18-A011",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 562,
+      "end": 571,
+      "texto": "4'000.003",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C18-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C18-A012",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 588,
+      "end": 626,
+      "texto": "Cra. 0 n.º 0A-00, oficina 502, casa 11",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C18-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C18-A013",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 635,
+      "end": 658,
+      "texto": "Los Almendros de Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C18-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C18-A014",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 660,
+      "end": 668,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C18-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C18-A015",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 678,
+      "end": 689,
+      "texto": "4.000.003-0",
+      "tipo": "NIT",
+      "rol": "CLIENTE",
+      "entidad": "C18-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F43"
+      ]
+    },
+    {
+      "id": "C18-A016",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 838,
+      "end": 853,
+      "texto": "Ley 222 de 1995",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C18-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C18-A017",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 949,
+      "end": 971,
+      "texto": "Agroindustrias Ejemplo",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C18-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A018",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 995,
+      "end": 1031,
+      "texto": "Kr. 0 N° 0A-00, oficina 502, casa 11",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C18-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C18-A019",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1035,
+      "end": 1051,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C18-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A020",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1075,
+      "end": 1089,
+      "texto": "Prueba Sánchez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C18-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C18-A021",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1166,
+      "end": 1186,
+      "texto": "36 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C18-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C18-A022",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1218,
+      "end": 1240,
+      "texto": "veinticinco (25) SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C18-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C18-A023",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1300,
+      "end": 1323,
+      "texto": "Leonardo Prueba Sánchez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C18-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C18-A024",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1406,
+      "end": 1459,
+      "texto": "veintiséis (26) de julio de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C18-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C18-A025",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1473,
+      "end": 1526,
+      "texto": "veintidós (22) de enero de dos mil veintisiete (2027)",
+      "tipo": "FECHA",
+      "entidad": "C18-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C18-A026",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1591,
+      "end": 1616,
+      "texto": "Aseguradora Ficticia S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C18-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C18-A027",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1622,
+      "end": 1633,
+      "texto": "811000004-6",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C18-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C18-A028",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1645,
+      "end": 1658,
+      "texto": "COP 4.500.000",
+      "tipo": "VALOR",
+      "entidad": "C18-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A029",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1751,
+      "end": 1778,
+      "texto": "Elizabeth Ficticia Valencia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C18-A030",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1780,
+      "end": 1795,
+      "texto": "gerente general",
+      "tipo": "CARGO",
+      "entidad": "C18-E22",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C18-A031",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1799,
+      "end": 1803,
+      "texto": "AGEX",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C18-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A032",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1847,
+      "end": 1858,
+      "texto": "T-8.100.002",
+      "tipo": "CC",
+      "entidad": "C18-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C18-A033",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1953,
+      "end": 1957,
+      "texto": "AGEX",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C18-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A034",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1959,
+      "end": 1975,
+      "texto": "Cra. 0 n.º 00-00",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C18-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C18-A035",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1984,
+      "end": 2020,
+      "texto": "contacto@agroindustrias-ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "entidad": "C18-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C18-A036",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2031,
+      "end": 2045,
+      "texto": "(601) 000 0005",
+      "tipo": "TELEFONO",
+      "rol": "EMPRESA",
+      "entidad": "C18-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C18-A037",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2047,
+      "end": 2061,
+      "texto": "Prueba Sánchez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C18-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C18-A038",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2063,
+      "end": 2101,
+      "texto": "Cra. 0 n.º 0A-00, oficina 502, casa 11",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C18-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C18-A039",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2110,
+      "end": 2138,
+      "texto": "leonardo.prueba@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C18-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C18-A040",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2148,
+      "end": 2160,
+      "texto": "312-000-0006",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C18-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C18-A041",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2176,
+      "end": 2192,
+      "texto": "Ficticio Herrera",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C18-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C18-A042",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2293,
+      "end": 2305,
+      "texto": "AT-0000-0007",
+      "tipo": "AFILIACION",
+      "entidad": "C18-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C18-A043",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2319,
+      "end": 2352,
+      "texto": "Servicios Públicos Ejemplo E.S.P.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C18-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C18-A044",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2358,
+      "end": 2371,
+      "texto": "890.000.008-5",
+      "tipo": "NIT",
+      "rol": "PROVEEDOR",
+      "entidad": "C18-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C18-A045",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2400,
+      "end": 2406,
+      "texto": "$20 MM",
+      "tipo": "VALOR",
+      "entidad": "C18-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C18-A046",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2416,
+      "end": 2468,
+      "texto": "treinta (30) de agosto de dos mil veintisiete (2027)",
+      "tipo": "FECHA",
+      "entidad": "C18-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C18-A047",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2484,
+      "end": 2492,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C18-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C18-A048",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2624,
+      "end": 2637,
+      "texto": "000-000009-00",
+      "tipo": "CUENTA",
+      "entidad": "C18-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C18-A049",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2642,
+      "end": 2660,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C18-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C18-A050",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2674,
+      "end": 2696,
+      "texto": "Agroindustrias Ejemplo",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C18-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A051",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2759,
+      "end": 2775,
+      "texto": "Ley 1581 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C18-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C18-A052",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2782,
+      "end": 2802,
+      "texto": "Decreto 1074 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C18-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C18-A053",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2926,
+      "end": 2969,
+      "texto": "datospersonales@agroindustrias-ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "entidad": "C18-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C18-A054",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2998,
+      "end": 3021,
+      "texto": "Leonardo Prueba Sánchez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C18-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C18-A055",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3137,
+      "end": 3152,
+      "texto": "cinco (5) SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C18-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C18-A056",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3178,
+      "end": 3219,
+      "texto": "TRES MILLONES DE PESOS M/CTE ($3.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C18-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24"
+      ]
+    },
+    {
+      "id": "C18-A057",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3283,
+      "end": 3305,
+      "texto": "HENRY FICTICIO HERRERA",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C18-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F43"
+      ]
+    },
+    {
+      "id": "C18-A058",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3466,
+      "end": 3474,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C18-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C18-A059",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3476,
+      "end": 3485,
+      "texto": "Antioquia",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C18-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A060",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3523,
+      "end": 3562,
+      "texto": "Juzgado 997 Civil Municipal de Envigado",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C18-E41",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C18-A061",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3554,
+      "end": 3562,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C18-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C18-A060",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C18-A062",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3635,
+      "end": 3657,
+      "texto": "HENRY FICTICIO HERRERA",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C18-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C18-A063",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3664,
+      "end": 3674,
+      "texto": "1000000010",
+      "tipo": "CC",
+      "rol": "CONTACTO",
+      "entidad": "C18-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C18-A064",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3684,
+      "end": 3700,
+      "texto": "+57 315 000 0011",
+      "tipo": "TELEFONO",
+      "rol": "CONTACTO",
+      "entidad": "C18-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C18-A065",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3865,
+      "end": 3881,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C18-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A066",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3888,
+      "end": 3933,
+      "texto": "veintiséis (26) días del mes de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C18-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C18-A067",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3953,
+      "end": 3970,
+      "texto": "Ficticia Valencia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C18-A068",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4026,
+      "end": 4042,
+      "texto": "Ficticio Herrera",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C18-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C18-A069",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4261,
+      "end": 4267,
+      "texto": "500238",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C18-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C18-A070",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4282,
+      "end": 4295,
+      "texto": "C-2026-000094",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C18-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C18-A071",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4366,
+      "end": 4388,
+      "texto": "Natalia Prueba Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C18-A072",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4390,
+      "end": 4422,
+      "texto": "coordinadora de auditoría médica",
+      "tipo": "CARGO",
+      "entidad": "C18-E47",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C18-A073",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4426,
+      "end": 4430,
+      "texto": "AGEX",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C18-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A074",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4454,
+      "end": 4462,
+      "texto": "52000012",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C18-A075",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4507,
+      "end": 4517,
+      "texto": "3230000013",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C18-A076",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4541,
+      "end": 4563,
+      "texto": "Henry Ficticio Herrera",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C18-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A077",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4626,
+      "end": 4653,
+      "texto": "Elizabeth Ficticia Valencia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C18-A078",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4656,
+      "end": 4660,
+      "texto": "AGEX",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C18-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C18-A079",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4661,
+      "end": 4684,
+      "texto": "LEONARDO PRUEBA SÁNCHEZ",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C18-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C18-A080",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4692,
+      "end": 4699,
+      "texto": "4000003",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C18-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F43"
+      ]
+    },
+    {
+      "id": "C18-A081",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4762,
+      "end": 4792,
+      "texto": "05-360-40-03-950-2022-00015-00",
+      "tipo": "RADICADO",
+      "entidad": "C18-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C18-A082",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4801,
+      "end": 4842,
+      "texto": "Juzgado 992 Promiscuo Municipal de Ibagué",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C18-E51",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C18-A083",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4836,
+      "end": 4842,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C18-E52",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C18-A082",
+      "caracteristicas": [
+        "F54"
+      ]
+    },
+    {
+      "id": "C18-A084",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4856,
+      "end": 4868,
+      "texto": "19 oct. 2026",
+      "tipo": "FECHA",
+      "entidad": "C18-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C18-A085",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4885,
+      "end": 4908,
+      "texto": "05360410395320210001600",
+      "tipo": "RADICADO",
+      "entidad": "C18-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C18-A086",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4917,
+      "end": 4958,
+      "texto": "Juzgado 994 Civil Municipal de Facatativá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C18-E55",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C18-A087",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4948,
+      "end": 4958,
+      "texto": "Facatativá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C18-E56",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C18-A086",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C18-A088",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4972,
+      "end": 4982,
+      "texto": "2025-09-19",
+      "tipo": "FECHA",
+      "entidad": "C18-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C18-A089",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4997,
+      "end": 5027,
+      "texto": "15-759-41-03-991-2024-00017-00",
+      "tipo": "RADICADO",
+      "entidad": "C18-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C18-A090",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5036,
+      "end": 5076,
+      "texto": "Juzgado 993 Civil del Circuito de Soacha",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C18-E59",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C18-A091",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5070,
+      "end": 5076,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C18-E56",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C18-A090",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C18-A092",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5090,
+      "end": 5101,
+      "texto": "4 jun. 2024",
+      "tipo": "FECHA",
+      "entidad": "C18-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C18-A093",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5141,
+      "end": 5156,
+      "texto": "Ficticio Franco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C18-A094",
+      "docId": "C18",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5168,
+      "end": 5180,
+      "texto": "79.000.019-2",
+      "tipo": "NIT",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C18-A095",
+      "docId": "C18",
+      "parte": {
+        "kind": "pie",
+        "index": 1
+      },
+      "start": 0,
+      "end": 27,
+      "texto": "Agroindustrias Ejemplo S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C18-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F34"
+      ]
+    },
+    {
+      "id": "C18-A096",
+      "docId": "C18",
+      "parte": {
+        "kind": "pie",
+        "index": 1
+      },
+      "start": 30,
+      "end": 49,
+      "texto": "Carrera 0 n.º 00-00",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C18-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F34"
+      ]
+    },
+    {
+      "id": "C18-A097",
+      "docId": "C18",
+      "parte": {
+        "kind": "pie",
+        "index": 1
+      },
+      "start": 52,
+      "end": 68,
+      "texto": "+57 601 000 0005",
+      "tipo": "TELEFONO",
+      "rol": "EMPRESA",
+      "entidad": "C18-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F34"
+      ]
+    },
+    {
+      "id": "C18-A098",
+      "docId": "C18",
+      "parte": {
+        "kind": "pie",
+        "index": 1
+      },
+      "start": 71,
+      "end": 107,
+      "texto": "contacto@agroindustrias-ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "entidad": "C18-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F34"
+      ]
+    },
+    {
+      "id": "C18-A099",
+      "docId": "C18",
+      "parte": {
+        "kind": "nota_pie",
+        "index": 1
+      },
+      "start": 9,
+      "end": 39,
+      "texto": "artículo 1546 del Código Civil",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C18-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F35"
+      ]
+    },
+    {
+      "id": "C18-A100",
+      "docId": "C18",
+      "parte": {
+        "kind": "nota_pie",
+        "index": 1
+      },
+      "start": 45,
+      "end": 68,
+      "texto": "Sentencia C-153 de 1993",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C18-E64",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F35"
+      ]
+    },
+    {
+      "id": "C18-A101",
+      "docId": "C18",
+      "parte": {
+        "kind": "comentario",
+        "index": 1
+      },
+      "start": 16,
+      "end": 19,
+      "texto": "104",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E65",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F36",
+        "F45"
+      ]
+    },
+    {
+      "id": "C18-A102",
+      "docId": "C18",
+      "parte": {
+        "kind": "comentario",
+        "index": 1
+      },
+      "start": 23,
+      "end": 40,
+      "texto": "Ficticia Valencia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C18-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F36",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C18-A103",
+      "docId": "C18",
+      "parte": {
+        "kind": "comentario",
+        "index": 1
+      },
+      "start": 50,
+      "end": 61,
+      "texto": "4.000.003-7",
+      "tipo": "NIT",
+      "rol": "CLIENTE",
+      "entidad": "C18-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F36"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

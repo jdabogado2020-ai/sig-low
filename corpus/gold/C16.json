@@ -1,0 +1,2553 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C16",
+  "tipoDocumento": "contrato",
+  "fuente": "docx",
+  "archivo": "corpus/docs/C16.docx",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "encabezado",
+        "index": 1,
+        "longitud": 73,
+        "sha256": "3ed0eab2d4675a75d1592686ac20b975f98dcab56895c804640ea26556ba4cd8"
+      },
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 5498,
+        "sha256": "7002fc4dbda151fdd3d847580eeab241924a1e3cc4fddf43e4c904c945a8b755"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": [
+      "propiedades_aplicacion",
+      "propiedades_documento"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Ferretería Ejemplo S.A.S.",
+      "role": "EMPRESA"
+    },
+    {
+      "name": "Patricia Prueba Mora",
+      "role": "CLIENTE"
+    },
+    {
+      "name": "Alejandro Ejemplo Martínez",
+      "role": "CONTACTO"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C16-E01",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Ferretería Ejemplo S.A.S.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C16-E02",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:901000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E03",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E04",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-14",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E05",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:KR 00 0A 0 TO 4 LC 2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E06",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:natalia prueba ruiz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E07",
+      "tipo": "CARGO",
+      "canonico": "CARGO:director regional",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E08",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:19000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E09",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "canonico": "LISTA:Patricia Prueba Mora",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C16-E10",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "canonico": "CC:2000000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E11",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:AC 00B 00 1 N CS 24",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E12",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:san ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E13",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E14",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 820 de 2003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E15",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:DG 0C BIS A 00 0 OF 502",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E16",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:la esperanza ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E17",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:100-000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E18",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1850000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E19",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2027-05-13",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E20",
+      "tipo": "VALOR",
+      "canonico": "VALOR:3700000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E21",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E22",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:aseo y mantenimiento prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E23",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XYZ006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E24",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XYZ07D",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E25",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:carlos alberto prueba gomez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E26",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E27",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1581 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E28",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 1074 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E29",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "canonico": "CORREO:datospersonales@ferreteria-ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E30",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:055000000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E31",
+      "tipo": "CUENTA",
+      "rol": "EMPRESA",
+      "canonico": "CUENTA:BREB:@ferretera.ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E32",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E33",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "canonico": "LISTA:Alejandro Ejemplo Martínez",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C16-E34",
+      "tipo": "CARGO",
+      "canonico": "CARGO:subgerente cientifico",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E35",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:41000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E36",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3120000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E37",
+      "tipo": "CC",
+      "rol": "CONTACTO",
+      "canonico": "CC:1000000012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E38",
+      "tipo": "TELEFONO",
+      "rol": "CONTACTO",
+      "canonico": "TEL:3120000013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E39",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 997 civil municipal de sogamoso",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E40",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E41",
+      "tipo": "VALOR",
+      "canonico": "VALOR:3000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E42",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:AT00000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E43",
+      "tipo": "NIT",
+      "rol": "PROVEEDOR",
+      "canonico": "NIT:901000015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E44",
+      "tipo": "VALOR",
+      "canonico": "VALOR:20000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E45",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2027-06-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E46",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "canonico": "CORREO:notificaciones@ferreteria-ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E47",
+      "tipo": "TELEFONO",
+      "rol": "EMPRESA",
+      "canonico": "TEL:6010000016",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E48",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "canonico": "CORREO:patricia.prueba@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E49",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:3140000017",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E50",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:500255",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E51",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:C2026000095",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E52",
+      "tipo": "RADICADO",
+      "canonico": "RAD:68276411094320210001800",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E53",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 994 civil municipal de ibague",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E54",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:73",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E55",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-02-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E56",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05266410390620260001900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E57",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 990 de familia de envigado",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E58",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E59",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-10-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E60",
+      "tipo": "RADICADO",
+      "canonico": "RAD:258996000913202200020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E61",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000237",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E62",
+      "tipo": "CC",
+      "canonico": "NEG:890201",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C16-E63",
+      "tipo": "VALOR",
+      "canonico": "NEG:$47.065",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C16-A001",
+      "docId": "C16",
+      "parte": {
+        "kind": "encabezado",
+        "index": 1
+      },
+      "start": 28,
+      "end": 53,
+      "texto": "FERRETERÍA EJEMPLO S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C16-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F34"
+      ]
+    },
+    {
+      "id": "C16-A002",
+      "docId": "C16",
+      "parte": {
+        "kind": "encabezado",
+        "index": 1
+      },
+      "start": 60,
+      "end": 73,
+      "texto": "901.000.001-6",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C16-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F34"
+      ]
+    },
+    {
+      "id": "C16-A003",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 60,
+      "end": 76,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C16-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A004",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 84,
+      "end": 125,
+      "texto": "catorce (14) días del mes de mayo de 2026",
+      "tipo": "FECHA",
+      "entidad": "C16-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C16-A005",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 161,
+      "end": 186,
+      "texto": "Ferretería Ejemplo S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C16-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A006",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 205,
+      "end": 218,
+      "texto": "901.000.001-6",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C16-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C16-A007",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 237,
+      "end": 271,
+      "texto": "Cr. 00 n.º 0A-00, torre 4, local 2",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C16-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C16-A008",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 275,
+      "end": 291,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C16-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A009",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 321,
+      "end": 340,
+      "texto": "Natalia Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C16-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C16-A010",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 371,
+      "end": 388,
+      "texto": "director regional",
+      "tipo": "CARGO",
+      "entidad": "C16-E07",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C16-A011",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 414,
+      "end": 424,
+      "texto": "19.000.002",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C16-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C16-A012",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 490,
+      "end": 510,
+      "texto": "Patricia Prueba Mora",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C16-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A013",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 554,
+      "end": 567,
+      "texto": "2.000'000.003",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C16-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C16-A014",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 584,
+      "end": 621,
+      "texto": "Av. Calle 00B N° 00-01 Norte, casa 24",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C16-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C16-A015",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 630,
+      "end": 641,
+      "texto": "San Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C16-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C16-A016",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 643,
+      "end": 651,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C16-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C16-A017",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 801,
+      "end": 816,
+      "texto": "Ley 820 de 2003",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C16-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C16-A018",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 928,
+      "end": 961,
+      "texto": "Dg. 0C Bis A # 00-00, oficina 502",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C16-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C16-A019",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 970,
+      "end": 991,
+      "texto": "La Esperanza Ficticia",
+      "tipo": "BARRIO",
+      "entidad": "C16-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C16-A020",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1006,
+      "end": 1014,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C16-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C16-A021",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1060,
+      "end": 1070,
+      "texto": "100-000004",
+      "tipo": "MATRICULA",
+      "entidad": "C16-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C16-A022",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1120,
+      "end": 1174,
+      "texto": "un millón ochocientos cincuenta mil pesos ($1.850.000)",
+      "tipo": "VALOR",
+      "entidad": "C16-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23"
+      ]
+    },
+    {
+      "id": "C16-A023",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1270,
+      "end": 1276,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C16-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C16-A024",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1367,
+      "end": 1416,
+      "texto": "catorce (14) de mayo de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C16-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C16-A025",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1426,
+      "end": 1436,
+      "texto": "13/05/2027",
+      "tipo": "FECHA",
+      "entidad": "C16-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C16-A026",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1538,
+      "end": 1592,
+      "texto": "tres millones setecientos mil pesos M/CTE ($3.700.000)",
+      "tipo": "VALOR",
+      "entidad": "C16-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24"
+      ]
+    },
+    {
+      "id": "C16-A027",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1707,
+      "end": 1716,
+      "texto": "000000005",
+      "tipo": "AFILIACION",
+      "entidad": "C16-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C16-A028",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1720,
+      "end": 1747,
+      "texto": "Aseo y Mantenimiento Prueba",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C16-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C16-A029",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1843,
+      "end": 1850,
+      "texto": "XYZ-006",
+      "tipo": "PLACA",
+      "entidad": "C16-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C16-A030",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1877,
+      "end": 1883,
+      "texto": "XYZ07D",
+      "tipo": "PLACA",
+      "entidad": "C16-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C16-A031",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1923,
+      "end": 1943,
+      "texto": "Patricia Prueba Mora",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C16-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A032",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2050,
+      "end": 2056,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C16-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F33",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C16-A033",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2095,
+      "end": 2104,
+      "texto": "000000008",
+      "tipo": "AFILIACION",
+      "entidad": "C16-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F33"
+      ]
+    },
+    {
+      "id": "C16-A034",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2135,
+      "end": 2145,
+      "texto": "14/05/2026",
+      "tipo": "FECHA",
+      "entidad": "C16-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F33"
+      ]
+    },
+    {
+      "id": "C16-A035",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2206,
+      "end": 2222,
+      "texto": "Ley 1581 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C16-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C16-A036",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2229,
+      "end": 2249,
+      "texto": "Decreto 1074 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C16-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C16-A037",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2373,
+      "end": 2412,
+      "texto": "datospersonales@ferreteria-ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "entidad": "C16-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C16-A038",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2509,
+      "end": 2523,
+      "texto": "0550-0000-0009",
+      "tipo": "CUENTA",
+      "entidad": "C16-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C16-A039",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2543,
+      "end": 2561,
+      "texto": "@ferretera.ejemplo",
+      "tipo": "CUENTA",
+      "rol": "EMPRESA",
+      "entidad": "C16-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C16-A040",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2566,
+      "end": 2578,
+      "texto": "Banco Prueba",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C16-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C16-A041",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2594,
+      "end": 2610,
+      "texto": "Ejemplo Martínez",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C16-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C16-A042",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2720,
+      "end": 2747,
+      "texto": "Carlos Alberto Prueba Gómez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C16-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C16-A043",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2749,
+      "end": 2770,
+      "texto": "subgerente científico",
+      "tipo": "CARGO",
+      "entidad": "C16-E34",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C16-A044",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2774,
+      "end": 2778,
+      "texto": "FESA",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C16-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A045",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2802,
+      "end": 2810,
+      "texto": "41000010",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C16-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C16-A046",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2855,
+      "end": 2865,
+      "texto": "3120000011",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C16-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F43"
+      ]
+    },
+    {
+      "id": "C16-A047",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2881,
+      "end": 2887,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C16-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C16-A048",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3044,
+      "end": 3060,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C16-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A049",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3067,
+      "end": 3108,
+      "texto": "catorce (14) días del mes de mayo de 2026",
+      "tipo": "FECHA",
+      "entidad": "C16-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C16-A050",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3128,
+      "end": 3139,
+      "texto": "Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C16-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C16-A051",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3205,
+      "end": 3221,
+      "texto": "Ejemplo Martínez",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C16-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C16-A052",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3322,
+      "end": 3348,
+      "texto": "ALEJANDRO EJEMPLO MARTÍNEZ",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C16-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C16-A053",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3355,
+      "end": 3365,
+      "texto": "1000000012",
+      "tipo": "CC",
+      "rol": "CONTACTO",
+      "entidad": "C16-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C16-A054",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3375,
+      "end": 3391,
+      "texto": "+57 312 000 0013",
+      "tipo": "TELEFONO",
+      "rol": "CONTACTO",
+      "entidad": "C16-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F43"
+      ]
+    },
+    {
+      "id": "C16-A055",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3567,
+      "end": 3575,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C16-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C16-A056",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3577,
+      "end": 3583,
+      "texto": "Boyacá",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C16-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A057",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3621,
+      "end": 3660,
+      "texto": "Juzgado 997 Civil Municipal de Sogamoso",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C16-E39",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C16-A058",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3652,
+      "end": 3660,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C16-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C16-A057",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C16-A059",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3676,
+      "end": 3696,
+      "texto": "Patricia Prueba Mora",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C16-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A060",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3829,
+      "end": 3837,
+      "texto": "10 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C16-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C16-A061",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3863,
+      "end": 3904,
+      "texto": "TRES MILLONES DE PESOS M/CTE ($3.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C16-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24"
+      ]
+    },
+    {
+      "id": "C16-A062",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3958,
+      "end": 3984,
+      "texto": "Alejandro Ejemplo Martínez",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C16-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A063",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4087,
+      "end": 4099,
+      "texto": "AT-0000-0014",
+      "tipo": "AFILIACION",
+      "entidad": "C16-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C16-A064",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4113,
+      "end": 4146,
+      "texto": "Aseo y Mantenimiento Prueba Ltda.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C16-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C16-A065",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4152,
+      "end": 4165,
+      "texto": "901.000.015-9",
+      "tipo": "NIT",
+      "rol": "PROVEEDOR",
+      "entidad": "C16-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C16-A066",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4194,
+      "end": 4232,
+      "texto": "veinte millones de pesos ($20.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C16-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23"
+      ]
+    },
+    {
+      "id": "C16-A067",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4242,
+      "end": 4295,
+      "texto": "dieciocho (18) de junio de dos mil veintisiete (2027)",
+      "tipo": "FECHA",
+      "entidad": "C16-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C16-A068",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4377,
+      "end": 4381,
+      "texto": "FESA",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C16-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A069",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4383,
+      "end": 4420,
+      "texto": "Carrera 00 N° 0A-00, torre 4, local 2",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C16-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C16-A070",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4429,
+      "end": 4467,
+      "texto": "notificaciones@ferreteria-ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "entidad": "C16-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C16-A071",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4478,
+      "end": 4494,
+      "texto": "+57 601 000 0016",
+      "tipo": "TELEFONO",
+      "rol": "EMPRESA",
+      "entidad": "C16-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C16-A072",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4496,
+      "end": 4507,
+      "texto": "Prueba Mora",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C16-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C16-A073",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4509,
+      "end": 4549,
+      "texto": "Avenida Calle 00B # 00-01 Norte, casa 24",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C16-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C16-A074",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4558,
+      "end": 4586,
+      "texto": "patricia.prueba@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C16-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C16-A075",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4596,
+      "end": 4608,
+      "texto": "314-000-0017",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C16-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F43"
+      ]
+    },
+    {
+      "id": "C16-A076",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4786,
+      "end": 4792,
+      "texto": "500255",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C16-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C16-A077",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4807,
+      "end": 4820,
+      "texto": "C-2026-000095",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C16-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C16-A078",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4863,
+      "end": 4882,
+      "texto": "Natalia Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C16-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C16-A079",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4885,
+      "end": 4889,
+      "texto": "FESA",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C16-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C16-A080",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4890,
+      "end": 4910,
+      "texto": "PATRICIA PRUEBA MORA",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C16-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C16-A081",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4918,
+      "end": 4928,
+      "texto": "2000000003",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C16-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C16-A082",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4985,
+      "end": 5015,
+      "texto": "68-276-41-10-943-2021-00018-00",
+      "tipo": "RADICADO",
+      "entidad": "C16-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C16-A083",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5024,
+      "end": 5061,
+      "texto": "Juzgado 994 Civil Municipal de Ibagué",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C16-E53",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C16-A084",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5055,
+      "end": 5061,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C16-E54",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C16-A083",
+      "caracteristicas": [
+        "F54"
+      ]
+    },
+    {
+      "id": "C16-A085",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5075,
+      "end": 5085,
+      "texto": "09.02.2025",
+      "tipo": "FECHA",
+      "entidad": "C16-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C16-A086",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5104,
+      "end": 5133,
+      "texto": "05266-41-03-906-2026-00019-00",
+      "tipo": "RADICADO",
+      "entidad": "C16-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C16-A087",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5142,
+      "end": 5176,
+      "texto": "Juzgado 990 de Familia de Envigado",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C16-E57",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C16-A088",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5168,
+      "end": 5176,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C16-E58",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C16-A087",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C16-A089",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5190,
+      "end": 5200,
+      "texto": "10.10.2026",
+      "tipo": "FECHA",
+      "entidad": "C16-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C16-A090",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5225,
+      "end": 5246,
+      "texto": "258996000913202200020",
+      "tipo": "RADICADO",
+      "entidad": "C16-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F05"
+      ]
+    },
+    {
+      "id": "C16-A091",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5297,
+      "end": 5316,
+      "texto": "4000 0000 0000 0237",
+      "tipo": "TARJETA",
+      "entidad": "C16-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C16-A092",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5422,
+      "end": 5428,
+      "texto": "890201",
+      "tipo": "CC",
+      "entidad": "C16-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C16-A093",
+      "docId": "C16",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5446,
+      "end": 5453,
+      "texto": "$47.065",
+      "tipo": "VALOR",
+      "entidad": "C16-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

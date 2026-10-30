@@ -1,0 +1,5966 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C03",
+  "tipoDocumento": "tutela_salud",
+  "fuente": "pdf",
+  "archivo": "corpus/docs/C03.pdf",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1,
+        "longitud": 3128,
+        "sha256": "267214752fab74418764290ed80ca12332e7f3ce1cc85f9bbf003903c07454e9"
+      },
+      {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2,
+        "longitud": 3280,
+        "sha256": "a6f73becee4a8689bd3192a475ec03a7a32c9cbc2608d5f5b43ea3266f982a45"
+      },
+      {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3,
+        "longitud": 3387,
+        "sha256": "c15cb19754d530debfcc8915f808a7ac1007697f95ab7b01c0c63eca70dcb2db"
+      },
+      {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4,
+        "longitud": 2319,
+        "sha256": "dd244eda12a8f0f7042c5e162e04693c6ee890695448d2a0d16098dcf574c93d"
+      },
+      {
+        "kind": "anotacion_pdf",
+        "index": 1,
+        "page": 2,
+        "longitud": 46,
+        "sha256": "dedddfddae957ce3389f195329917f874fed91611a9cd6b110bc0df22edf434c"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": [
+      "pdf_autores_anotaciones",
+      "pdf_propiedades"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Blanca Ficticia-Arango",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Cristian Camilo Ejemplo Castaño",
+      "role": "TESTIGO"
+    },
+    {
+      "name": "Salud Integral Prueba EPS S.A.",
+      "role": "EPS"
+    },
+    {
+      "name": "Hospital Universitario Ficticio E.S.E.",
+      "role": "IPS"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C03-E01",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 999 civil del circuito de sogamoso",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E02",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E03",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Blanca Ficticia-Arango",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C03-E04",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "LISTA:Salud Integral Prueba EPS S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C03-E05",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "canonico": "LISTA:Hospital Universitario Ficticio E.S.E.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C03-E06",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:7000001",
+      "mismoTitular": [
+        "C03-E35"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C03-E07",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:san ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E08",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:TV 0 00 0 AP 105 IN 8",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E09",
+      "tipo": "PASAPORTE",
+      "rol": "DEMANDANTE",
+      "canonico": "PASAPORTE:VE000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E10",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 86 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E11",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 2591 de 1991",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E12",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:inversiones ficticias",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E13",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:890000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E14",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:ivan dario ejemplo salazar",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E15",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-04-01",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E16",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:EPS000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E17",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E18",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:ricardo ficticio ortiz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E19",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TP:000095",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E20",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E21",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E22",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000000700",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E23",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "canonico": "CUENTA:BREB:@ficticiaarango1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E24",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:isabel cristina ejemplo zapata",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E25",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinadora de auditoria medica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E26",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000088",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E27",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "canonico": "TEL:6070000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E28",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "canonico": "CORREO:notificaciones@salud-integral-prueba-eps.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E29",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1423500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E30",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:fue atropellada por un vehiculo oficial de la alcaldia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E31",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:300-00000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E32",
+      "tipo": "VALOR",
+      "canonico": "VALOR:650000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E33",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E34",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000184",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E35",
+      "tipo": "HC",
+      "rol": "DEMANDANTE",
+      "canonico": "HC:7000001",
+      "mismoTitular": [
+        "C03-E06"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C03-E36",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:fibrosis quistica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E37",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:e84.0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E38",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:VEREDA ALTO DE PRUEBA",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E39",
+      "tipo": "PLACA",
+      "canonico": "PLACA:AAA011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E40",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:ambulancias ficticias",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E41",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E42",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "canonico": "DIR:KR 0A BIS 00 3 O OF 201",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E43",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:73",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E44",
+      "tipo": "VALOR",
+      "canonico": "VALOR:48000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E45",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3140000012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E46",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:blanca.ficticia-arango@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E47",
+      "tipo": "PERSONA",
+      "rol": "TESTIGO",
+      "canonico": "LISTA:Cristian Camilo Ejemplo Castaño",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C03-E48",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:el remanso ficticio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E49",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:hector fabio ficticio rincon",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E50",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:8000013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E51",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2022-02-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E52",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:EPS000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E53",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-12-19",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E54",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:20260314000000000015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E55",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000001600",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E56",
+      "tipo": "CARGO",
+      "canonico": "CARGO:administradora del conjunto",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E57",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000176",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E58",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "canonico": "CORREO:contacto@salud-integral-prueba-eps.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E59",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:denuncio publicamente al gerente del hospital",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E60",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:01N-00000018",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E61",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-19",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E62",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000317",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E63",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:VEREDA CHUSCAL EJEMPLO",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E64",
+      "tipo": "PLACA",
+      "canonico": "PLACA:WWW019",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E65",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-08-01",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E66",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:santa prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E67",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-760 de 2008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E68",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 49 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E69",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1751 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E70",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1581 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E71",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-074 de 2020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E72",
+      "tipo": "CC",
+      "canonico": "NEG:t-9.000.004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E73",
+      "tipo": "RADICADO",
+      "canonico": "NEG:25899-31-03-915-2019-00020-00",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E74",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1098 de 2006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E75",
+      "tipo": "RADICADO",
+      "canonico": "NEG:110014003999",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E76",
+      "tipo": "CC",
+      "canonico": "NEG:8610",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E77",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia c-089 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E78",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1564 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E79",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-121 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E80",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-19",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E81",
+      "tipo": "NIT",
+      "rol": "EPS",
+      "canonico": "NIT:901000021",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E82",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "canonico": "DIR:CL 00B 00 0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E83",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25899400594820240002200",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E84",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 991 laboral del circuito de bogota",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E85",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:11",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E86",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-03-20",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E87",
+      "tipo": "RADICADO",
+      "canonico": "RAD:15759411095920260002300",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E88",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 991 laboral del circuito de zipaquira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E89",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E90",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-07-01",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E91",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05360311098520220002400",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E92",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 994 civil municipal de itagui",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E93",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E94",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-11-19",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E95",
+      "tipo": "RADICADO",
+      "canonico": "RAD:258996000920201900025",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E96",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:juan david prueba bernal",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E97",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men26:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E98",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men26:rotulo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E99",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TI:15081100027",
+      "mismoTitular": [
+        "C03-E102"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C03-E100",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2015-08-11",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E101",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~11 anos de edad",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E102",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "HC:15081100027",
+      "mismoTitular": [
+        "C03-E99"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C03-E103",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:martha cecilia prueba giraldo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E104",
+      "tipo": "PPT",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PPT:7000029",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E105",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E106",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:nubia stella ficticia zapata",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E107",
+      "tipo": "PASAPORTE",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PASAPORTE:PE000031",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E108",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:52",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E109",
+      "tipo": "CC",
+      "canonico": "NEG:871121",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C03-E110",
+      "tipo": "CC",
+      "canonico": "NEG:6910",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C03-A001",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 6,
+      "end": 48,
+      "texto": "JUZGADO 999 CIVIL DEL CIRCUITO DE SOGAMOSO",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C03-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C03-A002",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 40,
+      "end": 48,
+      "texto": "SOGAMOSO",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C03-A001",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C03-A003",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 109,
+      "end": 145,
+      "texto": "BLANCA NUBIA FICTICIA-ARANGO RAMÍREZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A004",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 157,
+      "end": 187,
+      "texto": "SALUD INTEGRAL PRUEBA EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A005",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 199,
+      "end": 237,
+      "texto": "HOSPITAL UNIVERSITARIO FICTICIO E.S.E.",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C03-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A006",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 299,
+      "end": 335,
+      "texto": "Blanca Nubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A007",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 374,
+      "end": 383,
+      "texto": "7.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A008",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 416,
+      "end": 424,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A009",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 449,
+      "end": 460,
+      "texto": "San Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C03-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A010",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 468,
+      "end": 510,
+      "texto": "Tv. 0\n# 00-00, apartamento 105, interior 8",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A011",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 558,
+      "end": 566,
+      "texto": "VE000002",
+      "tipo": "PASAPORTE",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A012",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 656,
+      "end": 686,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A013",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 688,
+      "end": 691,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A014",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 817,
+      "end": 856,
+      "texto": "artículo 86 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A015",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 862,
+      "end": 882,
+      "texto": "Decreto 2591 de 1991",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A016",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 913,
+      "end": 940,
+      "texto": "INVERSIONES FICTICIAS LTDA.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C03-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A017",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 946,
+      "end": 959,
+      "texto": "890 000 003-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C03-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A018",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 971,
+      "end": 986,
+      "texto": "Ejemplo\nSalazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A019",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1028,
+      "end": 1064,
+      "texto": "Blanca Nubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A020",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1120,
+      "end": 1156,
+      "texto": "Blanca Nubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A021",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1181,
+      "end": 1211,
+      "texto": "Salud Integral\nPrueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A022",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1221,
+      "end": 1239,
+      "texto": "1 de abril de 2024",
+      "tipo": "FECHA",
+      "entidad": "C03-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A023",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1269,
+      "end": 1279,
+      "texto": "EPS-000004",
+      "tipo": "AFILIACION",
+      "entidad": "C03-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A024",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1295,
+      "end": 1310,
+      "texto": "Ficticia-Arango",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A025",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1369,
+      "end": 1422,
+      "texto": "diecisiete (17) de junio de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C03-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A026",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1434,
+      "end": 1456,
+      "texto": "Ricardo\nFicticio Ortiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A027",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1499,
+      "end": 1505,
+      "texto": "000095",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F45"
+      ]
+    },
+    {
+      "id": "C03-A028",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1567,
+      "end": 1577,
+      "texto": "2026000006",
+      "tipo": "AFILIACION",
+      "entidad": "C03-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A029",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1606,
+      "end": 1621,
+      "texto": "Ficticia-Arango",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A030",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1735,
+      "end": 1753,
+      "texto": "Banco\nEjemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C03-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A031",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1758,
+      "end": 1771,
+      "texto": "000-000007-00",
+      "tipo": "CUENTA",
+      "entidad": "C03-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A032",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1792,
+      "end": 1808,
+      "texto": "@ficticiaarango1",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A033",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1854,
+      "end": 1879,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A034",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1896,
+      "end": 1926,
+      "texto": "Isabel Cristina Ejemplo Zapata",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A035",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1952,
+      "end": 1984,
+      "texto": "coordinadora de auditoría médica",
+      "tipo": "CARGO",
+      "entidad": "C03-E25",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A036",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2095,
+      "end": 2110,
+      "texto": "Ficticia-Arango",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A037",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2192,
+      "end": 2211,
+      "texto": "4000 0000 0000 0088",
+      "tipo": "TARJETA",
+      "entidad": "C03-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A038",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2252,
+      "end": 2288,
+      "texto": "BLANCA NUBIA FICTICIA-ARANGO RAMÍREZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A039",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2445,
+      "end": 2448,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A040",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2454,
+      "end": 2475,
+      "texto": "607 000 0009 Ext. 102",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "entidad": "C03-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A041",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2484,
+      "end": 2529,
+      "texto": "NOTIFICACIONES@SALUD-INTEGRAL-PRUEBA-EPS.TEST",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C03-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A042",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2585,
+      "end": 2612,
+      "texto": "Inversiones Ficticias Ltda.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C03-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A043",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2631,
+      "end": 2699,
+      "texto": "un millón\ncuatrocientos veintitrés mil quinientos pesos ($1.423.500)",
+      "tipo": "VALOR",
+      "entidad": "C03-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A044",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2776,
+      "end": 2791,
+      "texto": "Ficticia-Arango",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A045",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2850,
+      "end": 2865,
+      "texto": "Ficticia-Arango",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A046",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2866,
+      "end": 2920,
+      "texto": "fue atropellada por un vehículo oficial de la\nalcaldía",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C03-E30",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A047",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 3035,
+      "end": 3047,
+      "texto": "300-00000010",
+      "tipo": "MATRICULA",
+      "entidad": "C03-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A048",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 3066,
+      "end": 3092,
+      "texto": "Iván Darío Ejemplo Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A049",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 3108,
+      "end": 3117,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C03-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A050",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 14,
+      "end": 33,
+      "texto": "26 de junio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C03-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A051",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 56,
+      "end": 59,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A052",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 77,
+      "end": 90,
+      "texto": "E-2026-000184",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C03-A053",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 192,
+      "end": 201,
+      "texto": "7.000.001",
+      "tipo": "HC",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A054",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 203,
+      "end": 226,
+      "texto": "Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A055",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 249,
+      "end": 266,
+      "texto": "fibrosis quística",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C03-E36",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A056",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 275,
+      "end": 280,
+      "texto": "E84.0",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C03-E37",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A057",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 288,
+      "end": 326,
+      "texto": "Hospital Universitario Ficticio\nE.S.E.",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C03-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A058",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 391,
+      "end": 412,
+      "texto": "vereda Alto de Prueba",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F14",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A059",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 433,
+      "end": 441,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A060",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 502,
+      "end": 517,
+      "texto": "Ficticia-Arango",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A061",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 609,
+      "end": 616,
+      "texto": "AAA-011",
+      "tipo": "PLACA",
+      "entidad": "C03-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A062",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 634,
+      "end": 649,
+      "texto": "Ejemplo Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A063",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 675,
+      "end": 696,
+      "texto": "Ambulancias Ficticias",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C03-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A064",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 746,
+      "end": 777,
+      "texto": "Hospital Universitario Ficticio",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C03-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A065",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 801,
+      "end": 813,
+      "texto": "25 jun. 2026",
+      "tipo": "FECHA",
+      "entidad": "C03-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A066",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 841,
+      "end": 880,
+      "texto": "Cra. 0A Bis N° 00-03 Oeste, oficina 201",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "entidad": "C03-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A067",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 884,
+      "end": 890,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E43",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A068",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 924,
+      "end": 952,
+      "texto": "Ambulancias Ficticias S.A.S.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C03-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A069",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1001,
+      "end": 1048,
+      "texto": "cuarenta y ocho millones de pesos ($48.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C03-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A070",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1092,
+      "end": 1128,
+      "texto": "Blanca Nubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A071",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1216,
+      "end": 1234,
+      "texto": "(+57) 314-000-0012",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A072",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1247,
+      "end": 1286,
+      "texto": "blanca.ficticia-arango@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A073",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1326,
+      "end": 1362,
+      "texto": "Blanca\nNubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A074",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1432,
+      "end": 1463,
+      "texto": "Cristian Camilo Ejemplo Castaño",
+      "tipo": "PERSONA",
+      "rol": "TESTIGO",
+      "entidad": "C03-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A075",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1483,
+      "end": 1502,
+      "texto": "El Remanso Ficticio",
+      "tipo": "BARRIO",
+      "entidad": "C03-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A076",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1527,
+      "end": 1535,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A077",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1575,
+      "end": 1601,
+      "texto": "Iván Darío Ejemplo Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A078",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1625,
+      "end": 1634,
+      "texto": "8.000.013",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A079",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1647,
+      "end": 1674,
+      "texto": "Inversiones Ficticias Ltda.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C03-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A080",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1680,
+      "end": 1693,
+      "texto": "890.000.003-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C03-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A081",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1749,
+      "end": 1772,
+      "texto": "Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A082",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1836,
+      "end": 1872,
+      "texto": "Blanca Nubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A083",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1897,
+      "end": 1927,
+      "texto": "Salud\nIntegral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A084",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1937,
+      "end": 1958,
+      "texto": "17 de febrero de 2022",
+      "tipo": "FECHA",
+      "entidad": "C03-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A085",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1988,
+      "end": 1998,
+      "texto": "EPS-000014",
+      "tipo": "AFILIACION",
+      "entidad": "C03-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A086",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2020,
+      "end": 2078,
+      "texto": "diecinueve (19) de diciembre de dos mil veinticinco (2025)",
+      "tipo": "FECHA",
+      "entidad": "C03-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A087",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2120,
+      "end": 2128,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A088",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2204,
+      "end": 2224,
+      "texto": "20260314000000000015",
+      "tipo": "AFILIACION",
+      "entidad": "C03-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A089",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2316,
+      "end": 2334,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C03-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A090",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2339,
+      "end": 2352,
+      "texto": "000-000016-00",
+      "tipo": "CUENTA",
+      "entidad": "C03-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A091",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2373,
+      "end": 2389,
+      "texto": "@ficticiaarango1",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A092",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2413,
+      "end": 2428,
+      "texto": "Ficticia-Arango",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A093",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2502,
+      "end": 2527,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A094",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2544,
+      "end": 2574,
+      "texto": "Isabel Cristina Ejemplo Zapata",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A095",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2600,
+      "end": 2627,
+      "texto": "administradora del\nconjunto",
+      "tipo": "CARGO",
+      "entidad": "C03-E56",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A096",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2754,
+      "end": 2769,
+      "texto": "Ficticia-Arango",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A097",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2854,
+      "end": 2870,
+      "texto": "4000000000000176",
+      "tipo": "TARJETA",
+      "entidad": "C03-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A098",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2932,
+      "end": 2955,
+      "texto": "Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A099",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3081,
+      "end": 3117,
+      "texto": "BLANCA NUBIA FICTICIA-ARANGO RAMÍREZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A100",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3180,
+      "end": 3183,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A101",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3189,
+      "end": 3210,
+      "texto": "607 000 0009 Ext. 102",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "entidad": "C03-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A102",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3219,
+      "end": 3258,
+      "texto": "contacto@salud-integral-prueba-eps.test",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C03-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A103",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 40,
+      "end": 67,
+      "texto": "Inversiones Ficticias Ltda.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C03-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A104",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 86,
+      "end": 154,
+      "texto": "un\nmillón cuatrocientos veintitrés mil quinientos pesos ($1.423.500)",
+      "tipo": "VALOR",
+      "entidad": "C03-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A105",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 238,
+      "end": 253,
+      "texto": "Ficticia-Arango",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A106",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 254,
+      "end": 299,
+      "texto": "denunció públicamente al gerente del\nhospital",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C03-E59",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A107",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 369,
+      "end": 405,
+      "texto": "Blanca\nNubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A108",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 495,
+      "end": 507,
+      "texto": "01N-00000018",
+      "tipo": "MATRICULA",
+      "entidad": "C03-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A109",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 526,
+      "end": 552,
+      "texto": "Iván Darío Ejemplo Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A110",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 568,
+      "end": 577,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C03-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A111",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 600,
+      "end": 619,
+      "texto": "19 de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C03-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A112",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 642,
+      "end": 645,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A113",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 663,
+      "end": 676,
+      "texto": "E-2026-000317",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C03-A114",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 741,
+      "end": 744,
+      "texto": "HUF",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C03-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A115",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 763,
+      "end": 770,
+      "texto": "7000001",
+      "tipo": "HC",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A116",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 789,
+      "end": 806,
+      "texto": "fibrosis quística",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C03-E36",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A117",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 815,
+      "end": 820,
+      "texto": "E84.0",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C03-E37",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A118",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 860,
+      "end": 896,
+      "texto": "Blanca Nubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A119",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 970,
+      "end": 992,
+      "texto": "vereda Chuscal Ejemplo",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F14",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A120",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1013,
+      "end": 1021,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A121",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1108,
+      "end": 1115,
+      "texto": "WWW-019",
+      "tipo": "PLACA",
+      "entidad": "C03-E64",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A122",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1133,
+      "end": 1148,
+      "texto": "Ejemplo\nSalazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A123",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1174,
+      "end": 1195,
+      "texto": "Ambulancias Ficticias",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C03-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A124",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1240,
+      "end": 1271,
+      "texto": "Hospital Universitario Ficticio",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C03-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A125",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1295,
+      "end": 1305,
+      "texto": "2026-08-01",
+      "tipo": "FECHA",
+      "entidad": "C03-E65",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A126",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1333,
+      "end": 1371,
+      "texto": "Cra. 0A Bis # 00-03 Oeste, oficina 201",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "entidad": "C03-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A127",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1375,
+      "end": 1381,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E43",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A128",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1408,
+      "end": 1436,
+      "texto": "Ambulancias Ficticias S.A.S.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C03-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A129",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1485,
+      "end": 1532,
+      "texto": "cuarenta y ocho millones de pesos ($48.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C03-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A130",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1581,
+      "end": 1617,
+      "texto": "Blanca Nubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A131",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1679,
+      "end": 1695,
+      "texto": "+57 314 000 0012",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A132",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1708,
+      "end": 1747,
+      "texto": "blanca.ficticia-arango@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A133",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1797,
+      "end": 1828,
+      "texto": "Cristian Camilo Ejemplo Castaño",
+      "tipo": "PERSONA",
+      "rol": "TESTIGO",
+      "entidad": "C03-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A134",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1848,
+      "end": 1860,
+      "texto": "Santa Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C03-E66",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A135",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1885,
+      "end": 1893,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A136",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1931,
+      "end": 1957,
+      "texto": "Iván Darío Ejemplo Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A137",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1981,
+      "end": 1990,
+      "texto": "8.000.013",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A138",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2003,
+      "end": 2030,
+      "texto": "Inversiones Ficticias Ltda.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C03-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A139",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2036,
+      "end": 2049,
+      "texto": "890.000.003-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C03-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A140",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2118,
+      "end": 2133,
+      "texto": "Ficticia-Arango",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A141",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2236,
+      "end": 2259,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E67",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A142",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2318,
+      "end": 2341,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E67",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A143",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2415,
+      "end": 2454,
+      "texto": "artículo 49 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E68",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A144",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2460,
+      "end": 2476,
+      "texto": "Ley 1751 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E69",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A145",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2519,
+      "end": 2535,
+      "texto": "Ley 1581 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E70",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A146",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2599,
+      "end": 2622,
+      "texto": "Sentencia T-074 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E71",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A147",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2655,
+      "end": 2666,
+      "texto": "T-9.000.004",
+      "tipo": "CC",
+      "entidad": "C03-E72",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A148",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2809,
+      "end": 2838,
+      "texto": "25899-31-03-915-2019-00020-00",
+      "tipo": "RADICADO",
+      "entidad": "C03-E73",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "bandera_esperada": "CITA_JURISPRUDENCIAL",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F32",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A149",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2893,
+      "end": 2909,
+      "texto": "Ley 1098 de 2006",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E74",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A150",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2958,
+      "end": 2970,
+      "texto": "110014003999",
+      "tipo": "RADICADO",
+      "entidad": "C03-E75",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C03-A151",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3029,
+      "end": 3033,
+      "texto": "8610",
+      "tipo": "CC",
+      "entidad": "C03-E76",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C03-A152",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3126,
+      "end": 3149,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E67",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A153",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3208,
+      "end": 3231,
+      "texto": "Sentencia C-089 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E77",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A154",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3305,
+      "end": 3344,
+      "texto": "artículo 49 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E68",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A155",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3350,
+      "end": 3366,
+      "texto": "Ley 1751 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E69",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A156",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 21,
+      "end": 37,
+      "texto": "Ley 1564 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E78",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A157",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 101,
+      "end": 124,
+      "texto": "Sentencia T-121 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C03-E79",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A158",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 157,
+      "end": 168,
+      "texto": "T-9.000.004",
+      "tipo": "CC",
+      "entidad": "C03-E72",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A159",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 257,
+      "end": 293,
+      "texto": "Blanca Nubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A160",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 308,
+      "end": 311,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A161",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 435,
+      "end": 452,
+      "texto": "fibrosis quística",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C03-E36",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A162",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 468,
+      "end": 493,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A163",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 589,
+      "end": 612,
+      "texto": "Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A164",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 640,
+      "end": 671,
+      "texto": "Hospital Universitario Ficticio",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C03-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A165",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 682,
+      "end": 692,
+      "texto": "2026-06-19",
+      "tipo": "FECHA",
+      "entidad": "C03-E80",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A166",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 738,
+      "end": 741,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A167",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 773,
+      "end": 819,
+      "texto": "Trans. 0 N° 00-00, apartamento 105, interior 8",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A168",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 821,
+      "end": 829,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A169",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 831,
+      "end": 837,
+      "texto": "Boyacá",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C03-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A170",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 859,
+      "end": 898,
+      "texto": "blanca.ficticia-arango@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A171",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 909,
+      "end": 925,
+      "texto": "+57 314 000 0012",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A172",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 941,
+      "end": 971,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C03-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A173",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 977,
+      "end": 990,
+      "texto": "901.000.021-3",
+      "tipo": "NIT",
+      "rol": "EPS",
+      "entidad": "C03-E81",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A174",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 998,
+      "end": 1015,
+      "texto": "Cl. 00B No.\n00-00",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "entidad": "C03-E82",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A175",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1024,
+      "end": 1069,
+      "texto": "notificaciones@salud-integral-prueba-eps.test",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C03-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A176",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1084,
+      "end": 1120,
+      "texto": "Blanca Nubia Ficticia-Arango Ramírez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C03-A177",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1126,
+      "end": 1133,
+      "texto": "7000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A178",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1137,
+      "end": 1143,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E43",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A179",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1230,
+      "end": 1253,
+      "texto": "25899400594820240002200",
+      "tipo": "RADICADO",
+      "entidad": "C03-E83",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A180",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1262,
+      "end": 1304,
+      "texto": "Juzgado 991 Laboral\ndel Circuito de Bogotá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C03-E84",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C03-A181",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1298,
+      "end": 1304,
+      "texto": "Bogotá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E85",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C03-A180",
+      "caracteristicas": [
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C03-A182",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1318,
+      "end": 1329,
+      "texto": "20-III-2024",
+      "tipo": "FECHA",
+      "entidad": "C03-E86",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A183",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1363,
+      "end": 1392,
+      "texto": "15759\n41 10 959 2026 00023 00",
+      "tipo": "RADICADO",
+      "entidad": "C03-E87",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A184",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1401,
+      "end": 1446,
+      "texto": "Juzgado 991 Laboral del Circuito de Zipaquirá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C03-E88",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C03-A185",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1437,
+      "end": 1446,
+      "texto": "Zipaquirá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E89",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C03-A184",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C03-A186",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1460,
+      "end": 1470,
+      "texto": "01/07/2025",
+      "tipo": "FECHA",
+      "entidad": "C03-E90",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A187",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1485,
+      "end": 1515,
+      "texto": "05-360-31-10-985-2022-00024-00",
+      "tipo": "RADICADO",
+      "entidad": "C03-E91",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A188",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1524,
+      "end": 1561,
+      "texto": "Juzgado 994 Civil\nMunicipal de Itagüí",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C03-E92",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C03-A189",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1555,
+      "end": 1561,
+      "texto": "Itagüí",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E93",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C03-A188",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C03-A190",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1575,
+      "end": 1585,
+      "texto": "19.11.2025",
+      "tipo": "FECHA",
+      "entidad": "C03-E94",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A191",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1610,
+      "end": 1631,
+      "texto": "258996000920201900025",
+      "tipo": "RADICADO",
+      "entidad": "C03-E95",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F05",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A192",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1644,
+      "end": 1668,
+      "texto": "Juan David Prueba Bernal",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E96",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A193",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1670,
+      "end": 1678,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C03-E97",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C03-A194",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1697,
+      "end": 1700,
+      "texto": "NIP",
+      "tipo": "MENOR",
+      "entidad": "C03-E98",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C03-A195",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1701,
+      "end": 1712,
+      "texto": "15081100027",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E99",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F08",
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C03-A196",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1723,
+      "end": 1733,
+      "texto": "2015-08-11",
+      "tipo": "FECHA",
+      "entidad": "C03-E100",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C03-A197",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1746,
+      "end": 1761,
+      "texto": "11 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C03-E101",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C03-A198",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1793,
+      "end": 1804,
+      "texto": "15081100027",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E102",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A199",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1819,
+      "end": 1848,
+      "texto": "Martha Cecilia Prueba Giraldo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E103",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A200",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1922,
+      "end": 1929,
+      "texto": "7000029",
+      "tipo": "PPT",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E104",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A201",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1958,
+      "end": 2010,
+      "texto": "dieciocho (18) de julio\nde dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C03-E105",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C03-A202",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2025,
+      "end": 2053,
+      "texto": "Nubia Stella Ficticia Zapata",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E106",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C03-A203",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2084,
+      "end": 2092,
+      "texto": "PE000031",
+      "tipo": "PASAPORTE",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C03-E107",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A204",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2121,
+      "end": 2131,
+      "texto": "19/07/2026",
+      "tipo": "FECHA",
+      "entidad": "C03-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A205",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2157,
+      "end": 2162,
+      "texto": "Albán",
+      "tipo": "MUNICIPIO",
+      "entidad": "C03-E108",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F26",
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A206",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2164,
+      "end": 2170,
+      "texto": "Nariño",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C03-E108",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C03-A207",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2237,
+      "end": 2243,
+      "texto": "871121",
+      "tipo": "CC",
+      "entidad": "C03-E109",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C03-A208",
+      "docId": "C03",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2270,
+      "end": 2274,
+      "texto": "6910",
+      "tipo": "CC",
+      "entidad": "C03-E110",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C03-A209",
+      "docId": "C03",
+      "parte": {
+        "kind": "anotacion_pdf",
+        "index": 1,
+        "page": 2
+      },
+      "start": 10,
+      "end": 22,
+      "texto": "314 000 0012",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C03-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F42"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

@@ -1,0 +1,3039 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C20",
+  "tipoDocumento": "contrato",
+  "fuente": "pdf",
+  "archivo": "corpus/docs/C20.pdf",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1,
+        "longitud": 2931,
+        "sha256": "88ce6c86bf754564704499ce4c7eadc48cab0eca578d9f3b218e3c0c166c41cd"
+      },
+      {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2,
+        "longitud": 2786,
+        "sha256": "fcedd07292e7c3531fbe669d1a3c90a80fbbe51756999ff17930932dee0ff04f"
+      },
+      {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3,
+        "longitud": 258,
+        "sha256": "8126ccafc21408976161a80e6ac7badc7b4ecc0c74f8b875a86f1b448617c3cb"
+      }
+    ],
+    "advertencias": [
+      "ORDEN_LECTURA_PDF"
+    ],
+    "metadatos": [
+      "pdf_propiedades"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Distribuidora Prueba y Cía. S. en C.",
+      "role": "EMPRESA"
+    },
+    {
+      "name": "Jorge Enrique Ejemplo Moreno",
+      "role": "CLIENTE"
+    },
+    {
+      "name": "Hugo Prueba Acosta",
+      "role": "CONTACTO"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C20-E01",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:68",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E02",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E03",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Distribuidora Prueba y Cía. S. en C.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C20-E04",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:890000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E05",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:CL 00B 00 0 IN 9",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E06",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:edgar prueba ramirez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E07",
+      "tipo": "CARGO",
+      "canonico": "CARGO:gerente general",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E08",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:10000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E09",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "canonico": "LISTA:Jorge Enrique Ejemplo Moreno",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C20-E10",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "canonico": "CC:8000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E11",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:KR 0C BIS 0 1 LC 6 IN 8",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E12",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:el mirador ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E13",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E14",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1564 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E15",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:KR 0 0 0 O AP 703",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E16",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:la esperanza ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E17",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:100-000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E18",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:50N-00000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E19",
+      "tipo": "VALOR",
+      "canonico": "VALOR:380000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E20",
+      "tipo": "VALOR",
+      "canonico": "VALOR:38000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E21",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:200",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E22",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-09-15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E23",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:notaria 999 del circulo de soacha",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E24",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000000600",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E25",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E26",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:rafael ficticio cifuentes",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E27",
+      "tipo": "NIT",
+      "rol": "OTRA_PERSONA",
+      "canonico": "NIT:51000007",
+      "mismoTitular": [
+        "C20-E53"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C20-E28",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-09-30",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E29",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:almacenes ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E30",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1840000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E31",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 997 civil municipal de soacha",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E32",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1581 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E33",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 1074 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E34",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "canonico": "CORREO:datospersonales@distribuidora-prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E35",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:AT00000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E36",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:taller mecanico ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E37",
+      "tipo": "NIT",
+      "rol": "PROVEEDOR",
+      "canonico": "NIT:860000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E38",
+      "tipo": "VALOR",
+      "canonico": "VALOR:20000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E39",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2027-08-21",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E40",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "canonico": "CORREO:notificaciones@distribuidora-prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E41",
+      "tipo": "TELEFONO",
+      "rol": "EMPRESA",
+      "canonico": "TEL:6010000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E42",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "canonico": "CORREO:jorge.ejemplo@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E43",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:3180000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E44",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "canonico": "LISTA:Hugo Prueba Acosta",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C20-E45",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:055000000012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E46",
+      "tipo": "CUENTA",
+      "rol": "EMPRESA",
+      "canonico": "CUENTA:BREB:@distribuidora.ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E47",
+      "tipo": "CC",
+      "rol": "CONTACTO",
+      "canonico": "CC:1000000013",
+      "mismoTitular": [
+        "C20-E48"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C20-E48",
+      "tipo": "NIT",
+      "rol": "CONTACTO",
+      "canonico": "NIT:1000000013",
+      "mismoTitular": [
+        "C20-E47"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C20-E49",
+      "tipo": "DIRECCION",
+      "rol": "CONTACTO",
+      "canonico": "DIR:KR 00B 0 1 TO 2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E50",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:500221",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E51",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:C2026000093",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E52",
+      "tipo": "CARGO",
+      "canonico": "CARGO:administrador del conjunto",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E53",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:51000007",
+      "mismoTitular": [
+        "C20-E27"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C20-E54",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3010000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E55",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:5",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E56",
+      "tipo": "VALOR",
+      "canonico": "VALOR:7500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E57",
+      "tipo": "RADICADO",
+      "canonico": "RAD:76520400597520190001500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E58",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 993 civil del circuito de facatativa",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E59",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-11-08",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E60",
+      "tipo": "RADICADO",
+      "canonico": "RAD:11001411094720200001600",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E61",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 993 civil del circuito de itagui",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E62",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E63",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-06-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E64",
+      "tipo": "RADICADO",
+      "canonico": "RAD:11999310396620210001800",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E65",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:henry ficticio del rio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E66",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:6030000020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E67",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:claudia prueba herrera",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E68",
+      "tipo": "NIT",
+      "rol": "OTRA_PERSONA",
+      "canonico": "NIT:80000022",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E69",
+      "tipo": "CC",
+      "canonico": "NEG:81",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C20-E70",
+      "tipo": "VALOR",
+      "canonico": "NEG:$47.065",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C20-A001",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 55,
+      "end": 66,
+      "texto": "Bucaramanga",
+      "tipo": "MUNICIPIO",
+      "entidad": "C20-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A002",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 74,
+      "end": 119,
+      "texto": "diecisiete (17) días del mes de julio de\n2026",
+      "tipo": "FECHA",
+      "entidad": "C20-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A003",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 155,
+      "end": 191,
+      "texto": "DISTRIBUIDORA PRUEBA Y CÍA. S. EN C.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C20-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A004",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 210,
+      "end": 223,
+      "texto": "890.000.001-7",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C20-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A005",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 242,
+      "end": 272,
+      "texto": "Cll. 00B No. 00-00,\ninterior 9",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C20-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A006",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 276,
+      "end": 287,
+      "texto": "Bucaramanga",
+      "tipo": "MUNICIPIO",
+      "entidad": "C20-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A007",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 317,
+      "end": 337,
+      "texto": "Édgar Prueba Ramírez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A008",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 368,
+      "end": 383,
+      "texto": "gerente\ngeneral",
+      "tipo": "CARGO",
+      "entidad": "C20-E07",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A009",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 409,
+      "end": 419,
+      "texto": "10.000.002",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A010",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 494,
+      "end": 522,
+      "texto": "Jorge Enrique Ejemplo\nMoreno",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A011",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 566,
+      "end": 575,
+      "texto": "8'000.003",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C20-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A012",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 592,
+      "end": 634,
+      "texto": "Carrera 0C Bis # 0-01, local 6, interior\n8",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C20-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A013",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 643,
+      "end": 661,
+      "texto": "El Mirador Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C20-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A014",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 663,
+      "end": 669,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C20-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A015",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 827,
+      "end": 843,
+      "texto": "Ley 1564 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C20-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A016",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 983,
+      "end": 1019,
+      "texto": "Cra. 0 # 0-00\nOeste, apartamento 703",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C20-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A017",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1028,
+      "end": 1049,
+      "texto": "La\nEsperanza Ficticia",
+      "tipo": "BARRIO",
+      "entidad": "C20-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A018",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1051,
+      "end": 1057,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C20-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A019",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1090,
+      "end": 1100,
+      "texto": "100-000004",
+      "tipo": "MATRICULA",
+      "entidad": "C20-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A020",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1124,
+      "end": 1136,
+      "texto": "50N-00000005",
+      "tipo": "MATRICULA",
+      "entidad": "C20-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A021",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1188,
+      "end": 1240,
+      "texto": "trescientos ochenta\nmillones de pesos ($380.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C20-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A022",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1272,
+      "end": 1278,
+      "texto": "$38 MM",
+      "tipo": "VALOR",
+      "entidad": "C20-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A023",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1305,
+      "end": 1365,
+      "texto": "doscientos (200)\nsalarios mínimos legales mensuales\nvigentes",
+      "tipo": "VALOR",
+      "entidad": "C20-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A024",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1416,
+      "end": 1444,
+      "texto": "JORGE ENRIQUE\nEJEMPLO MORENO",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A025",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1556,
+      "end": 1610,
+      "texto": "quince\n(15) de septiembre de dos mil veintiséis\n(2026)",
+      "tipo": "FECHA",
+      "entidad": "C20-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A026",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1617,
+      "end": 1650,
+      "texto": "Notaría 999 del Círculo de\nSoacha",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C20-E23",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C20-A027",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1644,
+      "end": 1650,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C20-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C20-A026",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C20-A028",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1666,
+      "end": 1673,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C20-A029",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1799,
+      "end": 1812,
+      "texto": "000-000006-00",
+      "tipo": "CUENTA",
+      "entidad": "C20-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A030",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1817,
+      "end": 1834,
+      "texto": "Banco Prueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C20-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A031",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1853,
+      "end": 1878,
+      "texto": "Rafael Ficticio\nCifuentes",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A032",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1884,
+      "end": 1896,
+      "texto": "51.000.007-4",
+      "tipo": "NIT",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A033",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1955,
+      "end": 1965,
+      "texto": "2026-09-30",
+      "tipo": "FECHA",
+      "entidad": "C20-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A034",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2045,
+      "end": 2067,
+      "texto": "Almacenes Ejemplo S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C20-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A035",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2094,
+      "end": 2104,
+      "texto": "$1.840.000",
+      "tipo": "VALOR",
+      "entidad": "C20-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A036",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2128,
+      "end": 2156,
+      "texto": "Jorge Enrique Ejemplo Moreno",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A037",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2303,
+      "end": 2309,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C20-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A038",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2311,
+      "end": 2323,
+      "texto": "Cundinamarca",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C20-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A039",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2361,
+      "end": 2398,
+      "texto": "Juzgado\n997 Civil Municipal de Soacha",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C20-E31",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C20-A040",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2392,
+      "end": 2398,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C20-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C20-A039",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C20-A041",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2462,
+      "end": 2478,
+      "texto": "Ley 1581 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C20-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A042",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2485,
+      "end": 2505,
+      "texto": "Decreto 1074 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C20-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A043",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2629,
+      "end": 2670,
+      "texto": "datospersonales@distribuidora-prueba.test",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "entidad": "C20-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A044",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2725,
+      "end": 2737,
+      "texto": "AT-0000-0008",
+      "tipo": "AFILIACION",
+      "entidad": "C20-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A045",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2751,
+      "end": 2781,
+      "texto": "Taller Mecánico Ejemplo S.A.S.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C20-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A046",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2787,
+      "end": 2800,
+      "texto": "860.000.009-3",
+      "tipo": "NIT",
+      "rol": "PROVEEDOR",
+      "entidad": "C20-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A047",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2829,
+      "end": 2849,
+      "texto": "20 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C20-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A048",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2859,
+      "end": 2913,
+      "texto": "veintiuno (21) de agosto de dos mil\nveintisiete (2027)",
+      "tipo": "FECHA",
+      "entidad": "C20-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A049",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 0,
+      "end": 28,
+      "texto": "Jorge Enrique Ejemplo Moreno",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A050",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 145,
+      "end": 150,
+      "texto": "DIPRU",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C20-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A051",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 152,
+      "end": 180,
+      "texto": "Cll. 00B # 00-00, interior 9",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C20-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A052",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 189,
+      "end": 229,
+      "texto": "notificaciones@distribuidora-prueba.test",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "entidad": "C20-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A053",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 240,
+      "end": 252,
+      "texto": "601 000 0010",
+      "tipo": "TELEFONO",
+      "rol": "EMPRESA",
+      "entidad": "C20-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A054",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 254,
+      "end": 268,
+      "texto": "Ejemplo Moreno",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C20-A055",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 270,
+      "end": 308,
+      "texto": "Cr. 0C Bis # 0-01, local 6, interior 8",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C20-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A056",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 317,
+      "end": 343,
+      "texto": "jorge.ejemplo@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C20-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A057",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 353,
+      "end": 370,
+      "texto": "0057 318 000 0011",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C20-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A058",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 394,
+      "end": 412,
+      "texto": "Hugo Prueba Acosta",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C20-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A059",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 544,
+      "end": 555,
+      "texto": "Bucaramanga",
+      "tipo": "MUNICIPIO",
+      "entidad": "C20-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A060",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 562,
+      "end": 607,
+      "texto": "diecisiete (17) días\ndel mes de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C20-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A061",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 627,
+      "end": 641,
+      "texto": "Prueba Ramírez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A062",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 707,
+      "end": 721,
+      "texto": "Ejemplo Moreno",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C20-A063",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 850,
+      "end": 864,
+      "texto": "0550-0000-0012",
+      "tipo": "CUENTA",
+      "entidad": "C20-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A064",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 884,
+      "end": 906,
+      "texto": "@distribuidora.ejemplo",
+      "tipo": "CUENTA",
+      "rol": "EMPRESA",
+      "entidad": "C20-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A065",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 911,
+      "end": 923,
+      "texto": "Banco Prueba",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C20-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A066",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 947,
+      "end": 975,
+      "texto": "Jorge Enrique Ejemplo Moreno",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A067",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1035,
+      "end": 1053,
+      "texto": "Hugo Prueba Acosta",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C20-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A068",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1077,
+      "end": 1090,
+      "texto": "1.000.000.013",
+      "tipo": "CC",
+      "rol": "CONTACTO",
+      "entidad": "C20-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A069",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1100,
+      "end": 1115,
+      "texto": "1.000.000.013-6",
+      "tipo": "NIT",
+      "rol": "CONTACTO",
+      "entidad": "C20-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A070",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1131,
+      "end": 1160,
+      "texto": "Carrera\n00B No. 0-01, torre 2",
+      "tipo": "DIRECCION",
+      "rol": "CONTACTO",
+      "entidad": "C20-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A071",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1191,
+      "end": 1198,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C20-A072",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1433,
+      "end": 1439,
+      "texto": "500221",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C20-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C20-A073",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1454,
+      "end": 1467,
+      "texto": "C-2026-000093",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C20-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C20-A074",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1483,
+      "end": 1511,
+      "texto": "Jorge Enrique Ejemplo Moreno",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A075",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1627,
+      "end": 1652,
+      "texto": "Rafael\nFicticio Cifuentes",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A076",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1654,
+      "end": 1680,
+      "texto": "administrador del\nconjunto",
+      "tipo": "CARGO",
+      "entidad": "C20-E52",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A077",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1684,
+      "end": 1689,
+      "texto": "DIPRU",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C20-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A078",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1713,
+      "end": 1721,
+      "texto": "51000007",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A079",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1766,
+      "end": 1776,
+      "texto": "3010000014",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A080",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1867,
+      "end": 1920,
+      "texto": "cinco (5) salarios mínimos\nlegales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C20-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A081",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1946,
+      "end": 2000,
+      "texto": "SIETE MILLONES\nQUINIENTOS MIL PESOS M/CTE ($7.500.000)",
+      "tipo": "VALOR",
+      "entidad": "C20-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A082",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2054,
+      "end": 2067,
+      "texto": "Prueba Acosta",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C20-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C20-A083",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2151,
+      "end": 2171,
+      "texto": "Édgar Prueba Ramírez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A084",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2174,
+      "end": 2179,
+      "texto": "DIPRU",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C20-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A085",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2180,
+      "end": 2208,
+      "texto": "JORGE ENRIQUE EJEMPLO MORENO",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C20-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A086",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2216,
+      "end": 2223,
+      "texto": "8000003",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C20-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A087",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2286,
+      "end": 2315,
+      "texto": "76520-40-05-975-2019-00015-00",
+      "tipo": "RADICADO",
+      "entidad": "C20-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A088",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2324,
+      "end": 2368,
+      "texto": "Juzgado 993 Civil del Circuito de\nFacatativá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C20-E58",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C20-A089",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2358,
+      "end": 2368,
+      "texto": "Facatativá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C20-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C20-A088",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C20-A090",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2382,
+      "end": 2392,
+      "texto": "2025-11-08",
+      "tipo": "FECHA",
+      "entidad": "C20-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A091",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2418,
+      "end": 2447,
+      "texto": "11001-41-10-947-2020-00016-00",
+      "tipo": "RADICADO",
+      "entidad": "C20-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A092",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2456,
+      "end": 2496,
+      "texto": "Juzgado 993 Civil del Circuito de\nItagüí",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C20-E61",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C20-A093",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2490,
+      "end": 2496,
+      "texto": "Itagüí",
+      "tipo": "MUNICIPIO",
+      "entidad": "C20-E62",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C20-A092",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C20-A094",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2510,
+      "end": 2522,
+      "texto": "18 jun. 2024",
+      "tipo": "FECHA",
+      "entidad": "C20-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A095",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2600,
+      "end": 2629,
+      "texto": "11999-31-03-966-2021-00018-00",
+      "tipo": "RADICADO",
+      "entidad": "C20-E64",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A096",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2722,
+      "end": 2738,
+      "texto": "Ficticio Del Río",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E65",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A097",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2744,
+      "end": 2756,
+      "texto": "603\n000 0020",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E66",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C20-A098",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 48,
+      "end": 62,
+      "texto": "Prueba Herrera",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E67",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C20-A099",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 74,
+      "end": 86,
+      "texto": "80.000.022-6",
+      "tipo": "NIT",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C20-E68",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C20-A100",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 186,
+      "end": 188,
+      "texto": "81",
+      "tipo": "CC",
+      "entidad": "C20-E69",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C20-A101",
+      "docId": "C20",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 206,
+      "end": 213,
+      "texto": "$47.065",
+      "tipo": "VALOR",
+      "entidad": "C20-E70",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

@@ -4,3 +4,5 @@
 *.siglow binary
 *.wasm binary
 *.onnx binary
+# PG-1a: los .txt del corpus conservan sus bytes (CRLF de C05, BOM de C10 y C11); sus sumas están en corpus/MANIFIESTO.json
+corpus/docs/*.txt -text

@@ -1,0 +1,2486 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C10",
+  "tipoDocumento": "derecho_peticion",
+  "fuente": "txt",
+  "archivo": "corpus/docs/C10.txt",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 4790,
+        "sha256": "71affae5e4673dff67cb9de4307d5e4e6662ff9e7421828bb43d95c69839e5b5"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": []
+  },
+  "listaDelCaso": [
+    {
+      "name": "Ana Prueba",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Salud Integral Prueba EPS S.A.",
+      "role": "EPS"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C10-E01",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:68",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E02",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-03-15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E03",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "LISTA:Salud Integral Prueba EPS S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C10-E04",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinadora de auditoria medica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E05",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:blanca nubia ejemplo rincon",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E06",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "canonico": "DIR:CL 0A BIS A 0 1 LC 2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E07",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 23 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E08",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Ana Prueba",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C10-E09",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:1000000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E10",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:KR 0A BIS A 0A 1 OF 303",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E11",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:ejemplo norte",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E12",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E13",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3100000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E14",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:0000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E15",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:ana.prueba@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E16",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:adriana ficticia cardona",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E17",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "canonico": "DIR:AV FICTICIA 0C 0 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E18",
+      "tipo": "VALOR",
+      "canonico": "VALOR:148000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E19",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3010000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E20",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E21",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:055000000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E22",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-01-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E23",
+      "tipo": "MENOR",
+      "canonico": "MENOR:test:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E24",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:notaria ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E25",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:santa prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E26",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E27",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-12-12",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E28",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:PQRSD2026000355",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E29",
+      "tipo": "FECHA",
+      "canonico": "FECHA:1965-04-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E30",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~61 anos",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E31",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-09-29",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E32",
+      "tipo": "VALOR",
+      "canonico": "VALOR:384500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E33",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:tecnologia ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E34",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:811000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E35",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:000000000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E36",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "canonico": "CUENTA:BREB:@prueba26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E37",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:0000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E38",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:los almendros de prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E39",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-12-06",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E40",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:PQRSD2026000443",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E41",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1755 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E42",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 1072 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E43",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia c-818 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E44",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 14 de la ley 1437 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E45",
+      "tipo": "CC",
+      "canonico": "NEG:3600",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E46",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-01",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E47",
+      "tipo": "VALOR",
+      "canonico": "VALOR:250000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E48",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E49",
+      "tipo": "RADICADO",
+      "canonico": "RAD:73001411099320210001000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E50",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 991 laboral del circuito de floridablanca",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E51",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-07-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E52",
+      "tipo": "RADICADO",
+      "canonico": "RAD:76520311099620210001100",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E53",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 994 civil municipal de palmira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E54",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E55",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-05-01",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E56",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:viviana ficticia beltran",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E57",
+      "tipo": "PASAPORTE",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PASAPORTE:VE000013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E58",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-07",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E59",
+      "tipo": "VALOR",
+      "canonico": "NEG:$47.065",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C10-E60",
+      "tipo": "CC",
+      "canonico": "NEG:8610",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C10-A001",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 0,
+      "end": 11,
+      "texto": "Bucaramanga",
+      "tipo": "MUNICIPIO",
+      "entidad": "C10-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C10-A002",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 18,
+      "end": 28,
+      "texto": "15/03/2026",
+      "tipo": "FECHA",
+      "entidad": "C10-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C10-A003",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 38,
+      "end": 68,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C10-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C10-A004",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 75,
+      "end": 107,
+      "texto": "coordinadora de auditoría médica",
+      "tipo": "CARGO",
+      "entidad": "C10-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C10-A005",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 110,
+      "end": 137,
+      "texto": "Blanca Nubia Ejemplo Rincón",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C10-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C10-A006",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 149,
+      "end": 180,
+      "texto": "Calle 0A Bis A N° 0-01, local 2",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "entidad": "C10-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C10-A007",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 182,
+      "end": 193,
+      "texto": "Bucaramanga",
+      "tipo": "MUNICIPIO",
+      "entidad": "C10-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C10-A008",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 225,
+      "end": 264,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C10-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C10-A009",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 266,
+      "end": 290,
+      "texto": "Ana Lucía Prueba Navarro",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A010",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 352,
+      "end": 365,
+      "texto": "1.000.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C10-A011",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 380,
+      "end": 414,
+      "texto": "Cra. 0A Bis A # 0A-01, oficina 303",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C10-A012",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 423,
+      "end": 436,
+      "texto": "Ejemplo Norte",
+      "tipo": "BARRIO",
+      "entidad": "C10-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C10-A013",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 438,
+      "end": 442,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C10-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C10-A014",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 456,
+      "end": 472,
+      "texto": "+57 310 000 0002",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C10-A015",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 480,
+      "end": 488,
+      "texto": "000 0003",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C10-A016",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 497,
+      "end": 524,
+      "texto": "ana.prueba@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C10-A017",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 611,
+      "end": 635,
+      "texto": "Adriana Ficticia Cardona",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C10-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C10-A018",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 653,
+      "end": 675,
+      "texto": "Av. Ficticia 0C # 0-03",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C10-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C10-A019",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 709,
+      "end": 718,
+      "texto": "$ 148.000",
+      "tipo": "VALOR",
+      "entidad": "C10-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C10-A020",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 764,
+      "end": 776,
+      "texto": "301-000-0004",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C10-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C10-A021",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 858,
+      "end": 876,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C10-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C10-A022",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 881,
+      "end": 895,
+      "texto": "0550-0000-0005",
+      "tipo": "CUENTA",
+      "entidad": "C10-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C10-A023",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 926,
+      "end": 936,
+      "texto": "2026-01-10",
+      "tipo": "FECHA",
+      "entidad": "C10-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C10-A024",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 965,
+      "end": 971,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A025",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1058,
+      "end": 1066,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C10-E23",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C10-A026",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1078,
+      "end": 1093,
+      "texto": "Notaría Ejemplo",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C10-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C10-A027",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1122,
+      "end": 1146,
+      "texto": "Ana Lucía Prueba Navarro",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A028",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1203,
+      "end": 1215,
+      "texto": "Santa Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C10-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C10-A029",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1219,
+      "end": 1223,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C10-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C10-A030",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1231,
+      "end": 1267,
+      "texto": "Cra. 0A Bis A No. 0A-01, oficina 303",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C10-A031",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1309,
+      "end": 1334,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C10-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C10-A032",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1345,
+      "end": 1354,
+      "texto": "000000006",
+      "tipo": "AFILIACION",
+      "entidad": "C10-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C10-A033",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1381,
+      "end": 1433,
+      "texto": "doce (12) de diciembre de dos mil veinticinco (2025)",
+      "tipo": "FECHA",
+      "entidad": "C10-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C10-A034",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1453,
+      "end": 1470,
+      "texto": "PQRSD-2026-000355",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C10-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C10-A035",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1509,
+      "end": 1523,
+      "texto": "Prueba Navarro",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A036",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1533,
+      "end": 1543,
+      "texto": "17/04/1965",
+      "tipo": "FECHA",
+      "entidad": "C10-E29",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C10-A037",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1549,
+      "end": 1556,
+      "texto": "61 años",
+      "tipo": "FECHA",
+      "entidad": "C10-E30",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C10-A038",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1668,
+      "end": 1692,
+      "texto": "29 de septiembre de 2025",
+      "tipo": "FECHA",
+      "entidad": "C10-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C10-A039",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1716,
+      "end": 1724,
+      "texto": "$384.500",
+      "tipo": "VALOR",
+      "entidad": "C10-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C10-A040",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1820,
+      "end": 1834,
+      "texto": "Prueba Navarro",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A041",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1865,
+      "end": 1891,
+      "texto": "TECNOLOGÍA FICTICIA S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C10-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F51"
+      ]
+    },
+    {
+      "id": "C10-A042",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1901,
+      "end": 1914,
+      "texto": "811.000.007-3",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C10-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C10-A043",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2059,
+      "end": 2083,
+      "texto": "Ana Lucía Prueba Navarro",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A044",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2109,
+      "end": 2133,
+      "texto": "Adriana Ficticia Cardona",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C10-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C10-A045",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2151,
+      "end": 2175,
+      "texto": "Av. Ficticia 0C No. 0-03",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C10-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C10-A046",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2209,
+      "end": 2218,
+      "texto": "$ 148.000",
+      "tipo": "VALOR",
+      "entidad": "C10-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C10-A047",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2264,
+      "end": 2276,
+      "texto": "301 000 0004",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C10-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C10-A048",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2326,
+      "end": 2338,
+      "texto": "000000000008",
+      "tipo": "CUENTA",
+      "entidad": "C10-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C10-A049",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2377,
+      "end": 2386,
+      "texto": "@prueba26",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C10-A050",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2402,
+      "end": 2426,
+      "texto": "Ana Lucía Prueba Navarro",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A051",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2528,
+      "end": 2536,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C10-E23",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C10-A052",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2548,
+      "end": 2563,
+      "texto": "Notaría Ejemplo",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C10-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C10-A053",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2592,
+      "end": 2598,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A054",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2651,
+      "end": 2681,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C10-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C10-A055",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2728,
+      "end": 2735,
+      "texto": "0000009",
+      "tipo": "AFILIACION",
+      "entidad": "C10-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C10-A056",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2768,
+      "end": 2805,
+      "texto": "Carrera 0A Bis A # 0A-01, oficina 303",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C10-A057",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2814,
+      "end": 2837,
+      "texto": "Los Almendros de Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C10-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C10-A058",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2852,
+      "end": 2856,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C10-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C10-A059",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2883,
+      "end": 2934,
+      "texto": "seis (6) de diciembre de dos mil veinticinco (2025)",
+      "tipo": "FECHA",
+      "entidad": "C10-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C10-A060",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2954,
+      "end": 2971,
+      "texto": "PQRSD-2026-000443",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C10-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C10-A061",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3011,
+      "end": 3025,
+      "texto": "Prueba Navarro",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A062",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3035,
+      "end": 3045,
+      "texto": "17/04/1965",
+      "tipo": "FECHA",
+      "entidad": "C10-E29",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C10-A063",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3051,
+      "end": 3058,
+      "texto": "61 años",
+      "tipo": "FECHA",
+      "entidad": "C10-E30",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C10-A064",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3180,
+      "end": 3219,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C10-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C10-A065",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3257,
+      "end": 3273,
+      "texto": "Ley 1755 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C10-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C10-A066",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3341,
+      "end": 3361,
+      "texto": "Decreto 1072 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C10-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C10-A067",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3367,
+      "end": 3390,
+      "texto": "Sentencia C-818 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C10-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C10-A068",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3464,
+      "end": 3498,
+      "texto": "artículo 14 de la Ley 1437 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C10-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C10-A069",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3516,
+      "end": 3520,
+      "texto": "3600",
+      "tipo": "CC",
+      "entidad": "C10-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C10-A070",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3620,
+      "end": 3631,
+      "texto": "1 feb. 2026",
+      "tipo": "FECHA",
+      "entidad": "C10-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C10-A071",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3684,
+      "end": 3731,
+      "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
+      "tipo": "VALOR",
+      "entidad": "C10-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24"
+      ]
+    },
+    {
+      "id": "C10-A072",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3796,
+      "end": 3823,
+      "texto": "ana.prueba@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C10-A073",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3902,
+      "end": 3916,
+      "texto": "Prueba Navarro",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A074",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4025,
+      "end": 4032,
+      "texto": "1 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C10-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C10-A075",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4075,
+      "end": 4110,
+      "texto": "Kr. 0A Bis A No. 0A-01, oficina 303",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C10-A076",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4112,
+      "end": 4116,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C10-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C10-A077",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4133,
+      "end": 4160,
+      "texto": "ana.prueba@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C10-A078",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4177,
+      "end": 4201,
+      "texto": "Ana Lucía Prueba Navarro",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C10-A079",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4207,
+      "end": 4217,
+      "texto": "1000000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C10-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C10-A080",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4279,
+      "end": 4308,
+      "texto": "73001 41 10 993 2021 00010 00",
+      "tipo": "RADICADO",
+      "entidad": "C10-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C10-A081",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4317,
+      "end": 4366,
+      "texto": "Juzgado 991 Laboral del Circuito de Floridablanca",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C10-E50",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C10-A082",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4353,
+      "end": 4366,
+      "texto": "Floridablanca",
+      "tipo": "MUNICIPIO",
+      "entidad": "C10-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C10-A081",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C10-A083",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4380,
+      "end": 4391,
+      "texto": "5 jul. 2024",
+      "tipo": "FECHA",
+      "entidad": "C10-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C10-A084",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4412,
+      "end": 4435,
+      "texto": "76520311099620210001100",
+      "tipo": "RADICADO",
+      "entidad": "C10-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C10-A085",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4444,
+      "end": 4482,
+      "texto": "Juzgado 994 Civil Municipal de Palmira",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C10-E53",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C10-A086",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4475,
+      "end": 4482,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C10-E54",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C10-A085",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C10-A087",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4496,
+      "end": 4506,
+      "texto": "2025-05-01",
+      "tipo": "FECHA",
+      "entidad": "C10-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C10-A088",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4522,
+      "end": 4546,
+      "texto": "Viviana Ficticia Beltrán",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C10-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C10-A089",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4577,
+      "end": 4585,
+      "texto": "VE000013",
+      "tipo": "PASAPORTE",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C10-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09"
+      ]
+    },
+    {
+      "id": "C10-A090",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4614,
+      "end": 4634,
+      "texto": "7 de febrero de 2026",
+      "tipo": "FECHA",
+      "entidad": "C10-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C10-A091",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4706,
+      "end": 4713,
+      "texto": "$47.065",
+      "tipo": "VALOR",
+      "entidad": "C10-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C10-A092",
+      "docId": "C10",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4740,
+      "end": 4744,
+      "texto": "8610",
+      "tipo": "CC",
+      "entidad": "C10-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

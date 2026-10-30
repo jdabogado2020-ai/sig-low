@@ -1,0 +1,2892 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C13",
+  "tipoDocumento": "derecho_peticion",
+  "fuente": "docx",
+  "archivo": "corpus/docs/C13.docx",
+  "conjunto": "desarrollo",
+  "semilla": "SIGLOW-CORPUS-A",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "encabezado",
+        "index": 1,
+        "longitud": 93,
+        "sha256": "0238e4aeb0b5ee9f9a3f7175bdf87a3a1c656fb67f2866c7c325a32cbdd7424a"
+      },
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 5647,
+        "sha256": "f7ebf14e7304ac6dea206328e8ad802e6d59f601666c666e270a5e1df076fe87"
+      }
+    ],
+    "advertencias": [
+      "TEXTO_ELIMINADO_EXCLUIDO"
+    ],
+    "metadatos": [
+      "autores_revisiones",
+      "propiedades_aplicacion",
+      "propiedades_documento",
+      "texto_eliminado"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Gilberto Prueba Ruiz",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Servicios Públicos Ejemplo E.S.P.",
+      "role": "PROVEEDOR"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C13-E01",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:agroindustrias ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E02",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:811000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E03",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:CL 0C 00 1 N",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E04",
+      "tipo": "TELEFONO",
+      "rol": "EMPRESA",
+      "canonico": "TEL:6060000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E05",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E06",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E07",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "LISTA:Servicios Públicos Ejemplo E.S.P.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C13-E08",
+      "tipo": "CARGO",
+      "canonico": "CARGO:representante legal",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E09",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:ana lucia ficticia de la hoz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E10",
+      "tipo": "DIRECCION",
+      "rol": "PROVEEDOR",
+      "canonico": "DIR:AV EJEMPLO 00B 00 3 LC 5 CS 25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E11",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 23 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E12",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Gilberto Prueba Ruiz",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C13-E13",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:6000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E14",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:CL 00B 00 1 E LC 12",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E15",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:el remanso ficticio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E16",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E17",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3120000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E18",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:gilberto.prueba@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E19",
+      "tipo": "MENOR",
+      "canonico": "MENOR:test:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E20",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:corporacion prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E21",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:300-00000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E22",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:oscar javier ficticio londono",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E23",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:villa prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E24",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E25",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E26",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:PQRSD2026000344",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E27",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E28",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:055000000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E29",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-04-02",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E30",
+      "tipo": "FECHA",
+      "canonico": "FECHA:1965-04-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E31",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~61 anos",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E32",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "canonico": "DIR:AC 00 BIS A 00 0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E33",
+      "tipo": "VALOR",
+      "canonico": "VALOR:148000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E34",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3150000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E35",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-11-21",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E36",
+      "tipo": "VALOR",
+      "canonico": "VALOR:3600000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E37",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:bella vista ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E38",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E39",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-01-20",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E40",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:PQRSD2026000432",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E41",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:055000000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E42",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-24",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E43",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-13",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E44",
+      "tipo": "VALOR",
+      "canonico": "VALOR:2840000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E45",
+      "tipo": "MENOR",
+      "canonico": "MENOR:test:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E46",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1755 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E47",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 306 de 1992",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E48",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia c-818 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E49",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 14 de la ley 1437 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E50",
+      "tipo": "CC",
+      "canonico": "NEG:3600",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E51",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-03-29",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E52",
+      "tipo": "VALOR",
+      "canonico": "VALOR:250000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E53",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E54",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05360400396220240001100",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E55",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 994 civil municipal de sogamoso",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E56",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E57",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-05-02",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E58",
+      "tipo": "RADICADO",
+      "canonico": "RAD:66170410590720220001200",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E59",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 990 de familia de bogota",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E60",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:11",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E61",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-04-03",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E62",
+      "tipo": "RADICADO",
+      "canonico": "NEG:050014003997",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E63",
+      "tipo": "CC",
+      "canonico": "NEG:250001",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C13-A001",
+      "docId": "C13",
+      "parte": {
+        "kind": "encabezado",
+        "index": 1
+      },
+      "start": 0,
+      "end": 27,
+      "texto": "AGROINDUSTRIAS EJEMPLO S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C13-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F34",
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A002",
+      "docId": "C13",
+      "parte": {
+        "kind": "encabezado",
+        "index": 1
+      },
+      "start": 34,
+      "end": 47,
+      "texto": "811.000.007-3",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C13-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F34"
+      ]
+    },
+    {
+      "id": "C13-A003",
+      "docId": "C13",
+      "parte": {
+        "kind": "encabezado",
+        "index": 1
+      },
+      "start": 50,
+      "end": 71,
+      "texto": "Cll. 0C # 00-01 Norte",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C13-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F34"
+      ]
+    },
+    {
+      "id": "C13-A004",
+      "docId": "C13",
+      "parte": {
+        "kind": "encabezado",
+        "index": 1
+      },
+      "start": 79,
+      "end": 93,
+      "texto": "(606) 000 0010",
+      "tipo": "TELEFONO",
+      "rol": "EMPRESA",
+      "entidad": "C13-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F34"
+      ]
+    },
+    {
+      "id": "C13-A005",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 0,
+      "end": 16,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C13-E05",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A006",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 18,
+      "end": 28,
+      "texto": "09/05/2026",
+      "tipo": "FECHA",
+      "entidad": "C13-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C13-A007",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 37,
+      "end": 70,
+      "texto": "Servicios Públicos Ejemplo E.S.P.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C13-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A008",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 77,
+      "end": 96,
+      "texto": "representante legal",
+      "tipo": "CARGO",
+      "entidad": "C13-E08",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C13-A009",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 99,
+      "end": 127,
+      "texto": "Ana Lucía Ficticia De la Hoz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C13-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A010",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 139,
+      "end": 182,
+      "texto": "Av. Ejemplo 00B No. 00-03, local 5, casa 25",
+      "tipo": "DIRECCION",
+      "rol": "PROVEEDOR",
+      "entidad": "C13-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C13-A011",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 184,
+      "end": 200,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C13-E05",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A012",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 231,
+      "end": 270,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C13-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C13-A013",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 271,
+      "end": 291,
+      "texto": "Gilberto Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A014",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 353,
+      "end": 362,
+      "texto": "6.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C13-A015",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 377,
+      "end": 409,
+      "texto": "Calle 00B # 00-01 Este, local 12",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C13-A016",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 418,
+      "end": 437,
+      "texto": "El Remanso Ficticio",
+      "tipo": "BARRIO",
+      "entidad": "C13-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C13-A017",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 439,
+      "end": 448,
+      "texto": "Zipaquirá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C13-E16",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C13-A018",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 463,
+      "end": 475,
+      "texto": "312 000 0002",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C13-A019",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 485,
+      "end": 517,
+      "texto": "gilberto.prueba@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C13-A020",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 652,
+      "end": 660,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C13-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C13-A021",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 672,
+      "end": 690,
+      "texto": "Corporación Prueba",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C13-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A022",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 706,
+      "end": 717,
+      "texto": "Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C13-A023",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 835,
+      "end": 847,
+      "texto": "300-00000003",
+      "tipo": "MATRICULA",
+      "entidad": "C13-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C13-A024",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 851,
+      "end": 867,
+      "texto": "Ficticio Londoño",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C13-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A025",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 893,
+      "end": 901,
+      "texto": "G. P. R.",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C13-A026",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 967,
+      "end": 979,
+      "texto": "Villa Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C13-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C13-A027",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 983,
+      "end": 992,
+      "texto": "Zipaquirá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C13-E16",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C13-A028",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1000,
+      "end": 1031,
+      "texto": "Cl. 00B N° 00-01 Este, local 12",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C13-A029",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1073,
+      "end": 1099,
+      "texto": "Servicios Públicos Ejemplo",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C13-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A030",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1110,
+      "end": 1119,
+      "texto": "000000004",
+      "tipo": "AFILIACION",
+      "entidad": "C13-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C13-A031",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1145,
+      "end": 1196,
+      "texto": "quince (15) de febrero de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C13-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C13-A032",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1216,
+      "end": 1233,
+      "texto": "PQRSD-2026-000344",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C13-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C13-A033",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1290,
+      "end": 1310,
+      "texto": "Gilberto Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A034",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1411,
+      "end": 1429,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C13-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A035",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1434,
+      "end": 1448,
+      "texto": "0550-0000-0005",
+      "tipo": "CUENTA",
+      "entidad": "C13-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C13-A036",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1479,
+      "end": 1489,
+      "texto": "2026-04-02",
+      "tipo": "FECHA",
+      "entidad": "C13-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C13-A037",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1494,
+      "end": 1505,
+      "texto": "Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C13-A038",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1515,
+      "end": 1525,
+      "texto": "17/04/1965",
+      "tipo": "FECHA",
+      "entidad": "C13-E30",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C13-A039",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1531,
+      "end": 1538,
+      "texto": "61 años",
+      "tipo": "FECHA",
+      "entidad": "C13-E31",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C13-A040",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1681,
+      "end": 1701,
+      "texto": "Gilberto Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A041",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1720,
+      "end": 1749,
+      "texto": "Óscar Javier Ficticio Londoño",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C13-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A042",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1767,
+      "end": 1793,
+      "texto": "Av. Calle 00 Bis A # 00-00",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C13-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C13-A043",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1827,
+      "end": 1836,
+      "texto": "$ 148.000",
+      "tipo": "VALOR",
+      "entidad": "C13-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A044",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1882,
+      "end": 1894,
+      "texto": "315 000 0006",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C13-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F43"
+      ]
+    },
+    {
+      "id": "C13-A045",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1941,
+      "end": 1951,
+      "texto": "21/11/2025",
+      "tipo": "FECHA",
+      "entidad": "C13-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C13-A046",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1959,
+      "end": 1980,
+      "texto": "3.6 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C13-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C13-A047",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2062,
+      "end": 2070,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C13-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C13-A048",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2082,
+      "end": 2100,
+      "texto": "Corporación Prueba",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C13-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A049",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2140,
+      "end": 2151,
+      "texto": "Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C13-A050",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2182,
+      "end": 2209,
+      "texto": "AGROINDUSTRIAS EJEMPLO S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C13-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A051",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2219,
+      "end": 2232,
+      "texto": "811.000.007-3",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C13-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C13-A052",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2384,
+      "end": 2404,
+      "texto": "Gilberto Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A053",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2461,
+      "end": 2481,
+      "texto": "Bella Vista Ficticia",
+      "tipo": "BARRIO",
+      "entidad": "C13-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C13-A054",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2485,
+      "end": 2494,
+      "texto": "Zipaquirá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C13-E16",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C13-A055",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2502,
+      "end": 2532,
+      "texto": "Cl. 00B # 00-01 Este, local 12",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C13-A056",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2574,
+      "end": 2600,
+      "texto": "Servicios Públicos Ejemplo",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C13-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A057",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2611,
+      "end": 2620,
+      "texto": "000000008",
+      "tipo": "AFILIACION",
+      "entidad": "C13-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C13-A058",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2650,
+      "end": 2670,
+      "texto": "GILBERTO PRUEBA RUIZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C13-A059",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2727,
+      "end": 2776,
+      "texto": "veinte (20) de enero de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C13-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C13-A060",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2796,
+      "end": 2813,
+      "texto": "PQRSD-2026-000432",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C13-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C13-A061",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2865,
+      "end": 2876,
+      "texto": "Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C13-A062",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2999,
+      "end": 3017,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C13-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A063",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3022,
+      "end": 3036,
+      "texto": "0550-0000-0009",
+      "tipo": "CUENTA",
+      "entidad": "C13-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C13-A064",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3067,
+      "end": 3077,
+      "texto": "2026-02-24",
+      "tipo": "FECHA",
+      "entidad": "C13-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C13-A065",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3083,
+      "end": 3094,
+      "texto": "Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C13-A066",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3104,
+      "end": 3114,
+      "texto": "17/04/1965",
+      "tipo": "FECHA",
+      "entidad": "C13-E30",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C13-A067",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3120,
+      "end": 3127,
+      "texto": "61 años",
+      "tipo": "FECHA",
+      "entidad": "C13-E31",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C13-A068",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3254,
+      "end": 3260,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C13-A069",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3286,
+      "end": 3315,
+      "texto": "Óscar Javier Ficticio Londoño",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C13-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A070",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3333,
+      "end": 3363,
+      "texto": "Avenida Calle 00 Bis A # 00-00",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C13-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C13-A071",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3397,
+      "end": 3406,
+      "texto": "$ 148.000",
+      "tipo": "VALOR",
+      "entidad": "C13-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A072",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3452,
+      "end": 3464,
+      "texto": "315-000-0006",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C13-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C13-A073",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3483,
+      "end": 3494,
+      "texto": "Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C13-A074",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3544,
+      "end": 3565,
+      "texto": "13 de febrero de 2026",
+      "tipo": "FECHA",
+      "entidad": "C13-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C13-A075",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3589,
+      "end": 3599,
+      "texto": "$2.840.000",
+      "tipo": "VALOR",
+      "entidad": "C13-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A076",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3674,
+      "end": 3694,
+      "texto": "Gilberto Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A077",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3749,
+      "end": 3757,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C13-E45",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C13-A078",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3769,
+      "end": 3787,
+      "texto": "Corporación Prueba",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C13-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A079",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3853,
+      "end": 3880,
+      "texto": "AGROINDUSTRIAS EJEMPLO S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C13-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F51"
+      ]
+    },
+    {
+      "id": "C13-A080",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3890,
+      "end": 3903,
+      "texto": "811.000.007-3",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C13-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F43"
+      ]
+    },
+    {
+      "id": "C13-A081",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4044,
+      "end": 4083,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C13-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C13-A082",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4121,
+      "end": 4137,
+      "texto": "Ley 1755 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C13-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C13-A083",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4204,
+      "end": 4223,
+      "texto": "Decreto 306 de 1992",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C13-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C13-A084",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4229,
+      "end": 4252,
+      "texto": "Sentencia C-818 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C13-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C13-A085",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4325,
+      "end": 4359,
+      "texto": "artículo 14 de la Ley 1437 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C13-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C13-A086",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4377,
+      "end": 4381,
+      "texto": "3600",
+      "tipo": "CC",
+      "entidad": "C13-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C13-A087",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4480,
+      "end": 4492,
+      "texto": "29 mar. 2026",
+      "tipo": "FECHA",
+      "entidad": "C13-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C13-A088",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4545,
+      "end": 4592,
+      "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
+      "tipo": "VALOR",
+      "entidad": "C13-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24"
+      ]
+    },
+    {
+      "id": "C13-A089",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4657,
+      "end": 4689,
+      "texto": "gilberto.prueba@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C13-A090",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4768,
+      "end": 4779,
+      "texto": "Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C13-A091",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4888,
+      "end": 4895,
+      "texto": "1 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C13-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C13-A092",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4937,
+      "end": 4971,
+      "texto": "Calle 00B No. 00-01 Este, local 12",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C13-A093",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4973,
+      "end": 4982,
+      "texto": "Zipaquirá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C13-E16",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C13-A094",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4999,
+      "end": 5031,
+      "texto": "gilberto.prueba@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C13-A095",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5047,
+      "end": 5067,
+      "texto": "Gilberto Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A096",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5073,
+      "end": 5080,
+      "texto": "6000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C13-A097",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5117,
+      "end": 5147,
+      "texto": "Cl. 00B # 00-01 Este, local 12",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C13-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F37"
+      ]
+    },
+    {
+      "id": "C13-A098",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5206,
+      "end": 5236,
+      "texto": "05-360-40-03-962-2024-00011-00",
+      "tipo": "RADICADO",
+      "entidad": "C13-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C13-A099",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5245,
+      "end": 5284,
+      "texto": "Juzgado 994 Civil Municipal de Sogamoso",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C13-E55",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C13-A100",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5276,
+      "end": 5284,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C13-E56",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C13-A099",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C13-A101",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5298,
+      "end": 5308,
+      "texto": "2025-05-02",
+      "tipo": "FECHA",
+      "entidad": "C13-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C13-A102",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5335,
+      "end": 5364,
+      "texto": "66170/41/05/907/2022/00012/00",
+      "tipo": "RADICADO",
+      "entidad": "C13-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C13-A103",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5373,
+      "end": 5405,
+      "texto": "Juzgado 990 de Familia de Bogotá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C13-E59",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C13-A104",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5399,
+      "end": 5405,
+      "texto": "Bogotá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C13-E60",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C13-A103",
+      "caracteristicas": [
+        "F54"
+      ]
+    },
+    {
+      "id": "C13-A105",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5419,
+      "end": 5429,
+      "texto": "03/04/2024",
+      "tipo": "FECHA",
+      "entidad": "C13-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C13-A106",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5475,
+      "end": 5486,
+      "texto": "Santa María",
+      "tipo": "MUNICIPIO",
+      "entidad": "C13-E56",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F26"
+      ]
+    },
+    {
+      "id": "C13-A107",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5488,
+      "end": 5494,
+      "texto": "Boyacá",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C13-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C13-A108",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5568,
+      "end": 5580,
+      "texto": "050014003997",
+      "tipo": "RADICADO",
+      "entidad": "C13-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C13-A109",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5596,
+      "end": 5602,
+      "texto": "250001",
+      "tipo": "CC",
+      "entidad": "C13-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}
