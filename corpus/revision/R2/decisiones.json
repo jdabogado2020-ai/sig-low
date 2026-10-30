@@ -1,0 +1,1632 @@
+{
+ "formato": "sig-low/revision-r2-decisiones",
+ "v": 1,
+ "decisiones": {
+  "mayusculas|acción de tutela": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "ACCIÓN DE TUTELA",
+   "apariciones": 16,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09"
+   ]
+  },
+  "mayusculas|derechos fundamentales": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "DERECHOS FUNDAMENTALES",
+   "apariciones": 8,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09"
+   ]
+  },
+  "mayusculas|fundamentos de derecho": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "FUNDAMENTOS DE DERECHO",
+   "apariciones": 8,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09"
+   ]
+  },
+  "mayusculas|la corte constitucional": {
+   "decision": "no_es_dato",
+   "motivo": "Autoridad o registro público citado como institución en la fundamentación jurídica; no es parte, tercero ni funcionario identificable (F30–F32 cubren las citas).",
+   "clase": "mayusculas",
+   "texto": "La Corte Constitucional",
+   "apariciones": 17,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09"
+   ]
+  },
+  "mayusculas|corte suprema": {
+   "decision": "no_es_dato",
+   "motivo": "Autoridad o registro público citado como institución en la fundamentación jurídica; no es parte, tercero ni funcionario identificable (F30–F32 cubren las citas).",
+   "clase": "mayusculas",
+   "texto": "Corte Suprema",
+   "apariciones": 10,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09"
+   ]
+  },
+  "mayusculas|el registro único": {
+   "decision": "no_es_dato",
+   "motivo": "Autoridad o registro público citado como institución en la fundamentación jurídica; no es parte, tercero ni funcionario identificable (F30–F32 cubren las citas).",
+   "clase": "mayusculas",
+   "texto": "El Registro Único",
+   "apariciones": 9,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09"
+   ]
+  },
+  "mayusculas|permiso especial": {
+   "decision": "no_es_dato",
+   "motivo": "Nombre del tipo de documento («Permiso Especial de Permanencia», «Permiso por Protección Temporal»); el número que lo acompaña sí está anotado como PPT/PEP.",
+   "clase": "mayusculas",
+   "texto": "Permiso Especial",
+   "apariciones": 3,
+   "docs": [
+    "C01",
+    "C06",
+    "C07"
+   ]
+  },
+  "rotulo|31": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "31",
+   "apariciones": 6,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C09"
+   ]
+  },
+  "rotulo|32": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "32",
+   "apariciones": 6,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C09"
+   ]
+  },
+  "rotulo|33": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "33",
+   "apariciones": 6,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C09"
+   ]
+  },
+  "rotulo|34": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "34",
+   "apariciones": 6,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C09"
+   ]
+  },
+  "rotulo|35": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "35",
+   "apariciones": 6,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C09"
+   ]
+  },
+  "rotulo|36": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "36",
+   "apariciones": 6,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C09"
+   ]
+  },
+  "rotulo|37": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "37",
+   "apariciones": 6,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C09"
+   ]
+  },
+  "rotulo|38": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "38",
+   "apariciones": 6,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C09"
+   ]
+  },
+  "rotulo|39": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "39",
+   "apariciones": 6,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C09"
+   ]
+  },
+  "rotulo|40": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "40",
+   "apariciones": 2,
+   "docs": [
+    "C01",
+    "C06"
+   ]
+  },
+  "rotulo|41": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "41",
+   "apariciones": 2,
+   "docs": [
+    "C01",
+    "C06"
+   ]
+  },
+  "rotulo|42": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "42",
+   "apariciones": 2,
+   "docs": [
+    "C01",
+    "C06"
+   ]
+  },
+  "rotulo|43": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "43",
+   "apariciones": 2,
+   "docs": [
+    "C01",
+    "C06"
+   ]
+  },
+  "rotulo|44": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "44",
+   "apariciones": 2,
+   "docs": [
+    "C01",
+    "C06"
+   ]
+  },
+  "rotulo|45": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "45",
+   "apariciones": 2,
+   "docs": [
+    "C01",
+    "C06"
+   ]
+  },
+  "marcador|ficticio": {
+   "decision": "no_es_dato",
+   "motivo": "Palabra de la marca de ficción «Documento ficticio para pruebas de Sig-Low.»; una detección sobre ella cuenta como falso positivo.",
+   "clase": "marcador",
+   "texto": "ficticio",
+   "apariciones": 33,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10",
+    "C11",
+    "C12",
+    "C13",
+    "C14",
+    "C15",
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21",
+    "C22",
+    "C23",
+    "C24",
+    "C25",
+    "C26",
+    "C27",
+    "C28",
+    "C29",
+    "C30"
+   ]
+  },
+  "iniciales|e. s. d": {
+   "decision": "no_es_dato",
+   "motivo": "Fórmula de cortesía «E. S. D.» («en su despacho») del encabezado de la tutela; no identifica a nadie.",
+   "clase": "iniciales",
+   "texto": "E. S. D",
+   "apariciones": 8,
+   "docs": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09"
+   ]
+  },
+  "mayusculas|acción de": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "ACCIÓN DE",
+   "apariciones": 1,
+   "docs": [
+    "C03"
+   ]
+  },
+  "mayusculas|protección temporal": {
+   "decision": "no_es_dato",
+   "motivo": "Nombre del tipo de documento («Permiso Especial de Permanencia», «Permiso por Protección Temporal»); el número que lo acompaña sí está anotado como PPT/PEP.",
+   "clase": "mayusculas",
+   "texto": "Protección Temporal",
+   "apariciones": 3,
+   "docs": [
+    "C03",
+    "C05",
+    "C08"
+   ]
+  },
+  "mayusculas|la eps": {
+   "decision": "no_es_dato",
+   "motivo": "Artículo y sigla genérica sin razón social; 10.2.2 excluye los artículos y la entidad concreta ya está anotada por su nombre.",
+   "clase": "mayusculas",
+   "texto": "La EPS",
+   "apariciones": 8,
+   "docs": [
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09"
+   ]
+  },
+  "rotulo|46": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "46",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|47": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "47",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|48": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "48",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|49": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "49",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|50": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "50",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|51": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "51",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|52": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "52",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|53": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "53",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|54": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "54",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|55": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "55",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|56": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "56",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|57": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "57",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|58": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "58",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "rotulo|59": {
+   "decision": "no_es_dato",
+   "motivo": "Ordinal de un hecho numerado («N.º 31.»), no un dato.",
+   "clase": "rotulo",
+   "texto": "59",
+   "apariciones": 1,
+   "docs": [
+    "C06"
+   ]
+  },
+  "mayusculas|tutela de salud": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "TUTELA DE SALUD",
+   "apariciones": 4,
+   "docs": [
+    "C09"
+   ]
+  },
+  "C10|mayusculas|reserva ficticia": {
+   "decision": "omision",
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO.",
+   "clase": "mayusculas",
+   "texto": "Reserva Ficticia",
+   "apariciones": 1,
+   "docs": [
+    "C10"
+   ]
+  },
+  "mayusculas|datos complementarios": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "DATOS COMPLEMENTARIOS",
+   "apariciones": 6,
+   "docs": [
+    "C10",
+    "C11",
+    "C12",
+    "C13",
+    "C14",
+    "C15"
+   ]
+  },
+  "C10|marcador|ficticia": {
+   "decision": "omision",
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO.",
+   "clase": "marcador",
+   "texto": "Ficticia",
+   "apariciones": 1,
+   "docs": [
+    "C10"
+   ]
+  },
+  "C11|marcador|ejemplo": {
+   "decision": "omision",
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO.",
+   "clase": "marcador",
+   "texto": "Ejemplo",
+   "apariciones": 1,
+   "docs": [
+    "C11"
+   ]
+  },
+  "C12|marcador|prueba": {
+   "decision": "omision",
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO.",
+   "clase": "marcador",
+   "texto": "Prueba",
+   "apariciones": 1,
+   "docs": [
+    "C12"
+   ]
+  },
+  "C13|marcador|prueba": {
+   "decision": "omision",
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO.",
+   "clase": "marcador",
+   "texto": "Prueba",
+   "apariciones": 1,
+   "docs": [
+    "C13"
+   ]
+  },
+  "C13|marcador|ejemplo": {
+   "decision": "omision",
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO.",
+   "clase": "marcador",
+   "texto": "Ejemplo",
+   "apariciones": 1,
+   "docs": [
+    "C13"
+   ]
+  },
+  "C14|marcador|ejemplo": {
+   "decision": "omision",
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO.",
+   "clase": "marcador",
+   "texto": "Ejemplo",
+   "apariciones": 1,
+   "docs": [
+    "C14"
+   ]
+  },
+  "C15|marcador|ejemplo": {
+   "decision": "omision",
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO.",
+   "clase": "marcador",
+   "texto": "Ejemplo",
+   "apariciones": 1,
+   "docs": [
+    "C15"
+   ]
+  },
+  "mayusculas|contrato de arrendamiento": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CONTRATO DE ARRENDAMIENTO",
+   "apariciones": 1,
+   "docs": [
+    "C16"
+   ]
+  },
+  "mayusculas|contrato de arrendamiento de vivienda urbana": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CONTRATO DE ARRENDAMIENTO DE VIVIENDA URBANA",
+   "apariciones": 1,
+   "docs": [
+    "C16"
+   ]
+  },
+  "mayusculas|el arrendador": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL ARRENDADOR",
+   "apariciones": 2,
+   "docs": [
+    "C16"
+   ]
+  },
+  "mayusculas|el arrendatario": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL ARRENDATARIO",
+   "apariciones": 2,
+   "docs": [
+    "C16"
+   ]
+  },
+  "mayusculas|cláusula primera": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA PRIMERA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula segunda": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA SEGUNDA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula tercera": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA TERCERA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula cuarta": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA CUARTA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula quinta": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA QUINTA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|inventario del inmueble": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "INVENTARIO DEL INMUEBLE",
+   "apariciones": 1,
+   "docs": [
+    "C16"
+   ]
+  },
+  "mayusculas|cláusula sexta": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA SEXTA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|tratamiento de datos": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "TRATAMIENTO DE DATOS",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula séptima": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA SÉPTIMA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|forma de pago": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "FORMA DE PAGO",
+   "apariciones": 5,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20"
+   ]
+  },
+  "mayusculas|cláusula octava": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA OCTAVA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula novena": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA NOVENA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula décima": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA DÉCIMA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|deudor solidario": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "DEUDOR SOLIDARIO",
+   "apariciones": 5,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula undécima": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA UNDÉCIMA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|domicilio y jurisdicción": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "DOMICILIO Y JURISDICCIÓN",
+   "apariciones": 5,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula duodécima": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA DUODÉCIMA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula penal": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA PENAL",
+   "apariciones": 5,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula decimotercera": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA DECIMOTERCERA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|terceros y garantías": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "TERCEROS Y GARANTÍAS",
+   "apariciones": 5,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20"
+   ]
+  },
+  "mayusculas|cláusula decimocuarta": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA DECIMOCUARTA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula decimoquinta": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA DECIMOQUINTA",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|autorización de centrales": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "AUTORIZACIÓN DE CENTRALES",
+   "apariciones": 5,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C21"
+   ]
+  },
+  "mayusculas|anexo de referencias": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "ANEXO DE REFERENCIAS",
+   "apariciones": 6,
+   "docs": [
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21"
+   ]
+  },
+  "mayusculas|contrato de compraventa de vehículo automotor": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CONTRATO DE COMPRAVENTA DE VEHÍCULO AUTOMOTOR",
+   "apariciones": 1,
+   "docs": [
+    "C17"
+   ]
+  },
+  "mayusculas|el vendedor": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL VENDEDOR",
+   "apariciones": 3,
+   "docs": [
+    "C17"
+   ]
+  },
+  "mayusculas|el comprador": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL COMPRADOR",
+   "apariciones": 2,
+   "docs": [
+    "C17"
+   ]
+  },
+  "mayusculas|tarjeta y seguros": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "TARJETA Y SEGUROS",
+   "apariciones": 1,
+   "docs": [
+    "C17"
+   ]
+  },
+  "mayusculas|contrato de prestación de servicios profesionales": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CONTRATO DE PRESTACIÓN DE SERVICIOS PROFESIONALES",
+   "apariciones": 1,
+   "docs": [
+    "C18"
+   ]
+  },
+  "mayusculas|el contratante": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL CONTRATANTE",
+   "apariciones": 1,
+   "docs": [
+    "C18"
+   ]
+  },
+  "mayusculas|el contratista": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL CONTRATISTA",
+   "apariciones": 2,
+   "docs": [
+    "C18"
+   ]
+  },
+  "C18|marcador|ejemplo": {
+   "decision": "no_es_dato",
+   "motivo": "Sustantivo común «ejemplo» («el expediente T-8.100.002 citado como ejemplo»), no es nombre propio.",
+   "clase": "marcador",
+   "texto": "ejemplo",
+   "apariciones": 1,
+   "docs": [
+    "C18"
+   ]
+  },
+  "mayusculas|contrato individual de trabajo a término fijo": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CONTRATO INDIVIDUAL DE TRABAJO A TÉRMINO FIJO",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|el empleador": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL EMPLEADOR",
+   "apariciones": 3,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|el trabajador": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL TRABAJADOR",
+   "apariciones": 6,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|objeto y lugar de trabajo": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "OBJETO Y LUGAR DE TRABAJO",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|permiso de trabajo": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "PERMISO DE TRABAJO",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|seguridad social": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "SEGURIDAD SOCIAL",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|pago por nómina": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "PAGO POR NÓMINA",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|período de prueba": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "PERÍODO DE PRUEBA",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|si el empleador": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "Si EL EMPLEADOR",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|domicilio del trabajador": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "DOMICILIO DEL TRABAJADOR",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|contacto de emergencia": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CONTACTO DE EMERGENCIA",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|horas extras y recargos": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "HORAS EXTRAS Y RECARGOS",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|pensión y cesantías": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "PENSIÓN Y CESANTÍAS",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|reglamento y quejas": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "REGLAMENTO Y QUEJAS",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|cláusula decimosexta": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA DECIMOSEXTA",
+   "apariciones": 2,
+   "docs": [
+    "C19",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula decimoséptima": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA DECIMOSÉPTIMA",
+   "apariciones": 2,
+   "docs": [
+    "C19",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula decimoctava": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA DECIMOCTAVA",
+   "apariciones": 2,
+   "docs": [
+    "C19",
+    "C21"
+   ]
+  },
+  "mayusculas|cláusula decimonovena": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CLÁUSULA DECIMONOVENA",
+   "apariciones": 1,
+   "docs": [
+    "C19"
+   ]
+  },
+  "C19|marcador|prueba": {
+   "decision": "no_es_dato",
+   "motivo": "Sustantivo común «PERÍODO DE PRUEBA»/«período de prueba» (cláusula sexta), no es nombre propio.",
+   "clase": "marcador",
+   "texto": "PRUEBA",
+   "apariciones": 2,
+   "docs": [
+    "C19"
+   ]
+  },
+  "mayusculas|promesa de compraventa de bien inmueble": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "PROMESA DE COMPRAVENTA DE BIEN INMUEBLE",
+   "apariciones": 1,
+   "docs": [
+    "C20"
+   ]
+  },
+  "mayusculas|el promitente vendedor": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL PROMITENTE VENDEDOR",
+   "apariciones": 1,
+   "docs": [
+    "C20"
+   ]
+  },
+  "mayusculas|promitente comprador": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "PROMITENTE COMPRADOR",
+   "apariciones": 1,
+   "docs": [
+    "C20"
+   ]
+  },
+  "mayusculas|precio y arras": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "PRECIO Y ARRAS",
+   "apariciones": 1,
+   "docs": [
+    "C20"
+   ]
+  },
+  "mayusculas|domicilio y": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "DOMICILIO Y",
+   "apariciones": 1,
+   "docs": [
+    "C20"
+   ]
+  },
+  "C20|marcador|ejemplo": {
+   "decision": "omision",
+   "motivo": "Nombre del mismo conjunto residencial, pero tras «conjunto» sin «residencial» (rótulo que R-BAR-01 no reconoce): identifica el lugar igual que en C10–C15. Se propone anotarlo como BARRIO con rotulado:false (brecha de regla, no de gold).",
+   "clase": "marcador",
+   "texto": "Ejemplo",
+   "apariciones": 1,
+   "docs": [
+    "C20"
+   ]
+  },
+  "mayusculas|autorización de": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "AUTORIZACIÓN DE",
+   "apariciones": 1,
+   "docs": [
+    "C20"
+   ]
+  },
+  "mayusculas|contrato de mutuo con interés": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CONTRATO DE MUTUO CON INTERÉS",
+   "apariciones": 1,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|el mutuante": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL MUTUANTE",
+   "apariciones": 3,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|el mutuario": {
+   "decision": "no_es_dato",
+   "motivo": "Rol contractual definido en el encabezado del contrato («en adelante EL ARRENDADOR»); la persona que lo ocupa ya está anotada por su nombre y el rol solo no la identifica.",
+   "clase": "mayusculas",
+   "texto": "EL MUTUARIO",
+   "apariciones": 7,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|superintendencia financiera": {
+   "decision": "no_es_dato",
+   "motivo": "Autoridad o registro público citado como institución en la fundamentación jurídica; no es parte, tercero ni funcionario identificable (F30–F32 cubren las citas).",
+   "clase": "mayusculas",
+   "texto": "Superintendencia Financiera",
+   "apariciones": 1,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|plazo y cuotas": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "PLAZO Y CUOTAS",
+   "apariciones": 1,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|forma de pago de las cuotas": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "FORMA DE PAGO DE LAS CUOTAS",
+   "apariciones": 1,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|garantía real": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "GARANTÍA REAL",
+   "apariciones": 1,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|mora y cobranza": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "MORA Y COBRANZA",
+   "apariciones": 1,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|cesión del crédito": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CESIÓN DEL CRÉDITO",
+   "apariciones": 1,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|cuadro de amortización": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CUADRO DE AMORTIZACIÓN",
+   "apariciones": 1,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|cuota vencimiento valor": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "Cuota\tVencimiento\tValor",
+   "apariciones": 1,
+   "docs": [
+    "C21"
+   ]
+  },
+  "mayusculas|centro de conciliación": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CENTRO DE CONCILIACIÓN",
+   "apariciones": 1,
+   "docs": [
+    "C27"
+   ]
+  },
+  "mayusculas|acta de audiencia de conciliación n": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "ACTA DE AUDIENCIA DE CONCILIACIÓN N",
+   "apariciones": 1,
+   "docs": [
+    "C27"
+   ]
+  },
+  "mayusculas|constancias adicionales": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "CONSTANCIAS ADICIONALES",
+   "apariciones": 4,
+   "docs": [
+    "C27",
+    "C28",
+    "C29",
+    "C30"
+   ]
+  },
+  "rotulo|042": {
+   "decision": "no_es_dato",
+   "motivo": "Consecutivo del acta (ACTA N.º nnn); no identifica a una persona ni un proceso.",
+   "clase": "rotulo",
+   "texto": "042",
+   "apariciones": 1,
+   "docs": [
+    "C27"
+   ]
+  },
+  "mayusculas|acta de junta directiva n": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "ACTA DE JUNTA DIRECTIVA N",
+   "apariciones": 1,
+   "docs": [
+    "C28"
+   ]
+  },
+  "rotulo|013": {
+   "decision": "no_es_dato",
+   "motivo": "Consecutivo del acta (ACTA N.º nnn); no identifica a una persona ni un proceso.",
+   "clase": "rotulo",
+   "texto": "013",
+   "apariciones": 1,
+   "docs": [
+    "C28"
+   ]
+  },
+  "cargo|revisor fiscal": {
+   "decision": "no_es_dato",
+   "motivo": "Cargo mencionado como punto del orden del día («elección de revisor fiscal»): ni persona ni entidad concreta lo hacen único (7.7.6 lo exige «junto a una entidad concreta»).",
+   "clase": "cargo",
+   "texto": "revisor fiscal",
+   "apariciones": 1,
+   "docs": [
+    "C28"
+   ]
+  },
+  "mayusculas|acta de audiencia inicial n": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "ACTA DE AUDIENCIA INICIAL N",
+   "apariciones": 1,
+   "docs": [
+    "C29"
+   ]
+  },
+  "rotulo|012": {
+   "decision": "no_es_dato",
+   "motivo": "Consecutivo del acta (ACTA N.º nnn); no identifica a una persona ni un proceso.",
+   "clase": "rotulo",
+   "texto": "012",
+   "apariciones": 1,
+   "docs": [
+    "C29"
+   ]
+  },
+  "cargo|secretaria": {
+   "decision": "no_es_dato",
+   "motivo": "Rótulo del campo «Secretaria: <nombre>» del encabezado del acta, sin entidad concreta; el nombre de la persona sí está anotado. Igual que «Juez:».",
+   "clase": "cargo",
+   "texto": "Secretaria",
+   "apariciones": 1,
+   "docs": [
+    "C29"
+   ]
+  },
+  "mayusculas|acta de reunión n": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "ACTA DE REUNIÓN N",
+   "apariciones": 1,
+   "docs": [
+    "C30"
+   ]
+  },
+  "mayusculas|nombre c": {
+   "decision": "no_es_dato",
+   "motivo": "Título, encabezado de sección o de columna del documento; no contiene ningún dato de una persona ni de una organización.",
+   "clase": "mayusculas",
+   "texto": "Nombre\tC",
+   "apariciones": 1,
+   "docs": [
+    "C30"
+   ]
+  },
+  "rotulo|005": {
+   "decision": "no_es_dato",
+   "motivo": "Consecutivo del acta (ACTA N.º nnn); no identifica a una persona ni un proceso.",
+   "clase": "rotulo",
+   "texto": "005",
+   "apariciones": 1,
+   "docs": [
+    "C30"
+   ]
+  }
+ }
+}

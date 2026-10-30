@@ -1,0 +1,466 @@
+{
+ "formato": "sig-low/revision-r1-comparacion",
+ "v": 1,
+ "umbral": 0.95,
+ "documentos": [
+  {
+   "docId": "C07",
+   "conjunto": "reserva",
+   "tipoDocumento": "tutela_salud",
+   "fuente": "docx",
+   "total": {
+    "r1": 228,
+    "gold": 235,
+    "coinciden": 224,
+    "f1": 0.9676025917926566
+   },
+   "positivas": {
+    "r1": 189,
+    "gold": 194,
+    "coinciden": 185,
+    "f1": 0.9660574412532638
+   },
+   "indirectos": {
+    "r1": 15,
+    "gold": 17,
+    "coinciden": 15,
+    "f1": 0.9375
+   },
+   "negativos": {
+    "r1": 24,
+    "gold": 24,
+    "coinciden": 24,
+    "f1": 1
+   },
+   "soloRevisor": [
+    {
+     "idR1": "C07-R059",
+     "parte": "cuerpo:1",
+     "tipo": "FECHA",
+     "texto": "6 años",
+     "ctx": "rero de 2020 y hoy tiene «6 años» de edad.\nDECIMOTERCERO. "
+    },
+    {
+     "idR1": "C07-R079",
+     "parte": "cuerpo:1",
+     "tipo": "DIRECCION",
+     "texto": "vereda El Ejemplo, ubicada en el kilómetro 7 de la vía a Bucaramanga",
+     "ctx": "ebo desplazarme desde la «vereda El Ejemplo, ubicada en el kilómetro 7 de la vía a Bucaramanga», sin transporte público "
+    },
+    {
+     "idR1": "C07-R126",
+     "parte": "cuerpo:1",
+     "tipo": "FECHA",
+     "texto": "6 años",
+     "ctx": "rero de 2020 y hoy tiene «6 años» de edad.\nN.º 32. La vivi"
+    },
+    {
+     "idR1": "C07-R211",
+     "parte": "cuerpo:1",
+     "tipo": "FECHA",
+     "texto": "6 años",
+     "ctx": "l 14/03/2020 y hoy tiene «6 años» de edad; su historia clí"
+    }
+   ],
+   "soloGold": [
+    {
+     "idGold": "C07-A015",
+     "parte": "cuerpo:1",
+     "tipo": "MENOR",
+     "negativo": false,
+     "texto": "T.I.",
+     "ctx": " Gómez, identificado con «T.I.» 1.000.000.002, actúo en "
+    },
+    {
+     "idGold": "C07-A052",
+     "parte": "cuerpo:1",
+     "tipo": "IPS",
+     "negativo": false,
+     "texto": "Fundación Hospital Ejemplo",
+     "ctx": "a cita de seguimiento en «Fundación Hospital Ejemplo» fue programada para el 2"
+    },
+    {
+     "idGold": "C07-A061",
+     "parte": "cuerpo:1",
+     "tipo": "FECHA",
+     "negativo": false,
+     "texto": "6 años de edad",
+     "ctx": "rero de 2020 y hoy tiene «6 años de edad».\nDECIMOTERCERO. La vivie"
+    },
+    {
+     "idGold": "C07-A081",
+     "parte": "cuerpo:1",
+     "tipo": "DIRECCION",
+     "negativo": false,
+     "texto": "vereda El Ejemplo",
+     "ctx": "ebo desplazarme desde la «vereda El Ejemplo», ubicada en el kilómetro"
+    },
+    {
+     "idGold": "C07-A082",
+     "parte": "cuerpo:1",
+     "tipo": "MUNICIPIO",
+     "negativo": false,
+     "texto": "Bucaramanga",
+     "ctx": " kilómetro 7 de la vía a «Bucaramanga», sin transporte público "
+    },
+    {
+     "idGold": "C07-A120",
+     "parte": "cuerpo:1",
+     "tipo": "IPS",
+     "negativo": false,
+     "texto": "Fundación Hospital Ejemplo",
+     "ctx": "rré (CIE-10 G61.0) en la «Fundación Hospital Ejemplo». Nada de lo anterior fue"
+    },
+    {
+     "idGold": "C07-A122",
+     "parte": "cuerpo:1",
+     "tipo": "IPS",
+     "negativo": false,
+     "texto": "Fundación Hospital Ejemplo",
+     "ctx": "a cita de seguimiento en «Fundación Hospital Ejemplo» fue programada para el 2"
+    },
+    {
+     "idGold": "C07-A131",
+     "parte": "cuerpo:1",
+     "tipo": "FECHA",
+     "negativo": false,
+     "texto": "6 años de edad",
+     "ctx": "rero de 2020 y hoy tiene «6 años de edad».\nN.º 32. La vivienda, id"
+    },
+    {
+     "idGold": "C07-A183",
+     "parte": "cuerpo:1",
+     "tipo": "IPS",
+     "negativo": false,
+     "texto": "Fundación Hospital Ejemplo",
+     "ctx": ". Historia clínica de la «Fundación Hospital Ejemplo» con fecha 2026-05-05.\n3."
+    },
+    {
+     "idGold": "C07-A215",
+     "parte": "cuerpo:1",
+     "tipo": "MENOR",
+     "negativo": false,
+     "texto": "T.I.",
+     "ctx": " menor, identificado con «T.I.» 1.000.000.032, nació el "
+    },
+    {
+     "idGold": "C07-A218",
+     "parte": "cuerpo:1",
+     "tipo": "FECHA",
+     "negativo": false,
+     "texto": "6 años de edad",
+     "ctx": "l 14/03/2020 y hoy tiene «6 años de edad»; su historia clínica es "
+    }
+   ]
+  },
+  {
+   "docId": "C14",
+   "conjunto": "reserva",
+   "tipoDocumento": "derecho_peticion",
+   "fuente": "docx",
+   "total": {
+    "r1": 94,
+    "gold": 97,
+    "coinciden": 94,
+    "f1": 0.9842931937172775
+   },
+   "positivas": {
+    "r1": 78,
+    "gold": 81,
+    "coinciden": 78,
+    "f1": 0.9811320754716981
+   },
+   "indirectos": {
+    "r1": 7,
+    "gold": 7,
+    "coinciden": 7,
+    "f1": 1
+   },
+   "negativos": {
+    "r1": 9,
+    "gold": 9,
+    "coinciden": 9,
+    "f1": 1
+   },
+   "soloRevisor": [],
+   "soloGold": [
+    {
+     "idGold": "C14-A028",
+     "parte": "cuerpo:1",
+     "tipo": "AFILIACION",
+     "negativo": false,
+     "texto": "000000004",
+     "ctx": "Legales Prueba (contrato «000000004»).\n4. Prueba Rojas nació "
+    },
+    {
+     "idGold": "C14-A053",
+     "parte": "cuerpo:1",
+     "tipo": "AFILIACION",
+     "negativo": false,
+     "texto": "000000008",
+     "ctx": "Legales Prueba (contrato «000000008»). Así lo ha manifestado "
+    },
+    {
+     "idGold": "C14-A076",
+     "parte": "cuerpo:1",
+     "tipo": "DIRECCION",
+     "negativo": false,
+     "texto": "Avenida Calle 0 n.º 0A-03, oficina 502",
+     "ctx": "Recibiré respuesta en la «Avenida Calle 0 n.º 0A-03, oficina 502», Chía, o en el correo sa"
+    }
+   ]
+  },
+  {
+   "docId": "C15",
+   "conjunto": "reserva",
+   "tipoDocumento": "derecho_peticion",
+   "fuente": "pdf",
+   "total": {
+    "r1": 66,
+    "gold": 67,
+    "coinciden": 66,
+    "f1": 0.9924812030075187
+   },
+   "positivas": {
+    "r1": 56,
+    "gold": 57,
+    "coinciden": 56,
+    "f1": 0.9911504424778761
+   },
+   "indirectos": {
+    "r1": 3,
+    "gold": 3,
+    "coinciden": 3,
+    "f1": 1
+   },
+   "negativos": {
+    "r1": 7,
+    "gold": 7,
+    "coinciden": 7,
+    "f1": 1
+   },
+   "soloRevisor": [],
+   "soloGold": [
+    {
+     "idGold": "C15-A043",
+     "parte": "pagina_pdf:1:p1",
+     "tipo": "AFILIACION",
+     "negativo": false,
+     "texto": "000000007",
+     "ctx": "r Banco Prueba (contrato «000000007»). Así lo ha\nmanifestado "
+    }
+   ]
+  },
+  {
+   "docId": "C19",
+   "conjunto": "reserva",
+   "tipoDocumento": "contrato",
+   "fuente": "docx",
+   "total": {
+    "r1": 107,
+    "gold": 108,
+    "coinciden": 106,
+    "f1": 0.986046511627907
+   },
+   "positivas": {
+    "r1": 93,
+    "gold": 93,
+    "coinciden": 93,
+    "f1": 1
+   },
+   "indirectos": {
+    "r1": 6,
+    "gold": 7,
+    "coinciden": 5,
+    "f1": 0.7692307692307693
+   },
+   "negativos": {
+    "r1": 8,
+    "gold": 8,
+    "coinciden": 8,
+    "f1": 1
+   },
+   "soloRevisor": [
+    {
+     "idR1": "C19-R016",
+     "parte": "cuerpo:1",
+     "tipo": "CARGO",
+     "texto": "rector de TEFI",
+     "ctx": " quien se desempeña como «rector de TEFI», en la Trans. 00Bª # 00-"
+    }
+   ],
+   "soloGold": [
+    {
+     "idGold": "C19-A008",
+     "parte": "cuerpo:1",
+     "tipo": "CARGO",
+     "negativo": false,
+     "texto": "representante legal",
+     "ctx": "n actúa en su calidad de «representante legal» y se identifica con C.C."
+    },
+    {
+     "idGold": "C19-A017",
+     "parte": "cuerpo:1",
+     "tipo": "CARGO",
+     "negativo": false,
+     "texto": "rector",
+     "ctx": " quien se desempeña como «rector» de TEFI, en la Trans. 00"
+    }
+   ]
+  },
+  {
+   "docId": "C21",
+   "conjunto": "reserva",
+   "tipoDocumento": "contrato",
+   "fuente": "txt",
+   "total": {
+    "r1": 97,
+    "gold": 99,
+    "coinciden": 97,
+    "f1": 0.9897959183673469
+   },
+   "positivas": {
+    "r1": 84,
+    "gold": 86,
+    "coinciden": 84,
+    "f1": 0.9882352941176471
+   },
+   "indirectos": {
+    "r1": 5,
+    "gold": 5,
+    "coinciden": 5,
+    "f1": 1
+   },
+   "negativos": {
+    "r1": 8,
+    "gold": 8,
+    "coinciden": 8,
+    "f1": 1
+   },
+   "soloRevisor": [],
+   "soloGold": [
+    {
+     "idGold": "C21-A025",
+     "parte": "cuerpo:1",
+     "tipo": "CUENTA",
+     "negativo": false,
+     "texto": "@segurospagos",
+     "ctx": "ueba, o a la llave Bre-B «@segurospagos». Sobre este punto Fictic"
+    },
+    {
+     "idGold": "C21-A067",
+     "parte": "cuerpo:1",
+     "tipo": "MUNICIPIO",
+     "negativo": false,
+     "texto": "Sogamoso",
+     "ctx": "tractual el municipio de «Sogamoso» (Boyacá), y se someten a"
+    }
+   ]
+  },
+  {
+   "docId": "C23",
+   "conjunto": "desarrollo",
+   "tipoDocumento": "correo_cliente",
+   "fuente": "txt",
+   "total": {
+    "r1": 43,
+    "gold": 43,
+    "coinciden": 43,
+    "f1": 1
+   },
+   "positivas": {
+    "r1": 38,
+    "gold": 38,
+    "coinciden": 38,
+    "f1": 1
+   },
+   "indirectos": {
+    "r1": 5,
+    "gold": 5,
+    "coinciden": 5,
+    "f1": 1
+   },
+   "negativos": {
+    "r1": 0,
+    "gold": 0,
+    "coinciden": 0,
+    "f1": 1
+   },
+   "soloRevisor": [],
+   "soloGold": []
+  },
+  {
+   "docId": "C26",
+   "conjunto": "reserva",
+   "tipoDocumento": "correo_cliente",
+   "fuente": "txt",
+   "total": {
+    "r1": 36,
+    "gold": 37,
+    "coinciden": 36,
+    "f1": 0.9863013698630136
+   },
+   "positivas": {
+    "r1": 35,
+    "gold": 36,
+    "coinciden": 35,
+    "f1": 0.9859154929577465
+   },
+   "indirectos": {
+    "r1": 1,
+    "gold": 1,
+    "coinciden": 1,
+    "f1": 1
+   },
+   "negativos": {
+    "r1": 0,
+    "gold": 0,
+    "coinciden": 0,
+    "f1": 1
+   },
+   "soloRevisor": [],
+   "soloGold": [
+    {
+     "idGold": "C26-A017",
+     "parte": "cuerpo:1",
+     "tipo": "PERSONA",
+     "negativo": false,
+     "texto": "Ejemplo Martínez",
+     "ctx": "@mail.prueba.test>\nPara: «Ejemplo Martínez» <fabian.ejemplo@correo.e"
+    }
+   ]
+  },
+  {
+   "docId": "C29",
+   "conjunto": "reserva",
+   "tipoDocumento": "acta",
+   "fuente": "pdf",
+   "total": {
+    "r1": 116,
+    "gold": 116,
+    "coinciden": 116,
+    "f1": 1
+   },
+   "positivas": {
+    "r1": 96,
+    "gold": 96,
+    "coinciden": 96,
+    "f1": 1
+   },
+   "indirectos": {
+    "r1": 15,
+    "gold": 15,
+    "coinciden": 15,
+    "f1": 1
+   },
+   "negativos": {
+    "r1": 5,
+    "gold": 5,
+    "coinciden": 5,
+    "f1": 1
+   },
+   "soloRevisor": [],
+   "soloGold": []
+  }
+ ]
+}

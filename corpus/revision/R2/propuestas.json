@@ -1,0 +1,150 @@
+{
+ "formato": "sig-low/revision-r2-propuestas",
+ "v": 1,
+ "propuestas": [
+  {
+   "docId": "C10",
+   "parte": "cuerpo:1",
+   "start": 1951,
+   "end": 1967,
+   "texto": "Reserva Ficticia",
+   "tipo": "BARRIO",
+   "accion": "agregar_anotacion",
+   "rotulado": true,
+   "caracteristicas": [
+    "F15"
+   ],
+   "debe_generalizarse": false,
+   "es_negativo_esperado": false,
+   "estructura": "no_aplica",
+   "enLista": false,
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO."
+  },
+  {
+   "docId": "C11",
+   "parte": "cuerpo:1",
+   "start": 1137,
+   "end": 1155,
+   "texto": "Torres del Ejemplo",
+   "tipo": "BARRIO",
+   "accion": "agregar_anotacion",
+   "rotulado": true,
+   "caracteristicas": [
+    "F15"
+   ],
+   "debe_generalizarse": false,
+   "es_negativo_esperado": false,
+   "estructura": "no_aplica",
+   "enLista": false,
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO."
+  },
+  {
+   "docId": "C12",
+   "parte": "cuerpo:1",
+   "start": 1956,
+   "end": 1972,
+   "texto": "Portal de Prueba",
+   "tipo": "BARRIO",
+   "accion": "agregar_anotacion",
+   "rotulado": true,
+   "caracteristicas": [
+    "F15"
+   ],
+   "debe_generalizarse": false,
+   "es_negativo_esperado": false,
+   "estructura": "no_aplica",
+   "enLista": false,
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO."
+  },
+  {
+   "docId": "C13",
+   "parte": "cuerpo:1",
+   "start": 2269,
+   "end": 2287,
+   "texto": "Altos de la Prueba",
+   "tipo": "BARRIO",
+   "accion": "agregar_anotacion",
+   "rotulado": true,
+   "caracteristicas": [
+    "F15"
+   ],
+   "debe_generalizarse": false,
+   "es_negativo_esperado": false,
+   "estructura": "no_aplica",
+   "enLista": false,
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO."
+  },
+  {
+   "docId": "C13",
+   "parte": "cuerpo:1",
+   "start": 3940,
+   "end": 3959,
+   "texto": "Mirador del Ejemplo",
+   "tipo": "BARRIO",
+   "accion": "agregar_anotacion",
+   "rotulado": true,
+   "caracteristicas": [
+    "F15"
+   ],
+   "debe_generalizarse": false,
+   "es_negativo_esperado": false,
+   "estructura": "no_aplica",
+   "enLista": false,
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO."
+  },
+  {
+   "docId": "C14",
+   "parte": "cuerpo:1",
+   "start": 2862,
+   "end": 2880,
+   "texto": "Torres del Ejemplo",
+   "tipo": "BARRIO",
+   "accion": "agregar_anotacion",
+   "rotulado": true,
+   "caracteristicas": [
+    "F15"
+   ],
+   "debe_generalizarse": false,
+   "es_negativo_esperado": false,
+   "estructura": "no_aplica",
+   "enLista": false,
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO."
+  },
+  {
+   "docId": "C15",
+   "parte": "pagina_pdf:1:p1",
+   "start": 696,
+   "end": 714,
+   "texto": "Torres del Ejemplo",
+   "tipo": "BARRIO",
+   "accion": "agregar_anotacion",
+   "rotulado": true,
+   "caracteristicas": [
+    "F15"
+   ],
+   "debe_generalizarse": false,
+   "es_negativo_esperado": false,
+   "estructura": "no_aplica",
+   "enLista": false,
+   "motivo": "Nombre de un conjunto residencial tras el rótulo «conjunto residencial»: R-BAR-01 (7.7) lo incluye entre los rótulos de BARRIO y F15 cuenta barrios rotulados; no es complemento de una dirección anotada. El gold no lo anota. Se propone anotarlo como BARRIO."
+  },
+  {
+   "docId": "C20",
+   "parte": "pagina_pdf:1:p1",
+   "start": 949,
+   "end": 967,
+   "texto": "Torres del\nEjemplo",
+   "tipo": "BARRIO",
+   "accion": "agregar_anotacion",
+   "rotulado": false,
+   "caracteristicas": [
+    "F15"
+   ],
+   "debe_generalizarse": false,
+   "es_negativo_esperado": false,
+   "estructura": "no_aplica",
+   "enLista": false,
+   "motivo": "Nombre del mismo conjunto residencial, pero tras «conjunto» sin «residencial» (rótulo que R-BAR-01 no reconoce): identifica el lugar igual que en C10–C15. Se propone anotarlo como BARRIO con rotulado:false (brecha de regla, no de gold)."
+  }
+ ]
+}
