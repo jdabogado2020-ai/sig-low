@@ -172,6 +172,13 @@
     },
     {
       "id": "C15-E18",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:torres del ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E19",
       "tipo": "PROVEEDOR",
       "rol": "PROVEEDOR",
       "canonico": "ORG:banco prueba",
@@ -179,42 +186,42 @@
       "enLista": false
     },
     {
-      "id": "C15-E19",
+      "id": "C15-E20",
       "tipo": "CUENTA",
       "canonico": "CUENTA:055000000005",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E20",
+      "id": "C15-E21",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-07-07",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E21",
+      "id": "C15-E22",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-05-03",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E22",
+      "id": "C15-E23",
       "tipo": "VALOR",
       "canonico": "VALOR:3600000",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E23",
+      "id": "C15-E24",
       "tipo": "MENOR",
       "canonico": "MENOR:test:la menor",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E24",
+      "id": "C15-E25",
       "tipo": "EMPRESA",
       "rol": "EMPRESA",
       "canonico": "ORG:gimnasio prueba",
@@ -222,35 +229,35 @@
       "enLista": false
     },
     {
-      "id": "C15-E25",
+      "id": "C15-E26",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-07-29",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E26",
+      "id": "C15-E27",
       "tipo": "RADICADO_ADMIN",
       "canonico": "RAD:PQRSD2026000355",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E27",
+      "id": "C15-E28",
       "tipo": "FECHA",
       "canonico": "FECHA:1965-04-17",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E28",
+      "id": "C15-E29",
       "tipo": "FECHA",
       "canonico": "FECHA:~61 anos",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E29",
+      "id": "C15-E30",
       "tipo": "PERSONA",
       "rol": "OTRA_PERSONA",
       "canonico": "PER:mauricio ejemplo salazar",
@@ -258,7 +265,7 @@
       "enLista": false
     },
     {
-      "id": "C15-E30",
+      "id": "C15-E31",
       "tipo": "DIRECCION",
       "rol": "OTRA_PERSONA",
       "canonico": "DIR:DG 0 BIS A 0 0 S IN 8 OF 502",
@@ -266,14 +273,14 @@
       "enLista": false
     },
     {
-      "id": "C15-E31",
+      "id": "C15-E32",
       "tipo": "VALOR",
       "canonico": "VALOR:148000",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E32",
+      "id": "C15-E33",
       "tipo": "TELEFONO",
       "rol": "OTRA_PERSONA",
       "canonico": "TEL:3210000006",
@@ -281,70 +288,70 @@
       "enLista": false
     },
     {
-      "id": "C15-E33",
+      "id": "C15-E34",
       "tipo": "AFILIACION",
       "canonico": "AFIL:000000007",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E34",
+      "id": "C15-E35",
       "tipo": "MATRICULA",
       "canonico": "MAT:100-000008",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E35",
+      "id": "C15-E36",
       "tipo": "RADICADO_ADMIN",
       "canonico": "NEG:ley 1755 de 2015",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E36",
+      "id": "C15-E37",
       "tipo": "RADICADO_ADMIN",
       "canonico": "NEG:ley 222 de 1995",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E37",
+      "id": "C15-E38",
       "tipo": "RADICADO_ADMIN",
       "canonico": "NEG:sentencia t-230 de 2020",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E38",
+      "id": "C15-E39",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-06-04",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E39",
+      "id": "C15-E40",
       "tipo": "VALOR",
       "canonico": "VALOR:250000",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E40",
+      "id": "C15-E41",
       "tipo": "VALOR",
       "canonico": "VALOR:SMMLV:1",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E41",
+      "id": "C15-E42",
       "tipo": "RADICADO",
       "canonico": "RAD:05360410596120190000900",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E42",
+      "id": "C15-E43",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
       "canonico": "ORG:juzgado 993 civil del circuito de chia",
@@ -352,28 +359,28 @@
       "enLista": false
     },
     {
-      "id": "C15-E43",
+      "id": "C15-E44",
       "tipo": "DEPARTAMENTO",
       "canonico": "DEP:25",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E44",
+      "id": "C15-E45",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-02-11",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E45",
+      "id": "C15-E46",
       "tipo": "CC",
       "canonico": "NEG:760001",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C15-E46",
+      "id": "C15-E47",
       "tipo": "VALOR",
       "canonico": "NEG:$47.065",
       "mismoTitular": [],
@@ -819,12 +826,35 @@
         "index": 1,
         "page": 1
       },
+      "start": 696,
+      "end": 714,
+      "texto": "Torres del Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C15-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A020",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
       "start": 863,
       "end": 880,
       "texto": "Banco\nPrueba S.A.",
       "tipo": "PROVEEDOR",
       "rol": "PROVEEDOR",
-      "entidad": "C15-E18",
+      "entidad": "C15-E19",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -837,7 +867,7 @@
       ]
     },
     {
-      "id": "C15-A020",
+      "id": "C15-A021",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -848,7 +878,7 @@
       "end": 899,
       "texto": "0550-0000-0005",
       "tipo": "CUENTA",
-      "entidad": "C15-E19",
+      "entidad": "C15-E20",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -860,7 +890,7 @@
       ]
     },
     {
-      "id": "C15-A021",
+      "id": "C15-A022",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -871,7 +901,7 @@
       "end": 940,
       "texto": "2026-07-07",
       "tipo": "FECHA",
-      "entidad": "C15-E20",
+      "entidad": "C15-E21",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -883,7 +913,7 @@
       ]
     },
     {
-      "id": "C15-A022",
+      "id": "C15-A023",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -907,7 +937,7 @@
       ]
     },
     {
-      "id": "C15-A023",
+      "id": "C15-A024",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -918,7 +948,7 @@
       "end": 1083,
       "texto": "03/05/2026",
       "tipo": "FECHA",
-      "entidad": "C15-E21",
+      "entidad": "C15-E22",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -930,7 +960,7 @@
       ]
     },
     {
-      "id": "C15-A024",
+      "id": "C15-A025",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -941,7 +971,7 @@
       "end": 1112,
       "texto": "3.6 millones de pesos",
       "tipo": "VALOR",
-      "entidad": "C15-E22",
+      "entidad": "C15-E23",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -953,7 +983,7 @@
       ]
     },
     {
-      "id": "C15-A025",
+      "id": "C15-A026",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -964,7 +994,7 @@
       "end": 1202,
       "texto": "la menor",
       "tipo": "MENOR",
-      "entidad": "C15-E23",
+      "entidad": "C15-E24",
       "debe_generalizarse": true,
       "generalizacion": "MENOR_A_GENERICO",
       "es_negativo_esperado": false,
@@ -978,7 +1008,7 @@
       ]
     },
     {
-      "id": "C15-A026",
+      "id": "C15-A027",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -990,7 +1020,7 @@
       "texto": "Gimnasio\nPrueba",
       "tipo": "EMPRESA",
       "rol": "EMPRESA",
-      "entidad": "C15-E24",
+      "entidad": "C15-E25",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1003,7 +1033,7 @@
       ]
     },
     {
-      "id": "C15-A027",
+      "id": "C15-A028",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1028,7 +1058,7 @@
       ]
     },
     {
-      "id": "C15-A028",
+      "id": "C15-A029",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1039,7 +1069,7 @@
       "end": 1360,
       "texto": "veintinueve (29) de julio de dos mil veintiséis (2026)",
       "tipo": "FECHA",
-      "entidad": "C15-E25",
+      "entidad": "C15-E26",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1051,7 +1081,7 @@
       ]
     },
     {
-      "id": "C15-A029",
+      "id": "C15-A030",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1062,7 +1092,7 @@
       "end": 1397,
       "texto": "PQRSD-2026-000355",
       "tipo": "RADICADO_ADMIN",
-      "entidad": "C15-E26",
+      "entidad": "C15-E27",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1074,7 +1104,7 @@
       ]
     },
     {
-      "id": "C15-A030",
+      "id": "C15-A031",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1099,7 +1129,7 @@
       ]
     },
     {
-      "id": "C15-A031",
+      "id": "C15-A032",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1124,7 +1154,7 @@
       ]
     },
     {
-      "id": "C15-A032",
+      "id": "C15-A033",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1135,7 +1165,7 @@
       "end": 1541,
       "texto": "17/04/1965",
       "tipo": "FECHA",
-      "entidad": "C15-E27",
+      "entidad": "C15-E28",
       "debe_generalizarse": true,
       "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
       "es_negativo_esperado": false,
@@ -1149,7 +1179,7 @@
       ]
     },
     {
-      "id": "C15-A033",
+      "id": "C15-A034",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1160,7 +1190,7 @@
       "end": 1554,
       "texto": "61 años",
       "tipo": "FECHA",
-      "entidad": "C15-E28",
+      "entidad": "C15-E29",
       "debe_generalizarse": true,
       "generalizacion": "EDAD_A_RANGO",
       "es_negativo_esperado": false,
@@ -1173,7 +1203,7 @@
       ]
     },
     {
-      "id": "C15-A034",
+      "id": "C15-A035",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1185,7 +1215,7 @@
       "texto": "Mauricio Ejemplo Salazar",
       "tipo": "PERSONA",
       "rol": "OTRA_PERSONA",
-      "entidad": "C15-E29",
+      "entidad": "C15-E30",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1197,7 +1227,7 @@
       ]
     },
     {
-      "id": "C15-A035",
+      "id": "C15-A036",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1209,7 +1239,7 @@
       "texto": "Diag. 0 Bis A # 0-00 Sur, interior 8,\noficina 502",
       "tipo": "DIRECCION",
       "rol": "OTRA_PERSONA",
-      "entidad": "C15-E30",
+      "entidad": "C15-E31",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1222,7 +1252,7 @@
       ]
     },
     {
-      "id": "C15-A036",
+      "id": "C15-A037",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1233,7 +1263,7 @@
       "end": 1796,
       "texto": "$ 148.000",
       "tipo": "VALOR",
-      "entidad": "C15-E31",
+      "entidad": "C15-E32",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1244,7 +1274,7 @@
       ]
     },
     {
-      "id": "C15-A037",
+      "id": "C15-A038",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1256,7 +1286,7 @@
       "texto": "321 000 0006",
       "tipo": "TELEFONO",
       "rol": "OTRA_PERSONA",
-      "entidad": "C15-E32",
+      "entidad": "C15-E33",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "valida",
@@ -1268,7 +1298,7 @@
       ]
     },
     {
-      "id": "C15-A038",
+      "id": "C15-A039",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1292,7 +1322,7 @@
       ]
     },
     {
-      "id": "C15-A039",
+      "id": "C15-A040",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1315,7 +1345,7 @@
       ]
     },
     {
-      "id": "C15-A040",
+      "id": "C15-A041",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1339,7 +1369,7 @@
       ]
     },
     {
-      "id": "C15-A041",
+      "id": "C15-A042",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1363,7 +1393,7 @@
       ]
     },
     {
-      "id": "C15-A042",
+      "id": "C15-A043",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1387,7 +1417,7 @@
       ]
     },
     {
-      "id": "C15-A043",
+      "id": "C15-A044",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1398,7 +1428,7 @@
       "end": 2094,
       "texto": "000000007",
       "tipo": "AFILIACION",
-      "entidad": "C15-E33",
+      "entidad": "C15-E34",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1410,7 +1440,7 @@
       ]
     },
     {
-      "id": "C15-A044",
+      "id": "C15-A045",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1434,7 +1464,7 @@
       ]
     },
     {
-      "id": "C15-A045",
+      "id": "C15-A046",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1445,7 +1475,7 @@
       "end": 2248,
       "texto": "100-000008",
       "tipo": "MATRICULA",
-      "entidad": "C15-E34",
+      "entidad": "C15-E35",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1457,7 +1487,7 @@
       ]
     },
     {
-      "id": "C15-A046",
+      "id": "C15-A047",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1469,7 +1499,7 @@
       "texto": "Ejemplo Salazar",
       "tipo": "PERSONA",
       "rol": "OTRA_PERSONA",
-      "entidad": "C15-E29",
+      "entidad": "C15-E30",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1482,7 +1512,7 @@
       ]
     },
     {
-      "id": "C15-A047",
+      "id": "C15-A048",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1507,7 +1537,7 @@
       ]
     },
     {
-      "id": "C15-A048",
+      "id": "C15-A049",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1530,7 +1560,7 @@
       ]
     },
     {
-      "id": "C15-A049",
+      "id": "C15-A050",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1540,29 +1570,6 @@
       "start": 2438,
       "end": 2454,
       "texto": "Ley 1755\nde 2015",
-      "tipo": "RADICADO_ADMIN",
-      "entidad": "C15-E35",
-      "debe_generalizarse": false,
-      "es_negativo_esperado": true,
-      "estructura": "no_aplica",
-      "enLista": false,
-      "rotulado": true,
-      "caracteristicas": [
-        "F30",
-        "F40"
-      ]
-    },
-    {
-      "id": "C15-A050",
-      "docId": "C15",
-      "parte": {
-        "kind": "pagina_pdf",
-        "index": 1,
-        "page": 1
-      },
-      "start": 2521,
-      "end": 2536,
-      "texto": "Ley 222 de 1995",
       "tipo": "RADICADO_ADMIN",
       "entidad": "C15-E36",
       "debe_generalizarse": false,
@@ -1583,9 +1590,9 @@
         "index": 1,
         "page": 1
       },
-      "start": 2542,
-      "end": 2565,
-      "texto": "Sentencia T-230 de 2020",
+      "start": 2521,
+      "end": 2536,
+      "texto": "Ley 222 de 1995",
       "tipo": "RADICADO_ADMIN",
       "entidad": "C15-E37",
       "debe_generalizarse": false,
@@ -1594,7 +1601,7 @@
       "enLista": false,
       "rotulado": true,
       "caracteristicas": [
-        "F31",
+        "F30",
         "F40"
       ]
     },
@@ -1606,18 +1613,18 @@
         "index": 1,
         "page": 1
       },
-      "start": 2660,
-      "end": 2671,
-      "texto": "4 jun. 2026",
-      "tipo": "FECHA",
+      "start": 2542,
+      "end": 2565,
+      "texto": "Sentencia T-230 de 2020",
+      "tipo": "RADICADO_ADMIN",
       "entidad": "C15-E38",
       "debe_generalizarse": false,
-      "es_negativo_esperado": false,
+      "es_negativo_esperado": true,
       "estructura": "no_aplica",
       "enLista": false,
-      "rotulado": false,
+      "rotulado": true,
       "caracteristicas": [
-        "F22",
+        "F31",
         "F40"
       ]
     },
@@ -1629,11 +1636,34 @@
         "index": 1,
         "page": 1
       },
+      "start": 2660,
+      "end": 2671,
+      "texto": "4 jun. 2026",
+      "tipo": "FECHA",
+      "entidad": "C15-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A054",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
       "start": 2724,
       "end": 2771,
       "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
       "tipo": "VALOR",
-      "entidad": "C15-E39",
+      "entidad": "C15-E40",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1646,7 +1676,7 @@
       ]
     },
     {
-      "id": "C15-A054",
+      "id": "C15-A055",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1670,7 +1700,7 @@
       ]
     },
     {
-      "id": "C15-A055",
+      "id": "C15-A056",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1696,7 +1726,7 @@
       ]
     },
     {
-      "id": "C15-A056",
+      "id": "C15-A057",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1707,7 +1737,7 @@
       "end": 206,
       "texto": "1 SMMLV",
       "tipo": "VALOR",
-      "entidad": "C15-E40",
+      "entidad": "C15-E41",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1719,7 +1749,7 @@
       ]
     },
     {
-      "id": "C15-A057",
+      "id": "C15-A058",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1743,7 +1773,7 @@
       ]
     },
     {
-      "id": "C15-A058",
+      "id": "C15-A059",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1767,7 +1797,7 @@
       ]
     },
     {
-      "id": "C15-A059",
+      "id": "C15-A060",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1791,7 +1821,7 @@
       ]
     },
     {
-      "id": "C15-A060",
+      "id": "C15-A061",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1816,7 +1846,7 @@
       ]
     },
     {
-      "id": "C15-A061",
+      "id": "C15-A062",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1840,7 +1870,7 @@
       ]
     },
     {
-      "id": "C15-A062",
+      "id": "C15-A063",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1851,7 +1881,7 @@
       "end": 473,
       "texto": "05360410596120190000900",
       "tipo": "RADICADO",
-      "entidad": "C15-E41",
+      "entidad": "C15-E42",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "valida",
@@ -1862,7 +1892,7 @@
       ]
     },
     {
-      "id": "C15-A063",
+      "id": "C15-A064",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1874,7 +1904,7 @@
       "texto": "Juzgado\n993 Civil del Circuito de Chía",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
-      "entidad": "C15-E42",
+      "entidad": "C15-E43",
       "debe_generalizarse": true,
       "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
@@ -1889,7 +1919,7 @@
       ]
     },
     {
-      "id": "C15-A064",
+      "id": "C15-A065",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1900,14 +1930,14 @@
       "end": 520,
       "texto": "Chía",
       "tipo": "MUNICIPIO",
-      "entidad": "C15-E43",
+      "entidad": "C15-E44",
       "debe_generalizarse": true,
       "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
       "rotulado": false,
-      "contenidaEn": "C15-A063",
+      "contenidaEn": "C15-A064",
       "caracteristicas": [
         "F25",
         "F40",
@@ -1915,7 +1945,7 @@
       ]
     },
     {
-      "id": "C15-A065",
+      "id": "C15-A066",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1926,7 +1956,7 @@
       "end": 546,
       "texto": "11 feb. 2026",
       "tipo": "FECHA",
-      "entidad": "C15-E44",
+      "entidad": "C15-E45",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1938,7 +1968,7 @@
       ]
     },
     {
-      "id": "C15-A066",
+      "id": "C15-A067",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1949,7 +1979,7 @@
       "end": 621,
       "texto": "760001",
       "tipo": "CC",
-      "entidad": "C15-E45",
+      "entidad": "C15-E46",
       "debe_generalizarse": false,
       "es_negativo_esperado": true,
       "estructura": "no_aplica",
@@ -1961,7 +1991,7 @@
       ]
     },
     {
-      "id": "C15-A067",
+      "id": "C15-A068",
       "docId": "C15",
       "parte": {
         "kind": "pagina_pdf",
@@ -1972,7 +2002,7 @@
       "end": 646,
       "texto": "$47.065",
       "tipo": "VALOR",
-      "entidad": "C15-E46",
+      "entidad": "C15-E47",
       "debe_generalizarse": false,
       "es_negativo_esperado": true,
       "estructura": "no_aplica",
@@ -1985,8 +2015,10 @@
     }
   ],
   "revision": {
-    "estado": "borrador",
+    "estado": "adjudicado",
     "discrepancias": 0,
-    "cambios": []
+    "cambios": [
+      "R3: C15-A019 BARRIO «Torres del Ejemplo» (nombre de conjunto, rotulado sí) agregada por R2"
+    ]
   }
 }

@@ -315,131 +315,145 @@
     {
       "id": "C13-E37",
       "tipo": "BARRIO",
-      "canonico": "BARRIO:bella vista ficticia",
+      "canonico": "BARRIO:altos de la prueba",
       "mismoTitular": [],
       "enLista": false
     },
     {
       "id": "C13-E38",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:bella vista ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E39",
       "tipo": "AFILIACION",
       "canonico": "AFIL:000000008",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E39",
+      "id": "C13-E40",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-01-20",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E40",
+      "id": "C13-E41",
       "tipo": "RADICADO_ADMIN",
       "canonico": "RAD:PQRSD2026000432",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E41",
+      "id": "C13-E42",
       "tipo": "CUENTA",
       "canonico": "CUENTA:055000000009",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E42",
+      "id": "C13-E43",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-02-24",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E43",
+      "id": "C13-E44",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-02-13",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E44",
+      "id": "C13-E45",
       "tipo": "VALOR",
       "canonico": "VALOR:2840000",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E45",
+      "id": "C13-E46",
       "tipo": "MENOR",
       "canonico": "MENOR:test:el menor",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E46",
-      "tipo": "RADICADO_ADMIN",
-      "canonico": "NEG:ley 1755 de 2015",
-      "mismoTitular": [],
-      "enLista": false
-    },
-    {
       "id": "C13-E47",
-      "tipo": "RADICADO_ADMIN",
-      "canonico": "NEG:decreto 306 de 1992",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:mirador del ejemplo",
       "mismoTitular": [],
       "enLista": false
     },
     {
       "id": "C13-E48",
       "tipo": "RADICADO_ADMIN",
-      "canonico": "NEG:sentencia c-818 de 2011",
+      "canonico": "NEG:ley 1755 de 2015",
       "mismoTitular": [],
       "enLista": false
     },
     {
       "id": "C13-E49",
       "tipo": "RADICADO_ADMIN",
-      "canonico": "NEG:articulo 14 de la ley 1437 de 2011",
+      "canonico": "NEG:decreto 306 de 1992",
       "mismoTitular": [],
       "enLista": false
     },
     {
       "id": "C13-E50",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia c-818 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E51",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 14 de la ley 1437 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C13-E52",
       "tipo": "CC",
       "canonico": "NEG:3600",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E51",
+      "id": "C13-E53",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-03-29",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E52",
+      "id": "C13-E54",
       "tipo": "VALOR",
       "canonico": "VALOR:250000",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E53",
+      "id": "C13-E55",
       "tipo": "VALOR",
       "canonico": "VALOR:SMMLV:1",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E54",
+      "id": "C13-E56",
       "tipo": "RADICADO",
       "canonico": "RAD:05360400396220240001100",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E55",
+      "id": "C13-E57",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
       "canonico": "ORG:juzgado 994 civil municipal de sogamoso",
@@ -447,28 +461,28 @@
       "enLista": false
     },
     {
-      "id": "C13-E56",
+      "id": "C13-E58",
       "tipo": "DEPARTAMENTO",
       "canonico": "DEP:15",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E57",
+      "id": "C13-E59",
       "tipo": "FECHA",
       "canonico": "FECHA:2025-05-02",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E58",
+      "id": "C13-E60",
       "tipo": "RADICADO",
       "canonico": "RAD:66170410590720220001200",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E59",
+      "id": "C13-E61",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
       "canonico": "ORG:juzgado 990 de familia de bogota",
@@ -476,28 +490,28 @@
       "enLista": false
     },
     {
-      "id": "C13-E60",
+      "id": "C13-E62",
       "tipo": "DEPARTAMENTO",
       "canonico": "DEP:11",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E61",
+      "id": "C13-E63",
       "tipo": "FECHA",
       "canonico": "FECHA:2024-04-03",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E62",
+      "id": "C13-E64",
       "tipo": "RADICADO",
       "canonico": "NEG:050014003997",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C13-E63",
+      "id": "C13-E65",
       "tipo": "CC",
       "canonico": "NEG:250001",
       "mismoTitular": [],
@@ -1628,6 +1642,27 @@
         "kind": "cuerpo",
         "index": 1
       },
+      "start": 2269,
+      "end": 2287,
+      "texto": "Altos de la Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C13-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C13-A053",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
       "start": 2384,
       "end": 2404,
       "texto": "Gilberto Prueba Ruiz",
@@ -1643,7 +1678,7 @@
       "caracteristicas": []
     },
     {
-      "id": "C13-A053",
+      "id": "C13-A054",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1653,7 +1688,7 @@
       "end": 2481,
       "texto": "Bella Vista Ficticia",
       "tipo": "BARRIO",
-      "entidad": "C13-E37",
+      "entidad": "C13-E38",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1664,7 +1699,7 @@
       ]
     },
     {
-      "id": "C13-A054",
+      "id": "C13-A055",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1686,7 +1721,7 @@
       ]
     },
     {
-      "id": "C13-A055",
+      "id": "C13-A056",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1708,7 +1743,7 @@
       ]
     },
     {
-      "id": "C13-A056",
+      "id": "C13-A057",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1729,7 +1764,7 @@
       "caracteristicas": []
     },
     {
-      "id": "C13-A057",
+      "id": "C13-A058",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1739,7 +1774,7 @@
       "end": 2620,
       "texto": "000000008",
       "tipo": "AFILIACION",
-      "entidad": "C13-E38",
+      "entidad": "C13-E39",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1750,7 +1785,7 @@
       ]
     },
     {
-      "id": "C13-A058",
+      "id": "C13-A059",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1773,7 +1808,7 @@
       ]
     },
     {
-      "id": "C13-A059",
+      "id": "C13-A060",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1783,7 +1818,7 @@
       "end": 2776,
       "texto": "veinte (20) de enero de dos mil veintiséis (2026)",
       "tipo": "FECHA",
-      "entidad": "C13-E39",
+      "entidad": "C13-E40",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1794,7 +1829,7 @@
       ]
     },
     {
-      "id": "C13-A060",
+      "id": "C13-A061",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1804,7 +1839,7 @@
       "end": 2813,
       "texto": "PQRSD-2026-000432",
       "tipo": "RADICADO_ADMIN",
-      "entidad": "C13-E40",
+      "entidad": "C13-E41",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1815,7 +1850,7 @@
       ]
     },
     {
-      "id": "C13-A061",
+      "id": "C13-A062",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1838,7 +1873,7 @@
       ]
     },
     {
-      "id": "C13-A062",
+      "id": "C13-A063",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1860,7 +1895,7 @@
       ]
     },
     {
-      "id": "C13-A063",
+      "id": "C13-A064",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1870,7 +1905,7 @@
       "end": 3036,
       "texto": "0550-0000-0009",
       "tipo": "CUENTA",
-      "entidad": "C13-E41",
+      "entidad": "C13-E42",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1881,7 +1916,7 @@
       ]
     },
     {
-      "id": "C13-A064",
+      "id": "C13-A065",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1891,7 +1926,7 @@
       "end": 3077,
       "texto": "2026-02-24",
       "tipo": "FECHA",
-      "entidad": "C13-E42",
+      "entidad": "C13-E43",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1902,7 +1937,7 @@
       ]
     },
     {
-      "id": "C13-A065",
+      "id": "C13-A066",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1926,7 +1961,7 @@
       ]
     },
     {
-      "id": "C13-A066",
+      "id": "C13-A067",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1949,7 +1984,7 @@
       ]
     },
     {
-      "id": "C13-A067",
+      "id": "C13-A068",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1971,7 +2006,7 @@
       ]
     },
     {
-      "id": "C13-A068",
+      "id": "C13-A069",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -1994,7 +2029,7 @@
       ]
     },
     {
-      "id": "C13-A069",
+      "id": "C13-A070",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2016,7 +2051,7 @@
       ]
     },
     {
-      "id": "C13-A070",
+      "id": "C13-A071",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2038,7 +2073,7 @@
       ]
     },
     {
-      "id": "C13-A071",
+      "id": "C13-A072",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2057,7 +2092,7 @@
       "caracteristicas": []
     },
     {
-      "id": "C13-A072",
+      "id": "C13-A073",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2079,7 +2114,7 @@
       ]
     },
     {
-      "id": "C13-A073",
+      "id": "C13-A074",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2102,7 +2137,7 @@
       ]
     },
     {
-      "id": "C13-A074",
+      "id": "C13-A075",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2112,7 +2147,7 @@
       "end": 3565,
       "texto": "13 de febrero de 2026",
       "tipo": "FECHA",
-      "entidad": "C13-E43",
+      "entidad": "C13-E44",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2123,7 +2158,7 @@
       ]
     },
     {
-      "id": "C13-A075",
+      "id": "C13-A076",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2133,7 +2168,7 @@
       "end": 3599,
       "texto": "$2.840.000",
       "tipo": "VALOR",
-      "entidad": "C13-E44",
+      "entidad": "C13-E45",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2142,7 +2177,7 @@
       "caracteristicas": []
     },
     {
-      "id": "C13-A076",
+      "id": "C13-A077",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2163,7 +2198,7 @@
       "caracteristicas": []
     },
     {
-      "id": "C13-A077",
+      "id": "C13-A078",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2173,7 +2208,7 @@
       "end": 3757,
       "texto": "el menor",
       "tipo": "MENOR",
-      "entidad": "C13-E45",
+      "entidad": "C13-E46",
       "debe_generalizarse": true,
       "generalizacion": "MENOR_A_GENERICO",
       "es_negativo_esperado": false,
@@ -2186,7 +2221,7 @@
       ]
     },
     {
-      "id": "C13-A078",
+      "id": "C13-A079",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2208,7 +2243,7 @@
       ]
     },
     {
-      "id": "C13-A079",
+      "id": "C13-A080",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2231,7 +2266,7 @@
       ]
     },
     {
-      "id": "C13-A080",
+      "id": "C13-A081",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2254,7 +2289,28 @@
       ]
     },
     {
-      "id": "C13-A081",
+      "id": "C13-A082",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3940,
+      "end": 3959,
+      "texto": "Mirador del Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C13-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C13-A083",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2275,7 +2331,7 @@
       ]
     },
     {
-      "id": "C13-A082",
+      "id": "C13-A084",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2285,48 +2341,6 @@
       "end": 4137,
       "texto": "Ley 1755 de 2015",
       "tipo": "RADICADO_ADMIN",
-      "entidad": "C13-E46",
-      "debe_generalizarse": false,
-      "es_negativo_esperado": true,
-      "estructura": "no_aplica",
-      "enLista": false,
-      "rotulado": true,
-      "caracteristicas": [
-        "F30"
-      ]
-    },
-    {
-      "id": "C13-A083",
-      "docId": "C13",
-      "parte": {
-        "kind": "cuerpo",
-        "index": 1
-      },
-      "start": 4204,
-      "end": 4223,
-      "texto": "Decreto 306 de 1992",
-      "tipo": "RADICADO_ADMIN",
-      "entidad": "C13-E47",
-      "debe_generalizarse": false,
-      "es_negativo_esperado": true,
-      "estructura": "no_aplica",
-      "enLista": false,
-      "rotulado": true,
-      "caracteristicas": [
-        "F30"
-      ]
-    },
-    {
-      "id": "C13-A084",
-      "docId": "C13",
-      "parte": {
-        "kind": "cuerpo",
-        "index": 1
-      },
-      "start": 4229,
-      "end": 4252,
-      "texto": "Sentencia C-818 de 2011",
-      "tipo": "RADICADO_ADMIN",
       "entidad": "C13-E48",
       "debe_generalizarse": false,
       "es_negativo_esperado": true,
@@ -2334,7 +2348,7 @@
       "enLista": false,
       "rotulado": true,
       "caracteristicas": [
-        "F31"
+        "F30"
       ]
     },
     {
@@ -2344,9 +2358,9 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 4325,
-      "end": 4359,
-      "texto": "artículo 14 de la Ley 1437 de 2011",
+      "start": 4204,
+      "end": 4223,
+      "texto": "Decreto 306 de 1992",
       "tipo": "RADICADO_ADMIN",
       "entidad": "C13-E49",
       "debe_generalizarse": false,
@@ -2365,11 +2379,53 @@
         "kind": "cuerpo",
         "index": 1
       },
+      "start": 4229,
+      "end": 4252,
+      "texto": "Sentencia C-818 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C13-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C13-A087",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4325,
+      "end": 4359,
+      "texto": "artículo 14 de la Ley 1437 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C13-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C13-A088",
+      "docId": "C13",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
       "start": 4377,
       "end": 4381,
       "texto": "3600",
       "tipo": "CC",
-      "entidad": "C13-E50",
+      "entidad": "C13-E52",
       "debe_generalizarse": false,
       "es_negativo_esperado": true,
       "estructura": "no_aplica",
@@ -2380,7 +2436,7 @@
       ]
     },
     {
-      "id": "C13-A087",
+      "id": "C13-A089",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2390,7 +2446,7 @@
       "end": 4492,
       "texto": "29 mar. 2026",
       "tipo": "FECHA",
-      "entidad": "C13-E51",
+      "entidad": "C13-E53",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2401,7 +2457,7 @@
       ]
     },
     {
-      "id": "C13-A088",
+      "id": "C13-A090",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2411,7 +2467,7 @@
       "end": 4592,
       "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
       "tipo": "VALOR",
-      "entidad": "C13-E52",
+      "entidad": "C13-E54",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2423,7 +2479,7 @@
       ]
     },
     {
-      "id": "C13-A089",
+      "id": "C13-A091",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2445,7 +2501,7 @@
       ]
     },
     {
-      "id": "C13-A090",
+      "id": "C13-A092",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2468,7 +2524,7 @@
       ]
     },
     {
-      "id": "C13-A091",
+      "id": "C13-A093",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2478,7 +2534,7 @@
       "end": 4895,
       "texto": "1 SMMLV",
       "tipo": "VALOR",
-      "entidad": "C13-E53",
+      "entidad": "C13-E55",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2489,7 +2545,7 @@
       ]
     },
     {
-      "id": "C13-A092",
+      "id": "C13-A094",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2511,7 +2567,7 @@
       ]
     },
     {
-      "id": "C13-A093",
+      "id": "C13-A095",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2533,7 +2589,7 @@
       ]
     },
     {
-      "id": "C13-A094",
+      "id": "C13-A096",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2555,7 +2611,7 @@
       ]
     },
     {
-      "id": "C13-A095",
+      "id": "C13-A097",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2576,7 +2632,7 @@
       "caracteristicas": []
     },
     {
-      "id": "C13-A096",
+      "id": "C13-A098",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2598,7 +2654,7 @@
       ]
     },
     {
-      "id": "C13-A097",
+      "id": "C13-A099",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2621,7 +2677,7 @@
       ]
     },
     {
-      "id": "C13-A098",
+      "id": "C13-A100",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2631,7 +2687,7 @@
       "end": 5236,
       "texto": "05-360-40-03-962-2024-00011-00",
       "tipo": "RADICADO",
-      "entidad": "C13-E54",
+      "entidad": "C13-E56",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "valida",
@@ -2642,7 +2698,7 @@
       ]
     },
     {
-      "id": "C13-A099",
+      "id": "C13-A101",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2653,7 +2709,7 @@
       "texto": "Juzgado 994 Civil Municipal de Sogamoso",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
-      "entidad": "C13-E55",
+      "entidad": "C13-E57",
       "debe_generalizarse": true,
       "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
@@ -2666,7 +2722,7 @@
       ]
     },
     {
-      "id": "C13-A100",
+      "id": "C13-A102",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2676,21 +2732,21 @@
       "end": 5284,
       "texto": "Sogamoso",
       "tipo": "MUNICIPIO",
-      "entidad": "C13-E56",
+      "entidad": "C13-E58",
       "debe_generalizarse": true,
       "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
       "rotulado": false,
-      "contenidaEn": "C13-A099",
+      "contenidaEn": "C13-A101",
       "caracteristicas": [
         "F25",
         "F54"
       ]
     },
     {
-      "id": "C13-A101",
+      "id": "C13-A103",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2700,7 +2756,7 @@
       "end": 5308,
       "texto": "2025-05-02",
       "tipo": "FECHA",
-      "entidad": "C13-E57",
+      "entidad": "C13-E59",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2711,7 +2767,7 @@
       ]
     },
     {
-      "id": "C13-A102",
+      "id": "C13-A104",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2721,7 +2777,7 @@
       "end": 5364,
       "texto": "66170/41/05/907/2022/00012/00",
       "tipo": "RADICADO",
-      "entidad": "C13-E58",
+      "entidad": "C13-E60",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "valida",
@@ -2732,7 +2788,7 @@
       ]
     },
     {
-      "id": "C13-A103",
+      "id": "C13-A105",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2743,7 +2799,7 @@
       "texto": "Juzgado 990 de Familia de Bogotá",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
-      "entidad": "C13-E59",
+      "entidad": "C13-E61",
       "debe_generalizarse": true,
       "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
@@ -2756,7 +2812,7 @@
       ]
     },
     {
-      "id": "C13-A104",
+      "id": "C13-A106",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2766,20 +2822,20 @@
       "end": 5405,
       "texto": "Bogotá",
       "tipo": "MUNICIPIO",
-      "entidad": "C13-E60",
+      "entidad": "C13-E62",
       "debe_generalizarse": true,
       "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
       "rotulado": false,
-      "contenidaEn": "C13-A103",
+      "contenidaEn": "C13-A105",
       "caracteristicas": [
         "F54"
       ]
     },
     {
-      "id": "C13-A105",
+      "id": "C13-A107",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2789,7 +2845,7 @@
       "end": 5429,
       "texto": "03/04/2024",
       "tipo": "FECHA",
-      "entidad": "C13-E61",
+      "entidad": "C13-E63",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2800,7 +2856,7 @@
       ]
     },
     {
-      "id": "C13-A106",
+      "id": "C13-A108",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2810,7 +2866,7 @@
       "end": 5486,
       "texto": "Santa María",
       "tipo": "MUNICIPIO",
-      "entidad": "C13-E56",
+      "entidad": "C13-E58",
       "debe_generalizarse": true,
       "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
       "es_negativo_esperado": false,
@@ -2823,7 +2879,7 @@
       ]
     },
     {
-      "id": "C13-A107",
+      "id": "C13-A109",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2833,7 +2889,7 @@
       "end": 5494,
       "texto": "Boyacá",
       "tipo": "DEPARTAMENTO",
-      "entidad": "C13-E56",
+      "entidad": "C13-E58",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2842,7 +2898,7 @@
       "caracteristicas": []
     },
     {
-      "id": "C13-A108",
+      "id": "C13-A110",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2852,7 +2908,7 @@
       "end": 5580,
       "texto": "050014003997",
       "tipo": "RADICADO",
-      "entidad": "C13-E62",
+      "entidad": "C13-E64",
       "debe_generalizarse": false,
       "es_negativo_esperado": true,
       "estructura": "no_aplica",
@@ -2863,7 +2919,7 @@
       ]
     },
     {
-      "id": "C13-A109",
+      "id": "C13-A111",
       "docId": "C13",
       "parte": {
         "kind": "cuerpo",
@@ -2873,7 +2929,7 @@
       "end": 5602,
       "texto": "250001",
       "tipo": "CC",
-      "entidad": "C13-E63",
+      "entidad": "C13-E65",
       "debe_generalizarse": false,
       "es_negativo_esperado": true,
       "estructura": "no_aplica",
@@ -2885,8 +2941,11 @@
     }
   ],
   "revision": {
-    "estado": "borrador",
+    "estado": "adjudicado",
     "discrepancias": 0,
-    "cambios": []
+    "cambios": [
+      "R3: C13-A052 BARRIO «Altos de la Prueba» (nombre de conjunto, rotulado sí) agregada por R2",
+      "R3: C13-A082 BARRIO «Mirador del Ejemplo» (nombre de conjunto, rotulado sí) agregada por R2"
+    ]
   }
 }

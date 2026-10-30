@@ -324,6 +324,13 @@
     },
     {
       "id": "C14-E39",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:torres del ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E40",
       "tipo": "PROVEEDOR",
       "rol": "PROVEEDOR",
       "canonico": "ORG:banco prueba",
@@ -331,77 +338,77 @@
       "enLista": false
     },
     {
-      "id": "C14-E40",
+      "id": "C14-E41",
       "tipo": "CUENTA",
       "canonico": "CUENTA:055000000010",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E41",
+      "id": "C14-E42",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-05-30",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E42",
+      "id": "C14-E43",
       "tipo": "RADICADO_ADMIN",
       "canonico": "NEG:ley 1755 de 2015",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E43",
+      "id": "C14-E44",
       "tipo": "RADICADO_ADMIN",
       "canonico": "NEG:sentencia t-230 de 2020",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E44",
+      "id": "C14-E45",
       "tipo": "RADICADO_ADMIN",
       "canonico": "NEG:articulo 14 de la ley 1437 de 2011",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E45",
+      "id": "C14-E46",
       "tipo": "CC",
       "canonico": "NEG:3600",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E46",
+      "id": "C14-E47",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-06-26",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E47",
+      "id": "C14-E48",
       "tipo": "VALOR",
       "canonico": "VALOR:250000",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E48",
+      "id": "C14-E49",
       "tipo": "VALOR",
       "canonico": "VALOR:SMMLV:1",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E49",
+      "id": "C14-E50",
       "tipo": "RADICADO",
       "canonico": "RAD:25899400390620220001100",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E50",
+      "id": "C14-E51",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
       "canonico": "ORG:juzgado 994 civil municipal de palmira",
@@ -409,21 +416,21 @@
       "enLista": false
     },
     {
-      "id": "C14-E51",
+      "id": "C14-E52",
       "tipo": "FECHA",
       "canonico": "FECHA:2024-05-17",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E52",
+      "id": "C14-E53",
       "tipo": "RADICADO",
       "canonico": "RAD:66170410591220250001200",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E53",
+      "id": "C14-E54",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
       "canonico": "ORG:juzgado 990 de familia de floridablanca",
@@ -431,21 +438,21 @@
       "enLista": false
     },
     {
-      "id": "C14-E54",
+      "id": "C14-E55",
       "tipo": "DEPARTAMENTO",
       "canonico": "DEP:68",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E55",
+      "id": "C14-E56",
       "tipo": "FECHA",
       "canonico": "FECHA:2025-12-24",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E56",
+      "id": "C14-E57",
       "tipo": "PERSONA",
       "rol": "OTRA_PERSONA",
       "canonico": "PER:juan david ejemplo ospina",
@@ -453,7 +460,7 @@
       "enLista": false
     },
     {
-      "id": "C14-E57",
+      "id": "C14-E58",
       "tipo": "CE",
       "rol": "OTRA_PERSONA",
       "canonico": "CE:1000014",
@@ -461,28 +468,28 @@
       "enLista": false
     },
     {
-      "id": "C14-E58",
+      "id": "C14-E59",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-07-01",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E59",
+      "id": "C14-E60",
       "tipo": "DEPARTAMENTO",
       "canonico": "DEP:66",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E60",
+      "id": "C14-E61",
       "tipo": "CC",
       "canonico": "NEG:95",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C14-E61",
+      "id": "C14-E62",
       "tipo": "CC",
       "canonico": "NEG:890201",
       "mismoTitular": [],
@@ -1809,6 +1816,27 @@
         "kind": "cuerpo",
         "index": 1
       },
+      "start": 2862,
+      "end": 2880,
+      "texto": "Torres del Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C14-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C14-A062",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
       "start": 2964,
       "end": 2970,
       "texto": "Prueba",
@@ -1826,7 +1854,7 @@
       ]
     },
     {
-      "id": "C14-A062",
+      "id": "C14-A063",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -1837,7 +1865,7 @@
       "texto": "Banco Prueba S.A.",
       "tipo": "PROVEEDOR",
       "rol": "PROVEEDOR",
-      "entidad": "C14-E39",
+      "entidad": "C14-E40",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1848,7 +1876,7 @@
       ]
     },
     {
-      "id": "C14-A063",
+      "id": "C14-A064",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -1858,7 +1886,7 @@
       "end": 3133,
       "texto": "0550-0000-0010",
       "tipo": "CUENTA",
-      "entidad": "C14-E40",
+      "entidad": "C14-E41",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1869,7 +1897,7 @@
       ]
     },
     {
-      "id": "C14-A064",
+      "id": "C14-A065",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -1879,7 +1907,7 @@
       "end": 3174,
       "texto": "2026-05-30",
       "tipo": "FECHA",
-      "entidad": "C14-E41",
+      "entidad": "C14-E42",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1890,7 +1918,7 @@
       ]
     },
     {
-      "id": "C14-A065",
+      "id": "C14-A066",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -1911,7 +1939,7 @@
       ]
     },
     {
-      "id": "C14-A066",
+      "id": "C14-A067",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -1921,28 +1949,7 @@
       "end": 3284,
       "texto": "Ley 1755 de 2015",
       "tipo": "RADICADO_ADMIN",
-      "entidad": "C14-E42",
-      "debe_generalizarse": false,
-      "es_negativo_esperado": true,
-      "estructura": "no_aplica",
-      "enLista": false,
-      "rotulado": true,
-      "caracteristicas": [
-        "F30"
-      ]
-    },
-    {
-      "id": "C14-A067",
-      "docId": "C14",
-      "parte": {
-        "kind": "cuerpo",
-        "index": 1
-      },
-      "start": 3351,
-      "end": 3367,
-      "texto": "Ley 1755 de 2015",
-      "tipo": "RADICADO_ADMIN",
-      "entidad": "C14-E42",
+      "entidad": "C14-E43",
       "debe_generalizarse": false,
       "es_negativo_esperado": true,
       "estructura": "no_aplica",
@@ -1959,32 +1966,11 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 3373,
-      "end": 3396,
-      "texto": "Sentencia T-230 de 2020",
+      "start": 3351,
+      "end": 3367,
+      "texto": "Ley 1755 de 2015",
       "tipo": "RADICADO_ADMIN",
       "entidad": "C14-E43",
-      "debe_generalizarse": false,
-      "es_negativo_esperado": true,
-      "estructura": "no_aplica",
-      "enLista": false,
-      "rotulado": true,
-      "caracteristicas": [
-        "F31"
-      ]
-    },
-    {
-      "id": "C14-A069",
-      "docId": "C14",
-      "parte": {
-        "kind": "cuerpo",
-        "index": 1
-      },
-      "start": 3469,
-      "end": 3503,
-      "texto": "artículo 14 de la Ley 1437 de 2011",
-      "tipo": "RADICADO_ADMIN",
-      "entidad": "C14-E44",
       "debe_generalizarse": false,
       "es_negativo_esperado": true,
       "estructura": "no_aplica",
@@ -1995,7 +1981,49 @@
       ]
     },
     {
+      "id": "C14-A069",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3373,
+      "end": 3396,
+      "texto": "Sentencia T-230 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C14-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
       "id": "C14-A070",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3469,
+      "end": 3503,
+      "texto": "artículo 14 de la Ley 1437 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C14-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C14-A071",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2005,7 +2033,7 @@
       "end": 3525,
       "texto": "3600",
       "tipo": "CC",
-      "entidad": "C14-E45",
+      "entidad": "C14-E46",
       "debe_generalizarse": false,
       "es_negativo_esperado": true,
       "estructura": "no_aplica",
@@ -2016,7 +2044,7 @@
       ]
     },
     {
-      "id": "C14-A071",
+      "id": "C14-A072",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2026,7 +2054,7 @@
       "end": 3636,
       "texto": "26 jun. 2026",
       "tipo": "FECHA",
-      "entidad": "C14-E46",
+      "entidad": "C14-E47",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2037,7 +2065,7 @@
       ]
     },
     {
-      "id": "C14-A072",
+      "id": "C14-A073",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2047,7 +2075,7 @@
       "end": 3736,
       "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
       "tipo": "VALOR",
-      "entidad": "C14-E47",
+      "entidad": "C14-E48",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2059,7 +2087,7 @@
       ]
     },
     {
-      "id": "C14-A073",
+      "id": "C14-A074",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2081,7 +2109,7 @@
       ]
     },
     {
-      "id": "C14-A074",
+      "id": "C14-A075",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2104,7 +2132,7 @@
       ]
     },
     {
-      "id": "C14-A075",
+      "id": "C14-A076",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2114,7 +2142,7 @@
       "end": 4043,
       "texto": "1 SMMLV",
       "tipo": "VALOR",
-      "entidad": "C14-E48",
+      "entidad": "C14-E49",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2125,7 +2153,7 @@
       ]
     },
     {
-      "id": "C14-A076",
+      "id": "C14-A077",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2147,7 +2175,7 @@
       ]
     },
     {
-      "id": "C14-A077",
+      "id": "C14-A078",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2169,7 +2197,7 @@
       ]
     },
     {
-      "id": "C14-A078",
+      "id": "C14-A079",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2191,7 +2219,7 @@
       ]
     },
     {
-      "id": "C14-A079",
+      "id": "C14-A080",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2213,7 +2241,7 @@
       ]
     },
     {
-      "id": "C14-A080",
+      "id": "C14-A081",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2235,7 +2263,7 @@
       ]
     },
     {
-      "id": "C14-A081",
+      "id": "C14-A082",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2245,7 +2273,7 @@
       "end": 4321,
       "texto": "25899/40/03/906/2022/00011/00",
       "tipo": "RADICADO",
-      "entidad": "C14-E49",
+      "entidad": "C14-E50",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "valida",
@@ -2256,7 +2284,7 @@
       ]
     },
     {
-      "id": "C14-A082",
+      "id": "C14-A083",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2267,7 +2295,7 @@
       "texto": "Juzgado 994 Civil Municipal de Palmira",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
-      "entidad": "C14-E50",
+      "entidad": "C14-E51",
       "debe_generalizarse": true,
       "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
@@ -2280,7 +2308,7 @@
       ]
     },
     {
-      "id": "C14-A083",
+      "id": "C14-A084",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2297,14 +2325,14 @@
       "estructura": "no_aplica",
       "enLista": false,
       "rotulado": false,
-      "contenidaEn": "C14-A082",
+      "contenidaEn": "C14-A083",
       "caracteristicas": [
         "F25",
         "F54"
       ]
     },
     {
-      "id": "C14-A084",
+      "id": "C14-A085",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2314,7 +2342,7 @@
       "end": 4394,
       "texto": "17 may. 2024",
       "tipo": "FECHA",
-      "entidad": "C14-E51",
+      "entidad": "C14-E52",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2325,7 +2353,7 @@
       ]
     },
     {
-      "id": "C14-A085",
+      "id": "C14-A086",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2335,7 +2363,7 @@
       "end": 4451,
       "texto": "66170/41/05/912/2025/00012/00",
       "tipo": "RADICADO",
-      "entidad": "C14-E52",
+      "entidad": "C14-E53",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "valida",
@@ -2346,7 +2374,7 @@
       ]
     },
     {
-      "id": "C14-A086",
+      "id": "C14-A087",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2357,7 +2385,7 @@
       "texto": "Juzgado 990 de Familia de Floridablanca",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
-      "entidad": "C14-E53",
+      "entidad": "C14-E54",
       "debe_generalizarse": true,
       "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
@@ -2370,7 +2398,7 @@
       ]
     },
     {
-      "id": "C14-A087",
+      "id": "C14-A088",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2380,21 +2408,21 @@
       "end": 4499,
       "texto": "Floridablanca",
       "tipo": "MUNICIPIO",
-      "entidad": "C14-E54",
+      "entidad": "C14-E55",
       "debe_generalizarse": true,
       "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
       "rotulado": false,
-      "contenidaEn": "C14-A086",
+      "contenidaEn": "C14-A087",
       "caracteristicas": [
         "F25",
         "F54"
       ]
     },
     {
-      "id": "C14-A088",
+      "id": "C14-A089",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2404,7 +2432,7 @@
       "end": 4523,
       "texto": "2025-12-24",
       "tipo": "FECHA",
-      "entidad": "C14-E55",
+      "entidad": "C14-E56",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2415,7 +2443,7 @@
       ]
     },
     {
-      "id": "C14-A089",
+      "id": "C14-A090",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2426,7 +2454,7 @@
       "texto": "Juan David Ejemplo Ospina",
       "tipo": "PERSONA",
       "rol": "OTRA_PERSONA",
-      "entidad": "C14-E56",
+      "entidad": "C14-E57",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2438,7 +2466,7 @@
       ]
     },
     {
-      "id": "C14-A090",
+      "id": "C14-A091",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2449,7 +2477,7 @@
       "texto": "1.000.014",
       "tipo": "CE",
       "rol": "OTRA_PERSONA",
-      "entidad": "C14-E57",
+      "entidad": "C14-E58",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2460,7 +2488,7 @@
       ]
     },
     {
-      "id": "C14-A091",
+      "id": "C14-A092",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2470,7 +2498,7 @@
       "end": 4677,
       "texto": "uno (1) de julio de dos mil veintiséis (2026)",
       "tipo": "FECHA",
-      "entidad": "C14-E58",
+      "entidad": "C14-E59",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2481,7 +2509,7 @@
       ]
     },
     {
-      "id": "C14-A092",
+      "id": "C14-A093",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2491,7 +2519,7 @@
       "end": 4709,
       "texto": "Balboa",
       "tipo": "MUNICIPIO",
-      "entidad": "C14-E59",
+      "entidad": "C14-E60",
       "debe_generalizarse": true,
       "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
       "es_negativo_esperado": false,
@@ -2504,7 +2532,7 @@
       ]
     },
     {
-      "id": "C14-A093",
+      "id": "C14-A094",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2514,7 +2542,7 @@
       "end": 4720,
       "texto": "Risaralda",
       "tipo": "DEPARTAMENTO",
-      "entidad": "C14-E59",
+      "entidad": "C14-E60",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -2523,7 +2551,7 @@
       "caracteristicas": []
     },
     {
-      "id": "C14-A094",
+      "id": "C14-A095",
       "docId": "C14",
       "parte": {
         "kind": "cuerpo",
@@ -2532,27 +2560,6 @@
       "start": 4782,
       "end": 4784,
       "texto": "95",
-      "tipo": "CC",
-      "entidad": "C14-E60",
-      "debe_generalizarse": false,
-      "es_negativo_esperado": true,
-      "estructura": "no_aplica",
-      "enLista": false,
-      "rotulado": true,
-      "caracteristicas": [
-        "F53"
-      ]
-    },
-    {
-      "id": "C14-A095",
-      "docId": "C14",
-      "parte": {
-        "kind": "cuerpo",
-        "index": 1
-      },
-      "start": 4798,
-      "end": 4804,
-      "texto": "890201",
       "tipo": "CC",
       "entidad": "C14-E61",
       "debe_generalizarse": false,
@@ -2566,6 +2573,27 @@
     },
     {
       "id": "C14-A096",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4798,
+      "end": 4804,
+      "texto": "890201",
+      "tipo": "CC",
+      "entidad": "C14-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C14-A097",
       "docId": "C14",
       "parte": {
         "kind": "comentario",
@@ -2588,7 +2616,7 @@
       ]
     },
     {
-      "id": "C14-A097",
+      "id": "C14-A098",
       "docId": "C14",
       "parte": {
         "kind": "comentario",
@@ -2612,8 +2640,10 @@
     }
   ],
   "revision": {
-    "estado": "borrador",
+    "estado": "adjudicado",
     "discrepancias": 0,
-    "cambios": []
+    "cambios": [
+      "R3: C14-A061 BARRIO «Torres del Ejemplo» (nombre de conjunto, rotulado sí) agregada por R2"
+    ]
   }
 }

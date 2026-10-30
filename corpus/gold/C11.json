@@ -205,6 +205,13 @@
     },
     {
       "id": "C11-E24",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:torres del ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C11-E25",
       "tipo": "PERSONA",
       "rol": "OTRA_PERSONA",
       "canonico": "PER:patricia ejemplo cifuentes",
@@ -212,7 +219,7 @@
       "enLista": false
     },
     {
-      "id": "C11-E25",
+      "id": "C11-E26",
       "tipo": "DIRECCION",
       "rol": "OTRA_PERSONA",
       "canonico": "DIR:AC 0 0 1 O OF 502",
@@ -220,14 +227,14 @@
       "enLista": false
     },
     {
-      "id": "C11-E26",
+      "id": "C11-E27",
       "tipo": "VALOR",
       "canonico": "VALOR:148000",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E27",
+      "id": "C11-E28",
       "tipo": "TELEFONO",
       "rol": "OTRA_PERSONA",
       "canonico": "TEL:3180000006",
@@ -235,28 +242,28 @@
       "enLista": false
     },
     {
-      "id": "C11-E28",
+      "id": "C11-E29",
       "tipo": "CARGO",
       "canonico": "CARGO:coordinadora de cartera",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E29",
+      "id": "C11-E30",
       "tipo": "RADICADO_ADMIN",
       "canonico": "RAD:2026001078",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E30",
+      "id": "C11-E31",
       "tipo": "MENOR",
       "canonico": "MENOR:test:la menor",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E31",
+      "id": "C11-E32",
       "tipo": "EMPRESA",
       "rol": "EMPRESA",
       "canonico": "ORG:gimnasio prueba",
@@ -264,84 +271,84 @@
       "enLista": false
     },
     {
-      "id": "C11-E32",
+      "id": "C11-E33",
       "tipo": "BARRIO",
       "canonico": "BARRIO:prados de prueba",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E33",
+      "id": "C11-E34",
       "tipo": "AFILIACION",
       "canonico": "AFIL:000000007",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E34",
+      "id": "C11-E35",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-04-10",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E35",
+      "id": "C11-E36",
       "tipo": "VALOR",
       "canonico": "VALOR:3600000",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E36",
+      "id": "C11-E37",
       "tipo": "RADICADO_ADMIN",
       "canonico": "NEG:ley 1755 de 2015",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E37",
+      "id": "C11-E38",
       "tipo": "RADICADO_ADMIN",
       "canonico": "NEG:ley 1306 de 2009",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E38",
+      "id": "C11-E39",
       "tipo": "RADICADO_ADMIN",
       "canonico": "NEG:sentencia t-230 de 2020",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E39",
+      "id": "C11-E40",
       "tipo": "FECHA",
       "canonico": "FECHA:2026-06-23",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E40",
+      "id": "C11-E41",
       "tipo": "VALOR",
       "canonico": "VALOR:250000",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E41",
+      "id": "C11-E42",
       "tipo": "VALOR",
       "canonico": "VALOR:SMMLV:1",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E42",
+      "id": "C11-E43",
       "tipo": "RADICADO",
       "canonico": "RAD:25175311094320250000800",
       "mismoTitular": [],
       "enLista": false
     },
     {
-      "id": "C11-E43",
+      "id": "C11-E44",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
       "canonico": "ORG:juzgado 992 promiscuo municipal de soacha",
@@ -349,7 +356,7 @@
       "enLista": false
     },
     {
-      "id": "C11-E44",
+      "id": "C11-E45",
       "tipo": "FECHA",
       "canonico": "FECHA:2025-09-03",
       "mismoTitular": [],
@@ -929,6 +936,27 @@
         "kind": "cuerpo",
         "index": 1
       },
+      "start": 1137,
+      "end": 1155,
+      "texto": "Torres del Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C11-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C11-A028",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
       "start": 1263,
       "end": 1271,
       "texto": "A. E. O.",
@@ -946,7 +974,7 @@
       ]
     },
     {
-      "id": "C11-A028",
+      "id": "C11-A029",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -957,7 +985,7 @@
       "texto": "Patricia Ejemplo Cifuentes",
       "tipo": "PERSONA",
       "rol": "OTRA_PERSONA",
-      "entidad": "C11-E24",
+      "entidad": "C11-E25",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -968,7 +996,7 @@
       ]
     },
     {
-      "id": "C11-A029",
+      "id": "C11-A030",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -979,7 +1007,7 @@
       "texto": "Avenida Calle 0 No. 0-01 Oeste, oficina 502",
       "tipo": "DIRECCION",
       "rol": "OTRA_PERSONA",
-      "entidad": "C11-E25",
+      "entidad": "C11-E26",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -990,7 +1018,7 @@
       ]
     },
     {
-      "id": "C11-A030",
+      "id": "C11-A031",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1000,7 +1028,7 @@
       "end": 1421,
       "texto": "$ 148.000",
       "tipo": "VALOR",
-      "entidad": "C11-E26",
+      "entidad": "C11-E27",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1009,7 +1037,7 @@
       "caracteristicas": []
     },
     {
-      "id": "C11-A031",
+      "id": "C11-A032",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1020,7 +1048,7 @@
       "texto": "318 000 0006",
       "tipo": "TELEFONO",
       "rol": "OTRA_PERSONA",
-      "entidad": "C11-E27",
+      "entidad": "C11-E28",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "valida",
@@ -1031,7 +1059,7 @@
       ]
     },
     {
-      "id": "C11-A032",
+      "id": "C11-A033",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1053,7 +1081,7 @@
       ]
     },
     {
-      "id": "C11-A033",
+      "id": "C11-A034",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1063,7 +1091,7 @@
       "end": 1583,
       "texto": "coordinadora de cartera",
       "tipo": "CARGO",
-      "entidad": "C11-E28",
+      "entidad": "C11-E29",
       "debe_generalizarse": true,
       "generalizacion": "CARGO_A_GENERICO",
       "es_negativo_esperado": false,
@@ -1076,7 +1104,7 @@
       ]
     },
     {
-      "id": "C11-A034",
+      "id": "C11-A035",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1086,7 +1114,7 @@
       "end": 1646,
       "texto": "2026001078",
       "tipo": "RADICADO_ADMIN",
-      "entidad": "C11-E29",
+      "entidad": "C11-E30",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1097,7 +1125,7 @@
       ]
     },
     {
-      "id": "C11-A035",
+      "id": "C11-A036",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1119,7 +1147,7 @@
       ]
     },
     {
-      "id": "C11-A036",
+      "id": "C11-A037",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1129,7 +1157,7 @@
       "end": 1788,
       "texto": "la menor",
       "tipo": "MENOR",
-      "entidad": "C11-E30",
+      "entidad": "C11-E31",
       "debe_generalizarse": true,
       "generalizacion": "MENOR_A_GENERICO",
       "es_negativo_esperado": false,
@@ -1142,7 +1170,7 @@
       ]
     },
     {
-      "id": "C11-A037",
+      "id": "C11-A038",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1153,7 +1181,7 @@
       "texto": "Gimnasio Prueba",
       "tipo": "EMPRESA",
       "rol": "EMPRESA",
-      "entidad": "C11-E31",
+      "entidad": "C11-E32",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1164,7 +1192,7 @@
       ]
     },
     {
-      "id": "C11-A038",
+      "id": "C11-A039",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1174,7 +1202,7 @@
       "end": 1857,
       "texto": "Prados de Prueba",
       "tipo": "BARRIO",
-      "entidad": "C11-E32",
+      "entidad": "C11-E33",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1185,7 +1213,7 @@
       ]
     },
     {
-      "id": "C11-A039",
+      "id": "C11-A040",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1207,7 +1235,7 @@
       ]
     },
     {
-      "id": "C11-A040",
+      "id": "C11-A041",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1229,7 +1257,7 @@
       ]
     },
     {
-      "id": "C11-A041",
+      "id": "C11-A042",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1252,7 +1280,7 @@
       ]
     },
     {
-      "id": "C11-A042",
+      "id": "C11-A043",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1262,7 +1290,7 @@
       "end": 1982,
       "texto": "000000007",
       "tipo": "AFILIACION",
-      "entidad": "C11-E33",
+      "entidad": "C11-E34",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1273,7 +1301,7 @@
       ]
     },
     {
-      "id": "C11-A043",
+      "id": "C11-A044",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1296,7 +1324,7 @@
       ]
     },
     {
-      "id": "C11-A044",
+      "id": "C11-A045",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1306,7 +1334,7 @@
       "end": 2115,
       "texto": "10/04/2026",
       "tipo": "FECHA",
-      "entidad": "C11-E34",
+      "entidad": "C11-E35",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1317,7 +1345,7 @@
       ]
     },
     {
-      "id": "C11-A045",
+      "id": "C11-A046",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1327,7 +1355,7 @@
       "end": 2144,
       "texto": "3.6 millones de pesos",
       "tipo": "VALOR",
-      "entidad": "C11-E35",
+      "entidad": "C11-E36",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1338,7 +1366,7 @@
       ]
     },
     {
-      "id": "C11-A046",
+      "id": "C11-A047",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1360,7 +1388,7 @@
       ]
     },
     {
-      "id": "C11-A047",
+      "id": "C11-A048",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1381,7 +1409,7 @@
       ]
     },
     {
-      "id": "C11-A048",
+      "id": "C11-A049",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1390,27 +1418,6 @@
       "start": 2351,
       "end": 2367,
       "texto": "Ley 1755 de 2015",
-      "tipo": "RADICADO_ADMIN",
-      "entidad": "C11-E36",
-      "debe_generalizarse": false,
-      "es_negativo_esperado": true,
-      "estructura": "no_aplica",
-      "enLista": false,
-      "rotulado": true,
-      "caracteristicas": [
-        "F30"
-      ]
-    },
-    {
-      "id": "C11-A049",
-      "docId": "C11",
-      "parte": {
-        "kind": "cuerpo",
-        "index": 1
-      },
-      "start": 2435,
-      "end": 2451,
-      "texto": "Ley 1306 de 2009",
       "tipo": "RADICADO_ADMIN",
       "entidad": "C11-E37",
       "debe_generalizarse": false,
@@ -1429,11 +1436,32 @@
         "kind": "cuerpo",
         "index": 1
       },
+      "start": 2435,
+      "end": 2451,
+      "texto": "Ley 1306 de 2009",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C11-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C11-A051",
+      "docId": "C11",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
       "start": 2457,
       "end": 2480,
       "texto": "Sentencia T-230 de 2020",
       "tipo": "RADICADO_ADMIN",
-      "entidad": "C11-E38",
+      "entidad": "C11-E39",
       "debe_generalizarse": false,
       "es_negativo_esperado": true,
       "estructura": "no_aplica",
@@ -1444,7 +1472,7 @@
       ]
     },
     {
-      "id": "C11-A051",
+      "id": "C11-A052",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1454,7 +1482,7 @@
       "end": 2588,
       "texto": "23 jun. 2026",
       "tipo": "FECHA",
-      "entidad": "C11-E39",
+      "entidad": "C11-E40",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1465,7 +1493,7 @@
       ]
     },
     {
-      "id": "C11-A052",
+      "id": "C11-A053",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1475,7 +1503,7 @@
       "end": 2688,
       "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
       "tipo": "VALOR",
-      "entidad": "C11-E40",
+      "entidad": "C11-E41",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1487,7 +1515,7 @@
       ]
     },
     {
-      "id": "C11-A053",
+      "id": "C11-A054",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1509,7 +1537,7 @@
       ]
     },
     {
-      "id": "C11-A054",
+      "id": "C11-A055",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1532,7 +1560,7 @@
       ]
     },
     {
-      "id": "C11-A055",
+      "id": "C11-A056",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1542,7 +1570,7 @@
       "end": 2992,
       "texto": "1 SMMLV",
       "tipo": "VALOR",
-      "entidad": "C11-E41",
+      "entidad": "C11-E42",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1553,7 +1581,7 @@
       ]
     },
     {
-      "id": "C11-A056",
+      "id": "C11-A057",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1575,7 +1603,7 @@
       ]
     },
     {
-      "id": "C11-A057",
+      "id": "C11-A058",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1597,7 +1625,7 @@
       ]
     },
     {
-      "id": "C11-A058",
+      "id": "C11-A059",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1619,7 +1647,7 @@
       ]
     },
     {
-      "id": "C11-A059",
+      "id": "C11-A060",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1641,7 +1669,7 @@
       ]
     },
     {
-      "id": "C11-A060",
+      "id": "C11-A061",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1663,7 +1691,7 @@
       ]
     },
     {
-      "id": "C11-A061",
+      "id": "C11-A062",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1673,7 +1701,7 @@
       "end": 3276,
       "texto": "25175 31 10 943 2025 00008 00",
       "tipo": "RADICADO",
-      "entidad": "C11-E42",
+      "entidad": "C11-E43",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "valida",
@@ -1682,7 +1710,7 @@
       "caracteristicas": []
     },
     {
-      "id": "C11-A062",
+      "id": "C11-A063",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1693,7 +1721,7 @@
       "texto": "Juzgado 992 Promiscuo Municipal de Soacha",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
-      "entidad": "C11-E43",
+      "entidad": "C11-E44",
       "debe_generalizarse": true,
       "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
@@ -1706,7 +1734,7 @@
       ]
     },
     {
-      "id": "C11-A063",
+      "id": "C11-A064",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1723,14 +1751,14 @@
       "estructura": "no_aplica",
       "enLista": false,
       "rotulado": false,
-      "contenidaEn": "C11-A062",
+      "contenidaEn": "C11-A063",
       "caracteristicas": [
         "F25",
         "F54"
       ]
     },
     {
-      "id": "C11-A064",
+      "id": "C11-A065",
       "docId": "C11",
       "parte": {
         "kind": "cuerpo",
@@ -1740,7 +1768,7 @@
       "end": 3350,
       "texto": "2025-09-03",
       "tipo": "FECHA",
-      "entidad": "C11-E44",
+      "entidad": "C11-E45",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
@@ -1752,8 +1780,10 @@
     }
   ],
   "revision": {
-    "estado": "borrador",
+    "estado": "adjudicado",
     "discrepancias": 0,
-    "cambios": []
+    "cambios": [
+      "R3: C11-A027 BARRIO «Torres del Ejemplo» (nombre de conjunto, rotulado sí) agregada por R2"
+    ]
   }
 }
