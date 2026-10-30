@@ -10,7 +10,7 @@ import {
 import type { GenDetection, GeneralizeInput, GeneralizeResult } from '../../src/core/generalize';
 import type {
   DataType, DetectionCandidate, DetectionId, FlagReason, FlagType, IdSource, PartId, Span, Suggestion, SuggestionKind,
-} from '../../src/core/types.local';
+} from '../../src/core/types';
 import cargosJson from '../../data/cargos.json';
 import cie10Json from '../../data/cie10-patron.json';
 import diagnosticosJson from '../../data/diagnosticos.json';
