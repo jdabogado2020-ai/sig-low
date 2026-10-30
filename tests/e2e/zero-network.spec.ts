@@ -1,6 +1,10 @@
+import { spawn, type ChildProcess } from 'node:child_process';
+import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { test, expect } from '@playwright/test';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { build, defaultClientConditions } from 'vite';
 
 const sha256 = (t: string): string => createHash('sha256').update(t).digest('hex');
 
@@ -127,4 +131,97 @@ test('T-PV-06 @cero-red INV-G10 sin conexión: crossOriginIsolated y las cabecer
   } finally {
     await context.setOffline(false);
   }
+});
+
+// Fase «pdf» (PE-4-r1, M-3; 10.5.1): se compila un arnés (tests/e2e/harness/pdf.ts) que usa readPdf con la configuración de la
+// app y las mismas opciones de Vite, se sirve con server.mjs (que aplica public/_headers: CSP, Trusted Types, COEP) y se leen
+// los PDF de tests/fixtures/. Exige 0 peticiones a otros orígenes, 0 violaciones de CSP y 0 consola (página y workers).
+// Sin la etiqueta @cero-red: compilar el arnés y leer los PDF toma 20 a 25 s (más de los 20 s del criterio), así que corre en
+// la suite completa (verify --full) y no en el verify normal.
+test.describe('fase pdf', () => {
+  test.describe.configure({ mode: 'serial' });
+  const RAIZ = process.cwd();
+  const CARPETA = join(RAIZ, 'test-results', 'pdf-harness');
+  const PUERTO = Number(process.env['PORT'] ?? 4173) + 6;
+  const ORIGEN = `http://127.0.0.1:${PUERTO}`;
+  const REGISTRO = join(CARPETA, 'peticiones.jsonl');
+  let servidor: ChildProcess | null = null;
+
+  test.beforeAll(async () => {
+    rmSync(CARPETA, { recursive: true, force: true });
+    mkdirSync(CARPETA, { recursive: true });
+    await build({
+      configFile: false,
+      root: join(RAIZ, 'tests/e2e/harness'),
+      publicDir: join(RAIZ, 'public'),
+      logLevel: 'silent',
+      cacheDir: join(RAIZ, '.vite-cache'),
+      define: { __SIGLOW_VERSION__: '"prueba"', __SIGLOW_MEDICION__: 'false' },
+      build: {
+        outDir: CARPETA, emptyOutDir: false, target: 'es2024', assetsInlineLimit: 0, sourcemap: false,
+        modulePreload: { polyfill: false }, reportCompressedSize: false,
+        rolldownOptions: { input: { pdf: join(RAIZ, 'tests/e2e/harness/pdf.html') }, output: { minify: { compress: { dropConsole: true, dropDebugger: true } } } },
+      },
+      worker: { format: 'es', rolldownOptions: { output: { minify: { compress: { dropConsole: true, dropDebugger: true } } } } },
+      resolve: { conditions: [...defaultClientConditions] },
+    });
+    mkdirSync(join(CARPETA, 'fixtures'), { recursive: true });
+    for (const f of readdirSync(join(RAIZ, 'tests/fixtures')).filter((n) => n.endsWith('.pdf'))) cpSync(join(RAIZ, 'tests/fixtures', f), join(CARPETA, 'fixtures', f));
+    servidor = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', CARPETA, '--port', String(PUERTO)], {
+      env: { ...process.env, SIGLOW_REGISTRO_PETICIONES: REGISTRO }, stdio: 'ignore',
+    });
+    for (let i = 0; i < 50; i++) {
+      try { if ((await fetch(`${ORIGEN}/`)).status) break; } catch { await new Promise((r) => setTimeout(r, 100)); }
+    }
+  });
+  test.afterAll(() => { servidor?.kill(); });
+
+  type Resumen = { error?: string; partes?: Array<{ kind: string; label: string; largo: number }>; avisos?: string[]; categorias?: string[] };
+  // Resultado esperado de cada fixture (T-LE-06 a T-LE-08, M-2).
+  const ESPERADO: Record<string, { error?: string; partes?: number; avisos?: string[] }> = {
+    'pdf-dos-columnas.pdf': { partes: 2, avisos: ['ORDEN_LECTURA_PDF'] },
+    'pdf-anotaciones.pdf': { partes: 5, avisos: [] },
+    'pdf-escaneado.pdf': { error: 'PDF_SIN_CAPA_TEXTO' },
+    'pdf-con-contrasena.pdf': { error: 'PDF_CON_CONTRASENA' },
+    'pdf-pagina-sin-texto.pdf': { partes: 2, avisos: ['PAGINA_SIN_TEXTO'] },
+    'pdf-js-recuadro.pdf': { partes: 1, avisos: [] },
+    'pdf-texto-ilegible.pdf': { partes: 1, avisos: ['TEXTO_ILEGIBLE'] },
+    'pdf-formularios.pdf': { partes: 4, avisos: ['CONTENIDO_PDF_NO_LEIDO'] },
+  };
+
+  test('fase pdf de cero red: lee los PDF con el worker del mismo origen, 0 peticiones ajenas, 0 violaciones de CSP y 0 consola', async ({ page }) => {
+    const ajenas: string[] = [];
+    const consola: string[] = [];
+    page.on('request', (r) => { if (new URL(r.url()).origin !== ORIGEN) ajenas.push(r.url()); });
+    page.on('console', (m) => consola.push(m.text()));
+    page.on('pageerror', (e) => consola.push(String(e.message)));
+    page.on('worker', (w) => w.on('console', (m) => consola.push(m.text())));
+    await page.addInitScript(() => {
+      (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
+      addEventListener('securitypolicyviolation', (e) => (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective));
+    });
+    await page.goto(`${ORIGEN}/pdf.html`);
+    expect(await page.evaluate(() => crossOriginIsolated)).toBe(true);
+
+    for (const [nombre, esperado] of Object.entries(ESPERADO)) {
+      const r = await page.evaluate((ruta) => (globalThis as unknown as { __pdf: { leer(r: string): Promise<Resumen> } }).__pdf.leer(ruta), `/fixtures/${nombre}`);
+      if (esperado.error !== undefined) expect(r.error, nombre).toBe(esperado.error);
+      else {
+        expect(r.error, nombre).toBeUndefined();
+        expect(r.partes, nombre).toHaveLength(esperado.partes ?? 0);
+        expect(r.avisos, nombre).toEqual(esperado.avisos);
+      }
+    }
+
+    expect(ajenas).toEqual([]);
+    expect(await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones)).toEqual([]);
+    expect(consola).toEqual([]);
+    // Todo al mismo origen: solo rutas del build, el worker de pdf.js como archivo propio (nunca blob:) y los PDF, sin query.
+    const registro = readFileSync(REGISTRO, 'utf8').trim().split('\n').map((l) => JSON.parse(l) as { m: string; u: string }).filter((x) => x.u !== '/'); // «/» es el sondeo del servidor
+    for (const x of registro) {
+      expect(x.m).toBe('GET');
+      expect(x.u, x.u).toMatch(/^\/(pdf\.html|tt-policy\.js|assets\/[A-Za-z0-9._-]+\.js|fixtures\/pdf-[a-z-]+\.pdf)$/);
+    }
+    expect(registro.some((x) => /^\/assets\/pdf\.worker-[A-Za-z0-9_-]+\.js$/.test(x.u))).toBe(true);
+  });
 });

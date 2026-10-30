@@ -26,6 +26,10 @@ export interface PdfDocumento {
   numPages: number;
   getPage(n: number): Promise<PdfPagina>;
   getMetadata(): Promise<{ info?: unknown; metadata?: unknown }>;
+  /** Adjuntos del documento (en 6.4.299 un `Map`; antes un objeto). Solo se cuentan. */
+  getAttachments?(): Promise<unknown>;
+  /** Marcadores (árbol de títulos). Solo se cuentan. */
+  getOutline?(): Promise<unknown>;
 }
 export interface PdfTarea { promise: Promise<PdfDocumento>; destroy(): Promise<void> | void }
 export interface PdfWorkerPdfjs { destroy(): void }
@@ -108,6 +112,35 @@ function textoDePagina(items: ReadonlyArray<unknown>): Pagina {
   return { texto: canonicoPdf(texto), saltosOrden: saltos };
 }
 
+/**
+ * Valores de campos de formulario con texto (`Tx`) u opción (`Ch`), incluidos los de campos ocultos (V-39). Las casillas,
+ * los botones de opción y los botones (`Btn`) no se leen. El nombre del campo (`T`) nunca se guarda.
+ */
+function valoresDeCampo(an: Record<string, unknown>): string[] {
+  if (an.subtype !== 'Widget' || (an.fieldType !== 'Tx' && an.fieldType !== 'Ch')) return [];
+  const v = an.fieldValue;
+  if (typeof v === 'string') return [v];
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
+}
+
+function contarAdjuntos(x: unknown): number {
+  if (x instanceof Map) return x.size;
+  return esObjeto(x) ? Object.keys(x).length : 0;
+}
+
+/** Cuenta los marcadores del árbol de títulos (con tope, por si el árbol es hostil). */
+function contarMarcadores(x: unknown): number {
+  let n = 0;
+  const pila: unknown[] = Array.isArray(x) ? [...x] : [];
+  while (pila.length > 0 && n < 1_000_000) {
+    const it = pila.pop();
+    if (!esObjeto(it)) continue;
+    n++;
+    if (Array.isArray(it.items)) pila.push(...it.items);
+  }
+  return n;
+}
+
 const INFO_IGNORADA: ReadonlySet<string> = new Set([
   'PDFFormatVersion', 'Language', 'EncryptFilterName', 'IsLinearized', 'IsAcroFormPresent', 'IsXFAPresent',
   'IsCollectionPresent', 'IsSignaturesPresent', 'Custom',
@@ -134,6 +167,7 @@ export function crearReadPdf(deps: PdfDeps = {}): ReadPdfFn {
     const { limits } = ctx;
     const ids = deps.ids ?? randomIds();
     let tarea: PdfTarea | undefined;
+    let datos: Uint8Array | undefined;
     let workerPdfjs: PdfWorkerPdfjs | undefined;
     let worker: { terminate(): void } | null = null;
     let terminado = false;
@@ -149,6 +183,8 @@ export function crearReadPdf(deps: PdfDeps = {}): ReadPdfFn {
       try { workerPdfjs?.destroy(); } catch { /* sin efecto */ }
       try { worker?.terminate(); } catch { /* sin efecto */ }
       if (!bytes.detached) new Uint8Array(bytes).fill(0);
+      // La copia que recibió pdf.js: si no se transfirió al worker (worker simulado o clonada), se pone en cero también.
+      if (datos !== undefined && datos.byteLength > 0) datos.fill(0); // byteLength 0 = ya transferida
     };
 
     // Vence el tiempo o se cancela: rechaza la carrera; el `finally` destruye la tarea.
@@ -167,10 +203,11 @@ export function crearReadPdf(deps: PdfDeps = {}): ReadPdfFn {
       try { lib = await (deps.cargarPdfjs ?? cargarPdfjs)(); } catch { throw new SiglowError('ERROR_INTERNO'); }
       if (terminado) throw new LecturaCancelada();
       // pdf.js toma la propiedad de lo que recibe: se le da una copia y el original se pone en cero al terminar.
-      const datos = new Uint8Array(bytes.slice(0));
+      datos = new Uint8Array(bytes.slice(0));
       const params: Record<string, unknown> = {
         data: datos, disableFontFace: true, useSystemFonts: false, verbosity: 0, enableXfa: false,
         // Sin recursos opcionales (4.6.2): ni fuentes, ni cmaps, ni wasm; nada sale a la red.
+        // `isEvalSupported` ya no existe en 6.4.299 (no figura en pdf.mjs ni en el worker): no hay nada que desactivar.
         useWasm: false, useWorkerFetch: false, isOffscreenCanvasSupported: false, isImageDecoderSupported: false,
       };
       try {
@@ -191,6 +228,8 @@ export function crearReadPdf(deps: PdfDeps = {}): ReadPdfFn {
       const advertencias: ParseWarning[] = [];
       let paginasSinTexto = 0;
       let conAutor = 0;
+      let enlaces = 0;
+      let adjuntos = 0;
       onProgress(0, total);
       for (let n = 1; n <= total; n++) {
         if (terminado) throw new LecturaCancelada();
@@ -223,12 +262,24 @@ export function crearReadPdf(deps: PdfDeps = {}): ReadPdfFn {
         for (const an of await pagina.getAnnotations({ intent: 'any' })) {
           if (!esObjeto(an) || an.subtype === 'Popup') continue; // la ventana emergente repite el contenido de su anotación
           if (cadenaDe(an.titleObj).trim() !== '') conAutor++; // solo se cuenta: el autor nunca se guarda
-          const t = canonicoPdf(cadenaDe(an.contentsObj));
-          if (t.trim() !== '') partesNota.push({ page: n, text: t });
+          // El URI de un enlace y el archivo de un adjunto no se leen: solo se cuentan (CONTENIDO_PDF_NO_LEIDO).
+          if (an.subtype === 'Link' && (typeof an.url === 'string' || typeof an.unsafeUrl === 'string')) enlaces++;
+          if (an.subtype === 'FileAttachment') adjuntos++;
+          for (const crudo of [cadenaDe(an.contentsObj), ...valoresDeCampo(an)]) {
+            const t = canonicoPdf(crudo);
+            if (t.trim() !== '') partesNota.push({ page: n, text: t });
+          }
         }
         pagina.cleanup();
         onProgress(n, total);
       }
+
+      // Adjuntos y marcadores del documento: solo se cuentan.
+      let marcadores = 0;
+      try { adjuntos += contarAdjuntos(await pdf.getAttachments?.()); } catch { /* sin conteo */ }
+      try { marcadores = contarMarcadores(await pdf.getOutline?.()); } catch { /* sin conteo */ }
+      const noLeido = enlaces + adjuntos + marcadores;
+      if (noLeido > 0) advertencias.push({ code: 'CONTENIDO_PDF_NO_LEIDO', count: noLeido });
 
       // Inventario: solo presencia y número (6.3.3).
       const categorias: Partial<Record<MetadataCategory, { count: number }>> = {};
@@ -239,6 +290,8 @@ export function crearReadPdf(deps: PdfDeps = {}): ReadPdfFn {
         if (meta.metadata !== null && meta.metadata !== undefined) categorias.pdf_xmp = { count: 1 };
       } catch { /* el inventario es opcional: sin él no se cuenta nada */ }
       if (conAutor > 0) categorias.pdf_autores_anotaciones = { count: conAutor };
+      if (enlaces > 0) categorias.vinculos_externos = { count: enlaces };
+      if (adjuntos > 0) categorias.objetos_y_macros = { count: adjuntos };
 
       // Orden de lectura canónico (6.3.1): todas las páginas (rango 1) y luego todas las anotaciones (rango 5).
       const partes: Part[] = partesPagina.map((p, i) => ({ ...p, order: i }));

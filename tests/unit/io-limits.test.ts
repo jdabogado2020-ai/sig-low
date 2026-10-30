@@ -417,6 +417,12 @@ describe('T-LE-09 calibración de IoLimits para PDF (PE-4)', () => {
   const FIXTURES = ['pdf-dos-columnas.pdf', 'pdf-anotaciones.pdf', 'pdf-pagina-sin-texto.pdf', 'pdf-js-recuadro.pdf', 'pdf-texto-ilegible.pdf'];
   it('cada PDF de prueba legítimo se lee muy por debajo del tiempo límite (menos de un tercio de timeoutMs)', async () => {
     const leer = crearReadPdf();
+    const cargar = (nombre: string): ArrayBuffer => {
+      const b = readFileSync(new URL(`../fixtures/${nombre}`, import.meta.url));
+      return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) as ArrayBuffer;
+    };
+    // Calentamiento fuera de la medida: la primera importación de pdf.js tarda más con la máquina cargada (verify en paralelo).
+    await leer(cargar('pdf-dos-columnas.pdf'), pdfCtx(), sinProgresoPdf, new AbortController().signal);
     for (const nombre of FIXTURES) {
       const b = readFileSync(new URL(`../fixtures/${nombre}`, import.meta.url));
       const ab = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) as ArrayBuffer;

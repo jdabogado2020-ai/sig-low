@@ -21,6 +21,7 @@ const SUMAS: Record<string, string> = {
   'pdf-pagina-sin-texto.pdf': '0e028df654bd43fee49a2e480deefd394712dac901d9dd384c217e848bf16c76',
   'pdf-js-recuadro.pdf': '1991a082cc8529bca80270d3648dbf7225235283fd27530de7a3d79744cb5cf5',
   'pdf-texto-ilegible.pdf': 'aee491035d930d613194d728025b3516130a69dcc9431611c171db04cbd28cf5',
+  'pdf-formularios.pdf': 'c054ddaded4c777fddf70e5c461e8749ac788fe8eaeb55375f68302941b40e49',
 };
 
 function bytesDe(nombre: string): ArrayBuffer {
@@ -49,7 +50,7 @@ async function codigoDe(p: Promise<unknown>): Promise<ErrorCode | 'NO_LANZA' | '
 
 /** pdf.js falso: registra los parámetros, las destrucciones y los workers terminados. */
 interface Pag { items?: unknown[]; anots?: unknown[] }
-function libFalsa(paginas: Pag[], modo: 'normal' | 'lanza' = 'normal', lanzado: unknown = new Error('Ana Ficticia Rojas')): {
+function libFalsa(paginas: Pag[], modo: 'normal' | 'lanza' = 'normal', lanzado: unknown = new Error('Ana Ficticia Rojas'), extra: { adjuntos?: unknown; marcadores?: unknown } = {}): {
   lib: PdfjsLib; params: Array<Record<string, unknown>>; destruidas: () => number; workersDestruidos: () => number;
 } {
   const params: Array<Record<string, unknown>> = [];
@@ -70,6 +71,8 @@ function libFalsa(paginas: Pag[], modo: 'normal' | 'lanza' = 'normal', lanzado: 
           });
         },
         getMetadata: () => Promise.resolve({ info: {}, metadata: null }),
+        getAttachments: () => Promise.resolve(extra.adjuntos ?? null),
+        getOutline: () => Promise.resolve(extra.marcadores ?? null),
       };
       return { promise: Promise.resolve(doc), destroy: () => { destruidas++; } };
     },
@@ -191,6 +194,61 @@ describe('T-LE-06 PDF con capa de texto', () => {
     const mal = bytesDe('pdf-con-contrasena.pdf');
     await codigoDe(lector(mal, ctx(), sinProgreso, senal()));
     expect(new Uint8Array(mal).every((x) => x === 0)).toBe(true);
+  });
+});
+
+describe('T-LE-06 campos de formulario y contenido no leído (PE-4-r1, M-2)', () => {
+  it('AcroForm: los valores de campos de texto y de opción, también los ocultos, son partes anotacion_pdf; las casillas no', async () => {
+    const d = await leer('pdf-formularios.pdf');
+    expect(d.parts.map((p) => [p.kind, p.label, p.page, p.text])).toEqual([
+      ['pagina_pdf', 'Página 1', 1, 'Formulario ficticio de prueba.'],
+      ['anotacion_pdf', 'Anotación 1 (página 1)', 1, 'Pedro Ficticio Ejemplo'],
+      ['anotacion_pdf', 'Anotación 2 (página 1)', 1, '1.000.000.002'],
+      ['anotacion_pdf', 'Anotación 3 (página 1)', 1, 'Ciudad Ejemplo'],
+    ]);
+    expect(d.parts.every((p) => ETIQUETA_NEUTRA.test(p.label))).toBe(true);
+  });
+
+  it('nombres de campo, URI, adjuntos y títulos de marcadores no llegan al modelo; solo se cuentan (CONTENIDO_PDF_NO_LEIDO)', async () => {
+    const d = await leer('pdf-formularios.pdf');
+    const s = JSON.stringify(d);
+    for (const valor of ['ejemplo.test', 'adjunto', 'Capitulo Ejemplo', 'Anexo Ficticio', 'acepta', 'Yes', 'nombre', 'ciudad']) expect(s, valor).not.toContain(valor);
+    // 1 enlace con URI + 1 adjunto + 2 marcadores; sin valores ni categorías en el aviso
+    expect(d.warnings).toEqual([{ code: 'CONTENIDO_PDF_NO_LEIDO', count: 4 }]);
+    expect(d.metadata.categories).toEqual({ vinculos_externos: { count: 1 }, objetos_y_macros: { count: 1 } });
+  });
+
+  it('opción múltiple: cada valor seleccionado es una parte; botones y casillas no; adjuntos como objeto o Map; marcadores anidados', async () => {
+    const f = libFalsa([{
+      items: [item('Texto ficticio suficiente.')],
+      anots: [
+        { subtype: 'Widget', fieldType: 'Ch', fieldValue: ['Ciudad Ejemplo', 'Otra Ciudad'], contentsObj: { str: '' } },
+        { subtype: 'Widget', fieldType: 'Btn', fieldValue: 'Off', checkBox: true },
+        { subtype: 'Widget', fieldType: 'Tx', fieldValue: '' },
+        { subtype: 'Widget', fieldType: 'Tx', fieldValue: 'Valor\r\nficticio' },
+        { subtype: 'Link', url: 'https://ejemplo.test/a' },
+        { subtype: 'Link', dest: 'interno' },
+        { subtype: 'FileAttachment', contentsObj: { str: 'Adjunto de ejemplo' } },
+      ],
+    }], 'normal', undefined, { adjuntos: { 'a.txt': {}, 'b.txt': {} }, marcadores: [{ title: 'A', items: [{ title: 'B', items: [] }] }, { title: 'C', items: [] }] });
+    const d = await crearReadPdf({ cargarPdfjs: () => Promise.resolve(f.lib), crearWorker: () => null, ids: idsFijos() })(new ArrayBuffer(8), ctx(), sinProgreso, senal());
+    expect(d.parts.filter((p) => p.kind === 'anotacion_pdf').map((p) => p.text)).toEqual(['Ciudad Ejemplo', 'Otra Ciudad', 'Valor\nficticio', 'Adjunto de ejemplo']);
+    // 1 enlace + (1 anotación FileAttachment + 2 adjuntos) + 3 marcadores
+    expect(d.warnings).toEqual([{ code: 'CONTENIDO_PDF_NO_LEIDO', count: 7 }]);
+    expect(d.metadata.categories).toEqual({ vinculos_externos: { count: 1 }, objetos_y_macros: { count: 3 } });
+    const m = libFalsa([{ items: [item('Texto ficticio suficiente.')] }], 'normal', undefined, { adjuntos: new Map([['a.txt', {}]]) });
+    const d2 = await crearReadPdf({ cargarPdfjs: () => Promise.resolve(m.lib), crearWorker: () => null })(new ArrayBuffer(8), ctx(), sinProgreso, senal());
+    expect(d2.warnings).toEqual([{ code: 'CONTENIDO_PDF_NO_LEIDO', count: 1 }]);
+  });
+
+  it('un fallo al contar adjuntos o marcadores no impide la lectura', async () => {
+    const f = libFalsa([{ items: [item('Texto ficticio suficiente.')] }]);
+    const lib: PdfjsLib = { ...f.lib, getDocument: (p) => {
+      const t = f.lib.getDocument(p);
+      return { ...t, promise: t.promise.then((doc) => ({ ...doc, getAttachments: () => Promise.reject(new Error('Ana Ficticia')), getOutline: () => Promise.reject(new Error('x')) })) };
+    } };
+    const d = await crearReadPdf({ cargarPdfjs: () => Promise.resolve(lib), crearWorker: () => null })(new ArrayBuffer(8), ctx(), sinProgreso, senal());
+    expect(d.warnings).toEqual([]);
   });
 });
 
@@ -321,7 +379,17 @@ describe('V-42 pdf.js sin recursos opcionales y con worker del mismo origen', ()
     await crearReadPdf({ cargarPdfjs: () => Promise.resolve(f.lib), crearWorker: () => null })(buf, ctx(), sinProgreso, senal());
     expect(buf.detached).toBe(false);
     expect(Array.from(new Uint8Array(buf))).toEqual([0, 0, 0, 0]);
-    expect(Array.from((f.params[0]?.data as Uint8Array))).toEqual([1, 2, 3, 4]);
+    // B-10: la copia que recibió pdf.js, si no se transfirió, también queda en cero (y no es el buffer del llamador).
+    const copia = f.params[0]?.data as Uint8Array;
+    expect(copia.buffer).not.toBe(buf);
+    expect(Array.from(copia)).toEqual([0, 0, 0, 0]);
+  });
+
+  it('B-10 isEvalSupported no existe en pdfjs-dist 6.4.299 (ni en pdf.mjs ni en el worker): no se pasa', () => {
+    for (const f of ['pdf.mjs', 'pdf.worker.mjs']) {
+      const src = readFileSync(new URL(`../../node_modules/pdfjs-dist/legacy/build/${f}`, import.meta.url), 'utf8');
+      expect(src, f).not.toContain('isEvalSupported');
+    }
   });
 
   it('el worker es de módulo, del mismo origen y nunca blob: ni data:', () => {

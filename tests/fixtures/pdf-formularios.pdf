@@ -1,0 +1,75 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R /AcroForm << /Fields [6 0 R 7 0 R 8 0 R 9 0 R] /DA (/Helv 10 Tf 0 g) /DR << /Font << /Helv 4 0 R >> >> >> /Outlines 11 0 R /Names << /EmbeddedFiles << /Names [(adjunto.txt) 14 0 R] >> >> >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R /Annots [6 0 R 7 0 R 8 0 R 9 0 R 10 0 R] >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Length 61 >>
+stream
+BT /F1 10 Tf 60 780 Td (Formulario ficticio de prueba.) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Annot /Subtype /Widget /FT /Tx /T (nombre) /V (Pedro Ficticio Ejemplo) /DA (/Helv 10 Tf 0 g) /Rect [60 700 300 720] /F 4 /P 3 0 R >>
+endobj
+7 0 obj
+<< /Type /Annot /Subtype /Widget /FT /Tx /T (documento) /V (1.000.000.002) /DA (/Helv 10 Tf 0 g) /Rect [60 660 300 680] /F 2 /P 3 0 R >>
+endobj
+8 0 obj
+<< /Type /Annot /Subtype /Widget /FT /Ch /Ff 131072 /T (ciudad) /V (Ciudad Ejemplo) /Opt [(Ciudad Ejemplo) (Otra Ciudad)] /DA (/Helv 10 Tf 0 g) /Rect [60 620 300 640] /F 4 /P 3 0 R >>
+endobj
+9 0 obj
+<< /Type /Annot /Subtype /Widget /FT /Btn /T (acepta) /V /Yes /AS /Yes /Rect [60 580 80 600] /F 4 /P 3 0 R >>
+endobj
+10 0 obj
+<< /Type /Annot /Subtype /Link /Rect [60 540 300 560] /Border [0 0 0] /A << /S /URI /URI (https://ejemplo.test/ficticio) >> >>
+endobj
+11 0 obj
+<< /Type /Outlines /First 12 0 R /Last 13 0 R /Count 2 >>
+endobj
+12 0 obj
+<< /Title (Capitulo Ejemplo) /Parent 11 0 R /Next 13 0 R /Dest [3 0 R /Fit] >>
+endobj
+13 0 obj
+<< /Title (Anexo Ficticio) /Parent 11 0 R /Prev 12 0 R /Dest [3 0 R /Fit] >>
+endobj
+14 0 obj
+<< /Type /Filespec /F (adjunto.txt) /UF (adjunto.txt) /EF << /F 15 0 R >> >>
+endobj
+15 0 obj
+<< /Type /EmbeddedFile /Length 29 >>
+stream
+Texto de un adjunto ficticio.
+endstream
+endobj
+xref
+0 16
+0000000000 65535 f 
+0000000009 00000 n 
+0000000245 00000 n 
+0000000302 00000 n 
+0000000469 00000 n 
+0000000566 00000 n 
+0000000677 00000 n 
+0000000835 00000 n 
+0000000987 00000 n 
+0000001186 00000 n 
+0000001311 00000 n 
+0000001454 00000 n 
+0000001528 00000 n 
+0000001623 00000 n 
+0000001716 00000 n 
+0000001809 00000 n 
+trailer
+<< /Size 16 /Root 1 0 R >>
+startxref
+1909
+%%EOF
