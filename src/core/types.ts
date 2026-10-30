@@ -293,6 +293,9 @@ export interface Suggestion {
   placeOptions?: string[];        // homónimo sin resolver (≥ 2 códigos DANE de departamento)
   status: 'pendiente' | 'aplicada' | 'descartada';
   chosenOptionId?: string;
+  // Contrato del integrador (regla 9, 30-oct; P0-6a de PB-3, B-7): edición de tramo de la sugerencia, sacada una sola
+  // vez de IdSource y conservada aunque la sugerencia se deshaga (INV-R10), como Flag.spanEditId.
+  spanEditId?: SpanEditId;
 }
 
 // ===== Sección 6.4.6 Banderas de revisión manual (bloque 12, línea 1325) =====
