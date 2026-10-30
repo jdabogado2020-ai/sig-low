@@ -1,0 +1,176 @@
+/* Estilos base del armazón (PC-1). Solo hojas del mismo origen y clases: la CSP (style-src 'self') no admite atributos style.
+   Unidades rem; sin alturas fijas en contenedores de texto (8.6.1, 1.4.4 y 1.4.12). Los colores de resaltado (8.4) son de PC-3. */
+:root {
+  --sl-fondo: #ffffff;
+  --sl-fondo-2: #f3f4f7;
+  --sl-texto: #1b1d22;
+  --sl-texto-2: #454a55;
+  --sl-borde: #6b7280;
+  --sl-borde-suave: #c9ccd3;
+  --sl-primario: #1d4ed8;
+  --sl-primario-texto: #ffffff;
+  --sl-foco: #b45309;
+  --sl-error: #b00020;
+  --sl-aviso-fondo: #fff7e0;
+  --sl-aviso-borde: #8a5a00;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sl-fondo: #14161a;
+    --sl-fondo-2: #1d2026;
+    --sl-texto: #eceef2;
+    --sl-texto-2: #b9bfcb;
+    --sl-borde: #8c93a1;
+    --sl-borde-suave: #3a3f4a;
+    --sl-primario: #8ab4ff;
+    --sl-primario-texto: #0b1220;
+    --sl-foco: #ffb454;
+    --sl-error: #ff8a9b;
+    --sl-aviso-fondo: #2b2410;
+    --sl-aviso-borde: #d9a441;
+  }
+}
+
+* { box-sizing: border-box; }
+html { font-size: 100%; scroll-padding-top: 4.5rem; }
+body {
+  margin: 0;
+  background: var(--sl-fondo);
+  color: var(--sl-texto);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+}
+h1, h2, h3, h4 { line-height: 1.25; }
+h1 { font-size: 1.6rem; margin: 1rem 0 0.75rem; }
+h2 { font-size: 1.25rem; margin: 0 0 0.5rem; }
+h3 { font-size: 1.05rem; margin: 0.75rem 0 0.25rem; }
+p { margin: 0.4rem 0; }
+ul, ol { margin: 0.4rem 0; padding-left: 1.25rem; }
+
+:focus-visible { outline: 3px solid var(--sl-foco); outline-offset: 2px; }
+h1:focus, main:focus { outline: none; }
+
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+main { flex: 1; width: 100%; max-width: 72rem; margin: 0 auto; padding: 0 1rem 1.5rem; }
+
+.salto {
+  position: absolute; left: 0.5rem; top: -4rem; z-index: 20;
+  background: var(--sl-primario); color: var(--sl-primario-texto);
+}
+.salto:focus { top: 0.5rem; }
+
+.cabecera {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center;
+  padding: 0.5rem 1rem;
+  background: var(--sl-fondo-2); border-bottom: 1px solid var(--sl-borde-suave);
+}
+.marca { font-weight: 700; font-size: 1.15rem; margin: 0; }
+.chip { margin: 0; padding: 0.15rem 0.6rem; border: 1px solid var(--sl-borde); border-radius: 999px; font-size: 0.9rem; }
+.sin-conexion { margin: 0; color: var(--sl-texto-2); font-size: 0.9rem; }
+.herramientas { margin-left: auto; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+
+.pasos { padding: 0.5rem 1rem; border-bottom: 1px solid var(--sl-borde-suave); }
+.pasos ol { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; list-style: none; margin: 0; padding: 0; }
+.pasos li { color: var(--sl-texto-2); }
+.pasos li.actual { color: var(--sl-texto); font-weight: 700; text-decoration: underline; text-underline-offset: 0.25rem; }
+
+.avisos { padding: 0 1rem; max-width: 72rem; margin: 0 auto; width: 100%; }
+.avisos p { margin: 0.25rem 0; }
+.aviso-global:empty { display: none; }
+.banda, .aviso-inicial, .aviso-bloqueo, .tarjeta, .confirmacion {
+  border: 1px solid var(--sl-aviso-borde); background: var(--sl-aviso-fondo);
+  border-radius: 0.5rem; padding: 0.75rem 1rem; margin: 0.75rem 0;
+}
+.banda { margin: 0; border-radius: 0; border-width: 0 0 1px 0; }
+.tarjeta { background: var(--sl-fondo-2); border-color: var(--sl-borde-suave); }
+.promesa { font-size: 1.1rem; max-width: 52rem; }
+
+.dos-columnas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; align-items: start; }
+.crear, .abrir, .agregar, .pegar, .variantes {
+  border: 1px solid var(--sl-borde-suave); border-radius: 0.5rem; padding: 0.75rem 1rem; margin: 0.75rem 0;
+}
+
+.campo { margin: 0.6rem 0; }
+.campo label, legend { display: block; font-weight: 600; margin-bottom: 0.2rem; }
+input[type='text'], input[type='password'], textarea, select {
+  width: 100%; max-width: 40rem; padding: 0.45rem 0.6rem; font: inherit; color: inherit;
+  background: var(--sl-fondo); border: 1px solid var(--sl-borde); border-radius: 0.375rem;
+}
+textarea { resize: vertical; }
+input[aria-invalid='true'] { border-color: var(--sl-error); border-width: 2px; }
+.ayuda { color: var(--sl-texto-2); font-size: 0.9rem; margin: 0.2rem 0; }
+.error-campo { color: var(--sl-error); font-weight: 600; margin: 0.2rem 0; }
+.fila { display: flex; gap: 0.5rem; align-items: end; flex-wrap: wrap; }
+.fila .campo { flex: 1 1 14rem; }
+fieldset.grupo { border: 1px solid var(--sl-borde-suave); border-radius: 0.375rem; margin: 0.6rem 0; padding: 0.4rem 0.75rem; }
+.radio, .casilla { display: grid; grid-template-columns: auto 1fr; column-gap: 0.5rem; align-items: start; margin: 0.4rem 0; }
+.radio input, .casilla input { margin-top: 0.3rem; min-width: 1.25rem; min-height: 1.25rem; }
+.radio label, .casilla label { font-weight: 400; margin: 0; }
+.radio p, .casilla p { grid-column: 2; margin: 0.1rem 0; }
+
+button {
+  font: inherit; cursor: pointer; min-height: 2.5rem; min-width: 2.5rem; padding: 0.4rem 0.9rem;
+  color: var(--sl-primario-texto); background: var(--sl-primario);
+  border: 2px solid var(--sl-primario); border-radius: 0.375rem;
+}
+button.secundario { color: var(--sl-texto); background: transparent; border-color: var(--sl-borde); }
+button.enlace { color: var(--sl-primario); background: transparent; border-color: transparent; text-decoration: underline; padding: 0.2rem 0.4rem; min-height: 1.5rem; }
+button[disabled] { cursor: not-allowed; opacity: 0.55; }
+button[aria-pressed='true'].secundario { border-color: var(--sl-primario); border-width: 3px; }
+.acciones { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0; }
+
+.menu { position: relative; }
+.menu-lista { position: absolute; right: 0; z-index: 15; list-style: none; margin: 0.25rem 0 0; padding: 0.4rem; min-width: 16rem;
+  background: var(--sl-fondo); border: 1px solid var(--sl-borde); border-radius: 0.375rem; }
+.menu-lista li { margin: 0.2rem 0; }
+.menu-lista button { width: 100%; text-align: left; }
+
+.tabla-envoltura { overflow-x: auto; }
+.tabla { border-collapse: collapse; width: 100%; }
+.tabla caption { text-align: left; font-weight: 700; padding: 0.4rem 0; }
+.tabla th, .tabla td { border: 1px solid var(--sl-borde-suave); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+.tabla thead th { background: var(--sl-fondo-2); }
+.tabla tr.seleccionada th, .tabla tr.seleccionada td { background: var(--sl-fondo-2); }
+.tabla .campo { margin: 0; }
+.tabla .campo label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.lista-variantes { list-style: none; padding: 0; }
+.lista-variantes li { border-top: 1px solid var(--sl-borde-suave); padding: 0.4rem 0; display: grid; grid-template-columns: 1fr auto; gap: 0.25rem 1rem; }
+.lista-variantes .casilla { grid-column: 1 / -1; margin: 0; }
+.var-texto { font-weight: 600; }
+.var-meta { color: var(--sl-texto-2); font-size: 0.9rem; }
+
+.pie { border-top: 1px solid var(--sl-borde-suave); padding: 0.75rem 1rem; background: var(--sl-fondo-2); color: var(--sl-texto-2); }
+.pie p { margin: 0.2rem 0; }
+
+.solo-lectores { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; margin: 0; }
+
+.dialogo { max-width: min(92vw, 40rem); max-height: 90vh; overflow: auto; padding: 0; color: var(--sl-texto); background: var(--sl-fondo);
+  border: 2px solid var(--sl-borde); border-radius: 0.5rem; }
+.dialogo.ancho { max-width: min(94vw, 56rem); }
+.dialogo::backdrop { background: rgb(0 0 0 / 55%); }
+.dialogo-cuerpo { padding: 1rem 1.25rem; }
+.aviso-licencia { border-top: 1px solid var(--sl-borde-suave); padding-top: 0.4rem; }
+
+/* Impresión (8.7): se oculta todo salvo el párrafo con M-126, creado fuera de #app. */
+.solo-impresion { display: none; }
+@media print {
+  body > * { display: none !important; }
+  body > .solo-impresion { display: block !important; }
+}
+
+/* Pantallas angostas y zoom del 200 %: sin desplazamiento horizontal (1.4.10). */
+@media (max-width: 56rem) {
+  .herramientas { margin-left: 0; }
+  main { padding: 0 0.75rem 1rem; }
+  .menu-lista { right: auto; left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+@media (forced-colors: active) {
+  button { border: 2px solid ButtonText; }
+  :focus-visible { outline: 3px solid Highlight; }
+}
