@@ -1,0 +1,96 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Author (Autora Ejemplo) /Title (Documento ficticio de prueba) /Producer (Productor Ficticio) >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 195 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+60 772 Td
+(Primera p\341gina de un documento ficticio.) Tj
+T*
+(Se\361ora Marta Ficticia Prueba, c\351dula 1.000.000.001.) Tj
+T*
+(L\355nea final de la primera p\341gina.) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 908 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+60 772 Td
+(Se\361ora Marta Ficticia Prueba, identificada con la) Tj
+T*
+(c\351dula de ciudadan\355a 1.000.000.001, domiciliada) Tj
+T*
+(en Ciudad Ejemplo, presenta la solicitud n\372mero) Tj
+T*
+(REF-0000-0001 ante la entidad Ejemplo S.A.S.) Tj
+T*
+(El correo de contacto es marta@ejemplo.test y el) Tj
+T*
+(tel\351fono es 300 000 0001. Anexa copia del poder) Tj
+T*
+(otorgado al abogado Juan Ficticio Ejemplo.) Tj
+T*
+(Fin de la primera columna.) Tj
+ET
+BT
+/F1 10 Tf
+14 TL
+315 772 Td
+(Segunda columna: hechos de la tutela ficticia.) Tj
+T*
+(El d\355a 01/01/2000 se radic\363 la petici\363n sin) Tj
+T*
+(respuesta de fondo. Radicado 00000-00-00-000-) Tj
+T*
+(0000-00000-00 del Juzgado Ejemplo de Prueba.) Tj
+T*
+(Se solicita el amparo de los derechos del) Tj
+T*
+(accionante Pedro Ficticio Ejemplo, quien reside) Tj
+T*
+(en la Calle 1 # 1-01 de Ciudad Ejemplo.) Tj
+T*
+(Fin de la segunda columna.) Tj
+ET
+endstream
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000224 00000 n 
+0000000339 00000 n 
+0000000465 00000 n 
+0000000710 00000 n 
+0000000836 00000 n 
+trailer
+<< /Size 9 /Root 1 0 R /Info 4 0 R >>
+startxref
+1794
+%%EOF

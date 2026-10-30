@@ -1,0 +1,72 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 9 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Author (Autora Ejemplo) /Title (Documento ficticio de prueba) /Producer (Productor Ficticio) >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R /Annots [7 0 R 8 0 R] >>
+endobj
+6 0 obj
+<< /Length 137 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+60 772 Td
+(P\341gina con anotaciones de revisi\363n.) Tj
+T*
+(Texto de cuerpo ficticio de la primera p\341gina.) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Annot /Subtype /Text /Rect [100 700 120 720] /Contents (Llamar a Marta Ficticia Prueba al 300 000 0001) /T (Revisor Ficticio) /F 4 /Open false /Name /Comment >>
+endobj
+8 0 obj
+<< /Type /Annot /Subtype /FreeText /Rect [100 650 300 680] /Contents (Verificar la c\351dula 1.000.000.001) /T (Revisora Ejemplo) /F 4 /DA (/Helv 10 Tf 0 g) >>
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R /Annots [11 0 R] >>
+endobj
+10 0 obj
+<< /Length 75 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+60 772 Td
+(Segunda p\341gina de cuerpo ficticio.) Tj
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Annot /Subtype /Text /Rect [100 700 120 720] /Contents (Correo marta@ejemplo.test) /T (Revisor Ficticio) /F 4 /Open false /Name /Comment >>
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000224 00000 n 
+0000000339 00000 n 
+0000000487 00000 n 
+0000000674 00000 n 
+0000000860 00000 n 
+0000001035 00000 n 
+0000001179 00000 n 
+0000001304 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R /Info 4 0 R >>
+startxref
+1470
+%%EOF

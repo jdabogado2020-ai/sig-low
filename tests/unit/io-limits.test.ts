@@ -7,6 +7,9 @@ import type { HandlerDeps } from '../../src/io/io-handler';
 import { IO_LIMITS_POR_DEFECTO, LecturaCancelada, leerArchivo } from '../../src/io/io-client';
 import type { WorkerIo } from '../../src/io/io-client';
 import { readTxt } from '../../src/io/txt-read';
+import { crearReadPdf } from '../../src/io/pdf-read';
+import type { PdfDocumento, PdfjsLib, PdfPagina, PdfTarea } from '../../src/io/pdf-read';
+import { readFileSync } from 'node:fs';
 
 const DOC = 'doc_00112233445566778899aabbccddeeff' as DocId;
 const REQ = 'req_00112233445566778899aabbccddeeff';
@@ -276,5 +279,171 @@ describe('T-LE-09 tiempo límite, cancelación y liberación (cliente del worker
     expect(Object.keys(msg.payload).sort()).toEqual(['bytes', 'docId', 'format', 'label', 'limits']);
     await vi.advanceTimersByTimeAsync(IO_LIMITS_POR_DEFECTO.timeoutMs + 1);
     await r;
+  });
+});
+
+// ---------- PE-4 · pdf.js (readPdf): tiempo límite, cancelación y loadingTask.destroy() (6.11.5, 6.11.6) ----------
+type ModoPdf = 'normal' | 'sin-documento' | 'sin-pagina' | 'destroy-colgado';
+interface EstadoPdf { destruidas: number; workersPdfjs: number; workersTerminados: number; getDocumentLlamadas: number; paginasPedidas: number }
+class PdfWorkerFalso { constructor(_p: { port: unknown }) { /* sin efecto */ } destroy(): void { /* sin efecto */ } }
+function pdfFalso(modo: ModoPdf, paginas = 3): { lib: PdfjsLib; e: EstadoPdf } {
+  const e: EstadoPdf = { destruidas: 0, workersPdfjs: 0, workersTerminados: 0, getDocumentLlamadas: 0, paginasPedidas: 0 };
+  class Worker2 extends PdfWorkerFalso { override destroy(): void { e.workersPdfjs++; } }
+  const lib: PdfjsLib = {
+    PDFWorker: Worker2,
+    getDocument(): PdfTarea {
+      e.getDocumentLlamadas++;
+      const doc: PdfDocumento = {
+        numPages: paginas,
+        getPage: (): Promise<PdfPagina> => {
+          e.paginasPedidas++;
+          if (modo === 'sin-pagina') return new Promise<PdfPagina>(() => undefined);
+          return Promise.resolve({
+            getTextContent: () => Promise.resolve({ items: [{ str: 'Texto ficticio de la página.', hasEOL: false, height: 10, transform: [10, 0, 0, 10, 50, 700] }] }),
+            getAnnotations: () => Promise.resolve([]),
+            cleanup: () => true,
+          });
+        },
+        getMetadata: () => Promise.resolve({ info: {}, metadata: null }),
+      };
+      const promise = modo === 'sin-documento' ? new Promise<PdfDocumento>(() => undefined) : Promise.resolve(doc);
+      return { promise, destroy: () => { e.destruidas++; return modo === 'destroy-colgado' ? new Promise<void>(() => undefined) : Promise.resolve(); } };
+    },
+  };
+  return { lib, e };
+}
+const pdfCtx = (limits: IoLimits = LIMITES): { docId: DocId; label: string; limits: IoLimits } => ({ docId: DOC, label: 'Documento 1', limits });
+const lectorPdf = (f: { lib: PdfjsLib; e: EstadoPdf }): ReturnType<typeof crearReadPdf> =>
+  crearReadPdf({ cargarPdfjs: () => Promise.resolve(f.lib), crearWorker: () => ({ terminate: () => { f.e.workersTerminados++; } }) });
+const codigoPdf = (p: Promise<unknown>): Promise<string> =>
+  p.then(() => 'resolvió', (e: unknown) => (e instanceof SiglowError ? e.code : e instanceof LecturaCancelada ? 'CANCELADO' : 'OTRO'));
+const sinProgresoPdf = (): void => undefined;
+
+describe('T-LE-09 pdf.js: tiempo límite, cancelación y loadingTask.destroy() (PE-4)', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('una lectura correcta llama a loadingTask.destroy() una vez y destruye el PDFWorker y el worker', async () => {
+    const f = pdfFalso('normal');
+    const d = await lectorPdf(f)(new ArrayBuffer(8), pdfCtx(), sinProgresoPdf, new AbortController().signal);
+    expect(d.parts).toHaveLength(3);
+    expect(f.e).toMatchObject({ destruidas: 1, workersPdfjs: 1, workersTerminados: 1 });
+  });
+  it('al vencer timeoutMs mientras abre el documento: TIEMPO_AGOTADO y destroy() una sola vez', async () => {
+    const f = pdfFalso('sin-documento');
+    const r = codigoPdf(lectorPdf(f)(new ArrayBuffer(8), pdfCtx({ ...LIMITES, timeoutMs: 15_000 }), sinProgresoPdf, new AbortController().signal));
+    await vi.advanceTimersByTimeAsync(14_999);
+    expect(f.e.destruidas).toBe(0);
+    await vi.advanceTimersByTimeAsync(2);
+    expect(await r).toBe('TIEMPO_AGOTADO');
+    expect(f.e).toMatchObject({ destruidas: 1, workersPdfjs: 1, workersTerminados: 1 });
+  });
+  it('al vencer a mitad de la extracción (una página atascada): TIEMPO_AGOTADO y no se piden más páginas', async () => {
+    const f = pdfFalso('sin-pagina');
+    const r = codigoPdf(lectorPdf(f)(new ArrayBuffer(8), pdfCtx(), sinProgresoPdf, new AbortController().signal));
+    await vi.advanceTimersByTimeAsync(LIMITES.timeoutMs + 1);
+    expect(await r).toBe('TIEMPO_AGOTADO');
+    expect(f.e.paginasPedidas).toBe(1);
+    expect(f.e.destruidas).toBe(1);
+  });
+  it('usa los 15 s de IoLimits.timeoutMs por defecto', async () => {
+    const f = pdfFalso('sin-documento');
+    const r = codigoPdf(lectorPdf(f)(new ArrayBuffer(8), pdfCtx(IO_LIMITS_POR_DEFECTO), sinProgresoPdf, new AbortController().signal));
+    await vi.advanceTimersByTimeAsync(IO_LIMITS_POR_DEFECTO.timeoutMs - 1);
+    expect(f.e.destruidas).toBe(0);
+    await vi.advanceTimersByTimeAsync(2);
+    expect(await r).toBe('TIEMPO_AGOTADO');
+    expect(IO_LIMITS_POR_DEFECTO.timeoutMs).toBe(15_000);
+  });
+  it('si destroy() nunca responde (worker de pdf.js atascado), el rechazo por tiempo no espera', async () => {
+    const f = pdfFalso('destroy-colgado', 2);
+    const g = pdfFalso('sin-documento');
+    const r = codigoPdf(lectorPdf(g)(new ArrayBuffer(8), pdfCtx(), sinProgresoPdf, new AbortController().signal));
+    await vi.advanceTimersByTimeAsync(LIMITES.timeoutMs + 1);
+    expect(await r).toBe('TIEMPO_AGOTADO');
+    const ok = await lectorPdf(f)(new ArrayBuffer(8), pdfCtx(), sinProgresoPdf, new AbortController().signal);
+    expect(ok.parts).toHaveLength(2);
+    expect(f.e.destruidas).toBe(1);
+  });
+  it('la cancelación (AbortSignal) rechaza con LecturaCancelada, llama a destroy() y termina el worker', async () => {
+    const f = pdfFalso('sin-documento');
+    const ac = new AbortController();
+    const r = codigoPdf(lectorPdf(f)(new ArrayBuffer(8), pdfCtx(), sinProgresoPdf, ac.signal));
+    await vi.advanceTimersByTimeAsync(1_000);
+    ac.abort();
+    expect(await r).toBe('CANCELADO');
+    expect(f.e).toMatchObject({ destruidas: 1, workersPdfjs: 1, workersTerminados: 1 });
+    await vi.advanceTimersByTimeAsync(LIMITES.timeoutMs * 2);
+    expect(f.e.destruidas).toBe(1);
+  });
+  it('la cancelación a mitad de la extracción detiene la lectura de páginas', async () => {
+    const f = pdfFalso('normal', 50);
+    const ac = new AbortController();
+    const r = codigoPdf(lectorPdf(f)(new ArrayBuffer(8), pdfCtx(), (hechas) => { if (hechas === 2) ac.abort(); }, ac.signal));
+    expect(await r).toBe('CANCELADO');
+    expect(f.e.paginasPedidas).toBeLessThanOrEqual(3);
+    expect(f.e.destruidas).toBe(1);
+  });
+  it('si la señal ya estaba cancelada no se abre ningún documento', async () => {
+    const f = pdfFalso('normal');
+    const ac = new AbortController();
+    ac.abort();
+    expect(await codigoPdf(lectorPdf(f)(new ArrayBuffer(8), pdfCtx(), sinProgresoPdf, ac.signal))).toBe('CANCELADO');
+    expect(f.e.getDocumentLlamadas).toBe(0);
+  });
+  it('al terminar no queda ningún temporizador ni oyente de abort pendiente', async () => {
+    const f = pdfFalso('normal');
+    const ac = new AbortController();
+    await lectorPdf(f)(new ArrayBuffer(8), pdfCtx(), sinProgresoPdf, ac.signal);
+    expect(vi.getTimerCount()).toBe(0);
+    ac.abort();
+    expect(f.e.destruidas).toBe(1);
+  });
+  it('un fallo al abrir también destruye la tarea (loadingTask.destroy() en todos los caminos)', async () => {
+    let destruidas = 0;
+    const lib: PdfjsLib = {
+      PDFWorker: PdfWorkerFalso,
+      getDocument: (): PdfTarea => ({
+        promise: Promise.reject(Object.assign(new Error('x'), { name: 'InvalidPDFException' })),
+        destroy: () => { destruidas++; },
+      }),
+    };
+    expect(await codigoPdf(crearReadPdf({ cargarPdfjs: () => Promise.resolve(lib), crearWorker: () => null })(new ArrayBuffer(8), pdfCtx(), sinProgresoPdf, new AbortController().signal))).toBe('PDF_DANADO');
+    expect(destruidas).toBe(1);
+  });
+});
+
+describe('T-LE-09 calibración de IoLimits para PDF (PE-4)', () => {
+  const FIXTURES = ['pdf-dos-columnas.pdf', 'pdf-anotaciones.pdf', 'pdf-pagina-sin-texto.pdf', 'pdf-js-recuadro.pdf', 'pdf-texto-ilegible.pdf'];
+  it('cada PDF de prueba legítimo se lee muy por debajo del tiempo límite (menos de un tercio de timeoutMs)', async () => {
+    const leer = crearReadPdf();
+    for (const nombre of FIXTURES) {
+      const b = readFileSync(new URL(`../fixtures/${nombre}`, import.meta.url));
+      const ab = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) as ArrayBuffer;
+      const t0 = performance.now();
+      await leer(ab, pdfCtx(), sinProgresoPdf, new AbortController().signal);
+      const ms = performance.now() - t0;
+      expect(ms, `${nombre}: ${ms.toFixed(0)} ms`).toBeLessThan(IO_LIMITS_POR_DEFECTO.timeoutMs / 3);
+    }
+  });
+  it('el trabajo propio del lector con 2 000 páginas de 5 000 caracteres es despreciable frente al tiempo límite', async () => {
+    const items = Array.from({ length: 50 }, (_, i) => ({ str: 'x'.repeat(99), hasEOL: true, height: 10, transform: [10, 0, 0, 10, 50, 800 - i * 12] }));
+    const lib: PdfjsLib = {
+      PDFWorker: PdfWorkerFalso,
+      getDocument: (): PdfTarea => ({
+        promise: Promise.resolve({
+          numPages: 2000,
+          getPage: () => Promise.resolve({ getTextContent: () => Promise.resolve({ items }), getAnnotations: () => Promise.resolve([]), cleanup: () => true }),
+          getMetadata: () => Promise.resolve({}),
+        }),
+        destroy: () => undefined,
+      }),
+    };
+    vi.useRealTimers();
+    const t0 = performance.now();
+    const d = await crearReadPdf({ cargarPdfjs: () => Promise.resolve(lib), crearWorker: () => null })(new ArrayBuffer(8), pdfCtx(), sinProgresoPdf, new AbortController().signal);
+    const ms = performance.now() - t0;
+    expect(d.parts).toHaveLength(2000);
+    expect(ms, `${ms.toFixed(0)} ms`).toBeLessThan(IO_LIMITS_POR_DEFECTO.timeoutMs / 3);
   });
 });
