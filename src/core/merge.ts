@@ -41,8 +41,14 @@ const KEY_PREFIX: Partial<Readonly<Record<DetectableType, string>>> = {
 /** R-MOD-03 · Palabras de función y tratamientos (vista `lista`). */
 const FW = 'de|del|la|las|los|el|lo|y|e|o|u|a|al|en|por|para|con|sin|su|sus|que|se|un|una|unos|unas|senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr|mrs|mr|ms';
 const FW_SET: ReadonlySet<string> = new Set(FW.split('|'));
-const RE_TRIM_LEFT = new RegExp(String.raw`^(?:[\s\p{P}\p{S}]+|(?:` + FW + String.raw`)(?=[\s\p{P}\p{S}]|$))+`, 'u');
-const RE_TRIM_RIGHT = new RegExp(String.raw`(?:[\s\p{P}\p{S}]+|(?<=^|[\s\p{P}\p{S}])(?:` + FW + String.raw`))+$`, 'u');
+/**
+ * Izquierda y Derecha de R-MOD-03 sin el `+` interno de 7.10.7 (P0-6a M-1): `(?:[sep]+|FW)+$` sin ancla
+ * al inicio retrocede de forma exponencial con signos sueltos separados por blancos. `(?:[sep]|FW)+`
+ * acepta el mismo lenguaje y da el mismo índice; cada signo es una vuelta y un FW solo empieza tras un
+ * signo o en el borde, así que no hay dos formas de partir la misma cadena. Exportadas para las pruebas.
+ */
+export const RE_TRIM_LEFT = new RegExp(String.raw`^(?:[\s\p{P}\p{S}]|(?:` + FW + String.raw`)(?=[\s\p{P}\p{S}]|$))+`, 'u');
+export const RE_TRIM_RIGHT = new RegExp(String.raw`(?:[\s\p{P}\p{S}]|(?<=^|[\s\p{P}\p{S}])(?:` + FW + String.raw`))+$`, 'u');
 /** Paso 2: lo que el modelo agrega no puede ser palabra de función ni tratamiento (R-MOD-03 y R-LST-03). */
 const NAME_STOP: ReadonlySet<string> = new Set([...FW_SET, 'ingeniera', 'ingeniero', 'ing', 'abogada', 'abogado', 'abg',
   'licenciada', 'licenciado', 'lic', 'magistrada', 'magistrado', 'jueza', 'juez', 'profesora', 'profesor', 'prof']);

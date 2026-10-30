@@ -1,6 +1,7 @@
 // T-MO-05 · Precedencia y solapamientos (plan 7.11.4), INV-R02, INV-R03 e INV-R04. Solo datos ficticios.
 import { describe, expect, it } from 'vitest';
-import { mergeCandidates, precedenceOf, resolveRemainder } from '../../src/core/merge.ts';
+import { mergeCandidates, precedenceOf, RE_TRIM_LEFT, RE_TRIM_RIGHT, resolveRemainder } from '../../src/core/merge.ts';
+import { buildSearchView } from '../../src/core/normalize.ts';
 import type {
   CaseEntityId, Confidence, DataType, DetectionCandidate, DocId, LabelHit, MergeCandidatesFn, MergedCandidate, Part, PartId,
   PartKind, RuleRegistry, ValidatorResult,
@@ -471,6 +472,109 @@ describe('T-MO-05 · normalización, remanentes y R-MRG-01', () => {
       expect(out).toHaveLength(1);
       expect(out[0]).toMatchObject({ precedence: 4, confidence: 'alta', score: 0.9 });
     });
+  });
+});
+
+describe('T-MO-05 · R-MOD-03 sin retroceso exponencial (P0-6a M-1, 7.10.7)', () => {
+  /** R-MOD-03 del plan v1.1 antes de la corrección, con el `+` interno: solo de oráculo y solo con entradas cortas. */
+  const FW_PLAN = 'de|del|la|las|los|el|lo|y|e|o|u|a|al|en|por|para|con|sin|su|sus|que|se|un|una|unos|unas|senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr|mrs|mr|ms';
+  const OLD_LEFT = new RegExp(String.raw`^(?:[\s\p{P}\p{S}]+|(?:` + FW_PLAN + String.raw`)(?=[\s\p{P}\p{S}]|$))+`, 'u');
+  const OLD_RIGHT = new RegExp(String.raw`(?:[\s\p{P}\p{S}]+|(?<=^|[\s\p{P}\p{S}])(?:` + FW_PLAN + String.raw`))+$`, 'u');
+  const lista = (s: string) => buildSearchView(s, 'lista', 'cuerpo').text;
+  /** Como trimFunctionWords: largo de la Izquierda, índice de la Derecha sobre el resto e índice de la Derecha sobre todo. */
+  const trimIdx = (left: RegExp, right: RegExp, v: string): [number, number, number] => {
+    const l = left.exec(v);
+    const ns = l === null ? 0 : l[0].length;
+    const r = right.exec(v.slice(ns));
+    const all = right.exec(v);
+    return [ns, r === null ? -1 : r.index, all === null ? -1 : all.index];
+  };
+  const bestOf3 = (f: () => unknown): number => Math.min(...[0, 1, 2].map(() => {
+    const t0 = performance.now();
+    f();
+    return performance.now() - t0;
+  }));
+  const modelo = (t: string): DetectionCandidate =>
+    ({ partId: PART_ID, start: 0, end: t.length, type: 'PERSONA', source: 'modelo', nerLabel: 'PER', confidence: 'media', score: 0.7, canonicalKey: 'PER:x' });
+
+  it.each([12, 14, 16, 200])('R-MOD-03 con %i palabras hostiles («x ! ! … ! ana») tarda menos de 50 ms', (words) => {
+    const s = 'x' + ' !'.repeat(words - 2) + ' ana';
+    expect(s.split(' ')).toHaveLength(words);
+    expect(bestOf3(() => RE_TRIM_RIGHT.exec(s))).toBeLessThan(50);
+    expect(RE_TRIM_RIGHT.exec(s)).toBeNull();
+    const l = ' !'.repeat(words - 1) + ' ana';
+    expect(bestOf3(() => RE_TRIM_LEFT.exec(l))).toBeLessThan(50);
+    expect(RE_TRIM_LEFT.exec(l)?.[0].length).toBe(2 * (words - 1) + 1);
+    // Por la función real (remanente del modelo, pasada 3 de PB-4): conserva el tramo entero.
+    const t = 'Ana' + ' !'.repeat(words - 2) + ' Ficticia';
+    const part = mkPart(t);
+    expect(bestOf3(() => resolveRemainder(part, modelo(t), 0, t.length, NO_RULES))).toBeLessThan(50);
+    const r = resolveRemainder(part, modelo(t), 0, t.length, NO_RULES);
+    expect(r && t.slice(r.start, r.end)).toBe(t);
+  });
+
+  it.each([
+    ['Dra. Ana Ficticia', 'Ana Ficticia'], ['la Ferretería Ejemplo,', 'Ferretería Ejemplo'], ['señor Pedro Ejemplo de', 'Pedro Ejemplo'],
+    ['(Ana Rojas)', 'Ana Rojas'], ['de', null], ['X', null], ['2026', null], ['Delia Prueba', 'Delia Prueba'], ['Ana', 'Ana'],
+  ])('R-MOD-03 tabla de 7.10.7: «%s» → %s', (span, want) => {
+    const r = resolveRemainder(mkPart(span), modelo(span), 0, span.length, NO_RULES);
+    expect(r && span.slice(r.start, r.end)).toBe(want);
+  });
+
+  /** Textos de todos los casos de este archivo (y la tabla de 7.10.7): se prueba cada subcadena por puntos de código. */
+  const CASES = [
+    'Radicado 90001-31-03-999-2026-00123-00 del Juzgado', 'Calle 00 # 00-00 300 000 0001, Villa Ejemplo',
+    'Kilómetro 3 vía Villa Ejemplo, predio 3000000001', 'Pagó la Ferretería Ejemplo de Ana Ficticia ayer',
+    'NIT 41.000.001-7 del contratista', 'NIT 900.000.001-0 de la sociedad', 'proceso 90001310399920260012300 en curso',
+    'la suma de cuarenta y ocho millones de pesos ($48.000.000) por concepto',
+    'el catorce de marzo de dos mil veintiséis (14/03/2026) se radicó', 'Ana Ficticia Rojas Prueba declaró',
+    'Ana Ficticia Rojas identificada con', 'la Dra. Ana Ficticia Rojas firmó', 'Ana Ficticia Rojas firmó',
+    'consignar en la cuenta 1000000017 del banco', 'número 1000000025 sin contexto', 'cuenta 4000000000000002 pagada',
+    'correo ana.ficticia@ejemplo.test fin', 'firmó Ana Ficticia Rojas Prueba ayer', 'firmó Ana Ficticia Rojas-Prueba ayer',
+    'FIRMÓ ANA FICTICIA ROJAS PRUEBA AYER', 'pagó Ferretería Ejemplo Prueba ayer', 'Ana Ficticia Rojas de Prueba declaró',
+    'Ana Ficticia Rojas 2 declaró', 'Ana Ficticia Rojas, Prueba declaró', 'el Ingeniero Ana Ficticia firmó',
+    'testigos Ana Ficticia Pedro Ejemplo presentes', 'vecina Ana Ficticia Villa Ejemplo dijo', 'dijo Ana Ficticia Rojas Prueba hoy',
+    'Ana Ficticia Rojas Prueba vive en Villa Ejemplo', 'clave 𝐀𝐁 1000000033 y 😀😀 fin', 'cédula 1000000041 del actor',
+    'Calle 00 # 00-00 int 2 300 000 0001', 'Calle 00 # 00-00 30 sur', '[DEMANDANTE_1] Prueba firmó', 'por diez pesos ($10) netos',
+    'pagó diez pesos ( $10) m/cte fin', 'pagó diez pesos (en letras: $10 y ) fin', 'pagó diez pesos (​$10\n) fin',
+    'Dra. Ana Ficticia', 'la Ferretería Ejemplo,', 'señor Pedro Ejemplo de', '(Ana Rojas)', 'de', 'X', '2026', 'Delia Prueba', 'Ana',
+  ];
+
+  it('R-MOD-03 corregida da el mismo índice que la del plan en cada subcadena de los casos de merge.test.ts', () => {
+    const diff: string[] = [];
+    let n = 0;
+    for (const t of CASES) {
+      const cps = [...t];
+      for (let i = 0; i < cps.length; i++) {
+        for (let j = i + 1; j <= cps.length; j++) {
+          const v = lista(cps.slice(i, j).join(''));
+          const a = trimIdx(RE_TRIM_LEFT, RE_TRIM_RIGHT, v); const b = trimIdx(OLD_LEFT, OLD_RIGHT, v);
+          if (a.join() !== b.join()) diff.push(`«${v}»: ${a.join()} ≠ ${b.join()}`);
+          n++;
+        }
+      }
+    }
+    expect(diff).toEqual([]);
+    expect(n).toBeGreaterThan(25000);
+  });
+
+  it('R-MOD-03 corregida da el mismo índice que la del plan en 300 cadenas aleatorias con semilla', () => {
+    let seed = 20261030;
+    const r = () => { seed = (Math.imul(seed, 1103515245) + 12345) >>> 0; return seed / 2 ** 32; };
+    const TOKENS = ['de', 'del', 'la', 'las', 'los', 'y', 'e', 'a', 'al', 'un', 'unas', 'sr', 'Sra.', 'Dra', 'señor', 'don', 'doña',
+      'Ana', 'Ficticia', 'Delia', 'Prueba', 'x', 'X', '2026', 'é', '😀', '𝐀', ' ', ' ', '  ', '\n', '\t', '.', ',', ';', '!', '¡',
+      '(', ')', '-', '$', '«', '»', '[DEMANDANTE_1]'];
+    const diff: string[] = [];
+    let trimmed = 0;
+    for (let k = 0; k < 300; k++) {
+      const s = Array.from({ length: 1 + Math.floor(r() * 12) }, () => TOKENS[Math.floor(r() * TOKENS.length)] as string).join('');
+      const v = lista(s);
+      const a = trimIdx(RE_TRIM_LEFT, RE_TRIM_RIGHT, v); const b = trimIdx(OLD_LEFT, OLD_RIGHT, v);
+      if (a.join() !== b.join()) diff.push(`«${v}»: ${a.join()} ≠ ${b.join()}`);
+      if (a[0] > 0 && a[1] >= 0) trimmed++;
+    }
+    expect(diff).toEqual([]);
+    expect(trimmed).toBeGreaterThan(30);   // la muestra recorta por los dos lados, no solo casos triviales
   });
 });
 
