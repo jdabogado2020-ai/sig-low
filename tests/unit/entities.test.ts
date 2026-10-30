@@ -459,14 +459,21 @@ describe('T-MO-06 · reductor applyReviewAction (6.4.4, 7.12.6)', () => {
 });
 
 describe('T-MO-06 · id de la edición de tramo de una sugerencia o bandera (P0-6a B-7)', () => {
-  /** IdSource con un contador por prefijo: `sug_…1`, `flg_…1` y `edt_…1` comparten sufijo, el caso que antes colisionaba. */
-  function perPrefixIds(): IdSource {
+  /** IdSource con un contador por prefijo: `sug_…1`, `flg_…1` y `edt_…1` comparten sufijo, el caso que antes colisionaba.
+   *  `edts` anota cada `edt` que entrega. */
+  function perPrefixIds(edts: string[]): IdSource {
     const n: Record<string, number> = {};
-    return { next: (p) => { const k = (n[p] ?? 0) + 1; n[p] = k; return `${p}_${k.toString(16).padStart(32, '0')}`; } };
+    return { next: (p) => {
+      const k = (n[p] ?? 0) + 1; n[p] = k;
+      const id = `${p}_${k.toString(16).padStart(32, '0')}`;
+      if (p === 'edt') edts.push(id);
+      return id;
+    } };
   }
   const hex = (n: number) => n.toString(16).padStart(32, '0');
   const setup = () => {
-    const ids = perPrefixIds();
+    const edts: string[] = [];
+    const ids = perPrefixIds(edts);
     const doc = mkDoc([['cuerpo', 'El menor con T.I. 1000000001 vive con la directora del colegio del Juzgado Ejemplo.']]);
     const part = doc.parts[0] as DocumentModel['parts'][number];
     const l = part.text.indexOf('T.I.');
@@ -475,27 +482,50 @@ describe('T-MO-06 · id de la edición de tramo de una sugerencia o bandera (P0-
     const at = (sub: string) => ({ partId: part.id, start: part.text.indexOf(sub), end: part.text.indexOf(sub) + sub.length });
     const flag = (sub: string): Flag => ({ id: ids.next('flg') as FlagId, type: 'CARGO', span: at(sub), text: sub, reason: 'LISTA_CARGOS',
       options: [{ id: 'o1', kind: 'CARGO_A_GENERICO', template: 'una directiva' }], acknowledged: false });
-    return { ids, doc, s, at, flag, ctx: { table: EMPTY, caseList: CASES, doc, ids } as ReviewContext };
+    return { edts, ids, doc, s, at, flag, ctx: { table: EMPTY, caseList: CASES, doc, ids } as ReviewContext };
   };
+  const docEntity = (st: ReviewState) => Object.values(st.entities).find((x) => x.type === 'DOCUMENTO' || x.type === 'TI') as Entity;
 
-  it('INV-G05 INV-R10 sugerencia y bandera con el mismo sufijo: dos ediciones distintas, la de la bandera sale de IdSource', () => {
-    const { s, flag, ctx } = setup();
+  it('INV-G05 INV-R10 sugerencia y bandera con el mismo sufijo: cada edt sale una vez de IdSource y no colisionan', () => {
+    const { edts, s, flag, ctx } = setup();
     const [sug] = Object.values(s.suggestions) as [Suggestion];
     const [sugEdit] = Object.values(s.spanEdits) as [SpanEdit];
-    expect(sug).toMatchObject({ id: `sug_${hex(1)}`, kind: 'ROTULO_DOCUMENTO_A_GENERICO', status: 'aplicada' });
+    expect(sug).toMatchObject({ id: `sug_${hex(1)}`, kind: 'ROTULO_DOCUMENTO_A_GENERICO', status: 'aplicada', spanEditId: sugEdit.id });
+    expect(edts).toEqual([sugEdit.id]);   // la edición preaplicada del rótulo sale de IdSource, no del sufijo de su sug_
     const f = flag('directora');
     expect(f.id).toBe(`flg_${hex(1)}`);
     const r = act({ ...s, flags: { [f.id]: f } }, { kind: 'resolver_bandera', flagId: f.id, resolution: 'reemplazar', optionId: 'o1' }, ctx);
     const flagEdit = r.flags[f.id]?.spanEditId as SpanEditId;
-    expect(flagEdit).toBe(`edt_${hex(2)}`);   // edt_…1 ya lo usa la sugerencia: se saca otro de IdSource
+    expect(edts).toEqual([sugEdit.id, flagEdit]);
+    expect(flagEdit).not.toBe(sugEdit.id);
     expect(Object.keys(r.spanEdits).sort()).toEqual([sugEdit.id, flagEdit].sort());
     expect(r.spanEdits[sugEdit.id]).toEqual(sugEdit);
     expect(r.spanEdits[flagEdit]).toMatchObject({ text: 'una directiva', originalText: 'directora', origin: { kind: 'bandera', flagId: f.id } });
-    // INV-R10 con la bandera resuelta: la ida y vuelta conserva las dos ediciones y sus ids.
-    const e = Object.values(r.entities).find((x) => x.type === 'DOCUMENTO' || x.type === 'TI') as Entity;
+    // INV-R10 con la bandera resuelta: la sugerencia deshecha conserva su spanEditId y la vuelta lo reutiliza.
+    const e = docEntity(r);
     const r1 = act(r, { kind: 'especificar_documento', entityId: e.id, especifico: true }, ctx);
     expect(Object.keys(r1.spanEdits)).toEqual([flagEdit]);
+    expect(r1.suggestions[sug.id]).toMatchObject({ status: 'descartada', spanEditId: sugEdit.id });
     expect(act(r1, { kind: 'especificar_documento', entityId: e.id, especifico: false }, ctx)).toEqual({ ...r, revision: r.revision + 2 });
+    expect(edts).toHaveLength(2);   // la ida y vuelta no saca ids nuevos
+  });
+
+  it('INV-G05 INV-R10 el edt reservado por una sugerencia deshecha no se reparte a otra edición', () => {
+    const { s, flag, ctx } = setup();
+    const [sug] = Object.values(s.suggestions) as [Suggestion];
+    const reserved = sug.spanEditId as SpanEditId;
+    const e = docEntity(s);
+    const off = act(s, { kind: 'especificar_documento', entityId: e.id, especifico: true }, ctx);
+    expect(off.spanEdits).toEqual({});
+    const f = flag('directora');
+    // Un IdSource que primero repite el id reservado: la bandera lo descarta y toma el siguiente.
+    const queue = [reserved, `edt_${hex(9)}`];
+    const replay: IdSource = { next: (p) => (p === 'edt' ? queue.shift() as string : ctx.ids?.next(p) as string) };
+    const r = act({ ...off, flags: { [f.id]: f } }, { kind: 'resolver_bandera', flagId: f.id, resolution: 'reemplazar', optionId: 'o1' }, { ...ctx, ids: replay });
+    expect(r.flags[f.id]?.spanEditId).toBe(`edt_${hex(9)}`);
+    const back = act(r, { kind: 'especificar_documento', entityId: e.id, especifico: false }, ctx);
+    expect(back.suggestions[sug.id]).toMatchObject({ status: 'aplicada', spanEditId: reserved });
+    expect(Object.keys(back.spanEdits).sort()).toEqual([reserved, `edt_${hex(9)}`].sort());
   });
 
   it('INV-G05 la bandera que pisa el rótulo de la sugerencia da SOLAPAMIENTO_PARCIAL y no la sobrescribe', () => {
@@ -506,19 +536,25 @@ describe('T-MO-06 · id de la edición de tramo de una sugerencia o bandera (P0-
       .toEqual({ ok: false, code: 'SOLAPAMIENTO_PARCIAL' });
   });
 
-  it('INV-G05 una sugerencia que llega después con el sufijo del edt de la bandera no la sobrescribe ni la borra', () => {
+  it('INV-G05 una sugerencia que llega después recibe su propio edt; si trae uno ajeno, no pisa ni borra la edición de la bandera', () => {
     const { s, at, flag, ctx } = setup();
     const f = flag('directora');
     const r = act({ ...s, suggestions: {}, spanEdits: {}, flags: { [f.id]: f } },
       { kind: 'resolver_bandera', flagId: f.id, resolution: 'reemplazar', optionId: 'o1' }, ctx);
     const flagEdit = r.flags[f.id]?.spanEditId as SpanEditId;
-    expect(flagEdit).toBe(`edt_${hex(1)}`);
     const late: Suggestion = { id: `sug_${hex(1)}` as SuggestionId, kind: 'DESPACHO_A_GENERICO', target: { kind: 'tramo', span: at('Juzgado Ejemplo') },
       originalText: 'Juzgado Ejemplo', options: [{ id: 'o1', kind: 'DESPACHO_A_GENERICO', template: 'un juzgado' }], status: 'pendiente' };
-    const r0: ReviewState = { ...r, suggestions: { [late.id]: late } };
+    const ok1 = act({ ...r, suggestions: { [late.id]: late } }, { kind: 'aplicar_sugerencia', suggestionId: late.id, optionId: 'o1' }, ctx);
+    const lateEdit = ok1.suggestions[late.id]?.spanEditId as SpanEditId;
+    expect(lateEdit).toMatch(/^edt_[0-9a-f]{32}$/u);
+    expect(lateEdit).not.toBe(flagEdit);
+    expect(ok1.spanEdits[flagEdit]).toEqual(r.spanEdits[flagEdit]);
+    expect(ok1.spanEdits[lateEdit]).toMatchObject({ text: 'un juzgado', origin: { kind: 'sugerencia', suggestionId: late.id } });
+    // Una sugerencia que trae el spanEditId de la bandera: se rechaza sin pisarla y, al deshacerla, no la borra.
+    const foreign: Suggestion = { ...late, spanEditId: flagEdit };
+    const r0: ReviewState = { ...r, suggestions: { [late.id]: foreign } };
     expect(applyReviewAction(r0, { kind: 'aplicar_sugerencia', suggestionId: late.id, optionId: 'o1' }, ctx)).toEqual({ ok: false, code: 'SOLAPAMIENTO_PARCIAL' });
-    // Aunque llegue marcada como aplicada, deshacerla no borra la edición de la bandera que comparte el id.
-    const d = act({ ...r, suggestions: { [late.id]: { ...late, status: 'aplicada', chosenOptionId: 'o1' } } },
+    const d = act({ ...r, suggestions: { [late.id]: { ...foreign, status: 'aplicada', chosenOptionId: 'o1' } } },
       { kind: 'descartar_sugerencia', suggestionId: late.id }, ctx);
     expect(d.spanEdits[flagEdit]).toEqual(r.spanEdits[flagEdit]);
     expect(d.suggestions[late.id]?.status).toBe('descartada');
@@ -537,11 +573,15 @@ describe('T-MO-06 · id de la edición de tramo de una sugerencia o bandera (P0-
     expect(r3.spanEdits[id]).toBeUndefined();
   });
 
-  it('INV-G05 un IdSource que repite ids no cuelga el reductor: la bandera da SOLAPAMIENTO_PARCIAL', () => {
-    const { s, flag, ctx } = setup();
+  it('INV-G05 un IdSource que repite ids no cuelga el reductor: la bandera y la sugerencia dan SOLAPAMIENTO_PARCIAL', () => {
+    const { s, at, flag, ctx } = setup();
     const f = flag('directora');
     const stuck: IdSource = { next: (p) => `${p}_${hex(1)}` };
     expect(applyReviewAction({ ...s, flags: { [f.id]: f } }, { kind: 'resolver_bandera', flagId: f.id, resolution: 'reemplazar', optionId: 'o1' },
+      { ...ctx, ids: stuck })).toEqual({ ok: false, code: 'SOLAPAMIENTO_PARCIAL' });
+    const late: Suggestion = { id: `sug_${hex(2)}` as SuggestionId, kind: 'DESPACHO_A_GENERICO', target: { kind: 'tramo', span: at('Juzgado Ejemplo') },
+      originalText: 'Juzgado Ejemplo', options: [{ id: 'o1', kind: 'DESPACHO_A_GENERICO', template: 'un juzgado' }], status: 'pendiente' };
+    expect(applyReviewAction({ ...s, suggestions: { ...s.suggestions, [late.id]: late } }, { kind: 'aplicar_sugerencia', suggestionId: late.id, optionId: 'o1' },
       { ...ctx, ids: stuck })).toEqual({ ok: false, code: 'SOLAPAMIENTO_PARCIAL' });
   });
 });

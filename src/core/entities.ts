@@ -158,15 +158,13 @@ function fullRadicadoKey(shortKey: string, fullKeys: readonly string[]): string 
 
 const ROTULO_TEMPLATE = 'documento de identidad';
 const TEMPLATE_M = '{m}';
-const hexOf = (id: string): string => id.slice(id.indexOf('_') + 1);
-/** La edición de tramo de una sugerencia reutiliza el sufijo aleatorio de su `sug_`: así la ida y vuelta de
- *  `especificar_documento` (INV-R10) deja el estado igual. No deriva del contenido (INV-G05). Provisional (P0-6a B-7):
- *  `Suggestion` no tiene dónde guardar un `edt` sacado una vez de IdSource, como `Flag.spanEditId`; pedido al integrador. */
-const suggestionEditId = (id: SuggestionId): SpanEditId => `edt_${hexOf(id)}` as SpanEditId;
-/** B-7 · `edt` de una bandera: sale de IdSource una sola vez y queda en `Flag.spanEditId`. Se descarta uno que ya use
- *  otra edición o el de una sugerencia del estado; un IdSource que repite ids da null y no un bucle infinito. */
+/** B-7 · `edt` de una sugerencia o bandera: sale de IdSource una sola vez y queda en `Suggestion.spanEditId` o
+ *  `Flag.spanEditId` (6.1.4); la sugerencia lo conserva aunque se deshaga, así la ida y vuelta de `especificar_documento`
+ *  (INV-R10) deja el estado igual. Se descarta uno que ya use otra edición o que tenga reservado una sugerencia o bandera;
+ *  un IdSource que repite ids da null y no un bucle infinito. */
 function freshEditId(state: ReviewState, ids: IdSource): SpanEditId | null {
-  const taken = new Set<string>([...Object.keys(state.spanEdits), ...Object.keys(state.suggestions).map((x) => suggestionEditId(x as SuggestionId))]);
+  const taken = new Set<string>([...Object.keys(state.spanEdits),
+    ...Object.values(state.suggestions).flatMap((x) => x.spanEditId ?? []), ...Object.values(state.flags).flatMap((x) => x.spanEditId ?? [])]);
   for (let i = 0; i < 8; i++) {
     const id = ids.next('edt');
     if (!taken.has(id)) return id as SpanEditId;
@@ -325,7 +323,7 @@ export function buildDetectionSet(doc: DocumentModel, merged: readonly MergedCan
   linkHolders(state, naturalNit);
   tidyEntities(state);
   preapplyRotulo(state, parts, ctx);
-  adoptSuggestions(state, ctx.suggestions ?? []);
+  adoptSuggestions(state, ctx.suggestions ?? [], ctx.ids);
   for (const f of ctx.flags ?? []) state.flags[f.id] = linkRotuloFlag({ ...f }, state);
   assignMarkers(ctx.table, state);
   return { detections: state.order.map((id) => state.detections[id] as Detection), entities: Object.values(state.entities),
@@ -379,13 +377,13 @@ function preapplyRotulo(state: ReviewState, parts: ReadonlyMap<PartId, Part>, ct
       target: { kind: 'tramo', span, relatedDetectionId: d.id }, originalText: part.text.slice(span.start, span.end),
       options: [{ id: 'o1', kind: 'ROTULO_DOCUMENTO_A_GENERICO', template: ROTULO_TEMPLATE }], status: 'pendiente' };
     state.suggestions[sug.id] = sug;
-    applySpanSuggestion(state, sug, sug.options[0] as SuggestionOption);
+    applySpanSuggestion(state, sug, sug.options[0] as SuggestionOption, ctx.ids);
   }
 }
 /** Sugerencias de generalize.ts (PG-4). La ROTULO_DOCUMENTO_A_GENERICO que PG-4 también emite preaplicada reemplaza a la
  *  propia del mismo rótulo (se conserva su id, que citan sus banderas) y recibe su edición de tramo; si la entidad ya es
  *  específica por la tabla del asunto, queda descartada (6.4.5). */
-function adoptSuggestions(state: ReviewState, incoming: readonly Suggestion[]): void {
+function adoptSuggestions(state: ReviewState, incoming: readonly Suggestion[], ids: IdSource): void {
   for (const s0 of incoming) {
     if (state.suggestions[s0.id] !== undefined) continue;
     const s: Suggestion = structuredClone(s0);
@@ -402,7 +400,7 @@ function adoptSuggestions(state: ReviewState, incoming: readonly Suggestion[]): 
     const ent = rel === undefined ? undefined : state.entities[state.detections[rel]?.entityId ?? ('' as EntityId)];
     if (ent?.marcadorEspecifico === true) { s.status = 'descartada'; continue; }
     const o = s.options.find((x) => x.id === s0.chosenOptionId) ?? s.options[0];
-    if (wanted && o !== undefined && applySpanSuggestion(state, s, o) !== null) { s.status = 'pendiente'; delete s.chosenOptionId; }
+    if (wanted && o !== undefined && applySpanSuggestion(state, s, o, ids) !== null) { s.status = 'pendiente'; delete s.chosenOptionId; }
   }
 }
 function linkRotuloFlag(f: Flag, state: ReviewState): Flag {
@@ -448,19 +446,22 @@ function removeSpanEdit(state: ReviewState, id: SpanEditId): void {
   delete state.spanEdits[id];
   for (const d of Object.values(state.detections)) if (d.coveredBy === id) delete d.coveredBy;
 }
-function applySpanSuggestion(state: ReviewState, s: Suggestion, o: SuggestionOption): ReviewError | null {
+function applySpanSuggestion(state: ReviewState, s: Suggestion, o: SuggestionOption, ids: IdSource): ReviewError | null {
   if (s.target.kind !== 'tramo') return 'NO_ENCONTRADO';
-  const err = placeSpanEdit(state, { id: suggestionEditId(s.id), span: s.target.span, originalText: s.originalText, text: o.template,
+  const id = s.spanEditId ?? freshEditId(state, ids);   // B-7: de IdSource una sola vez; se reutiliza al reaplicar
+  if (id === null) return 'SOLAPAMIENTO_PARCIAL';
+  const err = placeSpanEdit(state, { id, span: s.target.span, originalText: s.originalText, text: o.template,
     origin: { kind: 'sugerencia', suggestionId: s.id } });
   if (err !== null) return err;
-  s.status = 'aplicada'; s.chosenOptionId = o.id;
+  s.spanEditId = id; s.status = 'aplicada'; s.chosenOptionId = o.id;
   return null;
 }
-/** Deshace la aplicación de una sugerencia (edición de tramo, generalización o detección creada). */
+/** Deshace la aplicación de una sugerencia (edición de tramo, generalización o detección creada). Conserva su
+ *  `spanEditId` (INV-R10). */
 function unapplySuggestion(state: ReviewState, s: Suggestion): void {
-  const id = suggestionEditId(s.id);
-  const o = state.spanEdits[id]?.origin;
-  if (o?.kind === 'sugerencia' && o.suggestionId === s.id) removeSpanEdit(state, id);   // nunca la de otro origen (B-7)
+  const id = s.spanEditId;
+  const o = id === undefined ? undefined : state.spanEdits[id]?.origin;
+  if (id !== undefined && o?.kind === 'sugerencia' && o.suggestionId === s.id) removeSpanEdit(state, id);   // nunca la de otro origen (B-7)
   for (const d of Object.values(state.detections)) {
     if (d.replacement.generalized?.suggestionId === s.id) delete d.replacement.generalized;
     if (d.suggestionId === s.id) delete state.detections[d.id];
@@ -646,7 +647,7 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
         if (rel === undefined || !e.mentions.includes(rel)) continue;
         if (a.especifico) { unapplySuggestion(s, sug); sug.status = 'descartada'; delete sug.chosenOptionId; }
         else if (sug.status !== 'aplicada') {
-          const err = applySpanSuggestion(s, sug, sug.options[0] as SuggestionOption);
+          const err = applySpanSuggestion(s, sug, sug.options[0] as SuggestionOption, ids);
           if (err !== null) return err;
         }
       }
@@ -806,7 +807,7 @@ function applySuggestion(s: ReviewState, sug: Suggestion, o: SuggestionOption, i
     sug.status = 'aplicada'; sug.chosenOptionId = o.id;
     return null;
   }
-  if (!withM) return applySpanSuggestion(s, sug, o);
+  if (!withM) return applySpanSuggestion(s, sug, o, ids);
   const dep = o.depCode ?? (sug.placeOptions?.length === 1 ? sug.placeOptions[0] : undefined);
   if (dep === undefined) return 'DEPARTAMENTO_SIN_ELEGIR';
   const span = sug.target.span;
