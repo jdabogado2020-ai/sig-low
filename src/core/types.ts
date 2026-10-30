@@ -500,6 +500,9 @@ export interface ResidueRun { result: ResidueResult; nuevas: DetectionCandidate[
 export type RunResidueCheckFn = (doc: DocumentModel, state: ReviewState, out: RenderedOutput, ctx: {
   table: TableIndex; caseList: readonly CaseEntity[]; rules: RuleRegistry;
   detect: (tmp: DocumentModel) => Promise<DetectionSet>;
+  // Cambio de contrato del integrador (regla 9, 30-oct, pedido de PB-4): originales [M] de las entidades heredadas
+  // del asunto, por canonicalKey (7.13.2). Los rellena quien tiene la tabla del asunto en memoria (PC-5/PB-6).
+  originals?: Readonly<Record<string, readonly string[]>>;
 }) => Promise<ResidueRun>;
 
 // ===== Sección 6.10 Reinserción (bloque 24, línea 1915) =====
