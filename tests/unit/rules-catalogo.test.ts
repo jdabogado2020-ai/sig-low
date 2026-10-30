@@ -529,10 +529,16 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
   it.each(entradas)('%s', async (_n, texto) => {
     const reglas = await reglasDeModulos(MODULOS_REGLAS);
     const view = buildSearchView(texto, 'reglas', 'cuerpo');
-    const t0 = performance.now();
-    aplicarExclusiones(view, runRules(view, PART, reglas, 2026));
-    expect(performance.now() - t0).toBeLessThan(4000);
-  }, 20_000);
+    // Robusta a la carga de una máquina compartida (dos `verify` en paralelo): se mide el mejor de 3 corridas y el tope es de 10 s.
+    // Aislada, cada entrada tarda de 0,9 a 1,4 s; una expresión cuadrática en 40.000 caracteres tardaría minutos y seguiría fallando.
+    let mejor = Infinity;
+    for (let i = 0; i < 3; i++) {
+      const t0 = performance.now();
+      aplicarExclusiones(view, runRules(view, PART, reglas, 2026));
+      mejor = Math.min(mejor, performance.now() - t0);
+    }
+    expect(mejor).toBeLessThan(10_000);
+  }, 90_000);
 
   it('el tope por exclusión corta, conserva lo hallado y avisa solo con el id', () => {
     const texto = 'ley 1 '.repeat(2000);
