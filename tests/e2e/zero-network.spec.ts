@@ -1,4 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+
+const sha256 = (t: string): string => createHash('sha256').update(t).digest('hex');
 
 // Fase mínima de P0-1 (10.5.1). PD-5a y PD-5b agregan el servidor que registra, el señuelo, STUN y las fases.
 test('@cero-red carga: 0 peticiones a otros orígenes y 0 violaciones de CSP', async ({ page, baseURL }) => {
@@ -66,5 +70,61 @@ test('@cero-red fase pegar: pegar → Procesando → Revisión sin peticiones aj
     expect(decodeURIComponent(p.url)).not.toContain('Ficticia');
     expect(p.cuerpo).not.toContain('Ficticia');
     expect(p.cuerpo).not.toContain('1.000.000.017');
+  }
+});
+
+// Fase del service worker (PD-1, 3.2 y V-15): con conexión el SW instala el precache verificado; sin conexión la app
+// sale de la caché con las cabeceras de 3.6 (las de dist/_headers, inyectadas en sw.js al construir).
+const TRANSPORTE = new Set(['date', 'connection', 'keep-alive', 'content-length', 'transfer-encoding']);
+const OBLIGATORIAS = [
+  'content-security-policy', 'cross-origin-opener-policy', 'cross-origin-embedder-policy', 'cross-origin-resource-policy',
+  'x-content-type-options', 'referrer-policy', 'content-type',
+];
+const sinTransporte = (h: Record<string, string>): Record<string, string> =>
+  Object.fromEntries(Object.entries(h).filter(([k]) => !TRANSPORTE.has(k.toLowerCase())).map(([k, v]) => [k.toLowerCase(), v]).sort());
+
+test('T-PV-06 @cero-red INV-G10 sin conexión: crossOriginIsolated y las cabeceras de 3.6 en cada respuesta de la caché', async ({ page, context, request }) => {
+  await page.goto('/');
+  await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
+  const texto = readFileSync('dist/precache.json', 'utf8');
+  const lista = (JSON.parse(texto) as { archivos: { ruta: string; sha256: string }[] }).archivos;
+  const esperado = new Map([...lista.map((a) => [a.ruta, a.sha256] as const), ['/precache.json', sha256(texto)]]);
+  const rutas = [...esperado.keys()].sort();
+  // INV-G10: Cache Storage solo guarda la app: una caché `siglow-app-<SHA-256 de precache.json>` con la lista exacta.
+  const cachesVistas = await page.evaluate(async () => Promise.all((await caches.keys()).map(async (k) => ({
+    k, urls: (await (await caches.open(k)).keys()).map((r) => { const u = new URL(r.url); return u.pathname + u.search; }).sort(),
+  }))));
+  expect(cachesVistas).toEqual([{ k: `siglow-app-${sha256(texto)}`, urls: rutas }]);
+  // Cabeceras del alojamiento con conexión, pedidas por fuera del SW (server.mjs aplica dist/_headers).
+  const delServidor = new Map<string, Record<string, string>>();
+  for (const r of rutas) {
+    const resp = await request.get(r);
+    expect(resp.status(), r).toBe(200);
+    delServidor.set(r, sinTransporte(resp.headers()));
+  }
+  await context.setOffline(true);
+  try {
+    const nav = await page.reload();
+    expect(nav?.fromServiceWorker()).toBe(true);
+    await expect(page.locator('[data-prueba="promesa"]')).toBeVisible();
+    expect(await page.evaluate(() => ({ aislado: crossOriginIsolated, controlador: navigator.serviceWorker.controller !== null })))
+      .toEqual({ aislado: true, controlador: true });
+    expect(sinTransporte(await nav!.allHeaders())).toEqual(delServidor.get('/'));
+    const desdeCache = await page.evaluate(async (rs) => Promise.all(rs.map(async (r) => {
+      const resp = await fetch(r);
+      const h: Record<string, string> = {};
+      resp.headers.forEach((v, k) => { h[k] = v; });
+      const d = new Uint8Array(await crypto.subtle.digest('SHA-256', await resp.arrayBuffer()));
+      return { r, status: resp.status, h, sha: Array.from(d, (b) => b.toString(16).padStart(2, '0')).join('') };
+    })), rutas);
+    for (const { r, status, h, sha } of desdeCache) {
+      expect({ r, status, sha }).toEqual({ r, status: 200, sha: esperado.get(r) });
+      expect(sinTransporte(h), r).toEqual(delServidor.get(r));
+      for (const k of OBLIGATORIAS) expect(h[k], `${r}: ${k}`).toBeTruthy();
+      if (r.endsWith('.wasm')) expect(h['content-type']).toBe('application/wasm');
+      if (r.endsWith('.mjs')) expect(h['content-type']).toBe('text/javascript');
+    }
+  } finally {
+    await context.setOffline(false);
   }
 });

@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { defineConfig, defaultClientConditions } from 'vite';
 import { readFileSync } from 'node:fs';
+import { precache } from './vite-plugins/precache.ts';
 
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
 
@@ -9,6 +10,8 @@ export default defineConfig(({ mode }) => {
   const medicion = mode === 'medicion';
   return {
     cacheDir: '.vite-cache',
+    // Lista de precache con SHA-256 y configuración de sw.js (PD-1, 3.2).
+    plugins: [precache()],
     // ORT-web: build CPU sin el cargador incrustado (`blob:`); el .mjs y el .wasm se sirven desde /ort/ (4.6.1, V-09).
     resolve: { conditions: ['onnxruntime-web-use-extern-wasm', ...defaultClientConditions] },
     oxc: { jsx: { runtime: 'automatic', importSource: 'preact' } },
