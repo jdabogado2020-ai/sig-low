@@ -8,6 +8,20 @@ const MAX = 25 * 1024 * 1024;
 const WASM_PERMITIDO = 'ort-wasm-simd-threaded.wasm';
 const esOrtMjs = (r) => /^ort\/ort-wasm-simd-threaded(\.jsep)?\.mjs$/.test(r);
 
+// Chunk de ORT-web empaquetado por Vite (aprobado en la P0-6a de PF-1b, 30-oct): `blob:` ×2 son comparaciones
+// `startsWith('blob:')`/`indexOf('blob:')` que excluyen esas URL, y la única URL externa es el texto de un Error de
+// rolldown que nunca se pide. Se admiten solo con esas cuentas exactas, en ese chunk y con la versión de ORT fijada.
+const ORT_VERSION_APROBADA = '1.31.0-dev.20260914-8d85527a0';
+const URL_ROLLDOWN = 'https://rolldown.rs/in-depth/bundling-cjs#require-external-modules';
+const esChunkOrt = (r, t) => /^assets\/ort\.wasm\.min-[\w-]+\.js$/.test(r) && t.includes('ort-wasm-simd-threaded');
+const versionOrt = () => {
+  try {
+    return JSON.parse(readFileSync('node_modules/onnxruntime-web/package.json', 'utf8')).version;
+  } catch {
+    return null;
+  }
+};
+
 const PROHIBIDOS = [
   ['console', /\bconsole\s*\.\s*[a-z]+/g],
   ['XMLHttpRequest', /\bXMLHttpRequest\b/g],
@@ -56,6 +70,14 @@ for (const p of archivos) {
     if (esOrtMjs(r) && (nombre === 'console' || nombre === 'blob:' || nombre === 'eval')) continue;
     if (esOrtMjs(r) && nombre === 'XMLHttpRequest' && (t.match(re) ?? []).length <= 2) continue;
     if (nombre === 'http-externo' && (r === '_headers' || /^ort\//.test(r))) continue;
+    if (esChunkOrt(r, t) && (nombre === 'blob:' || nombre === 'http-externo')) {
+      const m = t.match(re) ?? [];
+      const tope = nombre === 'blob:' ? 2 : 1;
+      const soloRolldown = nombre !== 'http-externo' || m.every((u) => URL_ROLLDOWN.startsWith(u));
+      if (versionOrt() !== ORT_VERSION_APROBADA) hallazgos.push(`${r}: versión de ORT distinta de la aprobada; revisar las excepciones`);
+      else if (m.length > tope || !soloRolldown) hallazgos.push(`${r}: ${nombre} ×${m.length} fuera de la excepción aprobada`);
+      continue;
+    }
     const n = (t.match(re) ?? []).length;
     if (n) hallazgos.push(`${r}: ${nombre} ×${n}`);
   }
