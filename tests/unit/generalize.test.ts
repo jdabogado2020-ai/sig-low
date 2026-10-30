@@ -6,11 +6,11 @@ import { describe, expect, it } from 'vitest';
 import {
   DIVIPOLA, buildDivipolaIndex, candidateFromLoc, departamentoPorNombre, departamentosDeRadicados, detectPlaces, edadCumplida, edadEnLetras, esCapital,
   formasDeNombre, generalize, getDivipolaIndex, isCitation, mesYAnioDeClave, municipiosPorNombre, nombreDepartamento, prioridadDe, rangoDeEdad, resolvePlace,
-} from '../../src/core/generalize';
-import type { GenDetection, GeneralizeInput, GeneralizeResult } from '../../src/core/generalize';
+} from '../../src/core/generalize.ts';
+import type { GenDetection, GeneralizeInput, GeneralizeResult } from '../../src/core/generalize.ts';
 import type {
   DataType, DetectionCandidate, DetectionId, FlagReason, FlagType, IdSource, PartId, Span, Suggestion, SuggestionKind,
-} from '../../src/core/types';
+} from '../../src/core/types.ts';
 import cargosJson from '../../data/cargos.json';
 import cie10Json from '../../data/cie10-patron.json';
 import diagnosticosJson from '../../data/diagnosticos.json';

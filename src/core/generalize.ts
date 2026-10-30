@@ -15,7 +15,7 @@ import menoresRaw from '../../data/menores.json';
 import type {
   Confidence, DataType, DetectionCandidate, DetectionId, DivipolaFile, DivipolaIndex, DivipolaRow, Flag, FlagId, FlagReason,
   FlagType, GeneralizationKind, IdSource, IsoDate, LabelHit, PartId, Span, Suggestion, SuggestionId, SuggestionKind, SuggestionOption,
-} from './types';
+} from './types.ts';
 
 // ===================================================================== utilidades de patrones
 
