@@ -2,9 +2,9 @@
 import { describe, expect, it } from 'vitest';
 import { mergeCandidates, precedenceOf, resolveRemainder } from '../../src/core/merge';
 import type {
-  CaseEntityId, Confidence, DataType, DetectionCandidate, DocId, LabelHit, MergedCandidate, Part, PartId,
+  CaseEntityId, Confidence, DataType, DetectionCandidate, DocId, LabelHit, MergeCandidatesFn, MergedCandidate, Part, PartId,
   PartKind, RuleRegistry, ValidatorResult,
-} from '../../src/core/types.local';
+} from '../../src/core/types';
 
 const PART_ID = 'prt_00000000000000000000000000000001' as PartId;
 const OTHER_PART = 'prt_00000000000000000000000000000002' as PartId;
@@ -503,5 +503,12 @@ describe('T-MO-05 · función pura y determinista', () => {
   it('INV-R02 sin candidatos o con texto vacío devuelve una lista vacía', () => {
     expect(mergeCandidates(mkPart(''), [], NO_RULES)).toEqual([]);
     expect(mergeCandidates(mkPart(''), [{ partId: PART_ID, start: 0, end: 3, type: 'CC', source: 'regla', confidence: 'baja', score: 0.3, canonicalKey: 'CC:1' }], NO_RULES)).toEqual([]);
+  });
+});
+
+describe('T-MO-05 · contrato de 6.4.2', () => {
+  it('mergeCandidates cumple MergeCandidatesFn de types.ts', () => {
+    const contrato: MergeCandidatesFn = mergeCandidates;
+    expect(contrato(mkPart('sin datos'), [], NO_RULES)).toEqual([]);
   });
 });

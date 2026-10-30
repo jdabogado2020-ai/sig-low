@@ -1,11 +1,11 @@
 // Precedencia y resolución de solapamientos (plan 6.2.4, 6.4.2 y 7.11). PB-2.
 // Función pura y determinista: sin estado global mutable, sin reloj, sin azar, sin DOM ni red.
-// Los tipos vienen de types.local.ts (arranque anticipado); al rebasar sobre main se importan de types.ts.
+// Tipos: src/core/types.ts (sección 6).
 import type {
   Confidence, DataType, DetectableType, DetectionCandidate, DetectionSource, MergedCandidate,
   NerLabel, NormalizationProfile, Part, PartKind, RuleRegistry, SearchView,
-} from './types.local';
-import { FLAG_TYPES, ORG_CLASSES } from './types.local';
+} from './types';
+import { FLAG_TYPES, ORG_CLASSES } from './types';
 
 type Precedence = MergedCandidate['precedence'];
 /** Candidato de trabajo. `source` admite 'manual' (precedencia 1, 6.2.4), que DetectionCandidate excluye. */
