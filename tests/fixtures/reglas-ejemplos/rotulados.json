@@ -1,0 +1,1404 @@
+{
+  "modulo": "rotulados",
+  "casos": [
+    {
+      "texto": "vehículo de placas XXX001",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "XXX001",
+          "ruleId": "R-PLACA-01",
+          "confidence": "alta",
+          "canonicalKey": "PLACA:XXX001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Placa XXX000",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "XXX000",
+          "ruleId": "R-PLACA-01",
+          "confidence": "alta",
+          "canonicalKey": "PLACA:XXX000"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "placa XXX-01D",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "XXX-01D",
+          "ruleId": "R-PLACA-01",
+          "confidence": "alta",
+          "canonicalKey": "PLACA:XXX01D"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "placa 001XXX",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "001XXX",
+          "ruleId": "R-PLACA-01",
+          "confidence": "alta",
+          "canonicalKey": "PLACA:001XXX"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "placa S12345",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "S12345",
+          "ruleId": "R-PLACA-01",
+          "confidence": "alta",
+          "canonicalKey": "PLACA:S12345"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "placas DCO-001",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "DCO-001",
+          "ruleId": "R-PLACA-01",
+          "confidence": "alta",
+          "canonicalKey": "PLACA:DCO001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "placa xxx 004",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "xxx 004",
+          "ruleId": "R-PLACA-01",
+          "confidence": "alta",
+          "canonicalKey": "PLACA:XXX004"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "placa XXX·005",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "XXX·005",
+          "ruleId": "R-PLACA-01",
+          "confidence": "alta",
+          "canonicalKey": "PLACA:XXX005"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "placa de identificación",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin valor"
+    },
+    {
+      "texto": "placa 12345",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: forma no admitida"
+    },
+    {
+      "texto": "placa ABCD1234",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: forma no admitida"
+    },
+    {
+      "texto": "placa base",
+      "reglas": [
+        "R-PLACA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin valor"
+    },
+    {
+      "texto": "el automotor XXX001 fue inmovilizado",
+      "reglas": [
+        "R-PLACA-02"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "XXX001",
+          "ruleId": "R-PLACA-02",
+          "confidence": "media",
+          "canonicalKey": "PLACA:XXX001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "XXX-002",
+      "reglas": [
+        "R-PLACA-02"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "XXX-002",
+          "ruleId": "R-PLACA-02",
+          "confidence": "media",
+          "canonicalKey": "PLACA:XXX002"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "moto XXX01D",
+      "reglas": [
+        "R-PLACA-02"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "XXX01D",
+          "ruleId": "R-PLACA-02",
+          "confidence": "media",
+          "canonicalKey": "PLACA:XXX01D"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "XXX 006",
+      "reglas": [
+        "R-PLACA-02"
+      ],
+      "esperado": [
+        {
+          "type": "PLACA",
+          "texto": "XXX 006",
+          "ruleId": "R-PLACA-02",
+          "confidence": "media",
+          "canonicalKey": "PLACA:XXX006"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "ISO 9001",
+      "reglas": [
+        "R-PLACA-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 4 dígitos"
+    },
+    {
+      "texto": "STC1234-2026",
+      "reglas": [
+        "R-PLACA-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: providencia"
+    },
+    {
+      "texto": "xxx001",
+      "reglas": [
+        "R-PLACA-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: minúsculas sin rótulo"
+    },
+    {
+      "texto": "XXX0012",
+      "reglas": [
+        "R-PLACA-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 7 caracteres"
+    },
+    {
+      "texto": "AB 123",
+      "reglas": [
+        "R-PLACA-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: dos letras"
+    },
+    {
+      "texto": "XXXX001",
+      "reglas": [
+        "R-PLACA-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: cuatro letras"
+    },
+    {
+      "texto": "matrícula inmobiliaria No. 50C-00000001",
+      "reglas": [
+        "R-MAT-01"
+      ],
+      "esperado": [
+        {
+          "type": "MATRICULA",
+          "texto": "50C-00000001",
+          "ruleId": "R-MAT-01",
+          "confidence": "alta",
+          "canonicalKey": "MAT:50C-00000001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "folio de matrícula 001-000001",
+      "reglas": [
+        "R-MAT-01"
+      ],
+      "esperado": [
+        {
+          "type": "MATRICULA",
+          "texto": "001-000001",
+          "ruleId": "R-MAT-01",
+          "confidence": "alta",
+          "canonicalKey": "MAT:001-000001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "FMI 50N-20000001",
+      "reglas": [
+        "R-MAT-01"
+      ],
+      "esperado": [
+        {
+          "type": "MATRICULA",
+          "texto": "50N-20000001",
+          "ruleId": "R-MAT-01",
+          "confidence": "alta",
+          "canonicalKey": "MAT:50N-20000001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "M.I. 50S-123",
+      "reglas": [
+        "R-MAT-01"
+      ],
+      "esperado": [
+        {
+          "type": "MATRICULA",
+          "texto": "50S-123",
+          "ruleId": "R-MAT-01",
+          "confidence": "alta",
+          "canonicalKey": "MAT:50S-123"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "matricula inmobiliaria 50C00000001",
+      "reglas": [
+        "R-MAT-01"
+      ],
+      "esperado": [
+        {
+          "type": "MATRICULA",
+          "texto": "50C00000001",
+          "ruleId": "R-MAT-01",
+          "confidence": "alta",
+          "canonicalKey": "MAT:50C-00000001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "matrícula mercantil No. 12345-01",
+      "reglas": [
+        "R-MAT-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: matrícula mercantil"
+    },
+    {
+      "texto": "folio 123",
+      "reglas": [
+        "R-MAT-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: folio procesal"
+    },
+    {
+      "texto": "matrícula inmobiliaria del predio",
+      "reglas": [
+        "R-MAT-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin número"
+    },
+    {
+      "texto": "M.I. 12",
+      "reglas": [
+        "R-MAT-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin código de oficina"
+    },
+    {
+      "texto": "inmueble identificado con el folio No. 50C-00000001",
+      "reglas": [
+        "R-MAT-02"
+      ],
+      "esperado": [
+        {
+          "type": "MATRICULA",
+          "texto": "50C-00000001",
+          "ruleId": "R-MAT-02",
+          "confidence": "media",
+          "canonicalKey": "MAT:50C-00000001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "matrícula No. 50C-00000001",
+      "reglas": [
+        "R-MAT-02"
+      ],
+      "esperado": [
+        {
+          "type": "MATRICULA",
+          "texto": "50C-00000001",
+          "ruleId": "R-MAT-02",
+          "confidence": "media",
+          "canonicalKey": "MAT:50C-00000001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "matrícula 001-000002",
+      "reglas": [
+        "R-MAT-02"
+      ],
+      "esperado": [
+        {
+          "type": "MATRICULA",
+          "texto": "001-000002",
+          "ruleId": "R-MAT-02",
+          "confidence": "media",
+          "canonicalKey": "MAT:001-000002"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Matrícula: 01N-000003",
+      "reglas": [
+        "R-MAT-02"
+      ],
+      "esperado": [
+        {
+          "type": "MATRICULA",
+          "texto": "01N-000003",
+          "ruleId": "R-MAT-02",
+          "confidence": "media",
+          "canonicalKey": "MAT:01N-000003"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "matrícula n.º 50S-000123",
+      "reglas": [
+        "R-MAT-02"
+      ],
+      "esperado": [
+        {
+          "type": "MATRICULA",
+          "texto": "50S-000123",
+          "ruleId": "R-MAT-02",
+          "confidence": "media",
+          "canonicalKey": "MAT:50S-000123"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "matrícula mercantil No. 12345-01",
+      "reglas": [
+        "R-MAT-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: matrícula mercantil"
+    },
+    {
+      "texto": "matrícula profesional 12345",
+      "reglas": [
+        "R-MAT-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: matrícula profesional (R-TP-01)"
+    },
+    {
+      "texto": "matrícula 1234567",
+      "reglas": [
+        "R-MAT-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin guion"
+    },
+    {
+      "texto": "matrícula de la Cámara de Comercio 123-456",
+      "reglas": [
+        "R-MAT-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: mercantil"
+    },
+    {
+      "texto": "HC 000123",
+      "reglas": [
+        "R-HC-01"
+      ],
+      "esperado": [
+        {
+          "type": "HC",
+          "texto": "000123",
+          "ruleId": "R-HC-01",
+          "confidence": "alta",
+          "canonicalKey": "HC:000123"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "HC: TI 1000000002",
+      "reglas": [
+        "R-HC-01"
+      ],
+      "esperado": [
+        {
+          "type": "HC",
+          "texto": "1000000002",
+          "ruleId": "R-HC-01",
+          "confidence": "alta",
+          "canonicalKey": "HC:1000000002"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "historia clínica No. 1.000.000.001",
+      "reglas": [
+        "R-HC-01"
+      ],
+      "esperado": [
+        {
+          "type": "HC",
+          "texto": "1.000.000.001",
+          "ruleId": "R-HC-01",
+          "confidence": "alta",
+          "canonicalKey": "HC:1000000001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "H.C.: CC 1000000001",
+      "reglas": [
+        "R-HC-01"
+      ],
+      "esperado": [
+        {
+          "type": "HC",
+          "texto": "1000000001",
+          "ruleId": "R-HC-01",
+          "confidence": "alta",
+          "canonicalKey": "HC:1000000001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "Historia Clínica número HC-2026-000123",
+      "reglas": [
+        "R-HC-01"
+      ],
+      "esperado": [
+        {
+          "type": "HC",
+          "texto": "HC-2026-000123",
+          "ruleId": "R-HC-01",
+          "confidence": "alta",
+          "canonicalKey": "HC:2026000123"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "historia clínica completa",
+      "reglas": [
+        "R-HC-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin número"
+    },
+    {
+      "texto": "HC del paciente",
+      "reglas": [
+        "R-HC-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin número"
+    },
+    {
+      "texto": "HCX 123",
+      "reglas": [
+        "R-HC-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: rótulo pegado a otra letra"
+    },
+    {
+      "texto": "HC 12",
+      "reglas": [
+        "R-HC-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 2 dígitos"
+    },
+    {
+      "texto": "No. de afiliación 123456789",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "123456789",
+          "ruleId": "R-AFIL-01",
+          "confidence": "alta",
+          "canonicalKey": "AFIL:123456789"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "afiliado No. EPS-000123",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "EPS-000123",
+          "ruleId": "R-AFIL-01",
+          "confidence": "alta",
+          "canonicalKey": "AFIL:EPS000123"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "código de afiliado 00012345",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "00012345",
+          "ruleId": "R-AFIL-01",
+          "confidence": "alta",
+          "canonicalKey": "AFIL:00012345"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "carné 1234567",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "1234567",
+          "ruleId": "R-AFIL-01",
+          "confidence": "media",
+          "canonicalKey": "AFIL:1234567"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "afiliada a EPS Ejemplo S.A.",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin número"
+    },
+    {
+      "texto": "afiliación al régimen subsidiado",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin número"
+    },
+    {
+      "texto": "afiliación 12",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 2 dígitos"
+    },
+    {
+      "texto": "carné de vacunación",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin número"
+    },
+    {
+      "texto": "autorización No. 2026000123",
+      "reglas": [
+        "R-AFIL-02"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "2026000123",
+          "ruleId": "R-AFIL-02",
+          "confidence": "alta",
+          "canonicalKey": "AFIL:2026000123"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "MIPRES 20260314000000000001",
+      "reglas": [
+        "R-AFIL-02"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "20260314000000000001",
+          "ruleId": "R-AFIL-02",
+          "confidence": "alta",
+          "canonicalKey": "AFIL:20260314000000000001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "póliza SOAT No. AT-1234-5678",
+      "reglas": [
+        "R-AFIL-02"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "AT-1234-5678",
+          "ruleId": "R-AFIL-02",
+          "confidence": "alta",
+          "canonicalKey": "AFIL:AT12345678"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "número de siniestro 000123456",
+      "reglas": [
+        "R-AFIL-02"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "000123456",
+          "ruleId": "R-AFIL-02",
+          "confidence": "alta",
+          "canonicalKey": "AFIL:000123456"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "orden de servicio 98765",
+      "reglas": [
+        "R-AFIL-02"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "98765",
+          "ruleId": "R-AFIL-02",
+          "confidence": "alta",
+          "canonicalKey": "AFIL:98765"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "autorización del 14 de marzo",
+      "reglas": [
+        "R-AFIL-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin número tras el rótulo"
+    },
+    {
+      "texto": "sin autorización",
+      "reglas": [
+        "R-AFIL-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin número"
+    },
+    {
+      "texto": "póliza vigente",
+      "reglas": [
+        "R-AFIL-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin número"
+    },
+    {
+      "texto": "MIPRES 12",
+      "reglas": [
+        "R-AFIL-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 2 dígitos"
+    },
+    {
+      "texto": "cuenta de ahorros Bancolombia No. 123-456789-01",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "esperado": [
+        {
+          "type": "CUENTA",
+          "texto": "123-456789-01",
+          "ruleId": "R-CUENTA-01",
+          "confidence": "alta",
+          "canonicalKey": "CUENTA:12345678901"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "cuenta corriente de Davivienda número 0550-0000-0001",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "esperado": [
+        {
+          "type": "CUENTA",
+          "texto": "0550-0000-0001",
+          "ruleId": "R-CUENTA-01",
+          "confidence": "alta",
+          "canonicalKey": "CUENTA:055000000001"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "consignar en la cuenta de ahorros en Bancolombia No. 12345678901",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "esperado": [
+        {
+          "type": "CUENTA",
+          "texto": "12345678901",
+          "ruleId": "R-CUENTA-01",
+          "confidence": "alta",
+          "canonicalKey": "CUENTA:12345678901"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "cuenta de ahorros No. 123-456789-01",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "esperado": [
+        {
+          "type": "CUENTA",
+          "texto": "123-456789-01",
+          "ruleId": "R-CUENTA-01",
+          "confidence": "alta",
+          "canonicalKey": "CUENTA:12345678901"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "cuenta corriente del Banco Ejemplo No. 0000-1234-5678",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "esperado": [
+        {
+          "type": "CUENTA",
+          "texto": "0000-1234-5678",
+          "ruleId": "R-CUENTA-01",
+          "confidence": "alta",
+          "canonicalKey": "CUENTA:000012345678"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "cta. 1234567890",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "esperado": [
+        {
+          "type": "CUENTA",
+          "texto": "1234567890",
+          "ruleId": "R-CUENTA-01",
+          "confidence": "alta",
+          "canonicalKey": "CUENTA:1234567890"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "número de cuenta 001234567890123",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "esperado": [
+        {
+          "type": "CUENTA",
+          "texto": "001234567890123",
+          "ruleId": "R-CUENTA-01",
+          "confidence": "alta",
+          "canonicalKey": "CUENTA:001234567890123"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "producto No. 123456",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "esperado": [
+        {
+          "type": "CUENTA",
+          "texto": "123456",
+          "ruleId": "R-CUENTA-01",
+          "confidence": "media",
+          "canonicalKey": "CUENTA:123456"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "cuenta de cobro No. 123456",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: cuenta de cobro"
+    },
+    {
+      "texto": "tener en cuenta 300 casos",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 3 dígitos"
+    },
+    {
+      "texto": "cuenta No. 12345",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 5 dígitos"
+    },
+    {
+      "texto": "por cuenta de Ferretería Ejemplo",
+      "reglas": [
+        "R-CUENTA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin número"
+    },
+    {
+      "texto": "tarjeta de crédito 4111 1111 1111 1111 12/28",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "4111 1111 1111 1111",
+          "ruleId": "R-TARJETA-01",
+          "confidence": "alta",
+          "canonicalKey": "CUENTA:4111111111111111"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "tarjeta de crédito 4111 1111 1111 1111",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "4111 1111 1111 1111",
+          "ruleId": "R-TARJETA-01",
+          "confidence": "alta",
+          "canonicalKey": "CUENTA:4111111111111111"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "4111-1111-1111-1111",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "4111-1111-1111-1111",
+          "ruleId": "R-TARJETA-01",
+          "confidence": "media",
+          "canonicalKey": "CUENTA:4111111111111111"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "TC 5500 0000 0000 0004",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "5500 0000 0000 0004",
+          "ruleId": "R-TARJETA-01",
+          "confidence": "alta",
+          "canonicalKey": "CUENTA:5500000000000004"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "tarjeta 4111 1111 1111 1112",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "4111 1111 1111 1112",
+          "ruleId": "R-TARJETA-01",
+          "confidence": "media",
+          "canonicalKey": "CUENTA:4111111111111112"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "1234567890123",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "1234567890123",
+          "ruleId": "R-TARJETA-01",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:1234567890123"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "3782 822463 10005",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "3782 822463 10005",
+          "ruleId": "R-TARJETA-01",
+          "confidence": "media",
+          "canonicalKey": "CUENTA:378282246310005"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "11001400399920260000100",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 23 dígitos: radicado"
+    },
+    {
+      "texto": "0057 3000000001",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: empieza por 0"
+    },
+    {
+      "texto": "4111 1111 1111",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 12 dígitos"
+    },
+    {
+      "texto": "4111 1111 1111 1111 1111",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 20 dígitos"
+    },
+    {
+      "texto": "41000001 3000000001",
+      "reglas": [
+        "R-TARJETA-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: cédula y celular contiguos"
+    },
+    {
+      "texto": "tarjeta de crédito con terminación 1234",
+      "reglas": [
+        "R-TARJETA-02"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "1234",
+          "ruleId": "R-TARJETA-02",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:1234"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "tarjeta débito cuyos últimos cuatro dígitos son 1234",
+      "reglas": [
+        "R-TARJETA-02"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "1234",
+          "ruleId": "R-TARJETA-02",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:1234"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "la tarjeta de crédito terminada en 1234",
+      "reglas": [
+        "R-TARJETA-02"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "1234",
+          "ruleId": "R-TARJETA-02",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:1234"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "cuenta que termina en 5678",
+      "reglas": [
+        "R-TARJETA-02"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "5678",
+          "ruleId": "R-TARJETA-02",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:5678"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "tarjeta débito terminada en los dígitos 4321",
+      "reglas": [
+        "R-TARJETA-02"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "4321",
+          "ruleId": "R-TARJETA-02",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:4321"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "TC finalizada en 9876",
+      "reglas": [
+        "R-TARJETA-02"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "9876",
+          "ruleId": "R-TARJETA-02",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:9876"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "el contrato terminado en 2026",
+      "reglas": [
+        "R-TARJETA-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin contexto de tarjeta o cuenta"
+    },
+    {
+      "texto": "tarjeta terminada en marzo",
+      "reglas": [
+        "R-TARJETA-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin dígitos"
+    },
+    {
+      "texto": "tarjeta terminada en 12",
+      "reglas": [
+        "R-TARJETA-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 2 dígitos"
+    },
+    {
+      "texto": "tarjeta terminada en 12345",
+      "reglas": [
+        "R-TARJETA-02"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 5 dígitos"
+    },
+    {
+      "texto": "**** 1234",
+      "reglas": [
+        "R-TARJETA-03"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "1234",
+          "ruleId": "R-TARJETA-03",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:1234"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "XXXX-XXXX-XXXX-5678",
+      "reglas": [
+        "R-TARJETA-03"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "5678",
+          "ruleId": "R-TARJETA-03",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:5678"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "•••• 4321",
+      "reglas": [
+        "R-TARJETA-03"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "4321",
+          "ruleId": "R-TARJETA-03",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:4321"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "************9876",
+      "reglas": [
+        "R-TARJETA-03"
+      ],
+      "esperado": [
+        {
+          "type": "TARJETA",
+          "texto": "9876",
+          "ruleId": "R-TARJETA-03",
+          "confidence": "baja",
+          "canonicalKey": "CUENTA:9876"
+        }
+      ],
+      "nota": "positivo del laboratorio 07a"
+    },
+    {
+      "texto": "siglo XX 1990",
+      "reglas": [
+        "R-TARJETA-03"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: dos X"
+    },
+    {
+      "texto": "** nota 1234",
+      "reglas": [
+        "R-TARJETA-03"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: texto entre la máscara y el número"
+    },
+    {
+      "texto": "4111 1111 1111 1111",
+      "reglas": [
+        "R-TARJETA-03"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: sin máscara"
+    },
+    {
+      "texto": "XXXX 12",
+      "reglas": [
+        "R-TARJETA-03"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "negativo del laboratorio 07a: 2 dígitos"
+    }
+  ]
+}

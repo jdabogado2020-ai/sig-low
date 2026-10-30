@@ -11,6 +11,8 @@ import { rules as reglasContacto } from '../../src/core/rules/contacto.ts';
 import { rules as reglasRadicado } from '../../src/core/rules/radicado.ts';
 import { configurarDivipola, CORPORACIONES, divipolaCodes, radicado } from '../../src/core/validators/radicado.ts';
 import { correoValido, ndcMovil } from '../../src/core/validators/telefono.ts';
+import { luhn } from '../../src/core/validators/luhn.ts';
+import { rules as reglasRotulados } from '../../src/core/rules/rotulados.ts';
 
 const PARTE = 'prt_00000000000000000000000000000001' as PartId;
 const detectar = (texto: string): DetectionCandidate[] =>
@@ -302,6 +304,141 @@ describe('rendimiento de radicado y contacto', () => {
     for (const texto of casos) {
       const t0 = Date.now();
       detectarCon(texto, [...reglasRadicado, ...reglasContacto]);
+      expect(Date.now() - t0, `${texto.slice(0, 12)}…`).toBeLessThan(20000);
+    }
+  });
+});
+
+// ---- PA-5 (A3): luhn y datos rotulados ----
+describe('luhn', () => {
+  beforeEach(() => configurarDivipola(DIVIPOLA));
+  afterEach(() => configurarDivipola(null));
+
+  const rotulados = (texto: string): ReturnType<typeof runRules> => detectarCon(texto, reglasRotulados);
+  const tarjetas = (texto: string): ReturnType<typeof runRules> => rotulados(texto).filter((c) => c.ruleId === 'R-TARJETA-01');
+
+  it('T-MO-02 luhn: números de prueba conocidos, separadores de tarjeta y entradas inválidas', () => {
+    for (const d of ['4111111111111111', '5500000000000004', '378282246310005', '4111 1111 1111 1111', '4111-1111-1111-1111', '3782 822463 10005']) {
+      expect(luhn(d), d).toBe(true);
+    }
+    for (const d of ['4111111111111112', '5500000000000005', '378282246310006', '1234567890123']) expect(luhn(d), d).toBe(false);
+    expect(luhn('')).toBe(false);
+    expect(luhn('0')).toBe(false);
+    expect(luhn('4111 1111 1111 111a')).toBe(false);
+    expect(luhn('4111.1111.1111.1111')).toBe(false);
+    expect(luhn('00')).toBe(true);                                              // el estándar no exige longitud: eso es del patrón
+  });
+
+  it('T-MO-02 INV-R03 · tarjeta con rótulo: Luhn pasa → alta; falla → media y sigue detectada', () => {
+    const ok = tarjetas('tarjeta de crédito 4111 1111 1111 1111');
+    expect(ok).toHaveLength(1);
+    expect(ok[0]).toMatchObject({ confidence: 'alta', validator: { name: 'LUHN', passed: true }, label: { labelId: 'ROT-TAR' } });
+    const mal = tarjetas('tarjeta de crédito 4111 1111 1111 1112');
+    expect(mal).toHaveLength(1);
+    expect(mal[0]).toMatchObject({ confidence: 'media', validator: { name: 'LUHN', passed: false }, type: 'TARJETA' });
+    expect(tarjetas('TC 5500 0000 0000 0004')[0]).toMatchObject({ confidence: 'alta' });
+    expect(tarjetas('TC 5500 0000 0000 0005')[0]).toMatchObject({ confidence: 'media' });
+  });
+
+  it('T-MO-02 INV-R03 · tarjeta que pasa Luhn sin rótulo → confianza media; sin rótulo y sin Luhn → baja, nunca descartada', () => {
+    for (const t of ['4111111111111111', '4111 1111 1111 1111', '4111-1111-1111-1111', '3782 822463 10005']) {
+      const c = tarjetas(t);
+      expect(c, t).toHaveLength(1);
+      expect(c[0], t).toMatchObject({ confidence: 'media', validator: { name: 'LUHN', passed: true } });
+      expect(c[0]?.label, t).toBeUndefined();
+    }
+    for (const t of ['1234567890123', '4111 1111 1111 1112', '4111111111111112']) {
+      const c = tarjetas(t);
+      expect(c, t).toHaveLength(1);
+      expect(c[0], t).toMatchObject({ confidence: 'baja', validator: { name: 'LUHN', passed: false } });
+    }
+    // Ninguna combinación sube por encima de «media» sin rótulo, ni baja de «media» con rótulo.
+    for (const d of ['4111111111111111', '4111111111111112', '5500000000000004', '5500000000000005']) {
+      expect(tarjetas(d)[0]?.confidence).not.toBe('alta');
+      expect(tarjetas(`tarjeta ${d}`)[0]?.confidence).not.toBe('baja');
+    }
+  });
+
+  it('T-MO-02 la clave de la tarjeta son sus dígitos: igual con o sin separadores, rótulo o vencimiento', () => {
+    const textos = ['4111111111111111', '4111 1111 1111 1111', '4111-1111-1111-1111', 'tarjeta de crédito 4111 1111 1111 1111 12/28', 'TC 4111 1111 1111 1111'];
+    for (const t of textos) expect(tarjetas(t).map((c) => c.canonicalKey), t).toEqual(['CUENTA:4111111111111111']);
+    expect(rotulados('**** 1234')[0]?.canonicalKey).toBe('CUENTA:1234');
+    expect(rotulados('la tarjeta de crédito terminada en 1234')[0]?.canonicalKey).toBe('CUENTA:1234');
+  });
+
+  it('T-MO-02 radicado de 23 dígitos que contiene 16 dígitos Luhn válidos → gana el radicado (nunca se propone como tarjeta)', () => {
+    expect(luhn('1100140030012026')).toBe(true);                                // los 16 primeros dígitos del radicado pasan Luhn
+    const juntos = [...reglasRadicado, ...reglasRotulados];
+    const escrituras = [
+      'radicado 11001400300120260000100',
+      'radicado 11001-40-03-001-2026-00001-00',
+      'radicado 11001 40 03 001 2026 00001 00',
+      'radicado 1100 1400 3001 2026 0000100',
+      'radicado 1100 1400 3001 2026 0000 100',
+      'radicado 1100-1400-3001-2026-0000100',
+      'Rad. 1100 1400 3001 2026 00001 00',
+      '1100 1400 3001 2026 00001 00',
+    ];
+    for (const t of escrituras) {
+      const out = detectarCon(t, juntos);
+      expect(out.filter((c) => c.type === 'TARJETA'), t).toEqual([]);
+      const rad = out.filter((c) => c.type === 'RADICADO');
+      expect(rad, t).toHaveLength(1);
+      expect(rad[0], t).toMatchObject({ confidence: 'alta', canonicalKey: 'RAD:11001400300120260000100', validator: { name: 'RADICADO', passed: true } });
+    }
+    // Una tarjeta y un radicado vecinos siguen siendo dos detecciones.
+    const dos = detectarCon('radicado 11001400300120260000100 y tarjeta 4111 1111 1111 1111', juntos);
+    expect(dos.map((c) => c.type)).toEqual(['RADICADO', 'TARJETA']);
+    expect(dos.map((c) => c.confidence)).toEqual(['alta', 'alta']);
+    // La misma tarjeta con un grupo de dígitos pegado no se toma: puede ser parte de otro identificador.
+    expect(tarjetas('4111 1111 1111 1111 0000100')).toEqual([]);
+    expect(tarjetas('4111111111111111 0000100')).toEqual([]);
+  });
+
+  it('T-MO-02 las cadenas de dígitos que no son tarjeta no la producen (radicado de 23, cédula y celular contiguos, empieza por 0)', () => {
+    for (const t of ['11001400399920260000100', '0057 3000000001', '4111 1111 1111', '41000001 3000000001', '4111 1111 1111 1111 1111']) {
+      expect(tarjetas(t), t).toEqual([]);
+    }
+  });
+
+  it('T-MO-02 INV-R03 · afiliación y autorizaciones: el valor con forma de año baja a baja; el filtro estructural descarta', () => {
+    const afil = (t: string): string[] => rotulados(t).map((c) => c.confidence);
+    expect(afil('No. de afiliación 2026')).toEqual(['baja']);
+    expect(afil('autorización No. 1999')).toEqual(['baja']);
+    expect(afil('autorización No. 2026000123')).toEqual(['alta']);
+    expect(afil('carné 1234567')).toEqual(['media']);
+    expect(afil('afiliación 12')).toEqual([]);                                  // menos de 4 caracteres o de 3 dígitos
+    expect(afil('afiliación AB12')).toEqual([]);                                // 2 dígitos
+    expect(afil(`MIPRES ${'1'.repeat(31)}`)).toEqual([]);                       // más de 30 caracteres
+    expect(afil(`MIPRES ${'1'.repeat(30)}`)).toEqual(['alta']);
+    expect(afil(`afiliación ${'1'.repeat(26)}`)).toEqual([]);                   // más de 25 caracteres en R-AFIL-01
+  });
+
+  it('T-MO-02 claves: matrícula con y sin guion, historia clínica con tipo de documento y cuenta con separadores', () => {
+    const clave = (t: string): string[] => [...new Set(rotulados(t).map((c) => c.canonicalKey))];
+    expect(clave('FMI 50C-00000001')).toEqual(['MAT:50C-00000001']);
+    expect(clave('FMI 50C 00000001')).toEqual(['MAT:50C-00000001']);
+    expect(clave('matrícula inmobiliaria No. 50c00000001')).toEqual(['MAT:50C-00000001']);
+    expect(clave('matrícula No. 50C-00000001')).toEqual(['MAT:50C-00000001']);
+    expect(clave('HC: TI 1000000002')).toEqual(['HC:1000000002']);
+    expect(clave('historia clínica No. 1.000.000.001')).toEqual(['HC:1000000001']);
+    expect(clave('Historia Clínica número HC-2026-000123')).toEqual(['HC:2026000123']);
+    expect(clave('cuenta de ahorros Bancolombia No. 123-456789-01')).toEqual(['CUENTA:12345678901']);
+    expect(clave('cuenta de ahorros Bancolombia No. 12345678901')).toEqual(['CUENTA:12345678901']);
+    expect(clave('vehículo de placas xxx-001')).toEqual(['PLACA:XXX001']);
+    expect(clave('el automotor XXX 001 fue inmovilizado')).toEqual(['PLACA:XXX001']);
+  });
+
+  it('T-MO-02 entradas adversarias de 100.000 caracteres (dígitos, guiones, rótulos repetidos y máscaras) se procesan sin cuelgue', () => {
+    const casos = [
+      '4 '.repeat(50000), '4111 '.repeat(20000), '4111-'.repeat(20000), '1234567890'.repeat(10000), 'tarjeta '.repeat(12500),
+      'cuenta 1 '.repeat(11000), 'cuenta de ahorros en '.repeat(4800), 'afiliación 1-'.repeat(7700), 'historia clínica '.repeat(5800),
+      'XXXX-'.repeat(20000), '****'.repeat(25000), 'matrícula 50C-1 '.repeat(6200), 'placa XXX '.repeat(10000), 'terminada en '.repeat(7700),
+      'tarjeta 4111 1111 1111 1111 '.repeat(3600), 'banco '.repeat(16000) + '123',
+    ];
+    for (const texto of casos) {
+      const t0 = Date.now();
+      detectarCon(texto, reglasRotulados);
       expect(Date.now() - t0, `${texto.slice(0, 12)}…`).toBeLessThan(20000);
     }
   });
