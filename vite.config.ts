@@ -1,5 +1,5 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
+import { defineConfig, defaultClientConditions } from 'vite';
 import { readFileSync } from 'node:fs';
 
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => {
   const medicion = mode === 'medicion';
   return {
     cacheDir: '.vite-cache',
+    // ORT-web: build CPU sin el cargador incrustado (`blob:`); el .mjs y el .wasm se sirven desde /ort/ (4.6.1, V-09).
+    resolve: { conditions: ['onnxruntime-web-use-extern-wasm', ...defaultClientConditions] },
     oxc: { jsx: { runtime: 'automatic', importSource: 'preact' } },
     define: {
       __SIGLOW_VERSION__: JSON.stringify(pkg.version),

@@ -52,7 +52,9 @@ for (const p of archivos) {
   if (!/\.(m?js|html|json|txt|webmanifest|css)$/.test(p) && basename(p) !== '_headers') continue;
   const t = readFileSync(p, 'utf8');
   for (const [nombre, re] of PROHIBIDOS) {
-    if (esOrtMjs(r) && (nombre === 'console' || nombre === 'blob:' || nombre === 'eval')) continue; // .mjs de ORT copiado tal cual
+    // .mjs de ORT copiado tal cual (su SHA-256 lo fija PD-2): código de reserva de Emscripten.
+    if (esOrtMjs(r) && (nombre === 'console' || nombre === 'blob:' || nombre === 'eval')) continue;
+    if (esOrtMjs(r) && nombre === 'XMLHttpRequest' && (t.match(re) ?? []).length <= 2) continue;
     if (nombre === 'http-externo' && (r === '_headers' || /^ort\//.test(r))) continue;
     const n = (t.match(re) ?? []).length;
     if (n) hallazgos.push(`${r}: ${nombre} ×${n}`);
