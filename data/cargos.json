@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "nota": "Cargos únicos que, junto a una entidad concreta, pueden identificar a una persona (R-CAR-01, 7.7.6). Lista propia del producto; los jueces y magistrados quedan fuera porque son la autoridad del proceso.",
+  "privados": [
+    "gerente general", "gerente", "subgerente", "representante legal suplente", "representante legal",
+    "presidente de la junta directiva", "presidente", "presidenta", "vicepresidente", "vicepresidenta",
+    "director general", "directora general", "director ejecutivo", "directora ejecutiva", "director", "directora",
+    "jefe", "jefa", "coordinador", "coordinadora", "revisor fiscal", "revisora fiscal", "tesorero", "tesorera",
+    "rector", "rectora", "vicerrector", "vicerrectora", "decano", "decana", "administrador", "administradora",
+    "auditor", "auditora"
+  ],
+  "publicos": [
+    "alcalde", "alcaldesa", "gobernador", "gobernadora", "personero", "personera", "notario", "notaria",
+    "registrador", "registradora", "secretario de despacho", "secretaria de despacho", "secretario", "secretaria",
+    "contralor", "contralora", "inspector de policía", "inspectora de policía", "comisario de familia",
+    "comisaria de familia", "defensor de familia", "defensora de familia", "concejal", "concejala",
+    "superintendente", "comandante", "párroco"
+  ],
+  "excluidosTrasDe": ["la República", "la Nación"]
+}

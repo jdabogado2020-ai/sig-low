@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "nota": "Expresiones que indican que la persona es menor de edad (R-MEN-01, 7.7.6). {H} es el espacio horizontal. Lista propia del producto.",
+  "articulos": ["la", "el", "las", "los", "una", "un", "su", "sus", "mi", "mis", "del", "al", "nuestr[oa]s?"],
+  "expresiones": [
+    "ni[ñn][oa]s?", "adolescentes?", "menor(?:es)?{H}+de{H}+edad", "NNA", "neonat[oa]s?",
+    "reci[eé]n{H}+nacid[oa]s?", "lactantes?", "hij[oa]s?{H}+menor(?:es)?"
+  ],
+  "articulosMenor": ["la", "el", "las", "los", "del", "al", "su", "sus", "mi", "mis"],
+  "menorNoEsPersona": [
+    "cuant[ií]a", "valor", "precio", "medida", "tiempo", "grado", "costo", "n[uú]mero", "porcentaje", "parte",
+    "riesgo", "impacto", "cantidad", "plazo", "tarifa", "t[eé]rmino", "escala", "proporci[oó]n", "monto", "suma",
+    "da[ñn]o", "importancia", "inter[eé]s", "que", "de{H}+(?:los|las|ellos|ellas|todos|todas)"
+  ],
+  "rotulosQueRevelanMenor": ["ROT-TI", "ROT-RC"]
+}

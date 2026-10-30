@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "nota": "Términos de diagnóstico raro (R-DIAG-01, 7.7.6), redactados para el producto sin copiar ningún catálogo. Lista corta y revisable: lo que no cubra lo cubre la revisión manual. Pendiente de cotejo con el listado oficial de enfermedades huérfanas del Ministerio de Salud (sin red en la hackatón). Los patrones de contexto son expresiones regulares; {H} es el espacio horizontal.",
+  "terminos": [
+    "fibrosis quística", "hemofilia", "esclerosis lateral amiotrófica", "distrofia muscular de Duchenne",
+    "distrofia muscular de Becker", "atrofia muscular espinal", "fenilcetonuria", "enfermedad de Gaucher",
+    "enfermedad de Fabry", "enfermedad de Pompe", "enfermedad de Huntington", "enfermedad de Wilson",
+    "enfermedad de Niemann-Pick", "mucopolisacaridosis", "osteogénesis imperfecta", "miastenia gravis",
+    "esclerodermia", "hipertensión pulmonar", "acondroplasia", "neurofibromatosis", "porfiria"
+  ],
+  "contextoClinico": [
+    "diagn[oó]stic", "(?<![\\p{L}])i?dx(?![\\p{L}])", "cie-?{H}?10", "c[oó]digo{H}+cie",
+    "impresi[oó]n{H}+diagn[oó]stica", "patolog[ií]a", "enfermedad", "morbilidad", "comorbilidad"
+  ],
+  "excluyenAntes": [
+    "formulario", "formato", "anexo", "torre", "bloque", "apto\\.?", "apartamento", "casa", "local", "oficina",
+    "ruta", "v[ií]a", "placa", "modelo", "versi[oó]n", "referencia", "ref\\.", "sala", "cama", "habitaci[oó]n",
+    "consultorio", "radicado", "rad\\."
+  ]
+}

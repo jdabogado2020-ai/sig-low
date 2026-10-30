@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "nota": "Solo el patrón del código CIE-10 (letra, dos dígitos, subcódigo opcional, con o sin punto; incluye la letra U). No contiene el catálogo de la CIE-10. Un código solo se marca con contexto clínico cercano (R-CIE-01, 7.7.6).",
+  "patron": "[A-Z][0-9]{2}(?:\\.?[0-9A-Z]{1,2})?",
+  "ventanaAntes": 80,
+  "ventanaDespues": 40
+}

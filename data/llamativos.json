@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "nota": "Hechos o menciones que vuelven reconocible un caso (R-LLA-01, 7.7.6). Cada patrón es una expresión regular sin anclas; {H} es el espacio horizontal (espacio o tabulador). Lista propia del producto.",
+  "patrones": [
+    "homicidios?", "feminicidios?", "asesinat[oa]s?", "masacres?", "atentados?", "explosi[oó]n",
+    "desaparici[oó]n{H}+forzada", "ataque{H}+con{H}+[aá]cido", "incendios?", "secuestr(?:os?|ad[oa]s?)",
+    "accidente{H}+de{H}+tr[aá]nsito",
+    "(?:se{H}+(?:hizo|volvi[oó])|fue|video|publicaci[oó]n|mensaje|caso){H}+viral", "viraliz\\p{L}*",
+    "noticias?", "medios{H}+de{H}+comunicaci[oó]n", "prensa", "noticieros?", "redes{H}+sociales",
+    "titulares?", "caso{H}+medi[aá]tico"
+  ]
+}
