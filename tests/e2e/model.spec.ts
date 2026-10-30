@@ -9,7 +9,7 @@ import { cpSync, createReadStream, existsSync, mkdirSync, readFileSync, rmSync, 
 import { join, resolve } from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { build } from 'vite';
+import { build, defaultClientConditions } from 'vite';
 
 import type { ModelManifest } from '../../src/core/types';
 
@@ -77,6 +77,7 @@ test.beforeAll(async () => {
     publicDir: join(RAIZ, 'public'),
     logLevel: 'silent',
     cacheDir: join(RAIZ, '.vite-cache'),
+    resolve: { conditions: ['onnxruntime-web-use-extern-wasm', ...defaultClientConditions] },
     define: { __SIGLOW_VERSION__: '"prueba"', __SIGLOW_MEDICION__: 'false' },
     build: {
       outDir: CARPETA, emptyOutDir: false, target: 'es2024', assetsInlineLimit: 0, sourcemap: false,

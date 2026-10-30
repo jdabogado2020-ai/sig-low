@@ -51,8 +51,9 @@ function fetcherDe(manifest: ModelManifest): Fetcher {
 const rutaOrt = (nombre: string): string => new URL(`/ort/${nombre}`, self.location.href).href;
 
 const cargarOrt = async (): Promise<OrtModule> => {
-  const m = await import('../../node_modules/onnxruntime-web/dist/ort.wasm.min.mjs');
-  return { env: m.env, InferenceSession: m.InferenceSession, Tensor: m.Tensor };
+  // La condición de resolución `onnxruntime-web-use-extern-wasm` (vite.config.ts) elige el build sin el WebAssembly incrustado.
+  const m = await import('onnxruntime-web/wasm');
+  return m as unknown as OrtModule;
 };
 
 const manejar = crearManejadorNer({
