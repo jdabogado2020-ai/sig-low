@@ -10,7 +10,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { NullNerEngine } from '../../src/core/ner/engine';
 import {
@@ -37,7 +37,9 @@ import {
   type SpanCandidate,
   type TokenizerLike,
 } from '../../src/core/ner/gliner';
-import type { NerEngine, NerOptions, NerSpan, NerWindowResult, PartId } from '../../src/core/types';
+import { GlinerError, codigoDeError } from '../../src/core/ner/gliner/errors';
+import { crearManejadorNer } from '../../src/core/ner/handler';
+import { SiglowError, type ModelManifest, type NerEngine, type NerLoadProgress, type NerLoadResult, type NerOptions, type NerResponse, type NerSpan, type NerWindowResult, type PartId } from '../../src/core/types';
 
 // ---------------------------------------------------------------------------
 // Utilidades
@@ -92,10 +94,10 @@ describe('T-MO-09 · divisor de palabras (R-MOD-01)', () => {
     ['ana_ficticia vive', ['ana_ficticia', 'vive']],
     ['D’Ejemplo vive', ['D', '’', 'Ejemplo', 'vive']],
     ['Muñoz Pérez', ['Muñoz', 'Pérez']],
-    ['Ro­jas firmó', ['Ro­jas', 'firmó']],
+    ['Ro\u00ADjas firmó', ['Ro\u00ADjas', 'firmó']],
     ['ana.ficticia@ejemplo.test', ['ana', '.', 'ficticia', '@', 'ejemplo', '.', 'test']],
     ['Ana Rojas', ['Ana', 'Rojas']],
-    ['Ana ​ Rojas', ['Ana', 'Rojas']],
+    ['Ana \u200B Rojas', ['Ana', 'Rojas']],
     ['Rojas.', ['Rojas', '.']],
     ['Rojas-', ['Rojas', '-']],
     ['Ana - Rojas', ['Ana', '-', 'Rojas']],
@@ -112,10 +114,10 @@ describe('T-MO-09 · divisor de palabras (R-MOD-01)', () => {
   });
 
   it('T-MO-09 el tokenizador recibe la palabra sin invisibles, las posiciones son las canónicas', () => {
-    const text = 'Ro­jas firmó';
+    const text = 'Ro\u00ADjas firmó';
     const [w] = splitWords(text);
     expect(w).toEqual({ start: 0, end: 6, text: 'Rojas' });
-    expect(text.slice(w!.start, w!.end)).toBe('Ro­jas');
+    expect(text.slice(w!.start, w!.end)).toBe('Ro\u00ADjas');
   });
 
   it('T-MO-09 una marca combinante (\\p{M}) queda dentro de la palabra', () => {
@@ -124,7 +126,7 @@ describe('T-MO-09 · divisor de palabras (R-MOD-01)', () => {
 
   it('T-MO-09 texto vacío o solo espacios e invisibles no da palabras', () => {
     expect(segmentWords('')).toEqual([]);
-    expect(segmentWords(' \n\t ​­﻿')).toEqual([]);
+    expect(segmentWords(' \n\t \u200B\u00AD\uFEFF')).toEqual([]);
   });
 
   it('T-MO-09 las palabras son disjuntas y están en orden', () => {
@@ -689,9 +691,10 @@ describe('T-MO-09 · código incorporado (MIT) y privacidad', () => {
     for (const f of archivos) {
       const src = readFileSync(f, 'utf8');
       for (const re of prohibidos) expect(src, `${f} ${String(re)}`).not.toMatch(re);
-      // solo se importa la dependencia aprobada en H-0
-      for (const m of src.matchAll(/from\s+'([^'.][^']*)'/g)) {
-        expect(['@huggingface/tokenizers', 'node:fs']).toContain(m[1]);
+      // solo se importa la dependencia aprobada en H-0; sin importaciones dinámicas ni require; comillas simples o dobles
+      expect(src, `${f} import()`).not.toMatch(/\bimport\s*\(|\brequire\s*\(/);
+      for (const m of src.matchAll(/(?:\bfrom|\bimport)\s*(['"])([^'"]+)\1/g)) {
+        if (!m[2]!.startsWith('.')) expect(['@huggingface/tokenizers'], `${f} importa ${m[2]}`).toContain(m[2]);
       }
     }
   });
@@ -845,4 +848,201 @@ describe('T-MO-09 · contra los vectores de referencia de h0/referencia-gliner.j
       },
     );
   }
+});
+
+// ---------------------------------------------------------------------------
+// Protocolo del worker `ner` (handler.ts) con un motor simulado: INV-W01, INV-W07, INV-W08
+// ---------------------------------------------------------------------------
+
+class MotorFalso implements NerEngine {
+  readonly engineId = 'gliner-x-base' as const;
+  liberado = false;
+  constructor(private readonly alCargar?: () => never) {}
+  load(onProgress: (p: NerLoadProgress) => void): Promise<NerLoadResult> {
+    if (this.alCargar) this.alCargar();
+    for (let i = 0; i <= 50; i++) onProgress({ phase: 'verificando', done: i, total: 50 });
+    return Promise.resolve({ engineId: 'gliner-x-base', modelId: 'gliner-x-base', sha256: 'a'.repeat(64), threads: 4, crossOriginIsolated: true, labels: ['PER'], decoder: 'gliner-spans', loadMs: 1, warmupWindowMs: 1 });
+  }
+  planWindows(text: string): number { return Math.ceil(text.length / 10); }
+  async detect(text: string, _o: NerOptions, signal: AbortSignal, onWindow?: (w: NerWindowResult) => void): Promise<NerSpan[]> {
+    const n = this.planWindows(text);
+    const todos: NerSpan[] = [];
+    for (let i = 0; i < n; i++) {
+      if (signal.aborted) throw new NerAbortError();
+      await new Promise((r) => setTimeout(r, 5));
+      const spans: NerSpan[] = [{ start: i, end: i + 1, label: 'PER', score: 0.9 }];
+      todos.push(...spans);
+      onWindow?.({ partId: '' as PartId, windowIndex: i, windowTotal: n, spans, ms: 5 });
+    }
+    return todos;
+  }
+  dispose(): Promise<void> { this.liberado = true; return Promise.resolve(); }
+}
+
+const MANIFIESTO_MINIMO = {
+  formato: 'sig-low/modelo', v: 1, id: 'gliner-x-base', archivo: 'onnx/model_quantized.onnx', tamano: 10, sha256: 'a'.repeat(64),
+  auxiliares: [], tokenizador: { prefijo: 0, sufijo: 1, cls: false }, ventanaTokens: 512, solapePalabras: 37, umbral: 0.3, etiquetas: ['person', 'organization', 'location'],
+} as unknown as ModelManifest;
+
+function banco(motor: NerEngine = new MotorFalso()): { enviar: (m: unknown) => void; salida: NerResponse[]; esperar: (f: (s: NerResponse[]) => boolean) => Promise<void> } {
+  const salida: NerResponse[] = [];
+  const enviar = crearManejadorNer({ post: (m) => salida.push(m), crearMotor: () => motor });
+  const esperar = async (f: (s: NerResponse[]) => boolean): Promise<void> => {
+    for (let i = 0; i < 400 && !f(salida); i++) await new Promise((r) => setTimeout(r, 5));
+    expect(f(salida)).toBe(true);
+  };
+  return { enviar, salida, esperar };
+}
+const req = (reqId: string, kind: string, payload: unknown) => ({ v: 1, reqId, kind, payload });
+const OPC = { windowTokens: 512, overlapWords: 37, maxSpanWords: 12, threshold: 0.3, labels: ['person', 'organization', 'location'], threads: 4 };
+const PARTE_A = 'parte_0000000000000000000000000000000a';
+
+describe('T-MO-09 · worker ner: protocolo (INV-W01, INV-W07, INV-W08)', () => {
+  it('INV-W01 un mensaje de error solo tiene v, reqId, kind, code y retryable, y no repite lo recibido', async () => {
+    const b = banco();
+    b.enviar({ v: 1, reqId: 'x1', kind: 'inventado', payload: { texto: 'Ana Ficticia Rojas' } });
+    b.enviar({ v: 2, reqId: 'x2', kind: 'cargar', payload: {} });
+    b.enviar(req('x3', 'cargar', { manifest: { formato: 'Ana Ficticia Rojas' } }));
+    b.enviar(req('x4', 'detectar', { parts: [{ partId: 1 }], options: OPC }));
+    b.enviar('Ana Ficticia Rojas');
+    await b.esperar((s) => s.length === 5);
+    for (const m of b.salida) {
+      expect(Object.keys(m).sort()).toEqual(['code', 'kind', 'reqId', 'retryable', 'v']);
+      expect(m).toMatchObject({ kind: 'error', code: 'ENTRADA_INVALIDA', retryable: false });
+    }
+    expect(JSON.stringify(b.salida)).not.toContain('Ana');
+  });
+
+  it('INV-W01 un fallo del motor con texto del documento en la excepción sale solo como código', async () => {
+    const b = banco(new MotorFalso(() => { throw new Error('fallo con Ana Ficticia Rojas en el texto'); }));
+    b.enviar(req('c1', 'cargar', { manifest: MANIFIESTO_MINIMO }));
+    await b.esperar((s) => s.length === 1);
+    expect(b.salida[0]).toEqual({ v: 1, reqId: 'c1', kind: 'error', code: 'ERROR_INTERNO', retryable: false });
+  });
+
+  it('T-MO-09 cargar: progreso en bytes, a lo sumo uno cada 100 ms, y el resultado con NerLoadResult', async () => {
+    const b = banco();
+    b.enviar(req('c2', 'cargar', { manifest: MANIFIESTO_MINIMO }));
+    await b.esperar((s) => s.some((m) => m.kind === 'resultado'));
+    const prog = b.salida.filter((m) => m.kind === 'progreso');
+    expect(prog.length).toBeGreaterThan(0);
+    expect(prog.length).toBeLessThan(10);
+    for (const p of prog) expect(p).toMatchObject({ stage: 'modelo_carga', unit: 'bytes' });
+    expect(b.salida.at(-1)).toMatchObject({ kind: 'resultado', payload: { kind: 'cargar', load: { engineId: 'gliner-x-base', threads: 4 } } });
+  });
+
+  it('INV-W07 parcial y progreso no llevan texto: el parcial solo trae partId, posiciones, etiquetas y puntajes', async () => {
+    const b = banco();
+    b.enviar(req('c3', 'cargar', { manifest: MANIFIESTO_MINIMO }));
+    b.enviar(req('d1', 'detectar', { parts: [{ partId: PARTE_A, text: 'Ana Ficticia Rojas vive en Villa Ejemplo y trabaja ahí.' }, { partId: 'parte_0000000000000000000000000000000b', text: '' }], options: OPC }));
+    await b.esperar((s) => s.some((m) => m.reqId === 'd1' && m.kind === 'resultado'));
+    const d = b.salida.filter((m) => m.reqId === 'd1');
+    const parciales = d.filter((m) => m.kind === 'parcial');
+    expect(parciales.length).toBe(6);
+    for (const [i, p] of parciales.entries()) {
+      expect(Object.keys(p).sort()).toEqual(['kind', 'payload', 'reqId', 'v']);
+      const pl = (p as { payload: { windowsDone: number; windowsTotal: number; window: NerWindowResult } }).payload;
+      expect(Object.keys(pl).sort()).toEqual(['window', 'windowsDone', 'windowsTotal']);
+      expect(Object.keys(pl.window).sort()).toEqual(['ms', 'partId', 'spans', 'windowIndex', 'windowTotal']);
+      expect(pl.window.partId).toBe(PARTE_A);
+      expect(pl.windowsDone).toBe(i + 1);
+      expect(pl.windowsTotal).toBe(6);
+      for (const s of pl.window.spans) expect(Object.keys(s).sort()).toEqual(['end', 'label', 'score', 'start']);
+    }
+    for (const p of d.filter((m) => m.kind === 'progreso')) {
+      expect(Object.keys(p).sort()).toEqual(['done', 'kind', 'reqId', 'stage', 'total', 'unit', 'v']);
+      expect(p).toMatchObject({ stage: 'modelo', unit: 'ventanas', total: 6 });
+    }
+    expect(d[0]).toMatchObject({ kind: 'progreso', done: 0, total: 6 }); // primer progreso con el total del documento
+    expect(d.at(-1)).toMatchObject({ kind: 'resultado', payload: { kind: 'detectar', windows: 6 } });
+    expect(JSON.stringify(d)).not.toContain('Ficticia');
+  });
+
+  it('INV-W08 tras cancelar no sale otro parcial, se responde cancelado y no hay resultado', async () => {
+    const b = banco();
+    b.enviar(req('c4', 'cargar', { manifest: MANIFIESTO_MINIMO }));
+    b.enviar(req('d2', 'detectar', { parts: [{ partId: PARTE_A, text: 'x'.repeat(400) }], options: OPC }));
+    await b.esperar((s) => s.some((m) => m.reqId === 'd2' && m.kind === 'parcial'));
+    b.enviar(req('d2-c', 'cancelar', { targetReqId: 'd2' }));
+    await b.esperar((s) => s.some((m) => m.reqId === 'd2' && m.kind === 'cancelado'));
+    const cuantos = b.salida.length;
+    await new Promise((r) => setTimeout(r, 80));
+    expect(b.salida.length).toBe(cuantos); // no llega nada más
+    const d = b.salida.filter((m) => m.reqId === 'd2');
+    expect(d.at(-1)!.kind).toBe('cancelado');
+    expect(d.filter((m) => m.kind === 'parcial').length).toBeLessThan(40);
+    expect(d.some((m) => m.kind === 'resultado')).toBe(false);
+    expect(b.salida.some((m) => m.reqId === 'd2-c')).toBe(false);
+  });
+
+  it('T-MO-09 detectar sin cargar responde MODELO_NO_DESCARGADO', async () => {
+    const b = banco();
+    b.enviar(req('d3', 'detectar', { parts: [{ partId: PARTE_A, text: 'hola' }], options: OPC }));
+    await b.esperar((s) => s.length === 1);
+    expect(b.salida[0]).toEqual({ v: 1, reqId: 'd3', kind: 'error', code: 'MODELO_NO_DESCARGADO', retryable: true });
+  });
+
+  it('T-MO-09 liberar suelta el motor y deja de detectar', async () => {
+    const motor = new MotorFalso();
+    const b = banco(motor);
+    b.enviar(req('c5', 'cargar', { manifest: MANIFIESTO_MINIMO }));
+    b.enviar(req('l1', 'liberar', {}));
+    b.enviar(req('d4', 'detectar', { parts: [{ partId: PARTE_A, text: 'hola' }], options: OPC }));
+    await b.esperar((s) => s.some((m) => m.reqId === 'd4'));
+    expect(motor.liberado).toBe(true);
+    expect(b.salida.find((m) => m.reqId === 'l1')).toMatchObject({ kind: 'resultado', payload: { kind: 'liberar' } });
+    expect(b.salida.find((m) => m.reqId === 'd4')).toMatchObject({ kind: 'error', code: 'MODELO_NO_DESCARGADO' });
+  });
+});
+
+describe('T-MO-09 · worker ner: nada del documento en la consola ni en los errores (INV-W01, INV-W02, F-07)', () => {
+  const metodos = ['log', 'info', 'warn', 'error', 'debug', 'trace'] as const;
+
+  it('INV-W02 un fallo con texto del documento en la excepción no llega a la consola ni a ningún mensaje', async () => {
+    const espias = metodos.map((m) => vi.spyOn(console, m).mockImplementation(() => undefined));
+    try {
+      const fallos: Array<() => never> = [
+        () => { throw new Error('fallo con Ana Ficticia Rojas en el texto'); },
+        () => { throw 'Ana Ficticia Rojas como cadena'; },
+        () => { throw { message: 'Ana Ficticia Rojas', stack: 'Ana Ficticia Rojas' }; },
+        () => { throw new SiglowError('MODELO_INTEGRIDAD'); },
+        () => { throw new GlinerError('ENTRADA_INVALIDA'); },
+      ];
+      const esperados = ['ERROR_INTERNO', 'ERROR_INTERNO', 'ERROR_INTERNO', 'MODELO_INTEGRIDAD', 'ENTRADA_INVALIDA'];
+      for (const [i, fallo] of fallos.entries()) {
+        const b = banco(new MotorFalso(fallo));
+        b.enviar(req(`f${i}`, 'cargar', { manifest: MANIFIESTO_MINIMO }));
+        await b.esperar((s) => s.length === 1);
+        expect(b.salida[0]).toMatchObject({ kind: 'error', code: esperados[i] });
+        expect(Object.keys(b.salida[0]!).sort()).toEqual(['code', 'kind', 'reqId', 'retryable', 'v']);
+        expect(JSON.stringify(b.salida)).not.toContain('Ana');
+      }
+      for (const e of espias) expect(e).not.toHaveBeenCalled();
+    } finally {
+      for (const e of espias) e.mockRestore();
+    }
+  });
+
+  it('INV-W02 una excepción síncrona del manejador o de planWindows sale como ERROR_INTERNO, sin su texto', async () => {
+    const b = banco();
+    const trampa = { reqId: 'g1', kind: 'liberar', get v(): number { throw new Error('Ana Ficticia Rojas'); } };
+    b.enviar(trampa);
+    await b.esperar((s) => s.length === 1);
+    expect(b.salida[0]).toEqual({ v: 1, reqId: 'g1', kind: 'error', code: 'ERROR_INTERNO', retryable: false });
+
+    const roto = new MotorFalso();
+    roto.planWindows = () => { throw new Error('Ana Ficticia Rojas'); };
+    const c = banco(roto);
+    c.enviar(req('c6', 'cargar', { manifest: MANIFIESTO_MINIMO }));
+    c.enviar(req('d5', 'detectar', { parts: [{ partId: PARTE_A, text: 'Ana' }], options: OPC }));
+    await c.esperar((s) => s.some((m) => m.reqId === 'd5'));
+    expect(c.salida.find((m) => m.reqId === 'd5')).toEqual({ v: 1, reqId: 'd5', kind: 'error', code: 'ERROR_INTERNO', retryable: false });
+  });
+
+  it('INV-W01 clasifica por clase: reserva que no cabe → MEMORIA; cuota → CUOTA_EXCEDIDA; lo demás → ERROR_INTERNO', () => {
+    expect(codigoDeError(new RangeError('Ana'))).toBe('MEMORIA');
+    expect(codigoDeError(Object.assign(new Error('Ana'), { name: 'QuotaExceededError' }))).toBe('CUOTA_EXCEDIDA');
+    expect(codigoDeError(new TypeError('Ana'))).toBe('ERROR_INTERNO');
+    expect(codigoDeError(undefined)).toBe('ERROR_INTERNO');
+  });
 });

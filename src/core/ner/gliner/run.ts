@@ -94,6 +94,9 @@ export async function detectByWindows(p: DetectByWindowsParams): Promise<NerSpan
     const spans = toNerSpans(decoded, plan.words, range, zone);
     all.push(...spans);
     p.onWindow?.({ windowIndex: i, windowTotal: plan.windows.length, spans, ms: now() - t0 });
+    // La inferencia de ORT-web ocupa el hilo del worker: se cede el turno entre ventanas para que lleguen los mensajes
+    // (cancelar) y se vacíen los envíos (parcial, progreso).
+    await new Promise<void>((seguir) => setTimeout(seguir, 0));
   }
   return all;
 }

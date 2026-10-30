@@ -56,7 +56,7 @@ const INNER = '[\\p{L}\\p{M}\\p{N}_\\u{AD}\\u{200B}-\\u{200D}]';
 const HEAD = '[\\p{L}\\p{M}\\p{N}_]';
 const WORD_SOURCE =
   `${HEAD}${INNER}*(?:[-_]${HEAD}${INNER}*)*` + '|[^\\s\\u{AD}\\u{200B}-\\u{200D}\\u{FEFF}]';
-const INVISIBLES = /[­​-‍]/gu;
+const INVISIBLES = /[\u{AD}\u{200B}-\u{200D}]/gu;
 
 /** Quita los invisibles que solo se eliminan del texto de la palabra, nunca de las posiciones. */
 export function stripInvisibles(word: string): string {

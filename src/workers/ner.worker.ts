@@ -1,7 +1,82 @@
 /// <reference lib="webworker" />
-// Archivo de partida de P0-1 (9.1, regla 10): firma exportada sin lógica. Lo implementa PF-1b.
-// Worker de módulo del mismo origen (F-09). Responde ERROR_INTERNO hasta que se implemente.
-self.addEventListener('message', () => {
-  self.postMessage({ v: 1, kind: 'error', code: 'ERROR_INTERNO' });
+// Worker `ner` (6.11.3): conecta el protocolo de src/core/ner/handler.ts con el entorno.
+// Worker de módulo del mismo origen (F-09). Es el único archivo del modelo que llama a `fetch(` (F-01):
+// los bytes del modelo y del tokenizador salen de `/models/<id>/` del mismo origen y se verifican con SHA-256
+// contra el manifiesto antes de crear la sesión (V-44). ORT-web se sirve desde `/ort/` con la ruta fijada antes
+// del primer uso y sin proxy (V-09); no hay CDN.
+import { GlinerEngine, type GlinerEngineDeps, type OrtModule } from '../core/ner/engine';
+import { crearManejadorNer } from '../core/ner/handler';
+import type { Fetcher } from '../core/ner/model-fetch';
+import { SiglowError, type ModelManifest } from '../core/types';
+
+// Política `default` de Trusted Types (3.6): ORT crea sus workers de hilos con una URL de cadena. Solo se admite
+// el mismo origen y las rutas /assets/ y /ort/ (la misma regla que public/tt-policy.js).
+try {
+  const tt = (self as unknown as {
+    trustedTypes?: { createPolicy(nombre: string, reglas: { createScriptURL(s: string): string }): unknown };
+  }).trustedTypes;
+  tt?.createPolicy('default', {
+    createScriptURL(s: string): string {
+      const u = new URL(s, self.location.href);
+      if (u.origin === self.location.origin && /^\/(assets|ort)\//.test(u.pathname)) return u.href;
+      throw new TypeError('URL_NO_PERMITIDA');
+    },
+  });
+} catch {
+  // Ya existe la política (o el navegador no tiene Trusted Types): la CSP decide.
+}
+
+/** Descarga de una ruta del modelo en un búfer preasignado (sin `Blob` encadenados, que duplican la memoria). */
+function fetcherDe(manifest: ModelManifest): Fetcher {
+  return async (ruta, tamano, onBytes) => {
+    const url = new URL(`/models/${manifest.id}/${ruta}`, self.location.href);
+    const res = await fetch(url);
+    if (!res.ok || !res.body) throw new SiglowError('MODELO_NO_DESCARGADO');
+    const bytes = new Uint8Array(tamano);
+    const lector = res.body.getReader();
+    let escrito = 0;
+    for (;;) {
+      const { done, value } = await lector.read();
+      if (done) break;
+      if (escrito + value.byteLength > tamano) throw new SiglowError('MODELO_INTEGRIDAD');
+      bytes.set(value, escrito);
+      escrito += value.byteLength;
+      onBytes(escrito);
+    }
+    if (escrito !== tamano) throw new SiglowError('MODELO_INTEGRIDAD');
+    return bytes;
+  };
+}
+
+const rutaOrt = (nombre: string): string => new URL(`/ort/${nombre}`, self.location.href).href;
+
+const cargarOrt = async (): Promise<OrtModule> => {
+  const m = await import('../../node_modules/onnxruntime-web/dist/ort.wasm.min.mjs');
+  return { env: m.env, InferenceSession: m.InferenceSession, Tensor: m.Tensor };
+};
+
+const manejar = crearManejadorNer({
+  post: (msg) => self.postMessage(msg),
+  crearMotor: (manifest) => {
+    const deps: GlinerEngineDeps = {
+      loadOrt: cargarOrt,
+      fetcher: fetcherDe(manifest),
+      wasmPaths: { mjs: rutaOrt('ort-wasm-simd-threaded.mjs'), wasm: rutaOrt('ort-wasm-simd-threaded.wasm') },
+      crossOriginIsolated: self.crossOriginIsolated === true,
+    };
+    return new GlinerEngine(manifest, deps);
+  },
+});
+
+// Nada del documento llega a la consola (INV-W02): los errores no capturados se descartan sin registrarlos, y toda
+// excepción del manejador se traduce a ERROR_INTERNO, sin mensaje ni pila (F-07).
+self.addEventListener('error', (e) => e.preventDefault());
+self.addEventListener('unhandledrejection', (e) => e.preventDefault());
+self.addEventListener('message', (e: MessageEvent) => {
+  try {
+    manejar(e.data);
+  } catch {
+    self.postMessage({ v: 1, reqId: '', kind: 'error', code: 'ERROR_INTERNO', retryable: false });
+  }
 });
 export {};
