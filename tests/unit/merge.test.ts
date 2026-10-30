@@ -1,10 +1,10 @@
 // T-MO-05 · Precedencia y solapamientos (plan 7.11.4), INV-R02, INV-R03 e INV-R04. Solo datos ficticios.
 import { describe, expect, it } from 'vitest';
-import { mergeCandidates, precedenceOf, resolveRemainder } from '../../src/core/merge';
+import { mergeCandidates, precedenceOf, resolveRemainder } from '../../src/core/merge.ts';
 import type {
   CaseEntityId, Confidence, DataType, DetectionCandidate, DocId, LabelHit, MergeCandidatesFn, MergedCandidate, Part, PartId,
   PartKind, RuleRegistry, ValidatorResult,
-} from '../../src/core/types';
+} from '../../src/core/types.ts';
 
 const PART_ID = 'prt_00000000000000000000000000000001' as PartId;
 const OTHER_PART = 'prt_00000000000000000000000000000002' as PartId;

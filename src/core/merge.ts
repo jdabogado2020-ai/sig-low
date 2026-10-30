@@ -3,9 +3,10 @@
 // Tipos: src/core/types.ts (sección 6).
 import type {
   Confidence, DataType, DetectableType, DetectionCandidate, DetectionSource, MergedCandidate,
-  NerLabel, NormalizationProfile, Part, PartKind, RuleRegistry, SearchView,
-} from './types';
-import { FLAG_TYPES, ORG_CLASSES } from './types';
+  NerLabel, Part, PartKind, RuleRegistry,
+} from './types.ts';
+import { FLAG_TYPES, ORG_CLASSES } from './types.ts';
+import { buildSearchView, toCanonicalSpan } from './normalize.ts';
 
 type Precedence = MergedCandidate['precedence'];
 /** Candidato de trabajo. `source` admite 'manual' (precedencia 1, 6.2.4), que DetectionCandidate excluye. */
@@ -66,50 +67,8 @@ const SALUD = String.raw`(?<![\p{L}\p{N}])(?:e\. ?p\. ?s\.?|eps|i\. ?p\. ?s\.?|i
 const RE_SALUD_FIRST = new RegExp(SALUD, 'u');
 const RE_SALUD_ALL = new RegExp(SALUD, 'gu');   // solo con replace (no guarda estado entre llamadas)
 
-// ---------------------------------------------------------------------------------------------
-// Vista normalizada mínima (6.1.2, 7.1.2 y 7.1.3).
-// Implementación local hasta que PA-1 fusione normalize.ts; entonces se reemplaza por buildSearchView.
-// Sin los saltos unidos de 7.1.5: merge.ts solo la usa sobre tramos cortos (hueco, cierre, recorte y claves).
-// ---------------------------------------------------------------------------------------------
-
-function reglasChar(cp: number): string {
-  if (cp === 0xa0 || cp === 0x1680 || (cp >= 0x2000 && cp <= 0x200a) || cp === 0x202f || cp === 0x205f || cp === 0x3000) return ' ';
-  if ((cp >= 0x2010 && cp <= 0x2015) || cp === 0x2212 || cp === 0xfe58 || cp === 0xfe63 || cp === 0xff0d) return '-';
-  if (cp === 0x2018 || cp === 0x2019 || cp === 0x02bc || cp === 0x00b4 || cp === 0x2032) return "'";
-  if (cp === 0x00b0) return 'º';
-  if (cp === 0x2116 || cp === 0xff03) return '#';
-  if (cp === 0x00ad || (cp >= 0x200b && cp <= 0x200f) || cp === 0x2060 || cp === 0xfeff
-    || (cp >= 0x202a && cp <= 0x202e) || (cp >= 0x2066 && cp <= 0x2069)) return '';
-  return String.fromCodePoint(cp);
-}
-
-function localSearchView(text: string, profile: Exclude<NormalizationProfile, 'digitos'>, _partKind: PartKind): SearchView {
-  const ch: string[] = []; const sm: number[] = []; const em: number[] = [];
-  const push = (u: string, s: number, e: number): void => {
-    if (u === ' ' && ch.length > 0 && ch[ch.length - 1] === ' ') { em[em.length - 1] = e; return; }
-    for (let k = 0; k < u.length; k++) { ch.push(u[k] as string); sm.push(s); em.push(e); }
-  };
-  let i = 0;
-  while (i < text.length) {
-    const cp = text.codePointAt(i) as number;
-    const len = cp > 0xffff ? 2 : 1;
-    let r = reglasChar(cp);
-    if (profile === 'lista' && r !== '') {
-      r = /^\s$/u.test(r) ? ' ' : r.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/gu, '');
-    }
-    if (r !== '') push(r, i, i + len);
-    i += len;
-  }
-  sm.push(text.length);
-  return { profile, text: ch.join(''), startMap: Uint32Array.from(sm), endMap: Uint32Array.from(em) };
-}
-
-/** Tramo de la vista [nStart, nEnd), nEnd > nStart → tramo canónico (6.1.2). */
-function toCanonical(v: SearchView, nStart: number, nEnd: number): { start: number; end: number } {
-  return { start: v.startMap[nStart] as number, end: v.endMap[nEnd - 1] as number };
-}
-
-const fold = (s: string, kind: PartKind): string => localSearchView(s, 'lista', kind).text;
+/** Vista `lista` (7.1.3) de un tramo. */
+const fold = (s: string, kind: PartKind): string => buildSearchView(s, 'lista', kind).text;
 
 // ---------------------------------------------------------------------------------------------
 // Utilidades
@@ -203,13 +162,13 @@ function remainderKeyFromModel(c: Work, s: string, kind: PartKind): string {
 
 /** R-MOD-03 sobre la vista `lista` del tramo; devuelve posiciones relativas al tramo o null si queda vacío. */
 function trimFunctionWords(s: string, kind: PartKind): { start: number; end: number } | null {
-  const v = localSearchView(s, 'lista', kind);
+  const v = buildSearchView(s, 'lista', kind);
   const l = RE_TRIM_LEFT.exec(v.text);
   const ns = l === null ? 0 : l[0].length;
   const r = RE_TRIM_RIGHT.exec(v.text.slice(ns));
   const ne = v.text.length - (r === null ? 0 : r[0].length);
   if (ne <= ns) return null;
-  return toCanonical(v, ns, ne);
+  return toCanonicalSpan(v, ns, ne);
 }
 
 /**
@@ -293,12 +252,12 @@ function joinParen(work: Work[], part: Part): Work[] {
         const B = cand[j] as Work;
         if (A === B || A.type !== B.type || A.canonicalKey !== B.canonicalKey || A.end > B.start) continue;
         const gap = text.slice(A.end, B.start);
-        if (RE_LETTER_OR_DIGIT.test(gap) || !RE_HUECO.test(localSearchView(gap, 'reglas', part.kind).text)) continue;
+        if (RE_LETTER_OR_DIGIT.test(gap) || !RE_HUECO.test(buildSearchView(gap, 'reglas', part.kind).text)) continue;
         let end = B.end;
         let tail = text.slice(B.end, Math.min(text.length, B.end + CIERRE_WINDOW));
         const nl = tail.indexOf('\n');
         if (nl >= 0) tail = tail.slice(0, nl);
-        const v = localSearchView(tail, 'reglas', part.kind);
+        const v = buildSearchView(tail, 'reglas', part.kind);
         const m = RE_CIERRE.exec(v.text);
         if (m !== null) end = B.end + (v.endMap[m[0].length - 1] as number);
         const best = A.precedence < B.precedence ? A : B.precedence < A.precedence ? B
