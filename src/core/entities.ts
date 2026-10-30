@@ -311,7 +311,7 @@ export function buildDetectionSet(doc: DocumentModel, merged: readonly MergedCan
   linkHolders(state, naturalNit);
   tidyEntities(state);
   preapplyRotulo(state, parts, ctx);
-  for (const s of ctx.suggestions ?? []) if (state.suggestions[s.id] === undefined) state.suggestions[s.id] = s;
+  adoptSuggestions(state, ctx.suggestions ?? []);
   for (const f of ctx.flags ?? []) state.flags[f.id] = linkRotuloFlag({ ...f }, state);
   assignMarkers(ctx.table, state);
   return { detections: state.order.map((id) => state.detections[id] as Detection), entities: Object.values(state.entities),
@@ -366,6 +366,29 @@ function preapplyRotulo(state: ReviewState, parts: ReadonlyMap<PartId, Part>, ct
       options: [{ id: 'o1', kind: 'ROTULO_DOCUMENTO_A_GENERICO', template: ROTULO_TEMPLATE }], status: 'pendiente' };
     state.suggestions[sug.id] = sug;
     applySpanSuggestion(state, sug, sug.options[0] as SuggestionOption);
+  }
+}
+/** Sugerencias de generalize.ts (PG-4). La ROTULO_DOCUMENTO_A_GENERICO que PG-4 también emite preaplicada reemplaza a la
+ *  propia del mismo rótulo (se conserva su id, que citan sus banderas) y recibe su edición de tramo; si la entidad ya es
+ *  específica por la tabla del asunto, queda descartada (6.4.5). */
+function adoptSuggestions(state: ReviewState, incoming: readonly Suggestion[]): void {
+  for (const s0 of incoming) {
+    if (state.suggestions[s0.id] !== undefined) continue;
+    const s: Suggestion = structuredClone(s0);
+    if (s.kind !== 'ROTULO_DOCUMENTO_A_GENERICO' || s.target.kind !== 'tramo') { state.suggestions[s.id] = s; continue; }
+    const span = s.target.span;
+    const own = Object.values(state.suggestions).find((x) => x.kind === 'ROTULO_DOCUMENTO_A_GENERICO' && x.target.kind === 'tramo' && overlaps(x.target.span, span));
+    const rel = s.target.relatedDetectionId ?? (own?.target.kind === 'tramo' ? own.target.relatedDetectionId : undefined)
+      ?? Object.values(state.detections).find((d) => d.label !== undefined && overlaps({ partId: d.partId, start: d.label.start, end: d.label.end }, span))?.id;
+    if (rel !== undefined) s.target.relatedDetectionId = rel;
+    if (own !== undefined) { unapplySuggestion(state, own); delete state.suggestions[own.id]; }
+    const wanted = s.status === 'aplicada';
+    s.status = 'pendiente'; delete s.chosenOptionId;
+    state.suggestions[s.id] = s;
+    const ent = rel === undefined ? undefined : state.entities[state.detections[rel]?.entityId ?? ('' as EntityId)];
+    if (ent?.marcadorEspecifico === true) { s.status = 'descartada'; continue; }
+    const o = s.options.find((x) => x.id === s0.chosenOptionId) ?? s.options[0];
+    if (wanted && o !== undefined && applySpanSuggestion(state, s, o) !== null) { s.status = 'pendiente'; delete s.chosenOptionId; }
   }
 }
 function linkRotuloFlag(f: Flag, state: ReviewState): Flag {
