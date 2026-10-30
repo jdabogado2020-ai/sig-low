@@ -2,3 +2,4 @@
 export * from './validators/radicado.ts';
 export * from './validators/luhn.ts';
 export * from './validators/telefono.ts';
+export * from './validators/nit.ts';
