@@ -17,7 +17,7 @@ const NOMINAL: Record<Confidence, number> = { alta: 0.9, media: 0.6, baja: 0.3 }
 const mkPart = (text: string, kind: PartKind = 'cuerpo'): Part =>
   ({ id: PART_ID, docId: DOC_ID, kind, label: 'Cuerpo', order: 0, index: 1, text, included: true });
 
-type Src = 'lista' | 'regla' | 'modelo';
+type Src = 'manual' | 'lista' | 'regla' | 'modelo';
 type Spec = Partial<DetectionCandidate> & { type: DataType; source: Src; canonicalKey: string };
 /** Candidato sobre la aparición `occ` de `sub` en `text`. */
 function mk(text: string, sub: string, spec: Spec, occ = 0): DetectionCandidate {
@@ -291,6 +291,16 @@ describe('T-MO-05 · criterio de aceptación de PB-2', () => {
       [{ source: 'modelo', label: L, validator: ok('CORREO') }, 6],
     ];
     for (const [c, p] of cases) expect(precedenceOf(c)).toBe(p);
+  });
+
+  it('INV-R02 INV-R04 un manual (precedencia 1) gana a la lista y el remanente de la lista se descarta', () => {
+    const t = 'firmó Ana Ficticia Rojas ayer';
+    const out = run(t, [
+      mk(t, 'Ana Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, confidence: 'alta', canonicalKey: `LISTA:${CAS_A}` }),
+      mk(t, 'Ficticia Rojas', { type: 'PERSONA', source: 'manual', confidence: 'alta', score: 1, canonicalKey: 'PER:ficticia rojas' }),
+    ]);
+    expect(show(t, out)).toEqual(['PERSONA:«Ficticia Rojas»:alta']);
+    expect(out[0]).toMatchObject({ source: 'manual', precedence: 1 });
   });
 
   it('INV-R04 mergeCandidates recalcula precedence aunque el candidato traiga otra', () => {

@@ -9,8 +9,6 @@ import { FLAG_TYPES, ORG_CLASSES } from './types.ts';
 import { buildSearchView, toCanonicalSpan } from './normalize.ts';
 
 type Precedence = MergedCandidate['precedence'];
-/** Candidato de trabajo. `source` admite 'manual' (precedencia 1, 6.2.4), que DetectionCandidate excluye. */
-type Work = Omit<MergedCandidate, 'source'> & { source: DetectionSource };
 
 // ---------------------------------------------------------------------------------------------
 // Catálogos
@@ -91,7 +89,7 @@ const overlaps = (a: { start: number; end: number }, s: number, e: number): bool
 const countDigits = (s: string): number => (s.match(/[0-9]/gu) ?? []).length;
 
 /** 6.2.4 · Precedencia según la fuente, el validador y el rótulo. */
-export function precedenceOf(c: Pick<Work, 'source' | 'validator' | 'label'>): Precedence {
+export function precedenceOf(c: Pick<MergedCandidate, 'source' | 'validator' | 'label'>): Precedence {
   switch (c.source) {
     case 'manual': return 1;
     case 'lista': return 2;
@@ -108,29 +106,29 @@ export function precedenceOf(c: Pick<Work, 'source' | 'validator' | 'label'>): P
 }
 
 /** Desempates finales, después de los cinco criterios de 7.11.1 paso 3: hacen el orden total. */
-function tieBreak(a: Work, b: Work): number {
+function tieBreak(a: MergedCandidate, b: MergedCandidate): number {
   return CONF_RANK[b.confidence] - CONF_RANK[a.confidence] || b.score - a.score
     || cmpStr(a.canonicalKey, b.canonicalKey) || cmpStr(a.ruleId, b.ruleId) || cmpStr(a.caseEntityId, b.caseEntityId)
     || cmpStr(a.role, b.role) || cmpStr(a.nerLabel, b.nerLabel) || cmpStr(a.variantClass, b.variantClass);
 }
 /** 7.11.1 paso 3: precedencia ↑, longitud ↓, inicio ↑, orden fijo de tipos, fuente. */
-function byPriority(a: Work, b: Work): number {
+function byPriority(a: MergedCandidate, b: MergedCandidate): number {
   return a.precedence - b.precedence || (b.end - b.start) - (a.end - a.start) || a.start - b.start
     || (TYPE_RANK.get(a.type) ?? TYPE_ORDER.length) - (TYPE_RANK.get(b.type) ?? TYPE_ORDER.length)
     || SOURCE_RANK[a.source] - SOURCE_RANK[b.source] || tieBreak(a, b);
 }
-function byPosition(a: Work, b: Work): number {
+function byPosition(a: MergedCandidate, b: MergedCandidate): number {
   return a.start - b.start || a.end - b.end || byPriority(a, b);
 }
 
-function finish(w: Work, text: string): Work {
+function finish(w: MergedCandidate, text: string): MergedCandidate {
   w.start = widenStart(text, w.start);
   w.end = widenEnd(text, w.end);
   w.precedence = precedenceOf(w);
   return w;
 }
-function withoutValidator(c: Work): Work {
-  const copy: Work = { ...c };
+function withoutValidator(c: MergedCandidate): MergedCandidate {
+  const copy: MergedCandidate = { ...c };
   delete copy.validator;
   return copy;
 }
@@ -149,7 +147,7 @@ function orgKey(s: string, kind: PartKind): string {
   f = f.replace(RE_SALUD_ALL, ' ').replace(/[^\p{L}\p{N}& ]+/gu, ' ').replace(/ +/gu, ' ').trim();
   return `ORG:${clase}${f}`;
 }
-function remainderKeyFromModel(c: Work, s: string, kind: PartKind): string {
+function remainderKeyFromModel(c: MergedCandidate, s: string, kind: PartKind): string {
   if (c.type === 'PERSONA') return perKey(s, kind);
   if (ORG_SET.has(c.type)) return orgKey(s, kind);
   if (c.type === 'LUGAR') return 'LUGAR:' + fold(s, kind).trim();
@@ -182,7 +180,7 @@ export function resolveRemainder(part: Part, c: DetectionCandidate | MergedCandi
   const s0 = Math.max(0, Math.min(text.length, start));
   const e0 = Math.max(s0, Math.min(text.length, end));
   if (e0 <= s0) return null;
-  const base: Work = { ...(c as Work), precedence: precedenceOf(c as Work) };
+  const base: MergedCandidate = { ...c, precedence: precedenceOf(c) };
   const piece = text.slice(s0, e0);
   switch (base.source) {
     case 'modelo': {
@@ -193,7 +191,7 @@ export function resolveRemainder(part: Part, c: DetectionCandidate | MergedCandi
       if ([...sub].length < 2) return null;
       const named = sub.split(RE_WORD_SPLIT).some((w) => RE_UPPER_INITIAL.test(w) && !FW_SET.has(fold(w, part.kind)));
       if (!named) return null;
-      return asMerged(finish({ ...base, start: ns, end: ne, confidence: 'baja', canonicalKey: remainderKeyFromModel(base, sub, part.kind) }, text));
+      return finish({ ...base, start: ns, end: ne, confidence: 'baja', canonicalKey: remainderKeyFromModel(base, sub, part.kind) }, text);
     }
     case 'regla': {
       const found = base.ruleId === undefined ? null : rules.rerun(base.ruleId, piece);
@@ -201,7 +199,7 @@ export function resolveRemainder(part: Part, c: DetectionCandidate | MergedCandi
         && found.start >= 0 && found.end <= piece.length && found.start < found.end) {
         const w = withoutValidator({ ...base, start: s0 + found.start, end: s0 + found.end, canonicalKey: found.canonicalKey });
         delete w.fragment;
-        return asMerged(finish(w, text));
+        return finish(w, text);
       }
       if (countDigits(piece) >= 3) {
         // Sin blancos ni signos en los bordes; los dígitos nunca se recortan.
@@ -212,7 +210,7 @@ export function resolveRemainder(part: Part, c: DetectionCandidate | MergedCandi
         const prefix = KEY_PREFIX[base.type as DetectableType] ?? base.type;
         const w = withoutValidator({ ...base, start: ns, end: ne, confidence: 'baja', score: NOMINAL.baja,
           canonicalKey: `${prefix}:~${fold(core, part.kind).trim()}`, fragment: true });
-        return asMerged(finish(w, text));
+        return finish(w, text);
       }
       return null;
     }
@@ -223,7 +221,7 @@ export function resolveRemainder(part: Part, c: DetectionCandidate | MergedCandi
 }
 
 /** Partes de [c.start, c.end) que no cubre ningún aceptado. */
-function uncovered(c: Work, over: readonly Work[]): Array<[number, number]> {
+function uncovered(c: MergedCandidate, over: readonly MergedCandidate[]): Array<[number, number]> {
   const out: Array<[number, number]> = [];
   let cur = c.start;
   for (const a of [...over].sort((x, y) => x.start - y.start || x.end - y.end)) {
@@ -240,16 +238,16 @@ function uncovered(c: Work, over: readonly Work[]): Array<[number, number]> {
 // ---------------------------------------------------------------------------------------------
 
 /** Paso 1 · R-MRG-01: VALOR + VALOR o FECHA + FECHA con la misma clave, separados solo por « (». */
-function joinParen(work: Work[], part: Part): Work[] {
+function joinParen(work: MergedCandidate[], part: Part): MergedCandidate[] {
   const text = part.text;
   let out = work;
   for (;;) {
     const cand = out.filter((c) => c.type === 'VALOR' || c.type === 'FECHA').sort(byPosition);
-    let joined: { a: Work; b: Work; w: Work } | null = null;
+    let joined: { a: MergedCandidate; b: MergedCandidate; w: MergedCandidate } | null = null;
     for (let i = 0; i < cand.length && joined === null; i++) {
-      const A = cand[i] as Work;
+      const A = cand[i] as MergedCandidate;
       for (let j = 0; j < cand.length; j++) {
-        const B = cand[j] as Work;
+        const B = cand[j] as MergedCandidate;
         if (A === B || A.type !== B.type || A.canonicalKey !== B.canonicalKey || A.end > B.start) continue;
         const gap = text.slice(A.end, B.start);
         if (RE_LETTER_OR_DIGIT.test(gap) || !RE_HUECO.test(buildSearchView(gap, 'reglas', part.kind).text)) continue;
@@ -274,7 +272,7 @@ function joinParen(work: Work[], part: Part): Work[] {
   }
 }
 
-function nerLabelOf(c: Work): NerLabel | undefined {
+function nerLabelOf(c: MergedCandidate): NerLabel | undefined {
   if (c.nerLabel !== undefined) return c.nerLabel;
   if (c.type === 'PERSONA') return 'PER';
   return ORG_SET.has(c.type) ? 'ORG' : undefined;
@@ -289,7 +287,7 @@ function onlyNameWords(extra: string, kind: PartKind): boolean {
 }
 
 /** Paso 2 · Lista extendida por el modelo. */
-function extendWithModel(work: Work[], part: Part): Work[] {
+function extendWithModel(work: MergedCandidate[], part: Part): MergedCandidate[] {
   const text = part.text;
   let out = work;
   const listas = out.filter((c) => c.source === 'lista').sort(byPosition);
@@ -306,18 +304,13 @@ function extendWithModel(work: Work[], part: Part): Work[] {
       const blocked = out.some((X) => X !== L && X !== M && X.source !== 'modelo'
         && (overlaps(X, M.start, L.start) || overlaps(X, L.end, M.end)));
       if (blocked) continue;
-      const ext: Work = { ...L, start: M.start, end: M.end, confidence: 'media', score: NOMINAL.media, extended: true };
+      const ext: MergedCandidate = { ...L, start: M.start, end: M.end, confidence: 'media', score: NOMINAL.media, extended: true };
       out = out.filter((c) => c !== L && c !== M);
       out.push(ext);
       break;
     }
   }
   return out;
-}
-
-function asMerged(w: Work): MergedCandidate {
-  // 'manual' llega solo cuando el llamador reprocesa manuales (7.11); el contrato de 6.4.2 no lo modela.
-  return w as unknown as MergedCandidate;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -333,14 +326,14 @@ export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[]
   const text = part.text;
 
   // 0. Normalizar: límites dentro de un par sustituto, duplicados exactos y precedencia.
-  const unique = new Map<string, Work>();
-  for (const c of cands as ReadonlyArray<DetectionCandidate | Work>) {
+  const unique = new Map<string, MergedCandidate>();
+  for (const c of cands) {
     if (c.partId !== part.id || FLAG_SET.has(c.type)) continue;
     if (!Number.isFinite(c.start) || !Number.isFinite(c.end)) continue;
     const s = widenStart(text, Math.max(0, Math.min(text.length, Math.trunc(c.start))));
     const e = widenEnd(text, Math.max(0, Math.min(text.length, Math.trunc(c.end))));
     if (e <= s) continue;
-    const w: Work = { ...(c as Work), start: s, end: e, precedence: 5 };
+    const w: MergedCandidate = { ...c, start: s, end: e, precedence: 5 };
     w.precedence = precedenceOf(w);
     const k = `${s}\u0000${e}\u0000${w.type}\u0000${w.source}\u0000${w.canonicalKey}`;
     const prev = unique.get(k);
@@ -359,7 +352,7 @@ export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[]
   work.sort(byPriority);
 
   // 4. Colocar en orden.
-  const accepted: Work[] = [];
+  const accepted: MergedCandidate[] = [];
   for (const c of work) {
     const over = accepted.filter((a) => overlaps(a, c.start, c.end));
     if (over.length === 0) { accepted.push(c); continue; }
@@ -372,11 +365,11 @@ export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[]
       continue;
     }
     for (const [s, e] of uncovered(c, over)) {
-      const r = resolveRemainder(part, asMerged(c), s, e, rules);
-      if (r !== null) accepted.push(r as unknown as Work);
+      const r = resolveRemainder(part, c, s, e, rules);
+      if (r !== null) accepted.push(r);
     }
   }
 
   // 5. Devolver ordenado por inicio.
-  return accepted.sort((a, b) => a.start - b.start || a.end - b.end).map(asMerged);
+  return accepted.sort((a, b) => a.start - b.start || a.end - b.end);
 }
