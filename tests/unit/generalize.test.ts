@@ -7,6 +7,7 @@ import {
   DIVIPOLA, buildDivipolaIndex, candidateFromLoc, departamentoPorNombre, departamentosDeRadicados, detectPlaces, edadCumplida, edadEnLetras, esCapital,
   formasDeNombre, generalize, getDivipolaIndex, isCitation, mesYAnioDeClave, municipiosPorNombre, nombreDepartamento, prioridadDe, rangoDeEdad, resolvePlace,
 } from '../../src/core/generalize.ts';
+import { esContextoDeCita } from '../../src/core/rules/exclusiones.ts';
 import type { GenDetection, GeneralizeInput, GeneralizeResult } from '../../src/core/generalize.ts';
 import type {
   DataType, DetectionCandidate, DetectionId, FlagReason, FlagType, IdSource, PartId, Span, Suggestion, SuggestionKind,
@@ -1237,6 +1238,32 @@ describe('R-CIT-01 · cita jurisprudencial (G-13)', () => {
       expect(f.text).toBe(m[0]);
       expect(f.acknowledged).toBe(false);
     }
+  });
+});
+
+describe('R-CIT-01 · una sola fuente de verdad con E-CITA-01 (PG-4-r1)', () => {
+  const RAD7 = '11001-31-03-999-2026-00123-00';
+  // Los ocho ejemplos de 7.3.3, incluido el 7.º («de la referencia»), que R-CIT-01 sola trataba como cita.
+  const EJEMPLOS_733: [string, boolean][] = [
+    ['Consejo de Estado, Sección Tercera, sentencia del 14 de marzo de 2026, rad. 25000-23-26-999-2012-00123-01, C.P. Ana Ficticia Rojas', true],
+    ['Corte Suprema de Justicia, Sala de Casación Civil, sentencia del 3 de mayo de 2025, radicación 11001-31-03-999-2020-00001-01', true],
+    ['(ver sentencia del Tribunal, exp. 05001-23-33-999-2019-00001-00, M.P. Juan Ejemplo Prueba)', true],
+    ['Cfr. providencia radicado 76001-31-05-999-2018-00001-01', true],
+    ['Radicado: ' + RAD7, false],
+    ['Referencia: acción de tutela. Radicado 11001-40-03-999-2026-00001-00', false],
+    ['dentro del proceso de la referencia, radicado ' + RAD7 + ', el Juzgado profirió sentencia', false],
+    ['Demandante: Ana Ficticia Rojas. Proceso ' + RAD7, false],
+  ];
+  it('isCitation es la misma función que esContextoDeCita', () => {
+    expect(isCitation).toBe(esContextoDeCita);
+  });
+  it.each(EJEMPLOS_733.map((c, i) => [i + 1, ...c] as const))('7.3.3 ejemplo %i «%s» → bandera: %s', (_i, texto, esCita) => {
+    const m = /\d{5}-\d{2}-\d{2}-\d{3}-\d{4}-\d{5}-\d{2}/.exec(texto);
+    if (!m) throw new Error('sin radicado');
+    const det: GenDetection = { id: detId(1), start: m.index, end: m.index + m[0].length, type: 'RADICADO', canonicalKey: 'RADICADO:' + m[0] };
+    expect(isCitation(texto, det.start, det.end)).toBe(esCita);
+    const { res } = correr(texto, [det], { sinLugares: true });
+    expect(res.flags.some((x) => x.type === 'CITA_JURISPRUDENCIAL')).toBe(esCita);
   });
 });
 

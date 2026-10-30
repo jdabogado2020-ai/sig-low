@@ -6,6 +6,7 @@
 //  2. `generalize` (en `fusionar`, después de merge.ts): sugerencias (6.4.5) y banderas (6.4.6) sobre las detecciones ya fusionadas.
 // Los patrones buscan sobre la vista `reglas` (6.1.2) y se devuelven en posiciones canónicas.
 
+import { esContextoDeCita } from './rules/exclusiones.ts';
 import divipolaRaw from '../../data/divipola.json';
 import cargosRaw from '../../data/cargos.json';
 import diagnosticosRaw from '../../data/diagnosticos.json';
@@ -633,15 +634,9 @@ function oracionEn(t: string, s: number, e: number): string {
 }
 const inicioDeOracion = (t: string, pos: number): number => { let a = pos; while (a > 0 && !/[.\n;]/.test(t.charAt(a - 1))) a--; return a; };
 
-// R-CIT-01 (función de contexto, 7.7.6)
-const OWN_CASE = new RegExp(`(?:(?:^|\\n)${H}*(?:Ref(?:erencia)?\\.?|Radicado|Radicaci[oó]n|Rad\\.|Proceso|Expediente|Exp\\.|Asunto|Acci[oó]n${H}+de${H}+tutela)(?:${H}+(?:No\\.?|N[º°]\\.?|n\\.º|n[uú]mero))?${H}*:?${H}*$)|(?:(?:este|presente|nuestro|el${H}+presente)${H}+(?:proceso|expediente|asunto|tr[aá]mite)[^.\\n]{0,40}$)`, 'iu');
-const CITE_LEX = new RegExp(`sentencia|providencia|Corte(?!\\p{L})|Consejo${H}+de${H}+Estado|Tribunal|Sala${H}+de|Secci[oó]n|M\\.${H}*P\\.|C\\.${H}*P\\.|[Mm]agistrad[oa]${H}+[Pp]onente|[Cc]onsejer[oa]${H}+[Pp]onente|precedente|jurisprudencia|reiterad|citad|cfr\\.|v[eé]ase|(?:SU|T|C)-\\d{3,4}|S[CLPT][CLP]?\\d{3,5}-\\d{4}`, 'iu');
+// R-CIT-01 (función de contexto, 7.7.6): el criterio es el mismo de E-CITA-01 (`esContextoDeCita`, PA-7, 7.3.3): una sola fuente de verdad.
 /** R-CIT-01: ¿el radicado en [s, e) del texto es una cita jurisprudencial y no el radicado del propio caso? */
-export function isCitation(t: string, s: number, e: number): boolean {
-  const before = t.slice(Math.max(0, s - 150), s), after = t.slice(e, e + 60);
-  if (OWN_CASE.test(before)) return false;
-  return CITE_LEX.test(before) || CITE_LEX.test(after);
-}
+export const isCitation: (t: string, s: number, e: number) => boolean = esContextoDeCita;
 
 // ===================================================================== generalize (fase 2)
 

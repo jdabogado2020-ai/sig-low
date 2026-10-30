@@ -1,6 +1,6 @@
 // Exclusiones y calibración de confianza (PA-7; plan 7.3): E-NORMA-01 y 02, E-ART-01, E-SENT-01, E-EXPCC-01, E-PROV-01,
 // E-FOLIO-01, E-PUB-01, E-CANT-01, E-UNIDAD-01, E-DINERO-01, E-DANE-01, E-POSTAL-01, E-CIIU-01, E-CIE10-01, E-DESP-01,
-// E-DESP-02 y E-SIGLA-01. El contexto de cita jurisprudencial (E-CITA-01, 7.3.3) lo resuelve `generalize.ts` (`isCitation`, G-13).
+// E-DESP-02 y E-SIGLA-01. El contexto de cita jurisprudencial (E-CITA-01, 7.3.3) lo decide `esContextoDeCita`, que también usa `generalize.ts` (`isCitation`, G-13 / R-CIT-01, 7.7.6: una sola fuente de verdad).
 //
 // TypeScript puro: sin DOM, sin red, sin registro. Una exclusión NO es una regla de detección: no crea candidatos ni cambia
 // tipos (7.3.1). Se ejecuta DESPUÉS de las reglas, sobre la misma vista `reglas`, y protege tramos con nombre (`n`, `n2`, `fy`,
@@ -263,9 +263,19 @@ export function aplicarExclusiones(view: SearchView, candidatos: readonly Detect
 const CITA_SENAL = /(?<![\p{L}])(?:sentencia|providencia|fallo|auto[ ]+(?:interlocutorio[ ]+)?(?:de|del)|consejer[oa][ ]+ponente|magistrad[oa][ ]+ponente|c\.[ ]?p\.|m\.[ ]?p\.|corte[ ]+suprema|consejo[ ]+de[ ]+estado|corte[ ]+constitucional|sala[ ]+de[ ]+casaci[óo]n|secci[óo]n[ ]+(?:primera|segunda|tercera|cuarta|quinta)|subsecci[óo]n|precedente|jurisprudencia|cfr\.|v[ée]ase|citad[oa])(?![\p{L}])/iu;
 const CITA_PROPIO = /(?<![\p{L}])(?:de[ ]+la[ ]+referencia|del[ ]+asunto|(?:el|la)[ ]+presente[ ]+(?:proceso|acci[óo]n|tr[áa]mite|demanda|tutela)|este[ ]+(?:proceso|despacho|expediente)|nuestro[ ]+(?:proceso|caso))(?![\p{L}])/iu;
 
+// R-CIT-01 (7.7.6) complementa E-CITA-01 con un léxico más amplio de cita (`CITE_LEX`) y con los rótulos del propio caso (`OWN_CASE`).
+const HZ = '[ \\t]';
+const OWN_CASE = new RegExp(`(?:(?:^|\\n)${HZ}*(?:Ref(?:erencia)?\\.?|Radicado|Radicaci[oó]n|Rad\\.|Proceso|Expediente|Exp\\.|Asunto|Acci[oó]n${HZ}+de${HZ}+tutela)(?:${HZ}+(?:No\\.?|N[º°]\\.?|n\\.º|n[uú]mero))?${HZ}*:?${HZ}*$)|(?:(?:este|presente|nuestro|el${HZ}+presente)${HZ}+(?:proceso|expediente|asunto|tr[aá]mite)[^.\\n]{0,40}$)`, 'iu');
+const CITE_LEX = new RegExp(`sentencia|providencia|Corte(?!\\p{L})|Consejo${HZ}+de${HZ}+Estado|Tribunal|Sala${HZ}+de|Secci[oó]n|M\\.${HZ}*P\\.|C\\.${HZ}*P\\.|[Mm]agistrad[oa]${HZ}+[Pp]onente|[Cc]onsejer[oa]${HZ}+[Pp]onente|precedente|jurisprudencia|reiterad|citad|cfr\\.|v[eé]ase|(?:SU|T|C)-\\d{3,4}|S[CLPT][CLP]?\\d{3,5}-\\d{4}`, 'iu');
+
 /**
- * E-CITA-01: ¿el radicado en [start, end) de la vista `reglas` es una cita jurisprudencial y no el radicado del caso?
- * Ventana de 250 caracteres antes y 120 después, sin salir de la línea. Señal de cita y ninguna del propio caso → `true`.
+ * E-CITA-01 + R-CIT-01 (criterio único, PG-4-r1): ¿el radicado en [start, end) de la vista `reglas` es una cita jurisprudencial
+ * y no el radicado del caso?
+ * - Es del propio caso (→ `false`) si la ventana de 7.3.3 (250 caracteres antes y 120 después, sin salir de la línea) trae una
+ *   señal del propio caso (`CITA_PROPIO`: «de la referencia», «del asunto», «el presente proceso»…) o si justo antes hay un rótulo
+ *   del propio caso o «este/presente/nuestro proceso» (`OWN_CASE`, R-CIT-01: 150 caracteres antes).
+ * - Es cita (→ `true`) si la ventana de 7.3.3 trae una señal de cita (`CITA_SENAL`) o si `CITE_LEX` aparece 150 caracteres
+ *   antes o 60 después (R-CIT-01).
  * No suprime nada: el consumidor marca `context: 'cita'` y `generalize.ts` crea la bandera `CITA_JURISPRUDENCIAL` (6.4.6).
  * Aplica a `RADICADO` y `RADICADO_ADMIN`. (La regla de «misma clave sin cita en otra mención» la resuelve quien tiene
  * todas las detecciones de la parte.)
@@ -276,5 +286,7 @@ export function esContextoDeCita(texto: string, start: number, end: number): boo
   const le = k < 0 ? texto.length : k;
   const ventana = texto.slice(Math.max(ls, start - 250), start) + ' ' + texto.slice(end, Math.min(le, end + 120));
   if (CITA_PROPIO.test(ventana)) return false;
-  return CITA_SENAL.test(ventana);
+  const antes = texto.slice(Math.max(0, start - 150), start);
+  if (OWN_CASE.test(antes)) return false;
+  return CITA_SENAL.test(ventana) || CITE_LEX.test(antes) || CITE_LEX.test(texto.slice(end, end + 60));
 }

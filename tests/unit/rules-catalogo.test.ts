@@ -471,9 +471,6 @@ describe('T-MO-01 · INV-G12 e INV-R03: ningún validador descarta, ni siquiera 
   });
 });
 
-// NOTA (PG-4, para el integrador): `isCitation` de generalize.ts (R-CIT-01, 7.7.6) no reconoce «de la referencia» como señal del
-// propio caso, así que el 7.º ejemplo de 7.3.3 («dentro del proceso de la referencia, radicado …, el Juzgado profirió sentencia»)
-// crea hoy una bandera que 7.3.3 no pide. `esContextoDeCita` (E-CITA-01) sí lo resuelve; falta unificar ambas (PG-4-r1).
 describe('T-MO-01 · E-CITA-01: un radicado de jurisprudencia citada genera la bandera CITA_JURISPRUDENCIAL sin aceptación automática', () => {
   const idSource = (): IdSource => { let n = 0; return { next: (p) => `${p}_${(++n).toString(16).padStart(32, '0')}` }; };
   const citas: Array<[string, boolean]> = [
@@ -494,8 +491,8 @@ describe('T-MO-01 · E-CITA-01: un radicado de jurisprudencia citada genera la b
     if (rad !== undefined) expect(esContextoDeCita(view.text, rad.start, rad.end)).toBe(esCita);
   });
 
-  // De extremo a extremo: reglas → exclusiones → generalize.ts. Se excluye el 7.º ejemplo (ver abajo).
-  it.each(citas.filter((c) => !c[0].startsWith('dentro del proceso de la referencia')))('«%s» → bandera: %s', async (texto, esCita) => {
+  // De extremo a extremo: reglas → exclusiones → generalize.ts, con los ocho ejemplos de 7.3.3 (PG-4-r1: `isCitation` es `esContextoDeCita`).
+  it.each(citas)('«%s» → bandera: %s', async (texto, esCita) => {
     const view = buildSearchView(texto, 'reglas', 'cuerpo');
     const cands = aplicarExclusiones(view, runRules(view, PART, await cargarReglas('radicado'), 2026));
     const rad = cands.find((c) => c.type === 'RADICADO');
