@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   DIVIPOLA, buildDivipolaIndex, candidateFromLoc, departamentoPorNombre, departamentosDeRadicados, detectPlaces, edadCumplida, edadEnLetras, esCapital,
-  formasDeNombre, generalize, getDivipolaIndex, isCitation, mesYAnioDeClave, municipiosPorNombre, nombreDepartamento, prioridadDe, rangoDeEdad, resolvePlace,
+  despachoDesdeTramo, formasDeNombre, generalize, getDivipolaIndex, isCitation, mesYAnioDeClave, municipiosPorNombre, nombreDepartamento, prioridadDe, rangoDeEdad, resolvePlace,
 } from '../../src/core/generalize.ts';
 import { esContextoDeCita } from '../../src/core/rules/exclusiones.ts';
 import type { GenDetection, GeneralizeInput, GeneralizeResult } from '../../src/core/generalize.ts';
@@ -1238,6 +1238,112 @@ describe('R-CIT-01 · cita jurisprudencial (G-13)', () => {
       expect(f.text).toBe(m[0]);
       expect(f.acknowledged).toBe(false);
     }
+  });
+});
+
+describe('despachoDesdeTramo · R-DESP-01 sobre un tramo ORG del modelo (R-MOD-07)', () => {
+  const PREFIJO = 'El actor presentó la demanda ante el ';
+  const partDe = (text: string): { id: PartId; text: string } => ({ id: PID, text });
+  const tramoEn = (texto: string, sub: string): [number, number] => { const i = texto.indexOf(sub); return [i, i + sub.length]; };
+  const CARTAGO = 'Juzgado Tercero Civil del Circuito de Cartago';
+
+  it('un ORG con despacho y municipio produce DESPACHO_A_GENERICO con las opciones de R-DESP-01', () => {
+    const texto = PREFIJO + CARTAGO + ', que ordenó el traslado.';
+    const [s, e] = tramoEn(texto, CARTAGO);
+    const sug = despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds());
+    expect(sug).not.toBeNull();
+    if (!sug) return;
+    expect(sug.kind).toBe('DESPACHO_A_GENERICO');
+    expect(sug.status).toBe('pendiente');
+    expect(sug.prioridad).toBe('recomendada');
+    expect(sug.originalText).toBe(CARTAGO);
+    expect(tramoDe(sug)).toEqual({ partId: PID, start: s, end: e });
+    expect(sug.options.map((o) => ({ id: o.id, template: o.template, depCode: o.depCode }))).toEqual([
+      { id: 'o1', template: 'Juzgado Tercero Civil del Circuito de un municipio de {m}', depCode: '76' },
+      { id: 'o2', template: 'un juzgado civil del circuito', depCode: undefined },
+    ]);
+  });
+
+  it('da la misma sugerencia que generalize sobre el mismo texto (una sola lógica)', () => {
+    const despacho = 'Juzgado Promiscuo Municipal de Granada';
+    const texto = PREFIJO + despacho + '.';
+    const [s, e] = tramoEn(texto, despacho);
+    const sug = despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds());
+    const ref = sugDe(correr(texto, [], { sinLugares: true }).res, 'DESPACHO_A_GENERICO')[0];
+    expect(sug).not.toBeNull();
+    expect(ref).toBeDefined();
+    if (sug && ref) expect(sug).toEqual(ref);
+  });
+
+  it('un municipio homónimo sin evidencia lleva una opción por departamento; docDepCodes la reduce', () => {
+    const despacho = 'Juzgado Promiscuo Municipal de Granada';
+    const texto = PREFIJO + despacho + '.';
+    const [s, e] = tramoEn(texto, despacho);
+    const varias = despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds());
+    expect(varias?.options.map((o) => o.depCode)).toEqual(['05', '25', '50', undefined]);
+    const una = despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds(), { docDepCodes: ['50'] });
+    expect(una?.options.map((o) => o.depCode)).toEqual(['50', undefined]);
+  });
+
+  it('capitales: prioridad opcional_ciudad_grande; la plantilla de Bogotá no lleva «un municipio de»', () => {
+    const despacho = 'JUEZ CIVIL MUNICIPAL DE MEDELLÍN';
+    const texto = 'Auto del ' + despacho + ' (REPARTO).';
+    const [s, e] = tramoEn(texto, despacho);
+    const sug = despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds());
+    expect(sug?.prioridad).toBe('opcional_ciudad_grande');
+    expect(sug?.options.map((o) => o.template)).toEqual(['JUEZ CIVIL MUNICIPAL DE un municipio de {m}', 'un juez civil municipal']);
+    const bogota = 'Juzgado Quinto Civil del Circuito de Bogotá';
+    const t2 = 'ante el ' + bogota;
+    const [s2, e2] = tramoEn(t2, bogota);
+    expect(despachoDesdeTramo(partDe(t2), undefined, s2, e2, makeIds())?.options[0]?.template).toBe('Juzgado Quinto Civil del Circuito de {m}');
+  });
+
+  it.each([
+    ['sin municipio: Juzgado Tercero Civil del Circuito', 'Juzgado Tercero Civil del Circuito'],
+    ['solo departamento: Tribunal Superior de Cundinamarca', 'Tribunal Superior de Cundinamarca'],
+    ['entidad sin léxico de despacho: Clínica Ficticia de Bogotá', 'Clínica Ficticia de Bogotá'],
+    ['tramo vacío', ''],
+  ])('no propone nada: %s', (_n, org) => {
+    const texto = 'Se presentó ante ' + org + ' el escrito.';
+    const [s, e] = tramoEn(texto, org);
+    expect(despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds())).toBeNull();
+  });
+
+  it('el tramo de la sugerencia es el despacho hallado dentro del ORG, no todo el ORG', () => {
+    const org = 'Juzgado 3 Civil del Circuito de Ubaté (Cundinamarca) - Secretaría';
+    const texto = 'Radicó en el ' + org + ' el memorial.';
+    const [s, e] = tramoEn(texto, org);
+    const sug = despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds());
+    expect(sug?.originalText).toBe('Juzgado 3 Civil del Circuito de Ubaté');
+    expect(sug && tramoDe(sug).start).toBe(s);
+  });
+
+  it('solo mira dentro del tramo: un despacho fuera del ORG no cuenta', () => {
+    const texto = 'El ' + CARTAGO + ' remitió a la Sociedad Ficticia SAS.';
+    const [s, e] = tramoEn(texto, 'Sociedad Ficticia SAS');
+    expect(despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds())).toBeNull();
+  });
+
+  it('respeta las detecciones ocupadas: si el despacho se solapa con una, no propone nada', () => {
+    const texto = PREFIJO + CARTAGO + '.';
+    const [s, e] = tramoEn(texto, CARTAGO);
+    expect(despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds(), { ocupadas: [{ start: s + 3, end: s + 9 }] })).toBeNull();
+    expect(despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds(), { ocupadas: [{ start: 0, end: s - 1 }] })).not.toBeNull();
+  });
+
+  it('con una vista con mapa devuelve posiciones canónicas', () => {
+    const texto = PREFIJO + CARTAGO + '.';
+    const [s, e] = tramoEn(texto, CARTAGO);
+    const inicio = Array.from({ length: texto.length }, (_, i) => i);
+    const fin = Array.from({ length: texto.length }, (_, i) => i + 1);
+    const sug = despachoDesdeTramo(partDe(texto), { text: texto, startMap: inicio, endMap: fin }, s, e, makeIds());
+    expect(sug && tramoDe(sug)).toEqual({ partId: PID, start: s, end: e });
+  });
+
+  it('usa un id nuevo del IdSource con el prefijo sug', () => {
+    const texto = PREFIJO + CARTAGO + '.';
+    const [s, e] = tramoEn(texto, CARTAGO);
+    expect(despachoDesdeTramo(partDe(texto), undefined, s, e, makeIds())?.id).toMatch(/^sug_[0-9a-f]{32}$/);
   });
 });
 

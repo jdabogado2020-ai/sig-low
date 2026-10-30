@@ -417,6 +417,50 @@ function scanDespachos(view: ViewLike, docDeps: readonly string[]): DespachoMatc
   });
 }
 
+/** Sugerencia `DESPACHO_A_GENERICO` de un despacho hallado (G-04): una opción por departamento candidato y, al final, el genérico sin lugar. */
+function sugerenciaDeDespacho(d: DespachoMatch, part: { id: PartId; text: string }, view: ViewLike): Omit<Suggestion, 'id'> {
+  const cs = canonStart(view, d.start), ce = canonEnd(view, d.end);
+  const pre = part.text.slice(cs, canonStart(view, d.munStart));
+  const items: { kind: GeneralizationKind; template: string; depCode?: string }[] = d.deps.map((dep) => (
+    { kind: 'DESPACHO_A_GENERICO', template: pre + (dep === '11' ? '{m}' : 'un municipio de {m}'), depCode: dep }));
+  items.push({ kind: 'DESPACHO_A_GENERICO', template: d.generico });
+  const options: SuggestionOption[] = items.map((o, i) => (o.depCode !== undefined
+    ? { id: 'o' + (i + 1), kind: o.kind, template: o.template, depCode: o.depCode }
+    : { id: 'o' + (i + 1), kind: o.kind, template: o.template }));
+  return {
+    kind: 'DESPACHO_A_GENERICO', target: { kind: 'tramo', span: { partId: part.id, start: cs, end: ce } },
+    originalText: part.text.slice(cs, ce), options, prioridad: d.prioridad, status: 'pendiente',
+  };
+}
+
+/**
+ * R-DESP-01 sobre un tramo ORG del modelo (R-MOD-07): si el tramo [start, end) (posiciones canónicas de `part.text`) contiene
+ * un despacho o autoridad con municipio de la DIVIPOLA («Juzgado Tercero Civil del Circuito de Bogotá», «Alcaldía Municipal de
+ * Ubaté»), devuelve la sugerencia `DESPACHO_A_GENERICO` (con una opción por departamento candidato si el municipio es homónimo);
+ * si no hay municipio, devuelve `null` y no se propone nada. El ORG deja de ser detección: quien llama lo descarta de las
+ * detecciones antes de `generalize` y pasa aquí el resto en `ocupadas` (una sugerencia no se solapa con una detección).
+ *
+ * El tramo de la sugerencia es el despacho hallado (de la autoridad al municipio), que puede ser menor que el ORG. Si el ORG trae
+ * más de un despacho, se toma el primero. `docDepCodes` desambigua homónimos como en `generalize`. Usa `ids.next('sug')`.
+ */
+export function despachoDesdeTramo(
+  part: { id: PartId; text: string }, view: ViewLike | undefined, start: number, end: number, ids: IdSource,
+  opciones: { docDepCodes?: readonly string[]; ocupadas?: readonly { start: number; end: number }[] } = {},
+): Suggestion | null {
+  const v: ViewLike = view ?? { text: part.text };
+  const vs = viewIndexAtOrAfter(v, start), ve = viewIndexEndFor(v, end);
+  if (ve <= vs) return null;
+  const d = scanDespachos({ text: v.text.slice(vs, ve) }, opciones.docDepCodes ?? [])[0];
+  if (!d) return null;
+  const rel: DespachoMatch = { ...d, start: d.start + vs, end: d.end + vs, munStart: d.munStart + vs };
+  const sug = sugerenciaDeDespacho(rel, part, v);
+  if (sug.target.kind !== 'tramo') return null;
+  const { start: cs, end: ce } = sug.target.span;
+  const libre = recortar(cs, ce, opciones.ocupadas ?? []);
+  if (!libre || libre.start !== cs || libre.end !== ce) return null;
+  return { ...sug, id: ids.next('sug') as SuggestionId };
+}
+
 /** E-DESP-01 (7.3.2): código de despacho de 12 dígitos rotulado; contiene el DANE del municipio. */
 const E_DESP_01 = new RegExp(`${LB}(?:c[óo]digo[ ]+(?:del[ ]+)?despacho|despacho[ ]+(?:judicial[ ]+)?(?:c[óo]digo|no\\.?))[ ]*:?[ ]*(?<n>\\d{2}[ \\-]?\\d{3}[ \\-]?\\d{2}[ \\-]?\\d{2}[ \\-]?\\d{3})(?![\\p{L}\\p{N}])`, 'gdiu');
 
@@ -717,11 +761,7 @@ export function generalize(input: GeneralizeInput): GeneralizeResult {
     const libre = recortar(cs, ce, ocupadas);
     if (!libre || libre.start !== cs || libre.end !== ce) { descartadas++; continue; }
     tramosDespacho.push({ start: cs, end: ce });
-    const pre = part.text.slice(cs, canonStart(view, d.munStart));
-    const items: { kind: GeneralizationKind; template: string; depCode?: string }[] = d.deps.map((dep) => (
-      { kind: 'DESPACHO_A_GENERICO', template: pre + (dep === '11' ? '{m}' : 'un municipio de {m}'), depCode: dep }));
-    items.push({ kind: 'DESPACHO_A_GENERICO', template: d.generico });
-    nuevoSug({ kind: 'DESPACHO_A_GENERICO', target: { kind: 'tramo', span: spanOf(cs, ce) }, originalText: part.text.slice(cs, ce), options: opciones(items), prioridad: d.prioridad, status: 'pendiente' });
+    nuevoSug(sugerenciaDeDespacho(d, part, view));
   }
   for (const m of scan(E_DESP_01, vt, (x) => x)) {
     const digits = (m.groups?.['n'] ?? '').replace(/\D/g, '');
