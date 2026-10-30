@@ -13,7 +13,7 @@ import { buildSearchView, toCanonicalSpan } from './normalize.ts';
 import { runRules } from './rules/catalog.ts';
 import { rules as rContacto } from './rules/contacto.ts';
 import { rules as rDireccion } from './rules/direccion.ts';
-import { rules as rExclusiones } from './rules/exclusiones.ts';
+import { aplicarExclusiones, rules as rExclusiones } from './rules/exclusiones.ts';
 import { rules as rFechas, consolidarFechasSinAnio } from './rules/fechas.ts';
 import { rules as rIds } from './rules/ids.ts';
 import { rules as rRadicado } from './rules/radicado.ts';
@@ -438,7 +438,8 @@ export function createDetectHandler(deps: DetectDeps = {}): DetectHandler {
       for (let i = 0; i < parts.length; i++) {
         const part = parts[i] as Part;
         const view: SearchView = buildSearchView(part.text, 'reglas', part.kind);
-        reglas.push(runRules(view, part.id, ALL_RULES, refYear, maxMs === undefined ? {} : { maxMsPerRule: maxMs }));
+        // PA-7: las exclusiones corren después de las reglas, sobre la misma vista, y solo tocan candidatos de regla.
+        reglas.push(aplicarExclusiones(view, runRules(view, part.id, ALL_RULES, refYear, maxMs === undefined ? {} : { maxMsPerRule: maxMs })));
         progreso('reglas', i + 1, parts.length);
         if (await cooperar()) { post({ v: 1, reqId, kind: 'cancelado' }); return; }
       }
