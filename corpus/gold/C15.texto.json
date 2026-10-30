@@ -1,0 +1,97 @@
+{
+  "formato": "sig-low/gold-texto",
+  "v": 1,
+  "docId": "C15",
+  "partes": [
+    {
+      "kind": "pagina_pdf",
+      "index": 1,
+      "page": 1,
+      "texto": "Santiago de Cali, 8 DE SEPTIEMBRE DE 2026\nSeñores\nBanco Prueba S.A.\nAtn.: secretaria de salud municipal – Mónica Ejemplo González\nDirección: Avenida Calle 0 N° 00-00 Sur, local 3, Santiago de Cali\nAsunto: Derecho de petición – artículo 23 de la Constitución Política\nPaola Andrea Ficticia Mora, mayor de edad, identificada con la cédula de ciudadanía No.\n9.000.001, residente en Tv. 0ª No. 0A-03, barrio Santa Prueba, Envigado, con celular +57\n318 000 0002 y fijo 000 0003, correo paola.ficticia@correo.ejemplo.test, en ejercicio\ndel derecho de petición, me permito solicitar lo siguiente:\nHECHOS\n1. La empresa TEXTILES FICTICIOS S.A.S., con NIT 890.000.004-9, administra el conjunto\nresidencial Torres del Ejemplo y afirma que la deuda es mía, pese a que el apartamento\nfue vendido.\n2. Cancelé la obligación mediante transferencia desde la cuenta de ahorros del Banco\nPrueba S.A. No. 0550-0000-0005, según el soporte adjunto del 2026-07-07. Debe tenerse en\ncuenta que Paola Andrea Ficticia Mora ha actuado siempre de buena fe.\n3. La última facturación, con fecha de corte 03/05/2026, cobra 3.6 millones de pesos por\nun consumo inexistente.\n4. El servicio es indispensable para la educación de la menor, alumna de Gimnasio\nPrueba. Así lo ha manifestado Ficticia en varias ocasiones.\n5. Radiqué la queja el veintinueve (29) de julio de dos mil veintiséis (2026) con el\nconsecutivo PQRSD-2026-000355 y a la fecha no recibo respuesta. Debe tenerse en cuenta\nque Ficticia Mora ha actuado siempre de buena fe.\n6. Ficticia Mora nació el 17/04/1965; con 61 años y movilidad reducida, no puedo\ndesplazarme a la oficina, por lo que pido atención por medios virtuales.\n7. Mauricio Ejemplo Salazar, mi vecino de la Diag. 0 Bis A # 0-00 Sur, interior 8,\noficina 502, pagó por el mismo servicio solo $ 148.000 en el mismo período; puede ser\ncontactado al 321 000 0006. Sobre este punto Paola Andrea Ficticia Mora aportará las\npruebas que se le requieran.\n8. Resido en el barrio Santa Prueba de Envigado, en la Transversal 0ª N° 0A-03, y soy\ntitular del servicio prestado por Banco Prueba (contrato 000000007). Así lo ha\nmanifestado Paola Andrea Ficticia Mora en varias ocasiones.\n9. Quien figura como propietario en el folio de matrícula inmobiliaria 100-000008 es\nEjemplo Salazar, no yo. Así lo ha manifestado PAOLA ANDREA FICTICIA MORA en varias\nocasiones.\nFUNDAMENTOS\nEl artículo 23 de la Constitución Política consagra el derecho de petición y la Ley 1755\nde 2015 fija el término de quince días hábiles para responder.\nAdemás, la Ley 222 de 1995 y la Sentencia T-230 de 2020 precisan el alcance de una\nrespuesta de fondo.\nPETICIONES\nPRIMERA. Revisar la facturación del 4 jun. 2026 y ajustarla al consumo real, por un\nvalor máximo de doscientos cincuenta mil pesos M/CTE ($250.000).\nSEGUNDA. Entregarme copia del historial de consumo a mi correo\npaola.ficticia@correo.ejemplo.test."
+    },
+    {
+      "kind": "pagina_pdf",
+      "index": 2,
+      "page": 2,
+      "texto": "TERCERA. Informarme por escrito si existe algún proceso de cobro a nombre de Ficticia\nMora.\nCUARTA. Abstenerse de suspender el servicio hasta que se resuelva esta petición, incluso\nsi la mora supera 1 SMMLV.\nNOTIFICACIONES\nRecibiré respuesta en la Tv. 0ª N° 0A-03, Envigado, o en el correo\npaola.ficticia@correo.ejemplo.test.\nCordialmente,\nPAOLA ANDREA FICTICIA MORA\nC.C. 9000001\nDATOS COMPLEMENTARIOS\n1. Actuaciones previas: el trámite con radicado 05360410596120190000900 ante el Juzgado\n993 Civil del Circuito de Chía, iniciado el 11 feb. 2026.\n2. Referencias administrativas sin datos personales: código postal 760001; valor de la\nUVT $47.065.\nDocumento ficticio para pruebas de Sig-Low."
+    }
+  ],
+  "estructura": [],
+  "pdf": {
+    "paginas": [
+      {
+        "page": 1,
+        "lineas": [
+          "Santiago de Cali, 8 DE SEPTIEMBRE DE 2026",
+          "Señores",
+          "Banco Prueba S.A.",
+          "Atn.: secretaria de salud municipal – Mónica Ejemplo González",
+          "Dirección: Avenida Calle 0 N° 00-00 Sur, local 3, Santiago de Cali",
+          "Asunto: Derecho de petición – artículo 23 de la Constitución Política",
+          "Paola Andrea Ficticia Mora, mayor de edad, identificada con la cédula de ciudadanía No.",
+          "9.000.001, residente en Tv. 0ª No. 0A-03, barrio Santa Prueba, Envigado, con celular +57",
+          "318 000 0002 y fijo 000 0003, correo paola.ficticia@correo.ejemplo.test, en ejercicio",
+          "del derecho de petición, me permito solicitar lo siguiente:",
+          "HECHOS",
+          "1. La empresa TEXTILES FICTICIOS S.A.S., con NIT 890.000.004-9, administra el conjunto",
+          "residencial Torres del Ejemplo y afirma que la deuda es mía, pese a que el apartamento",
+          "fue vendido.",
+          "2. Cancelé la obligación mediante transferencia desde la cuenta de ahorros del Banco",
+          "Prueba S.A. No. 0550-0000-0005, según el soporte adjunto del 2026-07-07. Debe tenerse en",
+          "cuenta que Paola Andrea Ficticia Mora ha actuado siempre de buena fe.",
+          "3. La última facturación, con fecha de corte 03/05/2026, cobra 3.6 millones de pesos por",
+          "un consumo inexistente.",
+          "4. El servicio es indispensable para la educación de la menor, alumna de Gimnasio",
+          "Prueba. Así lo ha manifestado Ficticia en varias ocasiones.",
+          "5. Radiqué la queja el veintinueve (29) de julio de dos mil veintiséis (2026) con el",
+          "consecutivo PQRSD-2026-000355 y a la fecha no recibo respuesta. Debe tenerse en cuenta",
+          "que Ficticia Mora ha actuado siempre de buena fe.",
+          "6. Ficticia Mora nació el 17/04/1965; con 61 años y movilidad reducida, no puedo",
+          "desplazarme a la oficina, por lo que pido atención por medios virtuales.",
+          "7. Mauricio Ejemplo Salazar, mi vecino de la Diag. 0 Bis A # 0-00 Sur, interior 8,",
+          "oficina 502, pagó por el mismo servicio solo $ 148.000 en el mismo período; puede ser",
+          "contactado al 321 000 0006. Sobre este punto Paola Andrea Ficticia Mora aportará las",
+          "pruebas que se le requieran.",
+          "8. Resido en el barrio Santa Prueba de Envigado, en la Transversal 0ª N° 0A-03, y soy",
+          "titular del servicio prestado por Banco Prueba (contrato 000000007). Así lo ha",
+          "manifestado Paola Andrea Ficticia Mora en varias ocasiones.",
+          "9. Quien figura como propietario en el folio de matrícula inmobiliaria 100-000008 es",
+          "Ejemplo Salazar, no yo. Así lo ha manifestado PAOLA ANDREA FICTICIA MORA en varias",
+          "ocasiones.",
+          "FUNDAMENTOS",
+          "El artículo 23 de la Constitución Política consagra el derecho de petición y la Ley 1755",
+          "de 2015 fija el término de quince días hábiles para responder.",
+          "Además, la Ley 222 de 1995 y la Sentencia T-230 de 2020 precisan el alcance de una",
+          "respuesta de fondo.",
+          "PETICIONES",
+          "PRIMERA. Revisar la facturación del 4 jun. 2026 y ajustarla al consumo real, por un",
+          "valor máximo de doscientos cincuenta mil pesos M/CTE ($250.000).",
+          "SEGUNDA. Entregarme copia del historial de consumo a mi correo",
+          "paola.ficticia@correo.ejemplo.test."
+        ]
+      },
+      {
+        "page": 2,
+        "lineas": [
+          "TERCERA. Informarme por escrito si existe algún proceso de cobro a nombre de Ficticia",
+          "Mora.",
+          "CUARTA. Abstenerse de suspender el servicio hasta que se resuelva esta petición, incluso",
+          "si la mora supera 1 SMMLV.",
+          "NOTIFICACIONES",
+          "Recibiré respuesta en la Tv. 0ª N° 0A-03, Envigado, o en el correo",
+          "paola.ficticia@correo.ejemplo.test.",
+          "Cordialmente,",
+          "PAOLA ANDREA FICTICIA MORA",
+          "C.C. 9000001",
+          "DATOS COMPLEMENTARIOS",
+          "1. Actuaciones previas: el trámite con radicado 05360410596120190000900 ante el Juzgado",
+          "993 Civil del Circuito de Chía, iniciado el 11 feb. 2026.",
+          "2. Referencias administrativas sin datos personales: código postal 760001; valor de la",
+          "UVT $47.065.",
+          "Documento ficticio para pruebas de Sig-Low."
+        ]
+      }
+    ],
+    "dosColumnas": false
+  }
+}

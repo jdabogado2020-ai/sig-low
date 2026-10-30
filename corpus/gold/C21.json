@@ -1,0 +1,2686 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C21",
+  "tipoDocumento": "contrato",
+  "fuente": "txt",
+  "archivo": "corpus/docs/C21.txt",
+  "conjunto": "reserva",
+  "semilla": "SIGLOW-CORPUS-B",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 6297,
+        "sha256": "5eec5bfd53fa9f7354e1136fcafeb09ae88ade88f7a0e8d2a181c85f4c85a83a"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": []
+  },
+  "listaDelCaso": [
+    {
+      "name": "Seguros Prueba S.A.",
+      "role": "EMPRESA"
+    },
+    {
+      "name": "Álvaro Ficticio",
+      "role": "CLIENTE"
+    },
+    {
+      "name": "Rosa Elena Ficticia Restrepo",
+      "role": "CONTACTO"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C21-E01",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E02",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E03",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Seguros Prueba S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C21-E04",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:800000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E05",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:TV 00 0 0 TO 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E06",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:liliana prueba ruiz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E07",
+      "tipo": "CARGO",
+      "canonico": "CARGO:director regional",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E08",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:80000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E09",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "canonico": "LISTA:Álvaro Ficticio",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C21-E10",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "canonico": "CC:1000000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E11",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:KR 0 0 3 E LC 8",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E12",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:villa prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E13",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E14",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1564 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E15",
+      "tipo": "VALOR",
+      "canonico": "VALOR:30000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E16",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 884 del codigo de comercio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E17",
+      "tipo": "VALOR",
+      "canonico": "VALOR:10000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E18",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-08-24",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E19",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000000400",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E20",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E21",
+      "tipo": "CUENTA",
+      "rol": "EMPRESA",
+      "canonico": "CUENTA:BREB:@segurospagos",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E22",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:PG202600075",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E23",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "canonico": "CORREO:alvaro.ficticio@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E24",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:3100000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E25",
+      "tipo": "PLACA",
+      "canonico": "PLACA:WWW006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E26",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:100-000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E27",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-09-08",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E28",
+      "tipo": "VALOR",
+      "canonico": "VALOR:20000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E29",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E30",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:altos del ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E31",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:restaurante prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E32",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:900000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E33",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:jose miguel ficticio perez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E34",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:52000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E35",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3110000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E36",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 624 de 1989",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E37",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1943 de 2018",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E38",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-09-23",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E39",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-10-23",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E40",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "canonico": "LISTA:Rosa Elena Ficticia Restrepo",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C21-E41",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:500204",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E42",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:C2026000092",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E43",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1581 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E44",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 1074 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E45",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "canonico": "CORREO:datospersonales@seguros-prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E46",
+      "tipo": "CC",
+      "rol": "CONTACTO",
+      "canonico": "CC:7000011",
+      "mismoTitular": [
+        "C21-E47"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C21-E47",
+      "tipo": "NIT",
+      "rol": "CONTACTO",
+      "canonico": "NIT:7000011",
+      "mismoTitular": [
+        "C21-E46"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C21-E48",
+      "tipo": "DIRECCION",
+      "rol": "CONTACTO",
+      "canonico": "DIR:TV 0 BIS 0A 0 N",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E49",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 997 civil municipal de sogamoso",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E50",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:5",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E51",
+      "tipo": "VALOR",
+      "canonico": "VALOR:7500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E52",
+      "tipo": "CARGO",
+      "canonico": "CARGO:jefe de talento humano",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E53",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3160000012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E54",
+      "tipo": "RADICADO",
+      "canonico": "RAD:15759411093120190001300",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E55",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 990 de familia de dosquebradas",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E56",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:66",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E57",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-11-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E58",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25899410597620260001400",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E59",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 993 civil del circuito de palmira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E60",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-07-26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E61",
+      "tipo": "RADICADO",
+      "canonico": "RAD:258996000962202300015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E62",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:nestor raul prueba munoz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E63",
+      "tipo": "NIT",
+      "rol": "OTRA_PERSONA",
+      "canonico": "NIT:80000017",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E64",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:05001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C21-E65",
+      "tipo": "CC",
+      "canonico": "NEG:871121",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C21-A001",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 45,
+      "end": 61,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C21-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A002",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 69,
+      "end": 115,
+      "texto": "veinticinco (25) días del mes de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C21-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C21-A003",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 152,
+      "end": 171,
+      "texto": "Seguros Prueba S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C21-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A004",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 190,
+      "end": 203,
+      "texto": "800 000 001-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C21-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C21-A005",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 222,
+      "end": 246,
+      "texto": "Tv. 00 n.º 0-00, torre 3",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C21-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C21-A006",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 250,
+      "end": 266,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C21-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A007",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 296,
+      "end": 315,
+      "texto": "Liliana Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C21-A008",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 346,
+      "end": 363,
+      "texto": "director regional",
+      "tipo": "CARGO",
+      "entidad": "C21-E07",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C21-A009",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 389,
+      "end": 399,
+      "texto": "80.000.002",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C21-A010",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 463,
+      "end": 486,
+      "texto": "Álvaro Ficticio Salazar",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C21-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C21-A011",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 530,
+      "end": 543,
+      "texto": "1.000.000.003",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C21-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C21-A012",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 560,
+      "end": 588,
+      "texto": "Cr. 0 n.º 0-03 Este, local 8",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C21-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C21-A013",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 597,
+      "end": 609,
+      "texto": "Villa Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C21-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C21-A014",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 611,
+      "end": 619,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C21-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C21-A015",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 765,
+      "end": 781,
+      "texto": "Ley 1564 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C21-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C21-A016",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 887,
+      "end": 926,
+      "texto": "treinta millones de pesos ($30.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C21-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23"
+      ]
+    },
+    {
+      "id": "C21-A017",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1179,
+      "end": 1214,
+      "texto": "artículo 884 del Código de Comercio",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C21-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C21-A018",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1230,
+      "end": 1238,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C21-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C21-A019",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1378,
+      "end": 1390,
+      "texto": "$ 10.000.000",
+      "tipo": "VALOR",
+      "entidad": "C21-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A020",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1474,
+      "end": 1530,
+      "texto": "veinticuatro (24) de agosto de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C21-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C21-A021",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1549,
+      "end": 1572,
+      "texto": "Álvaro Ficticio Salazar",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C21-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C21-A022",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1716,
+      "end": 1729,
+      "texto": "000-000004-00",
+      "tipo": "CUENTA",
+      "entidad": "C21-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C21-A023",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1734,
+      "end": 1752,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C21-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C21-A024",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1765,
+      "end": 1779,
+      "texto": "Seguros Prueba",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C21-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A025",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1800,
+      "end": 1813,
+      "texto": "@segurospagos",
+      "tipo": "CUENTA",
+      "rol": "EMPRESA",
+      "entidad": "C21-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C21-A026",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1832,
+      "end": 1848,
+      "texto": "Ficticio Salazar",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C21-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C21-A027",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1976,
+      "end": 1989,
+      "texto": "PG-2026-00075",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C21-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C21-A028",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2048,
+      "end": 2080,
+      "texto": "alvaro.ficticio@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C21-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C21-A029",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2094,
+      "end": 2106,
+      "texto": "310-000-0005",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C21-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C21-A030",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2189,
+      "end": 2196,
+      "texto": "WWW-006",
+      "tipo": "PLACA",
+      "entidad": "C21-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C21-A031",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2214,
+      "end": 2230,
+      "texto": "Ficticio Salazar",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C21-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C21-A032",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2300,
+      "end": 2310,
+      "texto": "100-000007",
+      "tipo": "MATRICULA",
+      "entidad": "C21-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C21-A033",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2416,
+      "end": 2439,
+      "texto": "8 de septiembre de 2026",
+      "tipo": "FECHA",
+      "entidad": "C21-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C21-A034",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2516,
+      "end": 2536,
+      "texto": "20 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C21-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C21-A035",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2657,
+      "end": 2708,
+      "texto": "uno (1) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C21-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C21-A036",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2738,
+      "end": 2765,
+      "texto": "Cra. 0 # 0-03 Este, local 8",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C21-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C21-A037",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2774,
+      "end": 2791,
+      "texto": "Altos del Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C21-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C21-A038",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2796,
+      "end": 2804,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C21-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C21-A039",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2820,
+      "end": 2828,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C21-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C21-A040",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2950,
+      "end": 2975,
+      "texto": "Restaurante Prueba S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C21-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C21-A041",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2981,
+      "end": 2994,
+      "texto": "900.000.008-3",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C21-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C21-A042",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3116,
+      "end": 3142,
+      "texto": "José Miguel Ficticio Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C21-A043",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3149,
+      "end": 3157,
+      "texto": "52000009",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C21-A044",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3161,
+      "end": 3172,
+      "texto": "Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C21-A045",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3219,
+      "end": 3231,
+      "texto": "311 000 0010",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C21-A046",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3341,
+      "end": 3360,
+      "texto": "Decreto 624 de 1989",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C21-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C21-A047",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3368,
+      "end": 3384,
+      "texto": "Ley 1943 de 2018",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C21-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C21-A048",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3410,
+      "end": 3442,
+      "texto": "alvaro.ficticio@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C21-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C21-A049",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3494,
+      "end": 3504,
+      "texto": "24/08/2026",
+      "tipo": "FECHA",
+      "entidad": "C21-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F33"
+      ]
+    },
+    {
+      "id": "C21-A050",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3505,
+      "end": 3516,
+      "texto": "$10.000.000",
+      "tipo": "VALOR",
+      "entidad": "C21-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F33"
+      ]
+    },
+    {
+      "id": "C21-A051",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3519,
+      "end": 3529,
+      "texto": "2026-09-23",
+      "tipo": "FECHA",
+      "entidad": "C21-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F33"
+      ]
+    },
+    {
+      "id": "C21-A052",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3530,
+      "end": 3541,
+      "texto": "$10.000.000",
+      "tipo": "VALOR",
+      "entidad": "C21-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F33"
+      ]
+    },
+    {
+      "id": "C21-A053",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3544,
+      "end": 3554,
+      "texto": "23.10.2026",
+      "tipo": "FECHA",
+      "entidad": "C21-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F33"
+      ]
+    },
+    {
+      "id": "C21-A054",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3555,
+      "end": 3567,
+      "texto": "$ 10.000.000",
+      "tipo": "VALOR",
+      "entidad": "C21-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F33"
+      ]
+    },
+    {
+      "id": "C21-A055",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3595,
+      "end": 3623,
+      "texto": "Rosa Elena Ficticia Restrepo",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C21-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A056",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3830,
+      "end": 3836,
+      "texto": "500204",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C21-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C21-A057",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3851,
+      "end": 3864,
+      "texto": "C-2026-000092",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C21-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C21-A058",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3935,
+      "end": 3951,
+      "texto": "Ley 1581 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C21-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C21-A059",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3958,
+      "end": 3978,
+      "texto": "Decreto 1074 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C21-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C21-A060",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4102,
+      "end": 4137,
+      "texto": "datospersonales@seguros-prueba.test",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "entidad": "C21-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C21-A061",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4181,
+      "end": 4209,
+      "texto": "Rosa Elena Ficticia Restrepo",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C21-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A062",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4233,
+      "end": 4242,
+      "texto": "7.000.011",
+      "tipo": "CC",
+      "rol": "CONTACTO",
+      "entidad": "C21-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C21-A063",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4252,
+      "end": 4263,
+      "texto": "7.000.011-7",
+      "tipo": "NIT",
+      "rol": "CONTACTO",
+      "entidad": "C21-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C21-A064",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4279,
+      "end": 4312,
+      "texto": "Transversal 0 Bis No. 0A-00 Norte",
+      "tipo": "DIRECCION",
+      "rol": "CONTACTO",
+      "entidad": "C21-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C21-A065",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4343,
+      "end": 4351,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C21-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C21-A066",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4436,
+      "end": 4459,
+      "texto": "Álvaro Ficticio Salazar",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C21-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C21-A067",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4625,
+      "end": 4633,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C21-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C21-A068",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4635,
+      "end": 4641,
+      "texto": "Boyacá",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C21-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A069",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4679,
+      "end": 4718,
+      "texto": "Juzgado 997 Civil Municipal de Sogamoso",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C21-E49",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C21-A070",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4710,
+      "end": 4718,
+      "texto": "Sogamoso",
+      "tipo": "MUNICIPIO",
+      "entidad": "C21-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C21-A069",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C21-A071",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4737,
+      "end": 4754,
+      "texto": "Ficticia Restrepo",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C21-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C21-A072",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4886,
+      "end": 4939,
+      "texto": "cinco (5) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C21-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C21-A073",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4965,
+      "end": 5019,
+      "texto": "SIETE MILLONES QUINIENTOS MIL PESOS M/CTE ($7.500.000)",
+      "tipo": "VALOR",
+      "entidad": "C21-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24"
+      ]
+    },
+    {
+      "id": "C21-A074",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5127,
+      "end": 5153,
+      "texto": "José Miguel Ficticio Pérez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C21-A075",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5155,
+      "end": 5177,
+      "texto": "jefe de talento humano",
+      "tipo": "CARGO",
+      "entidad": "C21-E52",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C21-A076",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5181,
+      "end": 5186,
+      "texto": "SEPRU",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C21-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A077",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5210,
+      "end": 5218,
+      "texto": "52000009",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C21-A078",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5263,
+      "end": 5273,
+      "texto": "3160000012",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C21-A079",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5302,
+      "end": 5310,
+      "texto": "Ficticia",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C21-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C21-A080",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5459,
+      "end": 5475,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C21-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A081",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5482,
+      "end": 5528,
+      "texto": "veinticinco (25) días del mes de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C21-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C21-A082",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5548,
+      "end": 5559,
+      "texto": "Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C21-A083",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5640,
+      "end": 5659,
+      "texto": "Liliana Prueba Ruiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C21-A084",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5662,
+      "end": 5667,
+      "texto": "SEPRU",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C21-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C21-A085",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5668,
+      "end": 5691,
+      "texto": "ÁLVARO FICTICIO SALAZAR",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C21-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C21-A086",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5699,
+      "end": 5709,
+      "texto": "1000000003",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C21-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C21-A087",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5768,
+      "end": 5798,
+      "texto": "15-759-41-10-931-2019-00013-00",
+      "tipo": "RADICADO",
+      "entidad": "C21-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C21-A088",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5807,
+      "end": 5845,
+      "texto": "Juzgado 990 de Familia de Dosquebradas",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C21-E55",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C21-A089",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5833,
+      "end": 5845,
+      "texto": "Dosquebradas",
+      "tipo": "MUNICIPIO",
+      "entidad": "C21-E56",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C21-A088",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C21-A090",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5859,
+      "end": 5869,
+      "texto": "18-XI-2024",
+      "tipo": "FECHA",
+      "entidad": "C21-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C21-A091",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5892,
+      "end": 5921,
+      "texto": "25899-41-05-976-2026-00014-00",
+      "tipo": "RADICADO",
+      "entidad": "C21-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C21-A092",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5930,
+      "end": 5971,
+      "texto": "Juzgado 993 Civil del Circuito de Palmira",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C21-E59",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C21-A093",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5964,
+      "end": 5971,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C21-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C21-A092",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C21-A094",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5985,
+      "end": 5996,
+      "texto": "26-VII-2025",
+      "tipo": "FECHA",
+      "entidad": "C21-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C21-A095",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6021,
+      "end": 6042,
+      "texto": "258996000962202300015",
+      "tipo": "RADICADO",
+      "entidad": "C21-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F05"
+      ]
+    },
+    {
+      "id": "C21-A096",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6083,
+      "end": 6095,
+      "texto": "Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C21-A097",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6107,
+      "end": 6119,
+      "texto": "80.000.017-9",
+      "tipo": "NIT",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C21-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C21-A098",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6226,
+      "end": 6231,
+      "texto": "05001",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C21-E64",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C21-A099",
+      "docId": "C21",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6245,
+      "end": 6251,
+      "texto": "871121",
+      "tipo": "CC",
+      "entidad": "C21-E65",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

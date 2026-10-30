@@ -1,0 +1,1992 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C15",
+  "tipoDocumento": "derecho_peticion",
+  "fuente": "pdf",
+  "archivo": "corpus/docs/C15.pdf",
+  "conjunto": "reserva",
+  "semilla": "SIGLOW-CORPUS-B",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1,
+        "longitud": 2871,
+        "sha256": "5f9450c6f4688efcb4b23b1c43dfa6adba14e77d501965883651c4ca57cf61dd"
+      },
+      {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2,
+        "longitud": 691,
+        "sha256": "7f9aae61f44b30ff58f208fd53363e3582cb924f019e82163f24095738208f06"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": [
+      "pdf_propiedades"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Paola Andrea Ficticia Mora",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Banco Prueba S.A.",
+      "role": "PROVEEDOR"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C15-E01",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E02",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-09-08",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E03",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "LISTA:Banco Prueba S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C15-E04",
+      "tipo": "CARGO",
+      "canonico": "CARGO:secretaria de salud municipal",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E05",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:monica ejemplo gonzalez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E06",
+      "tipo": "DIRECCION",
+      "rol": "PROVEEDOR",
+      "canonico": "DIR:AC 0 00 0 S LC 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E07",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 23 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E08",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Paola Andrea Ficticia Mora",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C15-E09",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:9000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E10",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:TV 0 0A 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E11",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:santa prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E12",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E13",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3180000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E14",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:0000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E15",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:paola.ficticia@correo.ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E16",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:textiles ficticios",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E17",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:890000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E18",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E19",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:055000000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E20",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-07",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E21",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-03",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E22",
+      "tipo": "VALOR",
+      "canonico": "VALOR:3600000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E23",
+      "tipo": "MENOR",
+      "canonico": "MENOR:test:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E24",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:gimnasio prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E25",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-29",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E26",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:PQRSD2026000355",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E27",
+      "tipo": "FECHA",
+      "canonico": "FECHA:1965-04-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E28",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~61 anos",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E29",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:mauricio ejemplo salazar",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E30",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "canonico": "DIR:DG 0 BIS A 0 0 S IN 8 OF 502",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E31",
+      "tipo": "VALOR",
+      "canonico": "VALOR:148000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E32",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3210000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E33",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E34",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:100-000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E35",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1755 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E36",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 222 de 1995",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E37",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-230 de 2020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E38",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-04",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E39",
+      "tipo": "VALOR",
+      "canonico": "VALOR:250000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E40",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E41",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05360410596120190000900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E42",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 993 civil del circuito de chia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E43",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E44",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-11",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E45",
+      "tipo": "CC",
+      "canonico": "NEG:760001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C15-E46",
+      "tipo": "VALOR",
+      "canonico": "NEG:$47.065",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C15-A001",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 0,
+      "end": 16,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C15-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A002",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 18,
+      "end": 41,
+      "texto": "8 DE SEPTIEMBRE DE 2026",
+      "tipo": "FECHA",
+      "entidad": "C15-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A003",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 50,
+      "end": 67,
+      "texto": "Banco Prueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C15-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A004",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 74,
+      "end": 103,
+      "texto": "secretaria de salud municipal",
+      "tipo": "CARGO",
+      "entidad": "C15-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A005",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 106,
+      "end": 129,
+      "texto": "Mónica Ejemplo González",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C15-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C15-A006",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 141,
+      "end": 178,
+      "texto": "Avenida Calle 0 N° 00-00 Sur, local 3",
+      "tipo": "DIRECCION",
+      "rol": "PROVEEDOR",
+      "entidad": "C15-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A007",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 180,
+      "end": 196,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C15-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A008",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 227,
+      "end": 266,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C15-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A009",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 267,
+      "end": 293,
+      "texto": "Paola Andrea Ficticia Mora",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A010",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 355,
+      "end": 364,
+      "texto": "9.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A011",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 379,
+      "end": 395,
+      "texto": "Tv. 0ª No. 0A-03",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A012",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 404,
+      "end": 416,
+      "texto": "Santa Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C15-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A013",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 418,
+      "end": 426,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C15-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A014",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 440,
+      "end": 456,
+      "texto": "+57\n318 000 0002",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C15-A015",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 464,
+      "end": 472,
+      "texto": "000 0003",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A016",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 481,
+      "end": 515,
+      "texto": "paola.ficticia@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A017",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 611,
+      "end": 636,
+      "texto": "TEXTILES FICTICIOS S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C15-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C15-A018",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 646,
+      "end": 659,
+      "texto": "890.000.004-9",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C15-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A019",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 863,
+      "end": 880,
+      "texto": "Banco\nPrueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C15-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C15-A020",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 885,
+      "end": 899,
+      "texto": "0550-0000-0005",
+      "tipo": "CUENTA",
+      "entidad": "C15-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A021",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 930,
+      "end": 940,
+      "texto": "2026-07-07",
+      "tipo": "FECHA",
+      "entidad": "C15-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A022",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 969,
+      "end": 995,
+      "texto": "Paola Andrea Ficticia Mora",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A023",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1073,
+      "end": 1083,
+      "texto": "03/05/2026",
+      "tipo": "FECHA",
+      "entidad": "C15-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A024",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1091,
+      "end": 1112,
+      "texto": "3.6 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C15-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A025",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1194,
+      "end": 1202,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C15-E23",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C15-A026",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1214,
+      "end": 1229,
+      "texto": "Gimnasio\nPrueba",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C15-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C15-A027",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1253,
+      "end": 1261,
+      "texto": "Ficticia",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C15-A028",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1306,
+      "end": 1360,
+      "texto": "veintinueve (29) de julio de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C15-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A029",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1380,
+      "end": 1397,
+      "texto": "PQRSD-2026-000355",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C15-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C15-A030",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1459,
+      "end": 1472,
+      "texto": "Ficticia Mora",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C15-A031",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1508,
+      "end": 1521,
+      "texto": "Ficticia Mora",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C15-A032",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1531,
+      "end": 1541,
+      "texto": "17/04/1965",
+      "tipo": "FECHA",
+      "entidad": "C15-E27",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C15-A033",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1547,
+      "end": 1554,
+      "texto": "61 años",
+      "tipo": "FECHA",
+      "entidad": "C15-E28",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C15-A034",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1662,
+      "end": 1686,
+      "texto": "Mauricio Ejemplo Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C15-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C15-A035",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1704,
+      "end": 1753,
+      "texto": "Diag. 0 Bis A # 0-00 Sur, interior 8,\noficina 502",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C15-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C15-A036",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1787,
+      "end": 1796,
+      "texto": "$ 148.000",
+      "tipo": "VALOR",
+      "entidad": "C15-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A037",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1842,
+      "end": 1854,
+      "texto": "321 000 0006",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C15-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A038",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1873,
+      "end": 1899,
+      "texto": "Paola Andrea Ficticia Mora",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A039",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1965,
+      "end": 1977,
+      "texto": "Santa Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C15-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A040",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1981,
+      "end": 1989,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C15-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A041",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1997,
+      "end": 2020,
+      "texto": "Transversal 0ª N° 0A-03",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A042",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2062,
+      "end": 2074,
+      "texto": "Banco Prueba",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C15-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A043",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2085,
+      "end": 2094,
+      "texto": "000000007",
+      "tipo": "AFILIACION",
+      "entidad": "C15-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A044",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2119,
+      "end": 2145,
+      "texto": "Paola Andrea Ficticia Mora",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A045",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2238,
+      "end": 2248,
+      "texto": "100-000008",
+      "tipo": "MATRICULA",
+      "entidad": "C15-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A046",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2252,
+      "end": 2267,
+      "texto": "Ejemplo Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C15-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C15-A047",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2298,
+      "end": 2324,
+      "texto": "PAOLA ANDREA FICTICIA MORA",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A048",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2361,
+      "end": 2400,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C15-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A049",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2438,
+      "end": 2454,
+      "texto": "Ley 1755\nde 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C15-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A050",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2521,
+      "end": 2536,
+      "texto": "Ley 222 de 1995",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C15-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A051",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2542,
+      "end": 2565,
+      "texto": "Sentencia T-230 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C15-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A052",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2660,
+      "end": 2671,
+      "texto": "4 jun. 2026",
+      "tipo": "FECHA",
+      "entidad": "C15-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A053",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2724,
+      "end": 2771,
+      "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
+      "tipo": "VALOR",
+      "entidad": "C15-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A054",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2836,
+      "end": 2870,
+      "texto": "paola.ficticia@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A055",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 77,
+      "end": 90,
+      "texto": "Ficticia\nMora",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C15-A056",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 199,
+      "end": 206,
+      "texto": "1 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C15-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A057",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 248,
+      "end": 263,
+      "texto": "Tv. 0ª N° 0A-03",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A058",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 265,
+      "end": 273,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C15-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A059",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 290,
+      "end": 324,
+      "texto": "paola.ficticia@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A060",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 340,
+      "end": 366,
+      "texto": "PAOLA ANDREA FICTICIA MORA",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A061",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 372,
+      "end": 379,
+      "texto": "9000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C15-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A062",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 450,
+      "end": 473,
+      "texto": "05360410596120190000900",
+      "tipo": "RADICADO",
+      "entidad": "C15-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A063",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 482,
+      "end": 520,
+      "texto": "Juzgado\n993 Civil del Circuito de Chía",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C15-E42",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C15-A064",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 516,
+      "end": 520,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C15-E43",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C15-A063",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C15-A065",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 534,
+      "end": 546,
+      "texto": "11 feb. 2026",
+      "tipo": "FECHA",
+      "entidad": "C15-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C15-A066",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 615,
+      "end": 621,
+      "texto": "760001",
+      "tipo": "CC",
+      "entidad": "C15-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C15-A067",
+      "docId": "C15",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 639,
+      "end": 646,
+      "texto": "$47.065",
+      "tipo": "VALOR",
+      "entidad": "C15-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

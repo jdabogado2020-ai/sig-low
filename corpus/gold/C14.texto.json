@@ -1,0 +1,47 @@
+{
+  "formato": "sig-low/gold-texto",
+  "v": 1,
+  "docId": "C14",
+  "partes": [
+    {
+      "kind": "cuerpo",
+      "index": 1,
+      "texto": "Santiago de Cali, 10 de agosto de 2026\nSeñores\nAsesorías Legales Prueba S.A.S.\nAtn.: subgerente científica – Esperanza Ejemplo Orozco\nDirección: Transversal 00 # 0-01, Santiago de Cali\nAsunto: Derecho de petición – artículo 23 de la Constitución Política\nSantiago Prueba Rojas, mayor de edad, identificado con la cédula de ciudadanía No. 1.000'000.001, residente en Avenida Calle 0 n.º 0A-03, oficina 502, barrio Los Almendros de Prueba, Chía, con celular +57 320 000 0002 y fijo 000 0003, correo SANTIAGO.PRUEBA@CORREO.EJEMPLO.TEST, en ejercicio del derecho de petición, me permito solicitar lo siguiente:\nHECHOS\n1. Presenté reclamo verbal ante la funcionaria Esperanza Ejemplo Orozco, secretaria de salud municipal de la entidad, quien me dio el radicado interno No. 2026001013. Por esa razón Prueba Rojas insiste en que lo ocurrido debe ser reparado.\n2. El servicio es indispensable para la educación de la menor, alumna de Panadería Ficticia. Por esa razón SANTIAGO PRUEBA ROJAS insiste en que lo ocurrido debe ser reparado.\n3. Resido en el barrio Prados de Prueba de Chía, en la Av. Calle 0 N° 0A-03, oficina 502, y soy titular del servicio prestado por Asesorías Legales Prueba (contrato 000000004).\n4. Prueba Rojas nació el 17/04/1965; con 61 años y movilidad reducida, no puedo desplazarme a la oficina, por lo que pido atención por medios virtuales. Nada de lo anterior fue discutido por S. P. R. en su momento.\n5. Quien figura como propietario en el folio de matrícula inmobiliaria 070-000005 es Ejemplo Castaño, no yo.\n6. El pago consta en el extracto de la cuenta 000000000006 y en el comprobante de la llave Bre-B @prueba26.\n7. El 19 de junio de 2026 recibí una factura por $1.250.000, que supera en más de cuatro veces el consumo histórico.\n8. Isabel Cristina Ejemplo Castaño, mi vecina de la Av. Calle 00B n.º 00-00, pagó por el mismo servicio solo $ 148.000 en el mismo período; puede ser contactada al 311 000 0007.\n9. Presenté reclamo verbal ante la funcionaria Esperanza Ejemplo Orozco, administradora del conjunto de la entidad, quien me dio el radicado interno No. 2026001117. Debe tenerse en cuenta que Santiago Prueba Rojas ha actuado siempre de buena fe.\n10. Mi hijo el menor estudia en Panadería Ficticia Ltda. y necesita el servicio para sus clases virtuales.\n11. Resido en el barrio Prados de Prueba de Chía, en la Av. Calle 0 # 0A-03, oficina 502, y soy titular del servicio prestado por Asesorías Legales Prueba (contrato 000000008). Así lo ha manifestado Santiago Prueba Rojas en varias ocasiones.\n12. Prueba Rojas nació el 17/04/1965; con 61 años y movilidad reducida, no puedo desplazarme a la oficina, por lo que pido atención por medios virtuales. Debe tenerse en cuenta que Santiago Prueba Rojas ha actuado siempre de buena fe.\n13. La empresa CONSTRUCTORA PRUEBA S.A., con NIT 811.000.009-8, administra el conjunto residencial Torres del Ejemplo y afirma que la deuda es mía, pese a que el apartamento fue vendido. Por esa razón Prueba insiste en que lo ocurrido debe ser reparado.\n14. Cancelé la obligación mediante transferencia desde la cuenta de ahorros del Banco Prueba S.A. No. 0550-0000-0010, según el soporte adjunto del 2026-05-30.\nFUNDAMENTOS\nEl artículo 23 de la Constitución Política consagra el derecho de petición y la Ley 1755 de 2015 fija el término de quince días hábiles para responder.\nAdemás, la Ley 1755 de 2015 y la Sentencia T-230 de 2020 precisan el alcance de una respuesta de fondo.\nConviene recordar que el artículo 14 de la Ley 1437 de 2011 y el código CIIU 3600 de la empresa de servicios no alteran ese término.\nPETICIONES\nPRIMERA. Revisar la facturación del 26 jun. 2026 y ajustarla al consumo real, por un valor máximo de doscientos cincuenta mil pesos M/CTE ($250.000).\nSEGUNDA. Entregarme copia del historial de consumo a mi correo santiago.prueba@correo.ejemplo.test.\nTERCERA. Informarme por escrito si existe algún proceso de cobro a nombre de Prueba Rojas.\nCUARTA. Abstenerse de suspender el servicio hasta que se resuelva esta petición, incluso si la mora supera 1 SMMLV.\nNOTIFICACIONES\nRecibiré respuesta en la Avenida Calle 0 n.º 0A-03, oficina 502, Chía, o en el correo santiago.prueba@correo.ejemplo.test.\nCordialmente,\nSantiago Prueba Rojas\nC.C. 1000000001\nDATOS COMPLEMENTARIOS\n1. Actuaciones previas: expediente 25899/40/03/906/2022/00011/00 ante el Juzgado 994 Civil Municipal de Palmira, iniciado el 17 may. 2024; y el trámite con radicado 66170/41/05/912/2025/00012/00 ante el Juzgado 990 de Familia de Floridablanca, iniciado el 2025-12-24.\n2. El señor Juan David Ejemplo Ospina, con cédula de extranjería No. 1.000.014, fue citado como testigo el uno (1) de julio de dos mil veintiséis (2026).\n3. La vivienda queda en Balboa (Risaralda).\n4. Referencias administrativas sin datos personales: folio 95; código CUPS 890201.\nDocumento ficticio para pruebas de Sig-Low."
+    },
+    {
+      "kind": "comentario",
+      "index": 1,
+      "texto": "Verificar la cédula 1.000.000.001 y el celular 320 000 0002 antes de enviar."
+    }
+  ],
+  "estructura": [
+    {
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "bloques": [
+        {
+          "tipo": "runs_partidos",
+          "start": 661,
+          "end": 685
+        },
+        {
+          "tipo": "runs_partidos",
+          "start": 1758,
+          "end": 1789
+        },
+        {
+          "tipo": "runs_partidos",
+          "start": 2709,
+          "end": 2730
+        },
+        {
+          "tipo": "runs_partidos",
+          "start": 4537,
+          "end": 4562
+        }
+      ]
+    }
+  ]
+}

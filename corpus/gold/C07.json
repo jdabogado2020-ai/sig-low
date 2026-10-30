@@ -1,0 +1,6190 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C07",
+  "tipoDocumento": "tutela_salud",
+  "fuente": "docx",
+  "archivo": "corpus/docs/C07.docx",
+  "conjunto": "reserva",
+  "semilla": "SIGLOW-CORPUS-B",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "encabezado",
+        "index": 1,
+        "longitud": 52,
+        "sha256": "38e6625d79200b9c67470bf5f63e8b0bd176a7cd6eb881c3d97732b89762db0c"
+      },
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 12339,
+        "sha256": "c72c8e9571d7051c9628870d461212dad8ae4b36d9e6be4cebde3b3568c50d6d"
+      },
+      {
+        "kind": "nota_final",
+        "index": 1,
+        "longitud": 97,
+        "sha256": "c6b1ce39e3ace701f1732a0f920227d2f58e7eca02ddfe0a85f32394c30091cc"
+      }
+    ],
+    "advertencias": [
+      "MARCA_DE_AGUA",
+      "TEXTO_OCULTO_INCLUIDO"
+    ],
+    "metadatos": [
+      "autores_revisiones",
+      "propiedades_aplicacion",
+      "propiedades_documento"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Blanca Nubia Ficticia Muñoz",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Alejandro Ficticio Gómez",
+      "role": "PACIENTE"
+    },
+    {
+      "name": "Salud Integral Prueba EPS S.A.",
+      "role": "EPS"
+    },
+    {
+      "name": "Fundación Hospital Ejemplo",
+      "role": "IPS"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C07-E01",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Blanca Nubia Ficticia Muñoz",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C07-E02",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 998 civil municipal de dosquebradas",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E03",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:66",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E04",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "canonico": "LISTA:Alejandro Ficticio Gómez",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C07-E05",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "LISTA:Salud Integral Prueba EPS S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C07-E06",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "canonico": "LISTA:Fundación Hospital Ejemplo",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C07-E07",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:1000000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E08",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E09",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:AC 00B 0A 1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E10",
+      "tipo": "MENOR",
+      "canonico": "MENOR:pac:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E11",
+      "tipo": "MENOR",
+      "canonico": "MENOR:pac:rotulo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E12",
+      "tipo": "TI",
+      "rol": "PACIENTE",
+      "canonico": "TI:1000000002",
+      "mismoTitular": [
+        "C07-E34"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C07-E13",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 86 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E14",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 2591 de 1991",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E15",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:arturo ficticio orozco",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E16",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3230000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E17",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2020-12-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E18",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:EPS000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E19",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:denuncio publicamente al gerente del hospital",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E20",
+      "tipo": "VALOR",
+      "canonico": "VALOR:12000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E21",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E22",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "canonico": "TEL:6010000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E23",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "canonico": "CORREO:notificaciones@salud-integral-prueba-eps.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E24",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:tecnologia ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E25",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:900000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E26",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E27",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000000700",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E28",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "canonico": "CUENTA:BREB:@ficticia1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E29",
+      "tipo": "VALOR",
+      "canonico": "VALOR:2000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E30",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E31",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:la esperanza ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E32",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3010000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E33",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:blanca.ficticia@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E34",
+      "tipo": "HC",
+      "rol": "PACIENTE",
+      "canonico": "HC:1000000002",
+      "mismoTitular": [
+        "C07-E12"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C07-E35",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:sindrome de guillain-barre",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E36",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:g61.0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E37",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-29",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E38",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "canonico": "DIR:DG 0A 0A 0 E",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E39",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:68",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E40",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-20",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E41",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000177",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E42",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2020-02-22",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E43",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~6 anos de edad",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E44",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:100-000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E45",
+      "tipo": "VALOR",
+      "canonico": "VALOR:650000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E46",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-21",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E47",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:rafael prueba cuervo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E48",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TP:000100",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E49",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E50",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:paola andrea prueba guerrero",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E51",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinadora de auditoria medica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E52",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000127",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E53",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:gilberto ficticio salazar",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E54",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:san ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E55",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:claudia ficticia martinez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E56",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:VEREDA EL EJEMPLO",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E57",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XXX013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E58",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:papeleria ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E59",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2020-06-08",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E60",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:EPS000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E61",
+      "tipo": "VALOR",
+      "canonico": "VALOR:48000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E62",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "canonico": "CORREO:servicioalcliente@salud-integral-prueba-eps.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E63",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:9000015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E64",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000001600",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E65",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1423500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E66",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:6080000017",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E67",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-12",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E68",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-08",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E69",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000310",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E70",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:50S-00000018",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E71",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-23",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E72",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:20260314000000000019",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E73",
+      "tipo": "CARGO",
+      "canonico": "CARGO:subgerente cientifica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E74",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000200",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E75",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:ejemplo norte",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E76",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:VEREDA EL TABLON FICTICIO",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E77",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XYZ021",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E78",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2020-12-02",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E79",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:EPS000022",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E80",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-760 de 2008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E81",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia su-508 de 2020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E82",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 49 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E83",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1751 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E84",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1122 de 2007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E85",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia su-124 de 2018",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E86",
+      "tipo": "CC",
+      "canonico": "NEG:t-9.000.004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E87",
+      "tipo": "RADICADO",
+      "canonico": "NEG:15759-31-03-967-2019-00023-00",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E88",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 100 de 1993",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E89",
+      "tipo": "RADICADO",
+      "canonico": "NEG:110014003999",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E90",
+      "tipo": "CC",
+      "canonico": "NEG:8610",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E91",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-074 de 2020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E92",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1480 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E93",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E94",
+      "tipo": "NIT",
+      "rol": "EPS",
+      "canonico": "NIT:811000024",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E95",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "canonico": "DIR:AC 0 00 3 E TO 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E96",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "canonico": "CORREO:contacto@salud-integral-prueba-eps.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E97",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000002500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E98",
+      "tipo": "RADICADO",
+      "canonico": "RAD:66170410594220260002700",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E99",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 991 laboral del circuito de dosquebradas",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E100",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-24",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E101",
+      "tipo": "RADICADO",
+      "canonico": "RAD:66170410394620230002800",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E102",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 992 promiscuo municipal de itagui",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E103",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E104",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-03-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E105",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25175401098920190002900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E106",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 994 civil municipal de soacha",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E107",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E108",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-05-13",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E109",
+      "tipo": "RADICADO",
+      "canonico": "RAD:258996000916202100030",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E110",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:jairo ejemplo ortiz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E111",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men31:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E112",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men31:rotulo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E113",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TI:1000000032",
+      "mismoTitular": [
+        "C07-E115"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C07-E114",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2020-03-14",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E115",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "HC:1000000032",
+      "mismoTitular": [
+        "C07-E113"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C07-E116",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:leonardo ficticio torres",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E117",
+      "tipo": "PEP",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PEP:1000034890",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E118",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E119",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:alba lucia prueba guerrero",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E120",
+      "tipo": "CE",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CE:1000036",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E121",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-14",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E122",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:13",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E123",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:ivan dario ficticio jimenez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E124",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:6030000038",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E125",
+      "tipo": "VALOR",
+      "canonico": "NEG:$47.065",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E126",
+      "tipo": "CC",
+      "canonico": "NEG:680001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C07-E127",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:6020000026",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C07-A001",
+      "docId": "C07",
+      "parte": {
+        "kind": "encabezado",
+        "index": 1
+      },
+      "start": 25,
+      "end": 52,
+      "texto": "BLANCA NUBIA FICTICIA MUÑOZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F34",
+        "F49"
+      ]
+    },
+    {
+      "id": "C07-A002",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6,
+      "end": 49,
+      "texto": "JUZGADO 998 CIVIL MUNICIPAL DE DOSQUEBRADAS",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C07-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C07-A003",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 37,
+      "end": 49,
+      "texto": "DOSQUEBRADAS",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C07-A002",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C07-A004",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 110,
+      "end": 137,
+      "texto": "BLANCA NUBIA FICTICIA MUÑOZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C07-A005",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 149,
+      "end": 173,
+      "texto": "ALEJANDRO FICTICIO GÓMEZ",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C07-A006",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 185,
+      "end": 215,
+      "texto": "SALUD INTEGRAL PRUEBA EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A007",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 227,
+      "end": 253,
+      "texto": "FUNDACIÓN HOSPITAL EJEMPLO",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C07-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A008",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 315,
+      "end": 342,
+      "texto": "Blanca Nubia Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A009",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 381,
+      "end": 394,
+      "texto": "1.000.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C07-A010",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 427,
+      "end": 439,
+      "texto": "Dosquebradas",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C07-A011",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 464,
+      "end": 471,
+      "texto": "Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C07-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C07-A012",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 479,
+      "end": 500,
+      "texto": "Av. Calle 00B # 0A-01",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C07-A013",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 541,
+      "end": 549,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C07-E10",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C07-A014",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 550,
+      "end": 574,
+      "texto": "Alejandro Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A015",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 593,
+      "end": 597,
+      "texto": "T.I.",
+      "tipo": "MENOR",
+      "entidad": "C07-E11",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C07-A016",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 598,
+      "end": 611,
+      "texto": "1.000.000.002",
+      "tipo": "TI",
+      "rol": "PACIENTE",
+      "entidad": "C07-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F08",
+        "F50"
+      ]
+    },
+    {
+      "id": "C07-A017",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 701,
+      "end": 731,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A018",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 733,
+      "end": 736,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A019",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 862,
+      "end": 901,
+      "texto": "artículo 86 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C07-A020",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 907,
+      "end": 927,
+      "texto": "Decreto 2591 de 1991",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C07-A021",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 977,
+      "end": 999,
+      "texto": "Arturo Ficticio Orozco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F49",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A022",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1009,
+      "end": 1021,
+      "texto": "323 000 0003",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F49"
+      ]
+    },
+    {
+      "id": "C07-A023",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1032,
+      "end": 1056,
+      "texto": "Alejandro Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A024",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1081,
+      "end": 1111,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A025",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1121,
+      "end": 1144,
+      "texto": "18 de diciembre de 2020",
+      "tipo": "FECHA",
+      "entidad": "C07-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C07-A026",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1174,
+      "end": 1184,
+      "texto": "EPS-000004",
+      "tipo": "AFILIACION",
+      "entidad": "C07-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C07-A027",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1213,
+      "end": 1221,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A028",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1222,
+      "end": 1267,
+      "texto": "denunció públicamente al gerente del hospital",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C07-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C07-A029",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1350,
+      "end": 1370,
+      "texto": "12 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C07-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C07-A030",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1408,
+      "end": 1461,
+      "texto": "diez (10) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C07-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C07-A031",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1490,
+      "end": 1504,
+      "texto": "Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A032",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1569,
+      "end": 1572,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A033",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1578,
+      "end": 1599,
+      "texto": "601 000 0005 Ext. 102",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "entidad": "C07-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C07-A034",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1608,
+      "end": 1653,
+      "texto": "NOTIFICACIONES@SALUD-INTEGRAL-PRUEBA-EPS.TEST",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C07-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C07-A035",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1697,
+      "end": 1723,
+      "texto": "TECNOLOGÍA FICTICIA S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C07-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A036",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1729,
+      "end": 1742,
+      "texto": "900 000 006-9",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C07-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F43"
+      ]
+    },
+    {
+      "id": "C07-A037",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1754,
+      "end": 1769,
+      "texto": "Ficticio Orozco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A038",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1877,
+      "end": 1895,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C07-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A039",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1900,
+      "end": 1913,
+      "texto": "000-000007-00",
+      "tipo": "CUENTA",
+      "entidad": "C07-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C07-A040",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1934,
+      "end": 1944,
+      "texto": "@ficticia1",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C07-A041",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2007,
+      "end": 2017,
+      "texto": "$2.000.000",
+      "tipo": "VALOR",
+      "entidad": "C07-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A042",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2042,
+      "end": 2049,
+      "texto": "2 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C07-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C07-A043",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2069,
+      "end": 2090,
+      "texto": "La Esperanza Ficticia",
+      "tipo": "BARRIO",
+      "entidad": "C07-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C07-A044",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2094,
+      "end": 2106,
+      "texto": "Dosquebradas",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C07-A045",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2148,
+      "end": 2164,
+      "texto": "+57 301 000 0008",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C07-A046",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2177,
+      "end": 2209,
+      "texto": "blanca.ficticia@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C07-A047",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2219,
+      "end": 2222,
+      "texto": "FHE",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C07-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A048",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2241,
+      "end": 2251,
+      "texto": "1000000002",
+      "tipo": "HC",
+      "rol": "PACIENTE",
+      "entidad": "C07-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18"
+      ]
+    },
+    {
+      "id": "C07-A049",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2270,
+      "end": 2296,
+      "texto": "síndrome de Guillain-Barré",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C07-E35",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C07-A050",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2305,
+      "end": 2310,
+      "texto": "G61.0",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C07-E36",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C07-A051",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2334,
+      "end": 2342,
+      "texto": "A. F. G.",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A052",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2398,
+      "end": 2424,
+      "texto": "Fundación Hospital Ejemplo",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C07-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A053",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2448,
+      "end": 2460,
+      "texto": "29 jun. 2026",
+      "tipo": "FECHA",
+      "entidad": "C07-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C07-A054",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2488,
+      "end": 2509,
+      "texto": "Diag. 0A # 0A-00 Este",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "entidad": "C07-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C07-A055",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2513,
+      "end": 2524,
+      "texto": "Bucaramanga",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E39",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A056",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2539,
+      "end": 2557,
+      "texto": "20 de mayo de 2026",
+      "tipo": "FECHA",
+      "entidad": "C07-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C07-A057",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2580,
+      "end": 2583,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A058",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2601,
+      "end": 2614,
+      "texto": "E-2026-000177",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C07-A059",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2682,
+      "end": 2690,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A060",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2700,
+      "end": 2721,
+      "texto": "22 de febrero de 2020",
+      "tipo": "FECHA",
+      "entidad": "C07-E42",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F21",
+        "F47"
+      ]
+    },
+    {
+      "id": "C07-A061",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2734,
+      "end": 2748,
+      "texto": "6 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C07-E43",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C07-A062",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2822,
+      "end": 2832,
+      "texto": "100-000009",
+      "tipo": "MATRICULA",
+      "entidad": "C07-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C07-A063",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2851,
+      "end": 2873,
+      "texto": "Arturo Ficticio Orozco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A064",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2889,
+      "end": 2898,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C07-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A065",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2932,
+      "end": 2940,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A066",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2979,
+      "end": 3030,
+      "texto": "veintiuno (21) de mayo de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C07-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C07-A067",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3042,
+      "end": 3062,
+      "texto": "Rafael Prueba Cuervo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A068",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3105,
+      "end": 3111,
+      "texto": "000100",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F45"
+      ]
+    },
+    {
+      "id": "C07-A069",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3162,
+      "end": 3172,
+      "texto": "2026000011",
+      "tipo": "AFILIACION",
+      "entidad": "C07-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C07-A070",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3196,
+      "end": 3223,
+      "texto": "Blanca Nubia Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A071",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3295,
+      "end": 3320,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A072",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3337,
+      "end": 3365,
+      "texto": "Paola Andrea Prueba Guerrero",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A073",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3391,
+      "end": 3423,
+      "texto": "coordinadora de auditoría médica",
+      "tipo": "CARGO",
+      "entidad": "C07-E51",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C07-A074",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3557,
+      "end": 3581,
+      "texto": "Alejandro Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A075",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3680,
+      "end": 3699,
+      "texto": "4000 0000 0000 0127",
+      "tipo": "TARJETA",
+      "entidad": "C07-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C07-A076",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3737,
+      "end": 3761,
+      "texto": "Alejandro Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A077",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3863,
+      "end": 3888,
+      "texto": "Gilberto Ficticio Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A078",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3908,
+      "end": 3919,
+      "texto": "San Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C07-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C07-A079",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3944,
+      "end": 3952,
+      "texto": "Ficticia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A080",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3988,
+      "end": 4012,
+      "texto": "Alejandro Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A081",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4118,
+      "end": 4135,
+      "texto": "vereda El Ejemplo",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F14"
+      ]
+    },
+    {
+      "id": "C07-A082",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4175,
+      "end": 4186,
+      "texto": "Bucaramanga",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E39",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A083",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4247,
+      "end": 4274,
+      "texto": "BLANCA NUBIA FICTICIA MUÑOZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C07-A084",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4366,
+      "end": 4372,
+      "texto": "XXX013",
+      "tipo": "PLACA",
+      "entidad": "C07-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C07-A085",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4390,
+      "end": 4405,
+      "texto": "Ficticio Orozco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A086",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4431,
+      "end": 4449,
+      "texto": "Papelería Ficticia",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C07-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A087",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4474,
+      "end": 4482,
+      "texto": "Ficticia",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A088",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4539,
+      "end": 4563,
+      "texto": "Alejandro Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43"
+      ]
+    },
+    {
+      "id": "C07-A089",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4588,
+      "end": 4618,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A090",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4628,
+      "end": 4646,
+      "texto": "8 de junio de 2020",
+      "tipo": "FECHA",
+      "entidad": "C07-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C07-A091",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4676,
+      "end": 4686,
+      "texto": "EPS-000014",
+      "tipo": "AFILIACION",
+      "entidad": "C07-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C07-A092",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4705,
+      "end": 4713,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A093",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4791,
+      "end": 4799,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A094",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4800,
+      "end": 4845,
+      "texto": "denunció públicamente al gerente del hospital",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C07-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C07-A095",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4907,
+      "end": 4921,
+      "texto": "Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A096",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5002,
+      "end": 5026,
+      "texto": "Papelería Ficticia Ltda.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C07-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A097",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5064,
+      "end": 5111,
+      "texto": "cuarenta y ocho millones de pesos ($48.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C07-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23"
+      ]
+    },
+    {
+      "id": "C07-A098",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5160,
+      "end": 5174,
+      "texto": "Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A099",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5237,
+      "end": 5240,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A100",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5246,
+      "end": 5267,
+      "texto": "601 000 0005 Ext. 102",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "entidad": "C07-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C07-A101",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5276,
+      "end": 5324,
+      "texto": "servicioalcliente@salud-integral-prueba-eps.test",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C07-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C07-A102",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5364,
+      "end": 5378,
+      "texto": "Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A103",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5448,
+      "end": 5470,
+      "texto": "Arturo Ficticio Orozco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A104",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5494,
+      "end": 5503,
+      "texto": "9.000.015",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C07-A105",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5516,
+      "end": 5542,
+      "texto": "Tecnología Ficticia S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C07-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A106",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5548,
+      "end": 5561,
+      "texto": "900.000.006-9",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C07-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C07-A107",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5625,
+      "end": 5652,
+      "texto": "Blanca Nubia Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A108",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5763,
+      "end": 5781,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C07-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A109",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5786,
+      "end": 5799,
+      "texto": "000-000016-00",
+      "tipo": "CUENTA",
+      "entidad": "C07-E64",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C07-A110",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5820,
+      "end": 5830,
+      "texto": "@ficticia1",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C07-A111",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5872,
+      "end": 5898,
+      "texto": "Tecnología Ficticia S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C07-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A112",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5917,
+      "end": 5985,
+      "texto": "un millón cuatrocientos veintitrés mil quinientos pesos ($1.423.500)",
+      "tipo": "VALOR",
+      "entidad": "C07-E65",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23"
+      ]
+    },
+    {
+      "id": "C07-A113",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6057,
+      "end": 6071,
+      "texto": "Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A114",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6151,
+      "end": 6165,
+      "texto": "(608) 000 0017",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E66",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F10",
+        "F43"
+      ]
+    },
+    {
+      "id": "C07-A115",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6179,
+      "end": 6189,
+      "texto": "3010000008",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C07-A116",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6263,
+      "end": 6276,
+      "texto": "1.000.000.002",
+      "tipo": "HC",
+      "rol": "PACIENTE",
+      "entidad": "C07-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18"
+      ]
+    },
+    {
+      "id": "C07-A117",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6278,
+      "end": 6292,
+      "texto": "Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A118",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6315,
+      "end": 6341,
+      "texto": "síndrome de Guillain-Barré",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C07-E35",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C07-A119",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6350,
+      "end": 6355,
+      "texto": "G61.0",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C07-E36",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C07-A120",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6363,
+      "end": 6389,
+      "texto": "Fundación Hospital Ejemplo",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C07-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A121",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6429,
+      "end": 6437,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A122",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6495,
+      "end": 6521,
+      "texto": "Fundación Hospital Ejemplo",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C07-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A123",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6545,
+      "end": 6555,
+      "texto": "2026-06-12",
+      "tipo": "FECHA",
+      "entidad": "C07-E67",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C07-A124",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6583,
+      "end": 6602,
+      "texto": "Dg. 0A # 0A-00 Este",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "entidad": "C07-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C07-A125",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6606,
+      "end": 6617,
+      "texto": "Bucaramanga",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E39",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A126",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6633,
+      "end": 6651,
+      "texto": "8 de junio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C07-E68",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C07-A127",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6674,
+      "end": 6677,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A128",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6695,
+      "end": 6708,
+      "texto": "E-2026-000310",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E69",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C07-A129",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6773,
+      "end": 6781,
+      "texto": "Ficticio",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A130",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6791,
+      "end": 6812,
+      "texto": "22 de febrero de 2020",
+      "tipo": "FECHA",
+      "entidad": "C07-E42",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F21",
+        "F47"
+      ]
+    },
+    {
+      "id": "C07-A131",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6825,
+      "end": 6839,
+      "texto": "6 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C07-E43",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C07-A132",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6906,
+      "end": 6918,
+      "texto": "50S-00000018",
+      "tipo": "MATRICULA",
+      "entidad": "C07-E70",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C07-A133",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6937,
+      "end": 6959,
+      "texto": "Arturo Ficticio Orozco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A134",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6975,
+      "end": 6984,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C07-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A135",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7013,
+      "end": 7021,
+      "texto": "Ficticia",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A136",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7075,
+      "end": 7127,
+      "texto": "veintitrés (23) de mayo de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C07-E71",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C07-A137",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7169,
+      "end": 7175,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A138",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7240,
+      "end": 7260,
+      "texto": "20260314000000000019",
+      "tipo": "AFILIACION",
+      "entidad": "C07-E72",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C07-A139",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7276,
+      "end": 7303,
+      "texto": "Blanca Nubia Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A140",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7394,
+      "end": 7419,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A141",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7436,
+      "end": 7464,
+      "texto": "Paola Andrea Prueba Guerrero",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A142",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7490,
+      "end": 7511,
+      "texto": "subgerente científica",
+      "tipo": "CARGO",
+      "entidad": "C07-E73",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C07-A143",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7645,
+      "end": 7672,
+      "texto": "Blanca Nubia Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A144",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7766,
+      "end": 7785,
+      "texto": "4000-0000-0000-0200",
+      "tipo": "TARJETA",
+      "entidad": "C07-E74",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C07-A145",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7857,
+      "end": 7882,
+      "texto": "Gilberto Ficticio Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A146",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7902,
+      "end": 7915,
+      "texto": "Ejemplo Norte",
+      "tipo": "BARRIO",
+      "entidad": "C07-E75",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C07-A147",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 7940,
+      "end": 7948,
+      "texto": "Ficticia",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A148",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8025,
+      "end": 8050,
+      "texto": "vereda El Tablón Ficticio",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E76",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F14"
+      ]
+    },
+    {
+      "id": "C07-A149",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8071,
+      "end": 8083,
+      "texto": "Dosquebradas",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C07-A150",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8139,
+      "end": 8163,
+      "texto": "ALEJANDRO FICTICIO GÓMEZ",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C07-A151",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8238,
+      "end": 8245,
+      "texto": "XYZ-021",
+      "tipo": "PLACA",
+      "entidad": "C07-E77",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C07-A152",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8263,
+      "end": 8278,
+      "texto": "Ficticio Orozco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A153",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8304,
+      "end": 8322,
+      "texto": "Papelería Ficticia",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C07-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A154",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8371,
+      "end": 8398,
+      "texto": "Blanca Nubia Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A155",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8422,
+      "end": 8446,
+      "texto": "Alejandro Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A156",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8471,
+      "end": 8501,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A157",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8511,
+      "end": 8533,
+      "texto": "2 de diciembre de 2020",
+      "tipo": "FECHA",
+      "entidad": "C07-E78",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C07-A158",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8563,
+      "end": 8573,
+      "texto": "EPS-000022",
+      "tipo": "AFILIACION",
+      "entidad": "C07-E79",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C07-A159",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8597,
+      "end": 8605,
+      "texto": "Ficticia",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A160",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8697,
+      "end": 8720,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E80",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C07-A161",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8779,
+      "end": 8803,
+      "texto": "Sentencia SU-508 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E81",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C07-A162",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8877,
+      "end": 8916,
+      "texto": "artículo 49 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E82",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C07-A163",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8922,
+      "end": 8938,
+      "texto": "Ley 1751 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E83",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C07-A164",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 8981,
+      "end": 8997,
+      "texto": "Ley 1122 de 2007",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E84",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C07-A165",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9061,
+      "end": 9085,
+      "texto": "Sentencia SU-124 de 2018",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E85",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C07-A166",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9118,
+      "end": 9129,
+      "texto": "T-9.000.004",
+      "tipo": "CC",
+      "entidad": "C07-E86",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C07-A167",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9272,
+      "end": 9301,
+      "texto": "15759-31-03-967-2019-00023-00",
+      "tipo": "RADICADO",
+      "entidad": "C07-E87",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "bandera_esperada": "CITA_JURISPRUDENCIAL",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F32"
+      ]
+    },
+    {
+      "id": "C07-A168",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9356,
+      "end": 9371,
+      "texto": "Ley 100 de 1993",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E88",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C07-A169",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9420,
+      "end": 9432,
+      "texto": "110014003999",
+      "tipo": "RADICADO",
+      "entidad": "C07-E89",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C07-A170",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9491,
+      "end": 9495,
+      "texto": "8610",
+      "tipo": "CC",
+      "entidad": "C07-E90",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C07-A171",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9588,
+      "end": 9611,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E80",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C07-A172",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9670,
+      "end": 9693,
+      "texto": "Sentencia T-074 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E91",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C07-A173",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9767,
+      "end": 9806,
+      "texto": "artículo 49 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E82",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C07-A174",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9812,
+      "end": 9828,
+      "texto": "Ley 1751 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E83",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C07-A175",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9871,
+      "end": 9887,
+      "texto": "Ley 1480 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E92",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C07-A176",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 9951,
+      "end": 9974,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E80",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C07-A177",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10007,
+      "end": 10018,
+      "texto": "T-9.000.004",
+      "tipo": "CC",
+      "entidad": "C07-E86",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C07-A178",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10107,
+      "end": 10131,
+      "texto": "Alejandro Ficticio Gómez",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C07-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43"
+      ]
+    },
+    {
+      "id": "C07-A179",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10146,
+      "end": 10149,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A180",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10262,
+      "end": 10288,
+      "texto": "síndrome de Guillain-Barré",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C07-E35",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C07-A181",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10304,
+      "end": 10329,
+      "texto": "Salud Integral Prueba EPS",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A182",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10425,
+      "end": 10439,
+      "texto": "Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C07-A183",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10467,
+      "end": 10493,
+      "texto": "Fundación Hospital Ejemplo",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C07-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A184",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10504,
+      "end": 10514,
+      "texto": "2026-05-05",
+      "tipo": "FECHA",
+      "entidad": "C07-E93",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C07-A185",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10560,
+      "end": 10563,
+      "texto": "SIP",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A186",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10595,
+      "end": 10616,
+      "texto": "Av. Calle 00B # 0A-01",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C07-A187",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10618,
+      "end": 10630,
+      "texto": "Dosquebradas",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C07-A188",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10632,
+      "end": 10641,
+      "texto": "Risaralda",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C07-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A189",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10663,
+      "end": 10695,
+      "texto": "blanca.ficticia@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C07-A190",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10706,
+      "end": 10722,
+      "texto": "+57 301 000 0008",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C07-A191",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10738,
+      "end": 10768,
+      "texto": "Salud Integral Prueba EPS S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C07-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03"
+      ]
+    },
+    {
+      "id": "C07-A192",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10774,
+      "end": 10787,
+      "texto": "811.000.024-9",
+      "tipo": "NIT",
+      "rol": "EPS",
+      "entidad": "C07-E94",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C07-A193",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10795,
+      "end": 10834,
+      "texto": "Avenida Calle 0 No. 00-03 Este, torre 3",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "entidad": "C07-E95",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C07-A194",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10843,
+      "end": 10882,
+      "texto": "contacto@salud-integral-prueba-eps.test",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C07-E96",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C07-A195",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10897,
+      "end": 10924,
+      "texto": "Blanca Nubia Ficticia Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A196",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10930,
+      "end": 10940,
+      "texto": "1000000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C07-A197",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10944,
+      "end": 10955,
+      "texto": "Bucaramanga",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E39",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A198",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 10998,
+      "end": 11030,
+      "texto": "blanca.ficticia@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C07-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F49"
+      ]
+    },
+    {
+      "id": "C07-A199",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11044,
+      "end": 11057,
+      "texto": "000-000025-00",
+      "tipo": "CUENTA",
+      "entidad": "C07-E97",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F49"
+      ]
+    },
+    {
+      "id": "C07-A200",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11145,
+      "end": 11174,
+      "texto": "66170-41-05-942-2026-00027-00",
+      "tipo": "RADICADO",
+      "entidad": "C07-E98",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C07-A201",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11183,
+      "end": 11231,
+      "texto": "Juzgado 991 Laboral del Circuito de Dosquebradas",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C07-E99",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C07-A202",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11219,
+      "end": 11231,
+      "texto": "Dosquebradas",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C07-A201",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C07-A203",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11245,
+      "end": 11255,
+      "texto": "24/07/2026",
+      "tipo": "FECHA",
+      "entidad": "C07-E100",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C07-A204",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11283,
+      "end": 11313,
+      "texto": "66-170-41-03-946-2023-00028-00",
+      "tipo": "RADICADO",
+      "entidad": "C07-E101",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C07-A205",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11322,
+      "end": 11363,
+      "texto": "Juzgado 992 Promiscuo Municipal de Itagüí",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C07-E102",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C07-A206",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11357,
+      "end": 11363,
+      "texto": "Itagüí",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E103",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C07-A205",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C07-A207",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11377,
+      "end": 11387,
+      "texto": "18.03.2026",
+      "tipo": "FECHA",
+      "entidad": "C07-E104",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C07-A208",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11410,
+      "end": 11439,
+      "texto": "25175 40 10 989 2019 00029 00",
+      "tipo": "RADICADO",
+      "entidad": "C07-E105",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C07-A209",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11448,
+      "end": 11485,
+      "texto": "Juzgado 994 Civil Municipal de Soacha",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C07-E106",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C07-A210",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11479,
+      "end": 11485,
+      "texto": "Soacha",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E107",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C07-A209",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C07-A211",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11499,
+      "end": 11509,
+      "texto": "2025-05-13",
+      "tipo": "FECHA",
+      "entidad": "C07-E108",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C07-A212",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11534,
+      "end": 11555,
+      "texto": "258996000916202100030",
+      "tipo": "RADICADO",
+      "entidad": "C07-E109",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F05"
+      ]
+    },
+    {
+      "id": "C07-A213",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11568,
+      "end": 11587,
+      "texto": "Jairo Ejemplo Ortiz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E110",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A214",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11589,
+      "end": 11597,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C07-E111",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C07-A215",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11616,
+      "end": 11620,
+      "texto": "T.I.",
+      "tipo": "MENOR",
+      "entidad": "C07-E112",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C07-A216",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11621,
+      "end": 11634,
+      "texto": "1.000.000.032",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E113",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F08",
+        "F50"
+      ]
+    },
+    {
+      "id": "C07-A217",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11645,
+      "end": 11655,
+      "texto": "14/03/2020",
+      "tipo": "FECHA",
+      "entidad": "C07-E114",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C07-A218",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11668,
+      "end": 11682,
+      "texto": "6 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C07-E43",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C07-A219",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11714,
+      "end": 11727,
+      "texto": "1.000.000.032",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E115",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18"
+      ]
+    },
+    {
+      "id": "C07-A220",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11741,
+      "end": 11765,
+      "texto": "Leonardo Ficticio Torres",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E116",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A221",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11811,
+      "end": 11824,
+      "texto": "1.000.034.890",
+      "tipo": "PEP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E117",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09"
+      ]
+    },
+    {
+      "id": "C07-A222",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11853,
+      "end": 11872,
+      "texto": "26 de junio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C07-E118",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C07-A223",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11887,
+      "end": 11913,
+      "texto": "Alba Lucía Prueba Guerrero",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E119",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A224",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11945,
+      "end": 11954,
+      "texto": "1.000.036",
+      "tipo": "CE",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E120",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09"
+      ]
+    },
+    {
+      "id": "C07-A225",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 11983,
+      "end": 11993,
+      "texto": "14/06/2026",
+      "tipo": "FECHA",
+      "entidad": "C07-E121",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C07-A226",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12018,
+      "end": 12025,
+      "texto": "Córdoba",
+      "tipo": "MUNICIPIO",
+      "entidad": "C07-E122",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F26"
+      ]
+    },
+    {
+      "id": "C07-A227",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12027,
+      "end": 12034,
+      "texto": "Bolívar",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C07-E122",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C07-A228",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12088,
+      "end": 12104,
+      "texto": "Ficticio Jiménez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E123",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A229",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12110,
+      "end": 12122,
+      "texto": "603 000 0038",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E124",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C07-A230",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12232,
+      "end": 12239,
+      "texto": "$47.065",
+      "tipo": "VALOR",
+      "entidad": "C07-E125",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C07-A231",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12260,
+      "end": 12272,
+      "texto": "110014003999",
+      "tipo": "RADICADO",
+      "entidad": "C07-E89",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C07-A232",
+      "docId": "C07",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 12288,
+      "end": 12294,
+      "texto": "680001",
+      "tipo": "CC",
+      "entidad": "C07-E126",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C07-A233",
+      "docId": "C07",
+      "parte": {
+        "kind": "nota_final",
+        "index": 1
+      },
+      "start": 5,
+      "end": 28,
+      "texto": "Sentencia T-074 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C07-E91",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F35"
+      ]
+    },
+    {
+      "id": "C07-A234",
+      "docId": "C07",
+      "parte": {
+        "kind": "nota_final",
+        "index": 1
+      },
+      "start": 45,
+      "end": 65,
+      "texto": "Rafael Prueba Cuervo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F35",
+        "F51"
+      ]
+    },
+    {
+      "id": "C07-A235",
+      "docId": "C07",
+      "parte": {
+        "kind": "nota_final",
+        "index": 1
+      },
+      "start": 82,
+      "end": 96,
+      "texto": "(602) 000 0026",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C07-E127",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F35"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

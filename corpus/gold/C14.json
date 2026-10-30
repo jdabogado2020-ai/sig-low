@@ -1,0 +1,2619 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C14",
+  "tipoDocumento": "derecho_peticion",
+  "fuente": "docx",
+  "archivo": "corpus/docs/C14.docx",
+  "conjunto": "reserva",
+  "semilla": "SIGLOW-CORPUS-B",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 4849,
+        "sha256": "0a8a1578711da08799fe5a78867bea0438cb228f75605cbae64a44f4d069a83c"
+      },
+      {
+        "kind": "comentario",
+        "index": 1,
+        "longitud": 76,
+        "sha256": "1fe5c5e53ff2fe02136afab4b6779c91fd07f4cf11f9154eb18e95ad6f27fbf1"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": [
+      "autores_revisiones",
+      "propiedades_aplicacion",
+      "propiedades_documento"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Santiago Prueba",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Asesorías Legales Prueba S.A.S.",
+      "role": "EMPRESA"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C14-E01",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E02",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-08-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E03",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Asesorías Legales Prueba S.A.S.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C14-E04",
+      "tipo": "CARGO",
+      "canonico": "CARGO:subgerente cientifica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E05",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:esperanza ejemplo orozco",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E06",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:TV 00 0 1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E07",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 23 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E08",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Santiago Prueba",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C14-E09",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:1000000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E10",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:AC 0 0A 3 OF 502",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E11",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:los almendros de prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E12",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E13",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3200000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E14",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:0000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E15",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:santiago.prueba@correo.ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E16",
+      "tipo": "CARGO",
+      "canonico": "CARGO:secretaria de salud municipal",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E17",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:2026001013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E18",
+      "tipo": "MENOR",
+      "canonico": "MENOR:test:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E19",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:panaderia ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E20",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:prados de prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E21",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E22",
+      "tipo": "FECHA",
+      "canonico": "FECHA:1965-04-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E23",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~61 anos",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E24",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:070-000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E25",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:isabel cristina ejemplo castano",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E26",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:000000000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E27",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "canonico": "CUENTA:BREB:@prueba26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E28",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-19",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E29",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1250000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E30",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "canonico": "DIR:AC 00B 00 0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E31",
+      "tipo": "VALOR",
+      "canonico": "VALOR:148000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E32",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3110000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E33",
+      "tipo": "CARGO",
+      "canonico": "CARGO:administradora del conjunto",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E34",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:2026001117",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E35",
+      "tipo": "MENOR",
+      "canonico": "MENOR:test:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E36",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E37",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:constructora prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E38",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:811000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E39",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E40",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:055000000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E41",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-30",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E42",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1755 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E43",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-230 de 2020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E44",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 14 de la ley 1437 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E45",
+      "tipo": "CC",
+      "canonico": "NEG:3600",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E46",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-06-26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E47",
+      "tipo": "VALOR",
+      "canonico": "VALOR:250000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E48",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E49",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25899400390620220001100",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E50",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 994 civil municipal de palmira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E51",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-05-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E52",
+      "tipo": "RADICADO",
+      "canonico": "RAD:66170410591220250001200",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E53",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 990 de familia de floridablanca",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E54",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:68",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E55",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-12-24",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E56",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:juan david ejemplo ospina",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E57",
+      "tipo": "CE",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CE:1000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E58",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-01",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E59",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:66",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E60",
+      "tipo": "CC",
+      "canonico": "NEG:95",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C14-E61",
+      "tipo": "CC",
+      "canonico": "NEG:890201",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C14-A001",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 0,
+      "end": 16,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C14-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C14-A002",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 18,
+      "end": 38,
+      "texto": "10 de agosto de 2026",
+      "tipo": "FECHA",
+      "entidad": "C14-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C14-A003",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 47,
+      "end": 78,
+      "texto": "Asesorías Legales Prueba S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C14-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C14-A004",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 85,
+      "end": 106,
+      "texto": "subgerente científica",
+      "tipo": "CARGO",
+      "entidad": "C14-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C14-A005",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 109,
+      "end": 133,
+      "texto": "Esperanza Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C14-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C14-A006",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 145,
+      "end": 166,
+      "texto": "Transversal 00 # 0-01",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C14-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C14-A007",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 168,
+      "end": 184,
+      "texto": "Santiago de Cali",
+      "tipo": "MUNICIPIO",
+      "entidad": "C14-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C14-A008",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 215,
+      "end": 254,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C14-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C14-A009",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 255,
+      "end": 276,
+      "texto": "Santiago Prueba Rojas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A010",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 338,
+      "end": 351,
+      "texto": "1.000'000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C14-A011",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 366,
+      "end": 404,
+      "texto": "Avenida Calle 0 n.º 0A-03, oficina 502",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C14-A012",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 413,
+      "end": 436,
+      "texto": "Los Almendros de Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C14-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C14-A013",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 438,
+      "end": 442,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C14-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C14-A014",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 456,
+      "end": 472,
+      "texto": "+57 320 000 0002",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C14-A015",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 480,
+      "end": 488,
+      "texto": "000 0003",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C14-A016",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 497,
+      "end": 532,
+      "texto": "SANTIAGO.PRUEBA@CORREO.EJEMPLO.TEST",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C14-A017",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 661,
+      "end": 685,
+      "texto": "Esperanza Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C14-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C14-A018",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 687,
+      "end": 716,
+      "texto": "secretaria de salud municipal",
+      "tipo": "CARGO",
+      "entidad": "C14-E16",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C14-A019",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 769,
+      "end": 779,
+      "texto": "2026001013",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C14-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C14-A020",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 795,
+      "end": 807,
+      "texto": "Prueba Rojas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A021",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 907,
+      "end": 915,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C14-E18",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C14-A022",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 927,
+      "end": 945,
+      "texto": "Panadería Ficticia",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C14-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C14-A023",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 961,
+      "end": 982,
+      "texto": "SANTIAGO PRUEBA ROJAS",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C14-A024",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1052,
+      "end": 1068,
+      "texto": "Prados de Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C14-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C14-A025",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1072,
+      "end": 1076,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C14-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C14-A026",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1084,
+      "end": 1117,
+      "texto": "Av. Calle 0 N° 0A-03, oficina 502",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C14-A027",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1159,
+      "end": 1183,
+      "texto": "Asesorías Legales Prueba",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C14-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C14-A028",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1194,
+      "end": 1203,
+      "texto": "000000004",
+      "tipo": "AFILIACION",
+      "entidad": "C14-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C14-A029",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1209,
+      "end": 1221,
+      "texto": "Prueba Rojas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A030",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1231,
+      "end": 1241,
+      "texto": "17/04/1965",
+      "tipo": "FECHA",
+      "entidad": "C14-E22",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C14-A031",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1247,
+      "end": 1254,
+      "texto": "61 años",
+      "tipo": "FECHA",
+      "entidad": "C14-E23",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C14-A032",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1397,
+      "end": 1405,
+      "texto": "S. P. R.",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A033",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1492,
+      "end": 1502,
+      "texto": "070-000005",
+      "tipo": "MATRICULA",
+      "entidad": "C14-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C14-A034",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1506,
+      "end": 1521,
+      "texto": "Ejemplo Castaño",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C14-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C14-A035",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1576,
+      "end": 1588,
+      "texto": "000000000006",
+      "tipo": "CUENTA",
+      "entidad": "C14-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C14-A036",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1627,
+      "end": 1636,
+      "texto": "@prueba26",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C14-A037",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1644,
+      "end": 1663,
+      "texto": "19 de junio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C14-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C14-A038",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1687,
+      "end": 1697,
+      "texto": "$1.250.000",
+      "tipo": "VALOR",
+      "entidad": "C14-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C14-A039",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1758,
+      "end": 1789,
+      "texto": "Isabel Cristina Ejemplo Castaño",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C14-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C14-A040",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1807,
+      "end": 1830,
+      "texto": "Av. Calle 00B n.º 00-00",
+      "tipo": "DIRECCION",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C14-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C14-A041",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1864,
+      "end": 1873,
+      "texto": "$ 148.000",
+      "tipo": "VALOR",
+      "entidad": "C14-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C14-A042",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1919,
+      "end": 1931,
+      "texto": "311 000 0007",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C14-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C14-A043",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1980,
+      "end": 2004,
+      "texto": "Esperanza Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C14-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C14-A044",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2006,
+      "end": 2033,
+      "texto": "administradora del conjunto",
+      "tipo": "CARGO",
+      "entidad": "C14-E33",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C14-A045",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2086,
+      "end": 2096,
+      "texto": "2026001117",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C14-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C14-A046",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2125,
+      "end": 2146,
+      "texto": "Santiago Prueba Rojas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A047",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2191,
+      "end": 2199,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C14-E35",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C14-A048",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2211,
+      "end": 2235,
+      "texto": "Panadería Ficticia Ltda.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C14-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C14-A049",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2310,
+      "end": 2326,
+      "texto": "Prados de Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C14-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C14-A050",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2330,
+      "end": 2334,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C14-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C14-A051",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2342,
+      "end": 2374,
+      "texto": "Av. Calle 0 # 0A-03, oficina 502",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C14-A052",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2416,
+      "end": 2440,
+      "texto": "Asesorías Legales Prueba",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C14-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C14-A053",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2451,
+      "end": 2460,
+      "texto": "000000008",
+      "tipo": "AFILIACION",
+      "entidad": "C14-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C14-A054",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2485,
+      "end": 2506,
+      "texto": "Santiago Prueba Rojas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A055",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2532,
+      "end": 2544,
+      "texto": "Prueba Rojas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A056",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2554,
+      "end": 2564,
+      "texto": "17/04/1965",
+      "tipo": "FECHA",
+      "entidad": "C14-E22",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C14-A057",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2570,
+      "end": 2577,
+      "texto": "61 años",
+      "tipo": "FECHA",
+      "entidad": "C14-E23",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C14-A058",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2709,
+      "end": 2730,
+      "texto": "Santiago Prueba Rojas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A059",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2778,
+      "end": 2802,
+      "texto": "CONSTRUCTORA PRUEBA S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C14-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F51"
+      ]
+    },
+    {
+      "id": "C14-A060",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2812,
+      "end": 2825,
+      "texto": "811.000.009-8",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C14-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C14-A061",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2964,
+      "end": 2970,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A062",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3097,
+      "end": 3114,
+      "texto": "Banco Prueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C14-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C14-A063",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3119,
+      "end": 3133,
+      "texto": "0550-0000-0010",
+      "tipo": "CUENTA",
+      "entidad": "C14-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C14-A064",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3164,
+      "end": 3174,
+      "texto": "2026-05-30",
+      "tipo": "FECHA",
+      "entidad": "C14-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C14-A065",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3191,
+      "end": 3230,
+      "texto": "artículo 23 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C14-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C14-A066",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3268,
+      "end": 3284,
+      "texto": "Ley 1755 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C14-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C14-A067",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3351,
+      "end": 3367,
+      "texto": "Ley 1755 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C14-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C14-A068",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3373,
+      "end": 3396,
+      "texto": "Sentencia T-230 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C14-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31"
+      ]
+    },
+    {
+      "id": "C14-A069",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3469,
+      "end": 3503,
+      "texto": "artículo 14 de la Ley 1437 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C14-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C14-A070",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3521,
+      "end": 3525,
+      "texto": "3600",
+      "tipo": "CC",
+      "entidad": "C14-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C14-A071",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3624,
+      "end": 3636,
+      "texto": "26 jun. 2026",
+      "tipo": "FECHA",
+      "entidad": "C14-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C14-A072",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3689,
+      "end": 3736,
+      "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
+      "tipo": "VALOR",
+      "entidad": "C14-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24"
+      ]
+    },
+    {
+      "id": "C14-A073",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3801,
+      "end": 3836,
+      "texto": "santiago.prueba@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C14-A074",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3915,
+      "end": 3927,
+      "texto": "Prueba Rojas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A075",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4036,
+      "end": 4043,
+      "texto": "1 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C14-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C14-A076",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4085,
+      "end": 4123,
+      "texto": "Avenida Calle 0 n.º 0A-03, oficina 502",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C14-A077",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4125,
+      "end": 4129,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C14-E12",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C14-A078",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4146,
+      "end": 4181,
+      "texto": "santiago.prueba@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C14-A079",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4197,
+      "end": 4218,
+      "texto": "Santiago Prueba Rojas",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C14-A080",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4224,
+      "end": 4234,
+      "texto": "1000000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C14-A081",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4292,
+      "end": 4321,
+      "texto": "25899/40/03/906/2022/00011/00",
+      "tipo": "RADICADO",
+      "entidad": "C14-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C14-A082",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4330,
+      "end": 4368,
+      "texto": "Juzgado 994 Civil Municipal de Palmira",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C14-E50",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C14-A083",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4361,
+      "end": 4368,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C14-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C14-A082",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C14-A084",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4382,
+      "end": 4394,
+      "texto": "17 may. 2024",
+      "tipo": "FECHA",
+      "entidad": "C14-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C14-A085",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4422,
+      "end": 4451,
+      "texto": "66170/41/05/912/2025/00012/00",
+      "tipo": "RADICADO",
+      "entidad": "C14-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C14-A086",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4460,
+      "end": 4499,
+      "texto": "Juzgado 990 de Familia de Floridablanca",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C14-E53",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C14-A087",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4486,
+      "end": 4499,
+      "texto": "Floridablanca",
+      "tipo": "MUNICIPIO",
+      "entidad": "C14-E54",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C14-A086",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C14-A088",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4513,
+      "end": 4523,
+      "texto": "2025-12-24",
+      "tipo": "FECHA",
+      "entidad": "C14-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C14-A089",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4537,
+      "end": 4562,
+      "texto": "Juan David Ejemplo Ospina",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C14-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C14-A090",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4594,
+      "end": 4603,
+      "texto": "1.000.014",
+      "tipo": "CE",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C14-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09"
+      ]
+    },
+    {
+      "id": "C14-A091",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4632,
+      "end": 4677,
+      "texto": "uno (1) de julio de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C14-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C14-A092",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4703,
+      "end": 4709,
+      "texto": "Balboa",
+      "tipo": "MUNICIPIO",
+      "entidad": "C14-E59",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F26"
+      ]
+    },
+    {
+      "id": "C14-A093",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4711,
+      "end": 4720,
+      "texto": "Risaralda",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C14-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C14-A094",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4782,
+      "end": 4784,
+      "texto": "95",
+      "tipo": "CC",
+      "entidad": "C14-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C14-A095",
+      "docId": "C14",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4798,
+      "end": 4804,
+      "texto": "890201",
+      "tipo": "CC",
+      "entidad": "C14-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C14-A096",
+      "docId": "C14",
+      "parte": {
+        "kind": "comentario",
+        "index": 1
+      },
+      "start": 20,
+      "end": 33,
+      "texto": "1.000.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F36"
+      ]
+    },
+    {
+      "id": "C14-A097",
+      "docId": "C14",
+      "parte": {
+        "kind": "comentario",
+        "index": 1
+      },
+      "start": 47,
+      "end": 59,
+      "texto": "320 000 0002",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C14-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F36"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

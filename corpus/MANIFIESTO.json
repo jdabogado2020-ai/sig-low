@@ -6,7 +6,7 @@
     "desarrollo": "SIGLOW-CORPUS-A",
     "reserva": "SIGLOW-CORPUS-B"
   },
-  "conjuntoGenerado": "desarrollo",
+  "conjuntoGenerado": "todos",
   "documentos": [
     "C01",
     "C02",
@@ -27,13 +27,28 @@
     "C24",
     "C27",
     "C28",
-    "C30"
+    "C30",
+    "C07",
+    "C08",
+    "C09",
+    "C14",
+    "C15",
+    "C19",
+    "C21",
+    "C25",
+    "C26",
+    "C29"
   ],
   "archivos": [
     {
       "ruta": "corpus/docs/C05.txt",
       "sha256": "57187e5aa57786c03cffa3b4c2f3ad920cbdb3f85d33934be1bae037b4aacda9",
       "bytes": 10059
+    },
+    {
+      "ruta": "corpus/docs/C08.txt",
+      "sha256": "c80acd552b4fb76bbe4aab3f5e8f9ed35d39a364d3bb4b26115cbe06673284b1",
+      "bytes": 10158
     },
     {
       "ruta": "corpus/docs/C10.txt",
@@ -51,6 +66,11 @@
       "bytes": 4989
     },
     {
+      "ruta": "corpus/docs/C21.txt",
+      "sha256": "ee747820cd35462dc4306de26efbe71de3a6829e46eee05f9d302dc457ca1477",
+      "bytes": 6465
+    },
+    {
       "ruta": "corpus/docs/C22.txt",
       "sha256": "932d96b0dd738920119168fca32c31d78a4d56c66055626b871a2b7e28380687",
       "bytes": 3564
@@ -64,6 +84,16 @@
       "ruta": "corpus/docs/C24.txt",
       "sha256": "7bd0ad41661b61925988b6f8da6adc3afc7fcfcac171c9115e64ff4ef4580e82",
       "bytes": 2003
+    },
+    {
+      "ruta": "corpus/docs/C25.txt",
+      "sha256": "0714782ec1e766994e30cb80a94cb05099032ff407f4a1c93d412355220ad002",
+      "bytes": 1900
+    },
+    {
+      "ruta": "corpus/docs/C26.txt",
+      "sha256": "c270ce3e126c4e9455e009fe8fe353a2e1774b2050b0a06cd2421e98f4f49c9d",
+      "bytes": 1706
     },
     {
       "ruta": "corpus/docs/C30.txt",
@@ -131,6 +161,36 @@
       "bytes": 19707
     },
     {
+      "ruta": "corpus/gold/C07.json",
+      "sha256": "2a82219660bf721e29acd546abd04f2de64caea8c2f8b54ed8e1a3404837237e",
+      "bytes": 139206
+    },
+    {
+      "ruta": "corpus/gold/C07.texto.json",
+      "sha256": "b5563beacdf1077950f96f911e5567f41299c40d20c8b011dc5c189eeeb2e1b3",
+      "bytes": 14917
+    },
+    {
+      "ruta": "corpus/gold/C08.json",
+      "sha256": "48bd385ad941e92c98c639e67be4aa2a15bca07c251073deb0587850e304c8f3",
+      "bytes": 104820
+    },
+    {
+      "ruta": "corpus/gold/C08.texto.json",
+      "sha256": "bc7b023c2c9f65acba5e46ee0b43adb60070e66bef15eefa9603e3444af989cf",
+      "bytes": 10454
+    },
+    {
+      "ruta": "corpus/gold/C09.json",
+      "sha256": "6bfb40450a47a7fead7a42d3216e48f9d473be49be7927e19d86fb7e57c65dcd",
+      "bytes": 152695
+    },
+    {
+      "ruta": "corpus/gold/C09.texto.json",
+      "sha256": "9ca888afc4c8c3cab867f4a72030492ed33c633e6d4f89d44ad5181b4830b77f",
+      "bytes": 30584
+    },
+    {
       "ruta": "corpus/gold/C10.json",
       "sha256": "6281731ba9fd8df4c297fec8dde941bd0dcb31d1fabdbc367a17d4f83051c200",
       "bytes": 55496
@@ -171,6 +231,26 @@
       "bytes": 6995
     },
     {
+      "ruta": "corpus/gold/C14.json",
+      "sha256": "05c97f7e094bd22072253b80e0eb77e62b602e686b102436686abe7d6661764c",
+      "bytes": 58574
+    },
+    {
+      "ruta": "corpus/gold/C14.texto.json",
+      "sha256": "da61a6855c4754b9093ef07f0491259ae78fd68e2eabde4bf039fb9c4d7e7a17",
+      "bytes": 5817
+    },
+    {
+      "ruta": "corpus/gold/C15.json",
+      "sha256": "7b4acd1effdb12c3351711a219f56d5dfbfca815e6bcd0a001cb7b42fd2c3df5",
+      "bytes": 43946
+    },
+    {
+      "ruta": "corpus/gold/C15.texto.json",
+      "sha256": "7a0e7b8126d153a0070932aca4b0f89392d7e90024e15c88c63e34065eac940d",
+      "bytes": 8590
+    },
+    {
       "ruta": "corpus/gold/C16.json",
       "sha256": "724f53cd2907dfba3d310865446f78dbf2f2a08306361bce0371255074311f18",
       "bytes": 57082
@@ -201,6 +281,16 @@
       "bytes": 6650
     },
     {
+      "ruta": "corpus/gold/C19.json",
+      "sha256": "19cd6853fe305b85d2079be94254a68890085bc1adca68b09d7d71059fd94289",
+      "bytes": 65660
+    },
+    {
+      "ruta": "corpus/gold/C19.texto.json",
+      "sha256": "2ec4cfbb8760a2bf796ad620540922202fb526f12e1b6b5e6b639c220fe5251b",
+      "bytes": 7830
+    },
+    {
       "ruta": "corpus/gold/C20.json",
       "sha256": "22f78edfc4f1e2e2a618e9f43a248990a5b84ab49488f4ceb9d3861a293c3241",
       "bytes": 67130
@@ -209,6 +299,16 @@
       "ruta": "corpus/gold/C20.texto.json",
       "sha256": "37fbe35a365aa12ea6e97fe4a0b08eafeb839565ddd0d960ef807f502a651950",
       "bytes": 15660
+    },
+    {
+      "ruta": "corpus/gold/C21.json",
+      "sha256": "4b5bfb072575127f4923b616dcc7fa950ae8ca1cbedd5bedaa3bf481ed8cc7df",
+      "bytes": 59897
+    },
+    {
+      "ruta": "corpus/gold/C21.texto.json",
+      "sha256": "eab8cacf9ac0fa50ccc58860709782685fe489bdc42b557a72c8c57b0a6cd9a1",
+      "bytes": 8474
     },
     {
       "ruta": "corpus/gold/C22.json",
@@ -241,6 +341,26 @@
       "bytes": 2217
     },
     {
+      "ruta": "corpus/gold/C25.json",
+      "sha256": "c38f2043ec008cacc40d703ece5946eb509d3cf1dff3e111017750e6057f1b8e",
+      "bytes": 29968
+    },
+    {
+      "ruta": "corpus/gold/C25.texto.json",
+      "sha256": "b38560e2589d4cfdadde60d8cf103e0753aa624dcd97de5dfb9c689751e2a032",
+      "bytes": 2112
+    },
+    {
+      "ruta": "corpus/gold/C26.json",
+      "sha256": "a98868eaec0c1406ccf1f5db8d371eae8e1bbe6d2221951cf7dd6d7df3c74e8c",
+      "bytes": 23364
+    },
+    {
+      "ruta": "corpus/gold/C26.texto.json",
+      "sha256": "9055799e8b1a425d68b7c6443e3c135bb0770a84189d35991fa2e3b712c3f16e",
+      "bytes": 1920
+    },
+    {
       "ruta": "corpus/gold/C27.json",
       "sha256": "4cb36d8135b551a188d7cdfe1de0d1ce5a627f6b25e02f445e93d82275475c0d",
       "bytes": 89242
@@ -259,6 +379,16 @@
       "ruta": "corpus/gold/C28.texto.json",
       "sha256": "c3a6da9a9f5d58553289988d4e8195f6e59cb932f87e96a2e9a43efd3c4c4382",
       "bytes": 8722
+    },
+    {
+      "ruta": "corpus/gold/C29.json",
+      "sha256": "a02454973b94fc477deed954f4c8bb155389e8c74ac7db6da946a3faf75b2c29",
+      "bytes": 76128
+    },
+    {
+      "ruta": "corpus/gold/C29.texto.json",
+      "sha256": "67079e8ccfc91af9bf7832461986dd329b2c45b5faf46fcdc32cdca8a75bff4e",
+      "bytes": 11899
     },
     {
       "ruta": "corpus/gold/C30.json",

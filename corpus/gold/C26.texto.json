@@ -1,0 +1,13 @@
+{
+  "formato": "sig-low/gold-texto",
+  "v": 1,
+  "docId": "C26",
+  "partes": [
+    {
+      "kind": "cuerpo",
+      "index": 1,
+      "texto": "De: Fabián Ejemplo Martínez <fabian.ejemplo@correo.ejemplo.test>\nPara: Prueba Del Valle <julian.prueba@correo.ejemplo.test>\nFecha: domingo, 26 de julio de 2026, 17:57\nAsunto: Fwd: lo que me mandó el de la empresa\n\nhola Julián,\n\nle reenvío lo que me escribió diana carolina ficticia mora ayer; fíjese que no menciona el pago de la liquidación.\n\nla matrícula de la casa es 300-00000002 y está en Envigado, Antioquia. la escritura dice que el lote es de mi suegra Rosa Elena Prueba Torres, a quien le decimos mi mamá, desde 1998.\n\ngracias, quedo atento\nfabián ejemplo martínez\ncel +57 314 000 0003\n\n---------- Mensaje reenviado ----------\nDe: Diana Carolina Ficticia Mora <diana.ficticia@mail.prueba.test>\nPara: Ejemplo Martínez <fabian.ejemplo@correo.ejemplo.test>\nFecha: miércoles, 22 de julio de 2026, 08:38\nAsunto: tema pendiente de la liquidación\n\nSeñor(a) Ejemplo,\n\nSu solicitud quedó registrada con el radicado interno RH-2026-000125; si no recibe respuesta escriba a diana.ficticia@mail.prueba.test o llame al celular +57 322 000 0006.\n\nRecuerde que el contrato con Tecnología Ficticia S.A.S. (NIT 800000007-3) terminó el 6 de julio de 2026 y que la entrega de dotación quedó pendiente.\n\nLe informo que la liquidación de Ejemplo Martínez (C.C. 2.000.000.008) asciende a $7'350.000 y se consignará en la cuenta de ahorros 000-000010-00 del Banco Ejemplo.\n\nCordialmente,\nDiana Carolina Ficticia Mora – coordinadora de cartera\nTel. (608) 000 0011 · diana.ficticia@mail.prueba.test\n\npd. otros datos que le sirven\n\n1. Por error de digitación, la cédula de Prueba Moreno figura como 249000013; se aclara que es un dato mal digitado.\n\nDocumento ficticio para pruebas de Sig-Low."
+    }
+  ],
+  "estructura": []
+}

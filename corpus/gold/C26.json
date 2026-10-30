@@ -1,0 +1,1053 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C26",
+  "tipoDocumento": "correo_cliente",
+  "fuente": "txt",
+  "archivo": "corpus/docs/C26.txt",
+  "conjunto": "reserva",
+  "semilla": "SIGLOW-CORPUS-B",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 1676,
+        "sha256": "c270ce3e126c4e9455e009fe8fe353a2e1774b2050b0a06cd2421e98f4f49c9d"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": []
+  },
+  "listaDelCaso": [
+    {
+      "name": "Fabián Ejemplo Martínez",
+      "role": "CLIENTE"
+    },
+    {
+      "name": "Gloria Inés Ejemplo Cárdenas",
+      "role": "DEMANDADO"
+    },
+    {
+      "name": "Tecnología Ficticia S.A.S.",
+      "role": "EMPRESA"
+    },
+    {
+      "name": "EPS Bienestar Ficticio S.A.S.",
+      "role": "EPS"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C26-E01",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "canonico": "LISTA:Fabián Ejemplo Martínez",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C26-E02",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "canonico": "CORREO:fabian.ejemplo@correo.ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E03",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:julian prueba del valle",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E04",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "canonico": "CORREO:julian.prueba@correo.ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E05",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-26",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E06",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:diana carolina ficticia mora",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E07",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:300-00000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E08",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E09",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:rosa elena prueba torres",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E10",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:3140000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E11",
+      "tipo": "CORREO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CORREO:diana.ficticia@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E12",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-22",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E13",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:RH2026000125",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E14",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3220000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E15",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Tecnología Ficticia S.A.S.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C26-E16",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:800000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E17",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-06",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E18",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "canonico": "CC:2000000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E19",
+      "tipo": "VALOR",
+      "canonico": "VALOR:7350000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E20",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000001000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E21",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E22",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinadora de cartera",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E23",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:6080000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E24",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:miguel angel prueba moreno",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C26-E25",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:249000013",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C26-A001",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4,
+      "end": 27,
+      "texto": "Fabián Ejemplo Martínez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C26-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C26-A002",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 29,
+      "end": 63,
+      "texto": "fabian.ejemplo@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C26-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C26-A003",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 71,
+      "end": 87,
+      "texto": "Prueba Del Valle",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C26-A004",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 89,
+      "end": 122,
+      "texto": "julian.prueba@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "entidad": "C26-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C26-A005",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 140,
+      "end": 159,
+      "texto": "26 de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C26-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C26-A006",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 219,
+      "end": 225,
+      "texto": "Julián",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C26-A007",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 258,
+      "end": 286,
+      "texto": "diana carolina ficticia mora",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F52"
+      ]
+    },
+    {
+      "id": "C26-A008",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 371,
+      "end": 383,
+      "texto": "300-00000002",
+      "tipo": "MATRICULA",
+      "entidad": "C26-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C26-A009",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 394,
+      "end": 402,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C26-E08",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C26-A010",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 404,
+      "end": 413,
+      "texto": "Antioquia",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C26-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C26-A011",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 461,
+      "end": 485,
+      "texto": "Rosa Elena Prueba Torres",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C26-A012",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 506,
+      "end": 513,
+      "texto": "mi mamá",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C26-A013",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 550,
+      "end": 573,
+      "texto": "fabián ejemplo martínez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C26-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C26-A014",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 578,
+      "end": 594,
+      "texto": "+57 314 000 0003",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C26-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C26-A015",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 640,
+      "end": 668,
+      "texto": "Diana Carolina Ficticia Mora",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C26-A016",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 670,
+      "end": 701,
+      "texto": "diana.ficticia@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C26-A017",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 709,
+      "end": 725,
+      "texto": "Ejemplo Martínez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C26-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C26-A018",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 727,
+      "end": 761,
+      "texto": "fabian.ejemplo@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C26-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C26-A019",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 781,
+      "end": 800,
+      "texto": "22 de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C26-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C26-A020",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 859,
+      "end": 866,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C26-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C26-A021",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 923,
+      "end": 937,
+      "texto": "RH-2026-000125",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C26-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C26-A022",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 972,
+      "end": 1003,
+      "texto": "diana.ficticia@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C26-A023",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1023,
+      "end": 1039,
+      "texto": "+57 322 000 0006",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C26-A024",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1071,
+      "end": 1097,
+      "texto": "Tecnología Ficticia S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C26-E15",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C26-A025",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1103,
+      "end": 1114,
+      "texto": "800000007-3",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C26-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C26-A026",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1127,
+      "end": 1145,
+      "texto": "6 de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C26-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C26-A027",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1226,
+      "end": 1242,
+      "texto": "Ejemplo Martínez",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C26-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C26-A028",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1249,
+      "end": 1262,
+      "texto": "2.000.000.008",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C26-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C26-A029",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1275,
+      "end": 1285,
+      "texto": "$7'350.000",
+      "tipo": "VALOR",
+      "entidad": "C26-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C26-A030",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1326,
+      "end": 1339,
+      "texto": "000-000010-00",
+      "tipo": "CUENTA",
+      "entidad": "C26-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C26-A031",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1344,
+      "end": 1357,
+      "texto": "Banco Ejemplo",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C26-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C26-A032",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1374,
+      "end": 1402,
+      "texto": "Diana Carolina Ficticia Mora",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C26-A033",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1405,
+      "end": 1428,
+      "texto": "coordinadora de cartera",
+      "tipo": "CARGO",
+      "entidad": "C26-E22",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C26-A034",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1434,
+      "end": 1448,
+      "texto": "(608) 000 0011",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C26-A035",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1451,
+      "end": 1482,
+      "texto": "diana.ficticia@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C26-A036",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1556,
+      "end": 1569,
+      "texto": "Prueba Moreno",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C26-A037",
+      "docId": "C26",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1582,
+      "end": 1591,
+      "texto": "249000013",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C26-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

@@ -1,0 +1,6892 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C09",
+  "tipoDocumento": "tutela_salud",
+  "fuente": "pdf",
+  "archivo": "corpus/docs/C09.pdf",
+  "conjunto": "reserva",
+  "semilla": "SIGLOW-CORPUS-B",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1,
+        "longitud": 3193,
+        "sha256": "01a4c88798d5e8f233a033169e285fb3d210c0fedeb19f3d3da0c9c48ceaebb0"
+      },
+      {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2,
+        "longitud": 3663,
+        "sha256": "9bab440151180c5f73efb91afdf77b3df657c359680bcf32ceaec002d0f55458"
+      },
+      {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3,
+        "longitud": 3417,
+        "sha256": "25cff3c506d4e0e15171f89f1ff5520e05694bfd48cfe64c7bfcdb6c11aef30c"
+      },
+      {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4,
+        "longitud": 2378,
+        "sha256": "819e68c464e8bd04670c0e816e9b024518012b9c5c8c49f8be85d43c666829ed"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": [
+      "pdf_propiedades"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Viviana Prueba Muñoz",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Liliana Ejemplo Quintero",
+      "role": "PACIENTE"
+    },
+    {
+      "name": "Laura Camila Ficticia López",
+      "role": "TESTIGO"
+    },
+    {
+      "name": "EPS Salud Ficticia S.A.",
+      "role": "EPS"
+    },
+    {
+      "name": "Fundación Hospital Ejemplo",
+      "role": "IPS"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C09-E01",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Viviana Prueba Muñoz",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C09-E02",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 998 civil municipal de chia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E03",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E04",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "canonico": "LISTA:Liliana Ejemplo Quintero",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C09-E05",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "LISTA:EPS Salud Ficticia S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C09-E06",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "canonico": "LISTA:Fundación Hospital Ejemplo",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C09-E07",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:91000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E08",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:AC 00B 00 0 LC 3 CS 3",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E09",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:la esperanza ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E10",
+      "tipo": "CC",
+      "rol": "PACIENTE",
+      "canonico": "CC:20000002",
+      "mismoTitular": [
+        "C09-E48"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C09-E11",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 86 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E12",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 2591 de 1991",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E13",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E14",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "canonico": "DIR:KR 0A BIS A 0A 1 IN 4",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E15",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:73",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E16",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:su hija fue victima de secuestro en 2024",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E17",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:6060000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E18",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3140000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E19",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1750000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E20",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E21",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:altos del ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E22",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:hector fabio ficticio barrera",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E23",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:39000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E24",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:distribuidora prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E25",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:800000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E26",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:VEREDA SAN PRUEBA",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E27",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2022-09-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E28",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E29",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:50C-00000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E30",
+      "tipo": "VALOR",
+      "canonico": "VALOR:650000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E31",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "canonico": "TEL:6070000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E32",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "canonico": "CORREO:notificaciones@eps-salud-ficticia.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E33",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-13",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E34",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000170",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E35",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:123010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E36",
+      "tipo": "PLACA",
+      "canonico": "PLACA:AAA010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E37",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:taller mecanico ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E38",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E39",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000001100",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E40",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "canonico": "CUENTA:BREB:@prueba1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E41",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-01-28",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E42",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05001400391920210002300",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E43",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:gustavo ejemplo lopez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E44",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:20260314000000000012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E45",
+      "tipo": "FECHA",
+      "canonico": "FECHA:1945-02-21",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E46",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~81 anos de edad",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E47",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000135",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E48",
+      "tipo": "HC",
+      "rol": "PACIENTE",
+      "canonico": "HC:20000002",
+      "mismoTitular": [
+        "C09-E10"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C09-E49",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:esclerosis multiple",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E50",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:g35",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E51",
+      "tipo": "PERSONA",
+      "rol": "TESTIGO",
+      "canonico": "LISTA:Laura Camila Ficticia López",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C09-E52",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:bella vista ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E53",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:esperanza prueba rincon",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E54",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:elizabeth ejemplo-castro de la cruz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E55",
+      "tipo": "CARGO",
+      "canonico": "CARGO:subgerente cientifica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E56",
+      "tipo": "VALOR",
+      "canonico": "VALOR:12000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E57",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E58",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:sufrio un accidente aereo en el que murieron tres personas",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E59",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1423500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E60",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:VEREDA LA FICTICIA",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E61",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2023-06-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E62",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E63",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:50C-00000015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E64",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-15",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E65",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:E2026000303",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E66",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:123029",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E67",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XAA016",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E68",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000001700",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E69",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-09-24",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E70",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TP:000108",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E71",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000019",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E72",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000203",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E73",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:la prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E74",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinadora de auditoria medica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E75",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E76",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-760 de 2008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E77",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-597 de 1993",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E78",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 49 de la constitucion politica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E79",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1751 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E80",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 820 de 2003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E81",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia t-121 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E82",
+      "tipo": "CC",
+      "canonico": "NEG:t-9.000.004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E83",
+      "tipo": "RADICADO",
+      "canonico": "NEG:05001-31-03-968-2019-00021-00",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E84",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 2015 de 2020",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E85",
+      "tipo": "RADICADO",
+      "canonico": "NEG:110014003999",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E86",
+      "tipo": "CC",
+      "canonico": "NEG:8610",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E87",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 361 de 1997",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E88",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-01-02",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E89",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:viviana.prueba@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E90",
+      "tipo": "NIT",
+      "rol": "EPS",
+      "canonico": "NIT:860000022",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E91",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "canonico": "DIR:AV PRUEBA 00 00 0",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E92",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25754401090520250002400",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E93",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 993 civil del circuito de palmira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E94",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E95",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-07-27",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E96",
+      "tipo": "RADICADO",
+      "canonico": "RAD:76520411098020200002500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E97",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 990 de familia de dosquebradas",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E98",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:66",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E99",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-08-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E100",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25899410399620210002600",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E101",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 991 laboral del circuito de envigado",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E102",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E103",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2024-12-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E104",
+      "tipo": "RADICADO",
+      "canonico": "RAD:730016000906202300027",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E105",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:luis eduardo prueba pacheco",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E106",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men28:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E107",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men28:rotulo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E108",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TI:1000000029",
+      "mismoTitular": [
+        "C09-E111"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C09-E109",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2011-11-06",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E110",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~15 anos de edad",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E111",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "HC:1000000029",
+      "mismoTitular": [
+        "C09-E108"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C09-E112",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:pedro pablo ficticio quintero",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E113",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men30:el menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E114",
+      "tipo": "MENOR",
+      "canonico": "MENOR:men30:rotulo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E115",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TI:12092700031",
+      "mismoTitular": [
+        "C09-E118"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C09-E116",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2012-09-27",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E117",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~14 anos de edad",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E118",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "HC:12092700031",
+      "mismoTitular": [
+        "C09-E115"
+      ],
+      "enLista": false
+    },
+    {
+      "id": "C09-E119",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:adriana ficticia salazar",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E120",
+      "tipo": "DOCUMENTO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "DOCUMENTO:CD000033",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E121",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-14",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E122",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:paola andrea prueba giraldo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E123",
+      "tipo": "MENOR",
+      "canonico": "MENOR:ext34:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E124",
+      "tipo": "DOCUMENTO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "DOCUMENTO:1000000035",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E125",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2014-10-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E126",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:13",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E127",
+      "tipo": "RADICADO",
+      "canonico": "NEG:050014003997",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C09-E128",
+      "tipo": "CC",
+      "canonico": "NEG:4752",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C09-A001",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 29,
+      "end": 49,
+      "texto": "VIVIANA PRUEBA MUÑOZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A002",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 56,
+      "end": 91,
+      "texto": "JUZGADO 998 CIVIL MUNICIPAL DE CHÍA",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C09-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C09-A003",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 87,
+      "end": 91,
+      "texto": "CHÍA",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C09-A002",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C09-A004",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 152,
+      "end": 172,
+      "texto": "VIVIANA PRUEBA MUÑOZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A005",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 184,
+      "end": 208,
+      "texto": "LILIANA EJEMPLO QUINTERO",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A006",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 220,
+      "end": 243,
+      "texto": "EPS SALUD FICTICIA S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A007",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 255,
+      "end": 281,
+      "texto": "FUNDACIÓN HOSPITAL EJEMPLO",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C09-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A008",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 343,
+      "end": 363,
+      "texto": "Viviana Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A009",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 402,
+      "end": 412,
+      "texto": "91.000.001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A010",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 445,
+      "end": 449,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A011",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 457,
+      "end": 500,
+      "texto": "Avenida Calle 00B N° 00-00, local 3, casa 3",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A012",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 509,
+      "end": 530,
+      "texto": "La\nEsperanza Ficticia",
+      "tipo": "BARRIO",
+      "entidad": "C09-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C09-A013",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 574,
+      "end": 598,
+      "texto": "Liliana Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A014",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 622,
+      "end": 632,
+      "texto": "20.000.002",
+      "tipo": "CC",
+      "rol": "PACIENTE",
+      "entidad": "C09-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A015",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 722,
+      "end": 745,
+      "texto": "EPS Salud Ficticia S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A016",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 747,
+      "end": 750,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A017",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 876,
+      "end": 915,
+      "texto": "artículo 86 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A018",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 921,
+      "end": 941,
+      "texto": "Decreto 2591 de 1991",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A019",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 985,
+      "end": 1011,
+      "texto": "Fundación Hospital Ejemplo",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C09-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A020",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1035,
+      "end": 1046,
+      "texto": "5\nfeb. 2026",
+      "tipo": "FECHA",
+      "entidad": "C09-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C09-A021",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1074,
+      "end": 1108,
+      "texto": "Cr. 0A Bis A n.º 0A-01, interior 4",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "entidad": "C09-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A022",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1112,
+      "end": 1118,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A023",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1147,
+      "end": 1154,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A024",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1155,
+      "end": 1195,
+      "texto": "su hija fue víctima de secuestro en 2024",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C09-E16",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A025",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1293,
+      "end": 1307,
+      "texto": "(606) 000 0003",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F10",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A026",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1321,
+      "end": 1331,
+      "texto": "3140000004",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A027",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1420,
+      "end": 1430,
+      "texto": "$1.750.000",
+      "tipo": "VALOR",
+      "entidad": "C09-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A028",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1455,
+      "end": 1462,
+      "texto": "2 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C09-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A029",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1482,
+      "end": 1499,
+      "texto": "Altos del Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C09-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A030",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1503,
+      "end": 1507,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A031",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1528,
+      "end": 1557,
+      "texto": "Héctor Fabio Ficticio Barrera",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A032",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1581,
+      "end": 1591,
+      "texto": "39.000.005",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A033",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1604,
+      "end": 1640,
+      "texto": "Distribuidora Prueba y Cía. S. en C.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C09-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A034",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1646,
+      "end": 1659,
+      "texto": "800.000.006-6",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C09-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A035",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1718,
+      "end": 1724,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A036",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1824,
+      "end": 1841,
+      "texto": "vereda San Prueba",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F14",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A037",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1862,
+      "end": 1866,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A038",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1917,
+      "end": 1925,
+      "texto": "L. E. Q.",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A039",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1994,
+      "end": 2010,
+      "texto": "Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A040",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2016,
+      "end": 2034,
+      "texto": "EPS Salud Ficticia",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A041",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2057,
+      "end": 2067,
+      "texto": "05/09/2022",
+      "tipo": "FECHA",
+      "entidad": "C09-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A042",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2088,
+      "end": 2097,
+      "texto": "000000007",
+      "tipo": "AFILIACION",
+      "entidad": "C09-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A043",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2165,
+      "end": 2177,
+      "texto": "50C-00000008",
+      "tipo": "MATRICULA",
+      "entidad": "C09-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A044",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2196,
+      "end": 2225,
+      "texto": "Héctor Fabio Ficticio Barrera",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A045",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2241,
+      "end": 2250,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C09-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A046",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2294,
+      "end": 2297,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A047",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2303,
+      "end": 2324,
+      "texto": "607 000 0009 Ext. 102",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "entidad": "C09-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A048",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2333,
+      "end": 2371,
+      "texto": "notificaciones@eps-salud-ficticia.test",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C09-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A049",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2405,
+      "end": 2426,
+      "texto": "13 de febrero de 2026",
+      "tipo": "FECHA",
+      "entidad": "C09-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A050",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2449,
+      "end": 2452,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A051",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2470,
+      "end": 2483,
+      "texto": "E-2026-000170",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C09-A052",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2504,
+      "end": 2510,
+      "texto": "123010",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C09-A053",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2565,
+      "end": 2589,
+      "texto": "Liliana Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A054",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2677,
+      "end": 2684,
+      "texto": "AAA-010",
+      "tipo": "PLACA",
+      "entidad": "C09-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A055",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2702,
+      "end": 2718,
+      "texto": "Ficticio\nBarrera",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A056",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2744,
+      "end": 2767,
+      "texto": "Taller Mecánico Ejemplo",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C09-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A057",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2862,
+      "end": 2879,
+      "texto": "Banco Prueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C09-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A058",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2884,
+      "end": 2897,
+      "texto": "000-000011-00",
+      "tipo": "CUENTA",
+      "entidad": "C09-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A059",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2918,
+      "end": 2926,
+      "texto": "@prueba1",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A060",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2966,
+      "end": 2990,
+      "texto": "LILIANA EJEMPLO QUINTERO",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A061",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 3024,
+      "end": 3077,
+      "texto": "veintiocho (28) de enero de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C09-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A062",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 3114,
+      "end": 3143,
+      "texto": "05001-40-03-919-2021-00023-00",
+      "tipo": "RADICADO",
+      "entidad": "C09-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A063",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 3146,
+      "end": 3149,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A064",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 29,
+      "end": 49,
+      "texto": "VIVIANA PRUEBA MUÑOZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A065",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 75,
+      "end": 82,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A066",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 152,
+      "end": 172,
+      "texto": "20260314000000000012",
+      "tipo": "AFILIACION",
+      "entidad": "C09-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A067",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 188,
+      "end": 212,
+      "texto": "Liliana Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A068",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 273,
+      "end": 280,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A069",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 290,
+      "end": 311,
+      "texto": "21 de febrero de 1945",
+      "tipo": "FECHA",
+      "entidad": "C09-E45",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C09-A070",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 324,
+      "end": 339,
+      "texto": "81 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C09-E46",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C09-A071",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 368,
+      "end": 380,
+      "texto": "Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A072",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 480,
+      "end": 499,
+      "texto": "4000-0000-0000-0135",
+      "tipo": "TARJETA",
+      "entidad": "C09-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A073",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 550,
+      "end": 570,
+      "texto": "Viviana Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A074",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 646,
+      "end": 656,
+      "texto": "20.000.002",
+      "tipo": "HC",
+      "rol": "PACIENTE",
+      "entidad": "C09-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A075",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 658,
+      "end": 674,
+      "texto": "Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A076",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 697,
+      "end": 716,
+      "texto": "esclerosis múltiple",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C09-E49",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A077",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 725,
+      "end": 728,
+      "texto": "G35",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C09-E50",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A078",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 736,
+      "end": 762,
+      "texto": "Fundación Hospital Ejemplo",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C09-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A079",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 819,
+      "end": 846,
+      "texto": "Laura Camila Ficticia López",
+      "tipo": "PERSONA",
+      "rol": "TESTIGO",
+      "entidad": "C09-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A080",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 866,
+      "end": 886,
+      "texto": "Bella Vista Ficticia",
+      "tipo": "BARRIO",
+      "entidad": "C09-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A081",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 911,
+      "end": 917,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A082",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 985,
+      "end": 1003,
+      "texto": "EPS Salud Ficticia",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A083",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1020,
+      "end": 1055,
+      "texto": "Elizabeth Ejemplo-Castro De la Cruz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A084",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1081,
+      "end": 1102,
+      "texto": "subgerente científica",
+      "tipo": "CARGO",
+      "entidad": "C09-E55",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A085",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1236,
+      "end": 1242,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A086",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1315,
+      "end": 1335,
+      "texto": "12 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C09-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A087",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1373,
+      "end": 1426,
+      "texto": "diez (10) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C09-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A088",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1464,
+      "end": 1490,
+      "texto": "Fundación Hospital Ejemplo",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C09-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A089",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1514,
+      "end": 1526,
+      "texto": "28\nene. 2026",
+      "tipo": "FECHA",
+      "entidad": "C09-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C09-A090",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1554,
+      "end": 1589,
+      "texto": "Cra. 0A Bis A No. 0A-01, interior 4",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "entidad": "C09-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A091",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1593,
+      "end": 1599,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A092",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1636,
+      "end": 1643,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A093",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1644,
+      "end": 1702,
+      "texto": "sufrió un accidente aéreo en el que murieron\ntres personas",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C09-E58",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C09-A094",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1788,
+      "end": 1795,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A095",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1869,
+      "end": 1883,
+      "texto": "(606) 000 0003",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F10",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A096",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1897,
+      "end": 1907,
+      "texto": "3140000004",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A097",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1974,
+      "end": 1986,
+      "texto": "Prueba\nMuñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A098",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2044,
+      "end": 2080,
+      "texto": "Distribuidora Prueba y Cía. S. en C.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C09-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A099",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2099,
+      "end": 2167,
+      "texto": "un millón cuatrocientos veintitrés mil quinientos pesos ($1.423.500)",
+      "tipo": "VALOR",
+      "entidad": "C09-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A100",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2246,
+      "end": 2282,
+      "texto": "DISTRIBUIDORA PRUEBA Y CÍA. S. EN C.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C09-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A101",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2288,
+      "end": 2301,
+      "texto": "800 000 006-6",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C09-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A102",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2313,
+      "end": 2329,
+      "texto": "Ficticio Barrera",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A103",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2379,
+      "end": 2386,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A104",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2474,
+      "end": 2492,
+      "texto": "vereda La Ficticia",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F14",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A105",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2532,
+      "end": 2538,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A106",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2589,
+      "end": 2595,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A107",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2670,
+      "end": 2686,
+      "texto": "Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A108",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2692,
+      "end": 2710,
+      "texto": "EPS Salud Ficticia",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A109",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2733,
+      "end": 2743,
+      "texto": "18/06/2023",
+      "tipo": "FECHA",
+      "entidad": "C09-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A110",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2764,
+      "end": 2773,
+      "texto": "000000014",
+      "tipo": "AFILIACION",
+      "entidad": "C09-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A111",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2850,
+      "end": 2862,
+      "texto": "50C-00000015",
+      "tipo": "MATRICULA",
+      "entidad": "C09-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A112",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2881,
+      "end": 2910,
+      "texto": "Héctor Fabio Ficticio Barrera",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A113",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2926,
+      "end": 2935,
+      "texto": "$ 650.000",
+      "tipo": "VALOR",
+      "entidad": "C09-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A114",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2986,
+      "end": 2989,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A115",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 2995,
+      "end": 3016,
+      "texto": "607 000 0009 Ext. 102",
+      "tipo": "TELEFONO",
+      "rol": "EPS",
+      "entidad": "C09-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A116",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3025,
+      "end": 3063,
+      "texto": "NOTIFICACIONES@EPS-SALUD-FICTICIA.TEST",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C09-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A117",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3105,
+      "end": 3126,
+      "texto": "15 de febrero de 2026",
+      "tipo": "FECHA",
+      "entidad": "C09-E64",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A118",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3149,
+      "end": 3152,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A119",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3170,
+      "end": 3183,
+      "texto": "E-2026-000303",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E65",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C09-A120",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3204,
+      "end": 3210,
+      "texto": "123029",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E66",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C09-A121",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3294,
+      "end": 3301,
+      "texto": "XAA-016",
+      "tipo": "PLACA",
+      "entidad": "C09-E67",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A122",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3319,
+      "end": 3335,
+      "texto": "Ficticio Barrera",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A123",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3361,
+      "end": 3384,
+      "texto": "Taller Mecánico Ejemplo",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C09-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A124",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3476,
+      "end": 3493,
+      "texto": "Banco\nPrueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C09-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A125",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3498,
+      "end": 3511,
+      "texto": "000-000017-00",
+      "tipo": "CUENTA",
+      "entidad": "C09-E68",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A126",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3532,
+      "end": 3540,
+      "texto": "@prueba1",
+      "tipo": "CUENTA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A127",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3584,
+      "end": 3613,
+      "texto": "05001-40-03-919-2021-00023-00",
+      "tipo": "RADICADO",
+      "entidad": "C09-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A128",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 3616,
+      "end": 3619,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A129",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 29,
+      "end": 49,
+      "texto": "VIVIANA PRUEBA MUÑOZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A130",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 50,
+      "end": 74,
+      "texto": "Liliana Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A131",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 107,
+      "end": 168,
+      "texto": "veinticuatro (24) de septiembre de dos mil veinticinco (2025)",
+      "tipo": "FECHA",
+      "entidad": "C09-E69",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A132",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 180,
+      "end": 201,
+      "texto": "Gustavo Ejemplo López",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A133",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 244,
+      "end": 250,
+      "texto": "000108",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E70",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F45"
+      ]
+    },
+    {
+      "id": "C09-A134",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 306,
+      "end": 316,
+      "texto": "2026000019",
+      "tipo": "AFILIACION",
+      "entidad": "C09-E71",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A135",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 340,
+      "end": 347,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A136",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 377,
+      "end": 384,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A137",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 394,
+      "end": 415,
+      "texto": "21 de febrero de 1945",
+      "tipo": "FECHA",
+      "entidad": "C09-E45",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C09-A138",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 428,
+      "end": 443,
+      "texto": "81 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C09-E46",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C09-A139",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 483,
+      "end": 503,
+      "texto": "Viviana Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A140",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 580,
+      "end": 599,
+      "texto": "4000 0000 0000 0203",
+      "tipo": "TARJETA",
+      "entidad": "C09-E72",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A141",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 640,
+      "end": 664,
+      "texto": "Liliana Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A142",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 745,
+      "end": 755,
+      "texto": "20.000.002",
+      "tipo": "HC",
+      "rol": "PACIENTE",
+      "entidad": "C09-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A143",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 757,
+      "end": 773,
+      "texto": "Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A144",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 796,
+      "end": 815,
+      "texto": "esclerosis múltiple",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C09-E49",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A145",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 824,
+      "end": 827,
+      "texto": "G35",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C09-E50",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A146",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 835,
+      "end": 861,
+      "texto": "Fundación Hospital Ejemplo",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C09-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A147",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 901,
+      "end": 921,
+      "texto": "Viviana Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A148",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 985,
+      "end": 1012,
+      "texto": "Laura Camila Ficticia López",
+      "tipo": "PERSONA",
+      "rol": "TESTIGO",
+      "entidad": "C09-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A149",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1032,
+      "end": 1041,
+      "texto": "La Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C09-E73",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A150",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1066,
+      "end": 1072,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A151",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1129,
+      "end": 1141,
+      "texto": "Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A152",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1201,
+      "end": 1219,
+      "texto": "EPS Salud Ficticia",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A153",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1236,
+      "end": 1271,
+      "texto": "Elizabeth\nEjemplo-Castro De la Cruz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A154",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1297,
+      "end": 1329,
+      "texto": "coordinadora de auditoría médica",
+      "tipo": "CARGO",
+      "entidad": "C09-E74",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A155",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1470,
+      "end": 1490,
+      "texto": "12 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C09-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A156",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1528,
+      "end": 1581,
+      "texto": "diez (10) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C09-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A157",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1621,
+      "end": 1633,
+      "texto": "Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A158",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1683,
+      "end": 1709,
+      "texto": "Fundación Hospital Ejemplo",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C09-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A159",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1733,
+      "end": 1743,
+      "texto": "25-II-2026",
+      "tipo": "FECHA",
+      "entidad": "C09-E75",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A160",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1771,
+      "end": 1803,
+      "texto": "Kr. 0A Bis A # 0A-01, interior 4",
+      "tipo": "DIRECCION",
+      "rol": "IPS",
+      "entidad": "C09-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A161",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1807,
+      "end": 1813,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A162",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1842,
+      "end": 1862,
+      "texto": "Viviana Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A163",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 1965,
+      "end": 1988,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E76",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A164",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2047,
+      "end": 2070,
+      "texto": "Sentencia T-597 de 1993",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E77",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A165",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2144,
+      "end": 2183,
+      "texto": "artículo 49 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E78",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A166",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2189,
+      "end": 2205,
+      "texto": "Ley 1751 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E79",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A167",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2248,
+      "end": 2263,
+      "texto": "Ley 820 de 2003",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E80",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A168",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2327,
+      "end": 2350,
+      "texto": "Sentencia T-121 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E81",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A169",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2383,
+      "end": 2394,
+      "texto": "T-9.000.004",
+      "tipo": "CC",
+      "entidad": "C09-E82",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A170",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2537,
+      "end": 2566,
+      "texto": "05001-31-03-968-2019-00021-00",
+      "tipo": "RADICADO",
+      "entidad": "C09-E83",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "bandera_esperada": "CITA_JURISPRUDENCIAL",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F32",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A171",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2621,
+      "end": 2637,
+      "texto": "Ley 2015 de 2020",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E84",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A172",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2686,
+      "end": 2698,
+      "texto": "110014003999",
+      "tipo": "RADICADO",
+      "entidad": "C09-E85",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C09-A173",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2757,
+      "end": 2761,
+      "texto": "8610",
+      "tipo": "CC",
+      "entidad": "C09-E86",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C09-A174",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2854,
+      "end": 2877,
+      "texto": "Sentencia T-760 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E76",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A175",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 2936,
+      "end": 2959,
+      "texto": "Sentencia T-121 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E81",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A176",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3033,
+      "end": 3072,
+      "texto": "artículo 49 de la Constitución Política",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E78",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A177",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3078,
+      "end": 3094,
+      "texto": "Ley 1751 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E79",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A178",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3137,
+      "end": 3152,
+      "texto": "Ley 361 de 1997",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E87",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A179",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3216,
+      "end": 3239,
+      "texto": "Sentencia T-597 de 1993",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C09-E77",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A180",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3272,
+      "end": 3283,
+      "texto": "T-9.000.004",
+      "tipo": "CC",
+      "entidad": "C09-E82",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A181",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3338,
+      "end": 3367,
+      "texto": "05001-40-03-919-2021-00023-00",
+      "tipo": "RADICADO",
+      "entidad": "C09-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A182",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 3,
+        "page": 3
+      },
+      "start": 3370,
+      "end": 3373,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A183",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 29,
+      "end": 49,
+      "texto": "VIVIANA PRUEBA MUÑOZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A184",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 104,
+      "end": 128,
+      "texto": "Liliana Ejemplo Quintero",
+      "tipo": "PERSONA",
+      "rol": "PACIENTE",
+      "entidad": "C09-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A185",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 143,
+      "end": 146,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A186",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 264,
+      "end": 283,
+      "texto": "esclerosis múltiple",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C09-E49",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A187",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 299,
+      "end": 317,
+      "texto": "EPS Salud Ficticia",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A188",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 413,
+      "end": 425,
+      "texto": "Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C09-A189",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 453,
+      "end": 479,
+      "texto": "Fundación Hospital Ejemplo",
+      "tipo": "IPS",
+      "rol": "IPS",
+      "entidad": "C09-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A190",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 490,
+      "end": 500,
+      "texto": "2026-01-02",
+      "tipo": "FECHA",
+      "entidad": "C09-E88",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A191",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 546,
+      "end": 549,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A192",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 581,
+      "end": 621,
+      "texto": "Av. Calle 00B No. 00-00, local 3, casa 3",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A193",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 623,
+      "end": 627,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E03",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A194",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 629,
+      "end": 641,
+      "texto": "Cundinamarca",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C09-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A195",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 663,
+      "end": 690,
+      "texto": "viviana.prueba@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E89",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A196",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 701,
+      "end": 717,
+      "texto": "+57 314 000 0004",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A197",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 733,
+      "end": 756,
+      "texto": "EPS Salud Ficticia S.A.",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A198",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 762,
+      "end": 775,
+      "texto": "860.000.022-2",
+      "tipo": "NIT",
+      "rol": "EPS",
+      "entidad": "C09-E90",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A199",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 783,
+      "end": 810,
+      "texto": "Avenida Prueba 00 No.\n00-00",
+      "tipo": "DIRECCION",
+      "rol": "EPS",
+      "entidad": "C09-E91",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C09-A200",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 819,
+      "end": 857,
+      "texto": "notificaciones@eps-salud-ficticia.test",
+      "tipo": "CORREO",
+      "rol": "EPS",
+      "entidad": "C09-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A201",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 872,
+      "end": 892,
+      "texto": "Viviana Prueba Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A202",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 898,
+      "end": 906,
+      "texto": "91000001",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C09-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A203",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 910,
+      "end": 916,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A204",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1003,
+      "end": 1032,
+      "texto": "25754/40/10/905/2025/00024/00",
+      "tipo": "RADICADO",
+      "entidad": "C09-E92",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A205",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1041,
+      "end": 1082,
+      "texto": "Juzgado 993\nCivil del Circuito de Palmira",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C09-E93",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C09-A206",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1075,
+      "end": 1082,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E94",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C09-A205",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C09-A207",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1096,
+      "end": 1108,
+      "texto": "27 jul. 2025",
+      "tipo": "FECHA",
+      "entidad": "C09-E95",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A208",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1136,
+      "end": 1165,
+      "texto": "76520/41/10/980/2020/00025/00",
+      "tipo": "RADICADO",
+      "entidad": "C09-E96",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A209",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1174,
+      "end": 1212,
+      "texto": "Juzgado 990 de Familia de Dosquebradas",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C09-E97",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C09-A210",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1200,
+      "end": 1212,
+      "texto": "Dosquebradas",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E98",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C09-A209",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C09-A211",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1226,
+      "end": 1237,
+      "texto": "5 ago. 2026",
+      "tipo": "FECHA",
+      "entidad": "C09-E99",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A212",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1260,
+      "end": 1289,
+      "texto": "25899/41/03/996/2021/00026/00",
+      "tipo": "RADICADO",
+      "entidad": "C09-E100",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A213",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1298,
+      "end": 1342,
+      "texto": "Juzgado 991\nLaboral del Circuito de Envigado",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C09-E101",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C09-A214",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1334,
+      "end": 1342,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E102",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C09-A213",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C09-A215",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1356,
+      "end": 1367,
+      "texto": "9 dic. 2024",
+      "tipo": "FECHA",
+      "entidad": "C09-E103",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A216",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1392,
+      "end": 1418,
+      "texto": "73001-60-00-906-2023-00027",
+      "tipo": "RADICADO",
+      "entidad": "C09-E104",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F05",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A217",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1431,
+      "end": 1458,
+      "texto": "Luis Eduardo Prueba Pacheco",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E105",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A218",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1460,
+      "end": 1468,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C09-E106",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C09-A219",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1487,
+      "end": 1491,
+      "texto": "T.I.",
+      "tipo": "MENOR",
+      "entidad": "C09-E107",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C09-A220",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1492,
+      "end": 1505,
+      "texto": "1.000.000.029",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E108",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F08",
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C09-A221",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1516,
+      "end": 1526,
+      "texto": "06/11/2011",
+      "tipo": "FECHA",
+      "entidad": "C09-E109",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C09-A222",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1539,
+      "end": 1554,
+      "texto": "15 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C09-E110",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C09-A223",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1586,
+      "end": 1599,
+      "texto": "1.000.000.029",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E111",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A224",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1612,
+      "end": 1641,
+      "texto": "Pedro Pablo Ficticio Quintero",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E112",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A225",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1643,
+      "end": 1651,
+      "texto": "el menor",
+      "tipo": "MENOR",
+      "entidad": "C09-E113",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C09-A226",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1670,
+      "end": 1673,
+      "texto": "NIP",
+      "tipo": "MENOR",
+      "entidad": "C09-E114",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C09-A227",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1674,
+      "end": 1685,
+      "texto": "12092700031",
+      "tipo": "TI",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E115",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F08",
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C09-A228",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1696,
+      "end": 1720,
+      "texto": "27 de septiembre de 2012",
+      "tipo": "FECHA",
+      "entidad": "C09-E116",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C09-A229",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1733,
+      "end": 1748,
+      "texto": "14 años de edad",
+      "tipo": "FECHA",
+      "entidad": "C09-E117",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C09-A230",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1780,
+      "end": 1794,
+      "texto": "12.092.700.031",
+      "tipo": "HC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E118",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F18",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A231",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1809,
+      "end": 1833,
+      "texto": "Adriana Ficticia Salazar",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E119",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A232",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1884,
+      "end": 1893,
+      "texto": "CD-000033",
+      "tipo": "DOCUMENTO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E120",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A233",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1922,
+      "end": 1943,
+      "texto": "14 de febrero de 2026",
+      "tipo": "FECHA",
+      "entidad": "C09-E121",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A234",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1951,
+      "end": 1978,
+      "texto": "Paola Andrea Prueba Giraldo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E122",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C09-A235",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 1986,
+      "end": 1994,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C09-E123",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C09-A236",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2030,
+      "end": 2043,
+      "texto": "1.000.000.035",
+      "tipo": "DOCUMENTO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C09-E124",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09",
+        "F40",
+        "F50"
+      ]
+    },
+    {
+      "id": "C09-A237",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2054,
+      "end": 2074,
+      "texto": "9 de octubre de 2014",
+      "tipo": "FECHA",
+      "entidad": "C09-E125",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F47"
+      ]
+    },
+    {
+      "id": "C09-A238",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2100,
+      "end": 2107,
+      "texto": "Calamar",
+      "tipo": "MUNICIPIO",
+      "entidad": "C09-E126",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F26",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A239",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2109,
+      "end": 2116,
+      "texto": "Bolívar",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C09-E126",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A240",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2190,
+      "end": 2202,
+      "texto": "050014003997",
+      "tipo": "RADICADO",
+      "entidad": "C09-E127",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C09-A241",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2229,
+      "end": 2233,
+      "texto": "4752",
+      "tipo": "CC",
+      "entidad": "C09-E128",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C09-A242",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2299,
+      "end": 2328,
+      "texto": "05001-40-03-919-2021-00023-00",
+      "tipo": "RADICADO",
+      "entidad": "C09-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C09-A243",
+      "docId": "C09",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 4,
+        "page": 4
+      },
+      "start": 2331,
+      "end": 2334,
+      "texto": "ESF",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C09-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F40"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

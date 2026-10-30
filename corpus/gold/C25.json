@@ -1,0 +1,1344 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C25",
+  "tipoDocumento": "correo_cliente",
+  "fuente": "txt",
+  "archivo": "corpus/docs/C25.txt",
+  "conjunto": "reserva",
+  "semilla": "SIGLOW-CORPUS-B",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 1874,
+        "sha256": "0714782ec1e766994e30cb80a94cb05099032ff407f4a1c93d412355220ad002"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": []
+  },
+  "listaDelCaso": [
+    {
+      "name": "Diego Armando Ejemplo De la Cruz",
+      "role": "CLIENTE"
+    },
+    {
+      "name": "Liliana Prueba Suárez",
+      "role": "DEMANDADO"
+    },
+    {
+      "name": "Textiles Ficticios S.A.S.",
+      "role": "EMPRESA"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C25-E01",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "canonico": "LISTA:Diego Armando Ejemplo De la Cruz",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C25-E02",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "canonico": "CORREO:diego.ejemplo@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E03",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:camilo prueba arango",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E04",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "canonico": "CORREO:camilo.prueba@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E05",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-09-28",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E06",
+      "tipo": "PLACA",
+      "canonico": "PLACA:XYZ002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E07",
+      "tipo": "PLACA",
+      "canonico": "PLACA:AAA04C",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E08",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-10-23",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E09",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "canonico": "CC:1000000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E10",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:3220000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E11",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:0000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E12",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "canonico": "ORG:EPS:cooperativa de salud ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E13",
+      "tipo": "DIAGNOSTICO",
+      "canonico": "DIAG:lupus eritematoso sistemico",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E14",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:2026000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E15",
+      "tipo": "MENOR",
+      "canonico": "MENOR:fam:la menor",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E16",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:jose miguel ficticio torres",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E17",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinador de auditoria medica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E18",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "canonico": "LISTA:Liliana Prueba Suárez",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C25-E19",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:fue testigo clave en el proceso contra el exalcalde",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E20",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25175400398020210001000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E21",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 996 civil municipal de chia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E22",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E23",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-10-18",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E24",
+      "tipo": "FECHA",
+      "canonico": "FECHA:~37 anos",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E25",
+      "tipo": "FECHA",
+      "canonico": "FECHA:1983-06-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E26",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:CL 0 00 0 TO 1 OF 303",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E27",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:santa prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E28",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-10-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E29",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:000000000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E30",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E31",
+      "tipo": "CUENTA",
+      "rol": "CONTACTO",
+      "canonico": "CUENTA:BREB:@pruebaabogados",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E32",
+      "tipo": "VALOR",
+      "canonico": "VALOR:2500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E33",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:50C-00000016",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E34",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:isabel cristina prueba suarez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E35",
+      "tipo": "RADICADO",
+      "canonico": "RAD:68276410594520240001700",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E36",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 991 laboral del circuito de envigado",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E37",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C25-E38",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-01-23",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C25-A001",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4,
+      "end": 36,
+      "texto": "Diego Armando Ejemplo De la Cruz",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C25-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02"
+      ]
+    },
+    {
+      "id": "C25-A002",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 38,
+      "end": 64,
+      "texto": "diego.ejemplo@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CLIENTE",
+      "entidad": "C25-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C25-A003",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 72,
+      "end": 85,
+      "texto": "Prueba Arango",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C25-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C25-A004",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 87,
+      "end": 113,
+      "texto": "camilo.prueba@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "entidad": "C25-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C25-A005",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 129,
+      "end": 153,
+      "texto": "28 de septiembre de 2026",
+      "tipo": "FECHA",
+      "entidad": "C25-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C25-A006",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 199,
+      "end": 205,
+      "texto": "Camilo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C25-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C25-A007",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 225,
+      "end": 232,
+      "texto": "XYZ-002",
+      "tipo": "PLACA",
+      "entidad": "C25-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C25-A008",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 244,
+      "end": 250,
+      "texto": "AAA04C",
+      "tipo": "PLACA",
+      "entidad": "C25-E07",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F16"
+      ]
+    },
+    {
+      "id": "C25-A009",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 271,
+      "end": 281,
+      "texto": "23.10.2026",
+      "tipo": "FECHA",
+      "entidad": "C25-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C25-A010",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 297,
+      "end": 307,
+      "texto": "1000000005",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C25-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C25-A011",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 317,
+      "end": 327,
+      "texto": "3220000006",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C25-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C25-A012",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 377,
+      "end": 385,
+      "texto": "000 0007",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C25-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C25-A013",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 396,
+      "end": 400,
+      "texto": "COSE",
+      "tipo": "EPS",
+      "rol": "EPS",
+      "entidad": "C25-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F03",
+        "F51"
+      ]
+    },
+    {
+      "id": "C25-A014",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 443,
+      "end": 470,
+      "texto": "lupus eritematoso sistémico",
+      "tipo": "DIAGNOSTICO",
+      "entidad": "C25-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "DIAGNOSTICO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "DIAGNOSTICO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F28"
+      ]
+    },
+    {
+      "id": "C25-A015",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 489,
+      "end": 499,
+      "texto": "2026000009",
+      "tipo": "AFILIACION",
+      "entidad": "C25-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C25-A016",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 519,
+      "end": 527,
+      "texto": "la menor",
+      "tipo": "MENOR",
+      "entidad": "C25-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "MENOR_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "MENOR",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F50"
+      ]
+    },
+    {
+      "id": "C25-A017",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 564,
+      "end": 591,
+      "texto": "josé miguel ficticio torres",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C25-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F52"
+      ]
+    },
+    {
+      "id": "C25-A018",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 593,
+      "end": 624,
+      "texto": "coordinador de auditoría médica",
+      "tipo": "CARGO",
+      "entidad": "C25-E17",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C25-A019",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 667,
+      "end": 673,
+      "texto": "Camilo",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C25-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C25-A020",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 692,
+      "end": 713,
+      "texto": "liliana prueba suárez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C25-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C25-A021",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 714,
+      "end": 765,
+      "texto": "fue testigo clave en el proceso contra el exalcalde",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C25-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29"
+      ]
+    },
+    {
+      "id": "C25-A022",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 827,
+      "end": 856,
+      "texto": "25175 40 03 980 2021 00010 00",
+      "tipo": "RADICADO",
+      "entidad": "C25-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C25-A023",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 861,
+      "end": 896,
+      "texto": "Juzgado 996 Civil Municipal de Chía",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C25-E21",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C25-A024",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 892,
+      "end": 896,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C25-E22",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C25-A023",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C25-A025",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 924,
+      "end": 978,
+      "texto": "dieciocho (18) de octubre de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C25-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C25-A026",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 999,
+      "end": 1006,
+      "texto": "37 años",
+      "tipo": "FECHA",
+      "entidad": "C25-E24",
+      "debe_generalizarse": true,
+      "generalizacion": "EDAD_A_RANGO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F47"
+      ]
+    },
+    {
+      "id": "C25-A027",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1016,
+      "end": 1026,
+      "texto": "1983-06-09",
+      "tipo": "FECHA",
+      "entidad": "C25-E25",
+      "debe_generalizarse": true,
+      "generalizacion": "FECHA_NACIMIENTO_A_RANGO_EDAD",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F22",
+        "F47"
+      ]
+    },
+    {
+      "id": "C25-A028",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1093,
+      "end": 1114,
+      "texto": "liliana prueba suárez",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C25-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F52"
+      ]
+    },
+    {
+      "id": "C25-A029",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1161,
+      "end": 1199,
+      "texto": "Cll. 0 No. 00-00, torre 1, oficina 303",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C25-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C25-A030",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1211,
+      "end": 1223,
+      "texto": "Santa Prueba",
+      "tipo": "BARRIO",
+      "entidad": "C25-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C25-A031",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1245,
+      "end": 1257,
+      "texto": "10 oct. 2026",
+      "tipo": "FECHA",
+      "entidad": "C25-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C25-A032",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1310,
+      "end": 1322,
+      "texto": "000000000014",
+      "tipo": "CUENTA",
+      "entidad": "C25-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C25-A033",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1327,
+      "end": 1339,
+      "texto": "Banco Prueba",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C25-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C25-A034",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1353,
+      "end": 1368,
+      "texto": "@pruebaabogados",
+      "tipo": "CUENTA",
+      "rol": "CONTACTO",
+      "entidad": "C25-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C25-A035",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1374,
+      "end": 1384,
+      "texto": "$2.500.000",
+      "tipo": "VALOR",
+      "entidad": "C25-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C25-A036",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1414,
+      "end": 1426,
+      "texto": "50C-00000016",
+      "tipo": "MATRICULA",
+      "entidad": "C25-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17"
+      ]
+    },
+    {
+      "id": "C25-A037",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1437,
+      "end": 1441,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C25-E22",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C25-A038",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1443,
+      "end": 1455,
+      "texto": "Cundinamarca",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C25-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C25-A039",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1503,
+      "end": 1532,
+      "texto": "Isabel Cristina Prueba Suárez",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C25-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C25-A040",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1553,
+      "end": 1560,
+      "texto": "el niño",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C25-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C25-A041",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1597,
+      "end": 1629,
+      "texto": "diego armando ejemplo de la cruz",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C25-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sin_tildes",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F52"
+      ]
+    },
+    {
+      "id": "C25-A042",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1634,
+      "end": 1652,
+      "texto": "(+57) 322-000-0006",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C25-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C25-A043",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1720,
+      "end": 1749,
+      "texto": "68276-41-05-945-2024-00017-00",
+      "tipo": "RADICADO",
+      "entidad": "C25-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C25-A044",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1758,
+      "end": 1802,
+      "texto": "Juzgado 991 Laboral del Circuito de Envigado",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C25-E36",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C25-A045",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1794,
+      "end": 1802,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C25-E37",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C25-A044",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C25-A046",
+      "docId": "C25",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1816,
+      "end": 1828,
+      "texto": "23 ene. 2025",
+      "tipo": "FECHA",
+      "entidad": "C25-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

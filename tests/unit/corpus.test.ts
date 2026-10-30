@@ -157,6 +157,22 @@ describe('corpus · T-CO-01 estructura', () => {
     }
   });
 
+  it('T-CO-01 con 30 documentos: 20 de desarrollo (semilla A) y los 10 de reserva de 10.1.2 (semilla B)', () => {
+    if (!COMPLETO) return;
+    const reserva = ['C07', 'C08', 'C09', 'C14', 'C15', 'C19', 'C21', 'C25', 'C26', 'C29'];
+    const tiposReserva: Record<string, number> = {};
+    for (const g of todos) {
+      const esReserva = reserva.includes(g.docId);
+      expect(g.conjunto, `${g.docId} conjunto`).toBe(esReserva ? 'reserva' : 'desarrollo');
+      expect(g.semilla, `${g.docId} semilla`).toBe(esReserva ? 'SIGLOW-CORPUS-B' : 'SIGLOW-CORPUS-A');
+      if (esReserva) tiposReserva[g.tipoDocumento] = (tiposReserva[g.tipoDocumento] ?? 0) + 1;
+    }
+    expect(tiposReserva).toEqual({ tutela_salud: 3, derecho_peticion: 2, contrato: 2, correo_cliente: 2, acta: 1 });
+    const man = leerJson<{ semillas: Record<string, string>; documentos: string[] }>(join(CORPUS, 'MANIFIESTO.json'));
+    expect(man.semillas['reserva']).toBe('SIGLOW-CORPUS-B');
+    expect([...man.documentos].sort()).toEqual(IDS);
+  });
+
   it('T-CO-01 proporciones por tipo y por formato (10.1.1)', () => {
     const tipos: Record<string, number> = {};
     const formatos: Record<string, number> = {};
@@ -208,7 +224,7 @@ describe('corpus · T-CO-01 estructura', () => {
   });
 
   it('T-CO-01 los .txt tienen la codificación prevista y su texto canónico coincide con texto.json', () => {
-    const esperado: Record<string, string> = { C05: 'windows-1252', C10: 'utf-8-bom', C11: 'utf-16le-bom', C12: 'utf-8' };
+    const esperado: Record<string, string> = { C05: 'windows-1252', C08: 'utf-8', C10: 'utf-8-bom', C11: 'utf-16le-bom', C12: 'utf-8', C21: 'utf-8', C25: 'utf-8', C26: 'utf-8' };
     for (const id of IDS) {
       const g = golds.get(id) as Gold;
       if (g.fuente !== 'txt') continue;
@@ -223,6 +239,8 @@ describe('corpus · T-CO-01 estructura', () => {
       const esp = esperado[id]; if (esp) expect(enc, `${id} codificación`).toBe(esp);
       expect(texto, `${id} texto canónico`).toBe((textos.get(id) as TextoJson).partes[0]?.texto);
       if (id === 'C05') expect(b.includes(0x0d), 'C05 usa CRLF').toBe(true);
+      if (id === 'C21') expect(b.includes(0x0d), 'C21 usa CRLF').toBe(true);
+      if (id === 'C08' || id === 'C25' || id === 'C26') expect(b.includes(0x0d), `${id} usa LF`).toBe(false);
     }
   });
 
@@ -535,6 +553,109 @@ describe('corpus · T-CO-05 partes y rasgos de cada formato', () => {
       expect(textos.get('C20')?.pdf?.dosColumnas).toBe(true);
       expect(golds.get('C20')?.esperado.advertencias).toContain('ORDEN_LECTURA_PDF');
     }
+  });
+
+  // ----- Reserva (PG-1b): rasgos de formato de 10.1.2 -----
+  const cuerpoDe = (id: string): string => (textos.get(id)?.partes ?? []).filter((p) => p.kind === 'cuerpo').map((p) => p.texto).join('\n');
+  const annDe = (id: string): GoldAnn[] => golds.get(id)?.anotaciones ?? [];
+
+  it('T-CO-05 C07: nombres y números partidos en varios w:r, texto oculto w:vanish, marca de agua v:textpath y nota al final', () => {
+    if (!hay('C07')) return;
+    const g = golds.get('C07') as Gold;
+    expect(g.esperado.advertencias).toEqual(expect.arrayContaining(['TEXTO_OCULTO_INCLUIDO', 'MARCA_DE_AGUA']));
+    expect(partesDe('C07', 'nota_final')).toBe(1);
+    expect(bloques('C07').filter((b) => b.tipo === 'runs_partidos').length).toBeGreaterThanOrEqual(3);
+    expect(annDe('C07').some((a) => a.caracteristicas.includes('F43'))).toBe(true);
+    const ocultos = (textos.get('C07')?.estructura ?? []).flatMap((e) => e.bloques).filter((b) => b.tipo === 'oculto');
+    expect(ocultos.length).toBeGreaterThanOrEqual(1);
+    expect(tiene('C07', 'marca_agua')).toBe(true);
+    // F49: ambos esconden datos anotados (el texto oculto en el cuerpo; la marca de agua, en un encabezado)
+    const f49 = annDe('C07').filter((a) => a.caracteristicas.includes('F49'));
+    expect(f49.some((a) => a.parte.kind === 'cuerpo' && a.tipo === 'TELEFONO'), 'dato en texto oculto').toBe(true);
+    expect(f49.some((a) => a.parte.kind === 'encabezado' && a.tipo === 'PERSONA'), 'nombre en la marca de agua').toBe(true);
+    const c = cuerpoDe('C07');
+    for (const b of ocultos) expect(c.slice(b.start, b.end).length).toBeGreaterThan(10);
+  });
+
+  it('T-CO-05 C08: UTF-8, encabezado en MAYÚSCULAS y fechas con el mes en romanos', () => {
+    if (!hay('C08')) return;
+    const txt = cuerpoDe('C08');
+    const fechas = annDe('C08').filter((a) => a.tipo === 'FECHA' && /^\d{1,2}-(?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII)-\d{4}$/.test(a.texto));
+    expect(fechas.length).toBeGreaterThanOrEqual(5);
+    expect(txt.split('\n').slice(0, 3).join(' ')).toMatch(/JUZGADO/);
+    expect(annDe('C08').filter((a) => a.caracteristicas.includes('F01')).length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('T-CO-05 C09: PDF con capa de texto y el mismo encabezado y pie repetidos en cada página', () => {
+    if (!hay('C09')) return;
+    const pags = (textos.get('C09')?.partes ?? []).filter((p) => p.kind === 'pagina_pdf');
+    expect(pags.length).toBeGreaterThanOrEqual(3);
+    const prim = (pags[0] as { texto: string }).texto.split('\n');
+    const PREFIJO = 'TUTELA DE SALUD – ACCIONANTE ';
+    expect(prim[0]).toMatch(/^TUTELA DE SALUD – ACCIONANTE \S/);
+    expect(prim[prim.length - 1]).toBe(FICCION);
+    for (const pg of pags) {
+      const l = pg.texto.split('\n');
+      expect(l[0], `página ${pg.page} encabezado`).toBe(prim[0]);
+      expect(l.slice(-2), `página ${pg.page} pie`).toEqual(prim.slice(-2));
+      const anns = annDe('C09').filter((a) => a.parte.page === pg.page);
+      expect(anns.some((a) => a.tipo === 'PERSONA' && a.start === PREFIJO.length), `página ${pg.page}: nombre del encabezado anotado`).toBe(true);
+      expect(anns.some((a) => a.tipo === 'RADICADO' && a.texto === (prim[prim.length - 2] ?? '').slice('Radicado de reparto '.length).split(' · ')[0]), `página ${pg.page}: radicado del pie anotado`).toBe(true);
+    }
+    expect((golds.get('C09') as Gold).esperado.partes.every((p) => p.kind === 'pagina_pdf')).toBe(true);
+  });
+
+  it('T-CO-05 C14 tiene un comentario; C15 es un PDF con capa de texto y sin anotaciones', () => {
+    if (hay('C14')) { expect(partesDe('C14', 'comentario')).toBe(1); expect(golds.get('C14')?.esperado.metadatos).toContain('autores_revisiones'); }
+    if (hay('C15')) {
+      expect(partesDe('C15', 'pagina_pdf')).toBeGreaterThanOrEqual(1); expect(partesDe('C15', 'anotacion_pdf')).toBe(0);
+      expect(golds.get('C15')?.esperado.metadatos).toContain('pdf_propiedades');
+    }
+  });
+
+  it('T-CO-05 C19: contrato laboral de una persona extranjera con campos MERGEFIELD de resultado visible', () => {
+    if (!hay('C19')) return;
+    const merge = bloques('C19').filter((b) => b.tipo === 'campo' && b.instr?.startsWith('MERGEFIELD'));
+    expect(merge.length).toBeGreaterThanOrEqual(2);
+    expect(new Set(merge.map((b) => (b as unknown as { campo?: string }).campo))).toEqual(new Set(['fldSimple', 'fldChar']));
+    expect(annDe('C19').some((a) => ['CE', 'PPT', 'PEP', 'PASAPORTE'].includes(a.tipo))).toBe(true);
+    expect(golds.get('C19')?.esperado.metadatos).toContain('codigos_campo');
+  });
+
+  it('T-CO-05 C21: contrato de mutuo con tabla de cuotas separada por tabuladores', () => {
+    if (!hay('C21')) return;
+    const t = cuerpoDe('C21');
+    expect(t).toContain('\t');
+    expect(tiene('C21', 'tabla')).toBe(true);
+    expect(annDe('C21').filter((a) => a.caracteristicas.includes('F33')).length).toBeGreaterThanOrEqual(3);
+    expect(t).toMatch(/MUTUO/);
+  });
+
+  it('T-CO-05 C25 es un correo corto con nombres en minúsculas; C26 reenvía un correo con su propia cabecera', () => {
+    if (hay('C25')) {
+      expect(cuerpoDe('C25').length).toBeLessThan(2500);
+      expect(annDe('C25').some((a) => a.caracteristicas.includes('F52'))).toBe(true);
+    }
+    if (hay('C26')) {
+      const t = cuerpoDe('C26');
+      expect(t).toContain('---------- Mensaje reenviado ----------');
+      expect(t).toMatch(/^Asunto: Fwd:/m);
+      expect((t.match(/^De: /gm) ?? []).length).toBeGreaterThanOrEqual(2);
+      expect((t.match(/^Para: /gm) ?? []).length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('T-CO-05 C29: acta de audiencia en PDF con anotación /FreeText y despachos con su municipio', () => {
+    if (!hay('C29')) return;
+    const g = golds.get('C29') as Gold;
+    expect(partesDe('C29', 'pagina_pdf')).toBeGreaterThanOrEqual(2);
+    expect(partesDe('C29', 'anotacion_pdf')).toBe(1);
+    const bl = bloques('C29').filter((b) => b.tipo === 'anotacion') as unknown as Array<{ subtipo?: string }>;
+    expect(bl.map((b) => b.subtipo)).toEqual(['FreeText']);
+    expect(g.esperado.metadatos).toContain('pdf_autores_anotaciones');
+    expect(annDe('C29').some((a) => a.parte.kind === 'anotacion_pdf' && a.caracteristicas.includes('F42') && (a.tipo === 'CORREO' || a.tipo === 'TELEFONO'))).toBe(true);
+    expect(annDe('C29').some((a) => a.caracteristicas.includes('F54'))).toBe(true);
+    expect(tiene('C29', 'tabla')).toBe(false);
   });
 
   it('T-CO-05 los .docx y .pdf agregados por PG-2 (si existen) traen metadatos ficticios', () => {

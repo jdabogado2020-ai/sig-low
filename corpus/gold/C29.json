@@ -1,0 +1,3415 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C29",
+  "tipoDocumento": "acta",
+  "fuente": "pdf",
+  "archivo": "corpus/docs/C29.pdf",
+  "conjunto": "reserva",
+  "semilla": "SIGLOW-CORPUS-B",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1,
+        "longitud": 2922,
+        "sha256": "afbbe1b2c18ab3357c4b1911b9f056e9523e64b2cbc851f12ea2154c638aa5c2"
+      },
+      {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2,
+        "longitud": 1942,
+        "sha256": "e8a78ff9618de0accc1d5fa2bf6773e142ede9c825161d2e6faa185d16fcc842"
+      },
+      {
+        "kind": "anotacion_pdf",
+        "index": 1,
+        "page": 2,
+        "longitud": 86,
+        "sha256": "1ab16678dcdaef3b26c78c7d7f556b1f274237bbbf2ff48d435812b6047c8b39"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": [
+      "pdf_autores_anotaciones",
+      "pdf_propiedades"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Catalina Prueba",
+      "role": "DEMANDANTE"
+    },
+    {
+      "name": "Carmen Rosa Ejemplo Muñoz",
+      "role": "DEMANDADO"
+    },
+    {
+      "name": "Adriana Prueba Peña",
+      "role": "CONTACTO"
+    },
+    {
+      "name": "Constructora Prueba S.A.",
+      "role": "EMPRESA"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C29-E01",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:CL 0 BIS A 0A 3 AP 301",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E02",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E03",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-02",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E04",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 996 civil municipal de envigado",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E05",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25899400395220240000100",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E06",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:olga lucia ficticia vargas",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E07",
+      "tipo": "CARGO",
+      "canonico": "CARGO:jueza titular del despacho",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E08",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:viviana ficticia lopez",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E09",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "canonico": "LISTA:Catalina Prueba",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C29-E10",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "canonico": "CC:39000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E11",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "canonico": "LISTA:Carmen Rosa Ejemplo Muñoz",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C29-E12",
+      "tipo": "CC",
+      "rol": "DEMANDADO",
+      "canonico": "CC:1000000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E13",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "canonico": "LISTA:Adriana Prueba Peña",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C29-E14",
+      "tipo": "TP",
+      "rol": "CONTACTO",
+      "canonico": "TP:000094",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E15",
+      "tipo": "CARGO",
+      "canonico": "CARGO:subgerente cientifica",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E16",
+      "tipo": "CARGO",
+      "canonico": "CARGO:jefa de talento humano",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E17",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:blanca nubia ejemplo del rio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E18",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:2000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E19",
+      "tipo": "CARGO",
+      "canonico": "CARGO:gerente general",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E20",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:wilson ejemplo munoz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E21",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:63000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E22",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:ivan dario ejemplo munoz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E23",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:6000007",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E24",
+      "tipo": "CARGO",
+      "canonico": "CARGO:coordinador de cartera",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E25",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:restaurante prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E26",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:20265001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E27",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:S2026000071",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E28",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Constructora Prueba S.A.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C29-E29",
+      "tipo": "VALOR",
+      "canonico": "VALOR:41000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E30",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-11-09",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E31",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:comercializadora ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E32",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:830000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E33",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:DG 0 BIS A 0 1 IN 2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E34",
+      "tipo": "RADICADO",
+      "canonico": "RAD:15759400397020190000900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E35",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 995 civil municipal de envigado",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E36",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-31",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E37",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:cristian camilo prueba de la hoz",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E38",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "canonico": "DIR:AC 00 00 0 AP 105",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E39",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:ejemplo norte",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E40",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:denuncio publicamente al gerente del hospital",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E41",
+      "tipo": "VALOR",
+      "canonico": "VALOR:27500000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E42",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:19",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E43",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:50C-00000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E44",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1437 de 2011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E45",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 1069 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E46",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:sentencia c-902 de 2008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E47",
+      "tipo": "CARGO",
+      "canonico": "CARGO:conciliadora en derecho",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E48",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TP:000101",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E49",
+      "tipo": "VALOR",
+      "canonico": "VALOR:9000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E50",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-05-17",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E51",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000001200",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E52",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco prueba",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E53",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "canonico": "CORREO:catalina.prueba@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E54",
+      "tipo": "CORREO",
+      "rol": "DEMANDADO",
+      "canonico": "CORREO:carmen.ejemplo@mail.prueba.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E55",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "canonico": "TEL:3100000013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E56",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDADO",
+      "canonico": "TEL:3210000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E57",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:20265011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E58",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:S2026000081",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E59",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-12-05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E60",
+      "tipo": "RADICADO",
+      "canonico": "RAD:05001400393020260001500",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E61",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:san ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E62",
+      "tipo": "HECHO_LLAMATIVO",
+      "canonico": "HECHO:recibio amenazas del grupo armado que opera en la zona",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E63",
+      "tipo": "MATRICULA",
+      "canonico": "MAT:50N-00000016",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E64",
+      "tipo": "CARGO",
+      "canonico": "CARGO:presidenta de la junta",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E65",
+      "tipo": "CARGO",
+      "canonico": "CARGO:secretaria general",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E66",
+      "tipo": "RADICADO",
+      "canonico": "RAD:66170400593620240001700",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E67",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 994 civil municipal de ibague",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E68",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:73",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E69",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-02-01",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E70",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:05001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E71",
+      "tipo": "VALOR",
+      "canonico": "NEG:$47.065",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C29-E72",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "canonico": "CORREO:adriana.prueba@ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C29-A001",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 41,
+      "end": 78,
+      "texto": "Cll. 0 Bis A # 0A-03, apartamento 301",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C29-E01",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A002",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 80,
+      "end": 88,
+      "texto": "Medellín",
+      "tipo": "MUNICIPIO",
+      "entidad": "C29-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A003",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 102,
+      "end": 138,
+      "texto": "dos (2) días del mes de mayo de 2026",
+      "tipo": "FECHA",
+      "entidad": "C29-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A004",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 167,
+      "end": 206,
+      "texto": "Juzgado 996 Civil Municipal de Envigado",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C29-E04",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C29-A005",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 198,
+      "end": 206,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C29-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C29-A004",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C29-A006",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 236,
+      "end": 259,
+      "texto": "25899400395220240000100",
+      "tipo": "RADICADO",
+      "entidad": "C29-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A007",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 267,
+      "end": 293,
+      "texto": "Olga Lucía Ficticia Vargas",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A008",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 295,
+      "end": 321,
+      "texto": "jueza titular del despacho",
+      "tipo": "CARGO",
+      "entidad": "C29-E07",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A009",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 335,
+      "end": 349,
+      "texto": "Ficticia López",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A010",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 370,
+      "end": 395,
+      "texto": "CATALINA PRUEBA DEL VALLE",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A011",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 402,
+      "end": 412,
+      "texto": "39.000.002",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A012",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 424,
+      "end": 449,
+      "texto": "CARMEN ROSA\nEJEMPLO MUÑOZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A013",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 456,
+      "end": 466,
+      "texto": "1000000003",
+      "tipo": "CC",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A014",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 502,
+      "end": 521,
+      "texto": "Adriana Prueba Peña",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C29-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A015",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 528,
+      "end": 530,
+      "texto": "94",
+      "tipo": "TP",
+      "rol": "CONTACTO",
+      "entidad": "C29-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F45"
+      ]
+    },
+    {
+      "id": "C29-A016",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 545,
+      "end": 570,
+      "texto": "CATALINA PRUEBA DEL VALLE",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A017",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 577,
+      "end": 587,
+      "texto": "39.000.002",
+      "tipo": "CC",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A018",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 589,
+      "end": 610,
+      "texto": "subgerente científica",
+      "tipo": "CARGO",
+      "entidad": "C29-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A019",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 613,
+      "end": 638,
+      "texto": "Carmen Rosa Ejemplo Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A020",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 645,
+      "end": 655,
+      "texto": "1000000003",
+      "tipo": "CC",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A021",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 657,
+      "end": 679,
+      "texto": "jefa de talento humano",
+      "tipo": "CARGO",
+      "entidad": "C29-E16",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A022",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 682,
+      "end": 710,
+      "texto": "Blanca Nubia Ejemplo Del Río",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A023",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 717,
+      "end": 726,
+      "texto": "2.000.005",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A024",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 728,
+      "end": 743,
+      "texto": "gerente general",
+      "tipo": "CARGO",
+      "entidad": "C29-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A025",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 746,
+      "end": 766,
+      "texto": "Wilson Ejemplo Muñoz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A026",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 773,
+      "end": 781,
+      "texto": "63000006",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A027",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 783,
+      "end": 798,
+      "texto": "gerente general",
+      "tipo": "CARGO",
+      "entidad": "C29-E19",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A028",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 801,
+      "end": 825,
+      "texto": "Iván Darío Ejemplo Muñoz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A029",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 832,
+      "end": 841,
+      "texto": "6.000.007",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A030",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 843,
+      "end": 865,
+      "texto": "coordinador de cartera",
+      "tipo": "CARGO",
+      "entidad": "C29-E24",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A031",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 906,
+      "end": 931,
+      "texto": "Restaurante Prueba S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C29-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A032",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 964,
+      "end": 972,
+      "texto": "20265001",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C29-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C29-A033",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 997,
+      "end": 1010,
+      "texto": "S-2026-000071",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C29-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C29-A034",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1015,
+      "end": 1040,
+      "texto": "Catalina Prueba Del Valle",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A035",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1055,
+      "end": 1074,
+      "texto": "Constructora Prueba",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C29-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A036",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1085,
+      "end": 1136,
+      "texto": "cuarenta y un\nmillones de pesos M/CTE ($41.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C29-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A037",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1146,
+      "end": 1168,
+      "texto": "9 de noviembre de 2025",
+      "tipo": "FECHA",
+      "entidad": "C29-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A038",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1184,
+      "end": 1214,
+      "texto": "Comercializadora Ejemplo Ltda.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C29-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A039",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1220,
+      "end": 1233,
+      "texto": "830.000.008-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C29-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A040",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1253,
+      "end": 1264,
+      "texto": "Prueba Peña",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C29-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A041",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1304,
+      "end": 1336,
+      "texto": "Dg. 0 Bis A n.º 0-01, interior 2",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C29-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A042",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1340,
+      "end": 1348,
+      "texto": "Medellín",
+      "tipo": "MUNICIPIO",
+      "entidad": "C29-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A043",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1391,
+      "end": 1420,
+      "texto": "15759-40-03-970-2019-00009-00",
+      "tipo": "RADICADO",
+      "entidad": "C29-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A044",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1425,
+      "end": 1464,
+      "texto": "Juzgado 995\nCivil Municipal de Envigado",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C29-E35",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C29-A045",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1456,
+      "end": 1464,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C29-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C29-A044",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C29-A046",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1493,
+      "end": 1549,
+      "texto": "treinta y uno (31) de julio de\ndos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C29-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A047",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1554,
+      "end": 1586,
+      "texto": "Cristian Camilo Prueba De la Hoz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A048",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1626,
+      "end": 1663,
+      "texto": "Av. Calle 00\n# 00-00, apartamento 105",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A049",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1672,
+      "end": 1685,
+      "texto": "Ejemplo Norte",
+      "tipo": "BARRIO",
+      "entidad": "C29-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A050",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1693,
+      "end": 1700,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A051",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1701,
+      "end": 1746,
+      "texto": "denunció públicamente al\ngerente del hospital",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C29-E40",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A052",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1789,
+      "end": 1811,
+      "texto": "27.5 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C29-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A053",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1832,
+      "end": 1891,
+      "texto": "diecinueve (19) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C29-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A054",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1937,
+      "end": 1949,
+      "texto": "50C-00000010",
+      "tipo": "MATRICULA",
+      "entidad": "C29-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A055",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 1965,
+      "end": 1976,
+      "texto": "C. R. E. M.",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A056",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2079,
+      "end": 2095,
+      "texto": "Ley 1437 de 2011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C29-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A057",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2100,
+      "end": 2120,
+      "texto": "Decreto\n1069 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C29-E45",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A058",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2126,
+      "end": 2149,
+      "texto": "Sentencia C-902 de 2008",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C29-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F31",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A059",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2178,
+      "end": 2194,
+      "texto": "Prueba Del Valle",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A060",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2256,
+      "end": 2282,
+      "texto": "Olga Lucía Ficticia Vargas",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A061",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2284,
+      "end": 2307,
+      "texto": "conciliadora en derecho",
+      "tipo": "CARGO",
+      "entidad": "C29-E47",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A062",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2322,
+      "end": 2325,
+      "texto": "101",
+      "tipo": "TP",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F45"
+      ]
+    },
+    {
+      "id": "C29-A063",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2375,
+      "end": 2400,
+      "texto": "CARMEN ROSA EJEMPLO MUÑOZ",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A064",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2433,
+      "end": 2444,
+      "texto": "$ 9.000.000",
+      "tipo": "VALOR",
+      "entidad": "C29-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A065",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2460,
+      "end": 2512,
+      "texto": "diecisiete (17) de mayo de dos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C29-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A066",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2568,
+      "end": 2581,
+      "texto": "000-000012-00",
+      "tipo": "CUENTA",
+      "entidad": "C29-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A067",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2586,
+      "end": 2603,
+      "texto": "Banco Prueba S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C29-E52",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A068",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2638,
+      "end": 2666,
+      "texto": "catalina.prueba@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A069",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2669,
+      "end": 2700,
+      "texto": "carmen.ejemplo@mail.prueba.test",
+      "tipo": "CORREO",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A070",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2732,
+      "end": 2744,
+      "texto": "310 000 0013",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A071",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2747,
+      "end": 2765,
+      "texto": "(+57)\n321-000-0014",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A072",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2781,
+      "end": 2788,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A073",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 1,
+        "page": 1
+      },
+      "start": 2865,
+      "end": 2890,
+      "texto": "Restaurante Prueba S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C29-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A074",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 0,
+      "end": 8,
+      "texto": "20265011",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C29-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C29-A075",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 33,
+      "end": 46,
+      "texto": "S-2026-000081",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C29-E58",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F46"
+      ]
+    },
+    {
+      "id": "C29-A076",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 86,
+      "end": 99,
+      "texto": "Ejemplo Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A077",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 119,
+      "end": 144,
+      "texto": "Catalina Prueba Del Valle",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A078",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 159,
+      "end": 178,
+      "texto": "Constructora Prueba",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C29-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "razon_social_sin_sufijo",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A079",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 189,
+      "end": 234,
+      "texto": "cuarenta y un\nmillones de pesos ($41.000.000)",
+      "tipo": "VALOR",
+      "entidad": "C29-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A080",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 244,
+      "end": 266,
+      "texto": "5 de diciembre de 2025",
+      "tipo": "FECHA",
+      "entidad": "C29-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A081",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 306,
+      "end": 322,
+      "texto": "Prueba Del Valle",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A082",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 353,
+      "end": 383,
+      "texto": "Comercializadora Ejemplo Ltda.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C29-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A083",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 389,
+      "end": 402,
+      "texto": "830.000.008-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C29-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A084",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 422,
+      "end": 433,
+      "texto": "Prueba Peña",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C29-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A085",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 473,
+      "end": 505,
+      "texto": "Diag. 0 Bis A # 0-01, interior 2",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C29-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A086",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 509,
+      "end": 517,
+      "texto": "Medellín",
+      "tipo": "MUNICIPIO",
+      "entidad": "C29-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A087",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 557,
+      "end": 582,
+      "texto": "Carmen Rosa Ejemplo Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A088",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 640,
+      "end": 669,
+      "texto": "05001-40-03-930-2026-00015-00",
+      "tipo": "RADICADO",
+      "entidad": "C29-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A089",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 674,
+      "end": 713,
+      "texto": "Juzgado 995\nCivil Municipal de Envigado",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C29-E35",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C29-A090",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 705,
+      "end": 713,
+      "texto": "Envigado",
+      "tipo": "MUNICIPIO",
+      "entidad": "C29-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C29-A089",
+      "caracteristicas": [
+        "F25",
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C29-A091",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 742,
+      "end": 798,
+      "texto": "treinta y uno (31) de julio de\ndos mil veintiséis (2026)",
+      "tipo": "FECHA",
+      "entidad": "C29-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A092",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 838,
+      "end": 863,
+      "texto": "Carmen Rosa Ejemplo\nMuñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A093",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 883,
+      "end": 915,
+      "texto": "Cristian Camilo Prueba De la Hoz",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F02",
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A094",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 955,
+      "end": 993,
+      "texto": "Av. Calle 00\nN° 00-00, apartamento 105",
+      "tipo": "DIRECCION",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A095",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1002,
+      "end": 1013,
+      "texto": "San Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C29-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A096",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1021,
+      "end": 1028,
+      "texto": "Ejemplo",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F44"
+      ]
+    },
+    {
+      "id": "C29-A097",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1029,
+      "end": 1083,
+      "texto": "recibió amenazas del grupo\narmado que opera en la zona",
+      "tipo": "HECHO_LLAMATIVO",
+      "entidad": "C29-E62",
+      "debe_generalizarse": true,
+      "generalizacion": "HECHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "HECHO_LLAMATIVO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F29",
+        "F40",
+        "F43"
+      ]
+    },
+    {
+      "id": "C29-A098",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1099,
+      "end": 1124,
+      "texto": "CATALINA PRUEBA DEL VALLE",
+      "tipo": "PERSONA",
+      "rol": "DEMANDANTE",
+      "entidad": "C29-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01",
+        "F02",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A099",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1213,
+      "end": 1235,
+      "texto": "27.5 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C29-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A100",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1256,
+      "end": 1315,
+      "texto": "diecinueve (19) salarios mínimos legales mensuales vigentes",
+      "tipo": "VALOR",
+      "entidad": "C29-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A101",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1361,
+      "end": 1373,
+      "texto": "50N-00000016",
+      "tipo": "MATRICULA",
+      "entidad": "C29-E63",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F17",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A102",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1402,
+      "end": 1427,
+      "texto": "Carmen Rosa Ejemplo Muñoz",
+      "tipo": "PERSONA",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A103",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1491,
+      "end": 1517,
+      "texto": "Olga Lucía Ficticia Vargas",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A104",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1520,
+      "end": 1542,
+      "texto": "presidenta de la junta",
+      "tipo": "CARGO",
+      "entidad": "C29-E64",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A105",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1543,
+      "end": 1565,
+      "texto": "Viviana Ficticia López",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C29-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51"
+      ]
+    },
+    {
+      "id": "C29-A106",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1568,
+      "end": 1586,
+      "texto": "secretaria general",
+      "tipo": "CARGO",
+      "entidad": "C29-E65",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A107",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1659,
+      "end": 1688,
+      "texto": "66170 40 05 936 2024 00017 00",
+      "tipo": "RADICADO",
+      "entidad": "C29-E66",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A108",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1697,
+      "end": 1734,
+      "texto": "Juzgado 994 Civil Municipal de Ibagué",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C29-E67",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40",
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C29-A109",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1728,
+      "end": 1734,
+      "texto": "Ibagué",
+      "tipo": "MUNICIPIO",
+      "entidad": "C29-E68",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C29-A108",
+      "caracteristicas": [
+        "F40",
+        "F54"
+      ]
+    },
+    {
+      "id": "C29-A110",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1748,
+      "end": 1757,
+      "texto": "1-II-2026",
+      "tipo": "FECHA",
+      "entidad": "C29-E69",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A111",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1782,
+      "end": 1789,
+      "texto": "Barbosa",
+      "tipo": "MUNICIPIO",
+      "entidad": "C29-E02",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25",
+        "F26",
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A112",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1791,
+      "end": 1800,
+      "texto": "Antioquia",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C29-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F40"
+      ]
+    },
+    {
+      "id": "C29-A113",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1867,
+      "end": 1872,
+      "texto": "05001",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C29-E70",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C29-A114",
+      "docId": "C29",
+      "parte": {
+        "kind": "pagina_pdf",
+        "index": 2,
+        "page": 2
+      },
+      "start": 1890,
+      "end": 1897,
+      "texto": "$47.065",
+      "tipo": "VALOR",
+      "entidad": "C29-E71",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F40",
+        "F53"
+      ]
+    },
+    {
+      "id": "C29-A115",
+      "docId": "C29",
+      "parte": {
+        "kind": "anotacion_pdf",
+        "index": 1,
+        "page": 2
+      },
+      "start": 33,
+      "end": 60,
+      "texto": "adriana.prueba@ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "entidad": "C29-E72",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12",
+        "F42"
+      ]
+    },
+    {
+      "id": "C29-A116",
+      "docId": "C29",
+      "parte": {
+        "kind": "anotacion_pdf",
+        "index": 1,
+        "page": 2
+      },
+      "start": 73,
+      "end": 85,
+      "texto": "321 000 0014",
+      "tipo": "TELEFONO",
+      "rol": "DEMANDADO",
+      "entidad": "C29-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F42"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}

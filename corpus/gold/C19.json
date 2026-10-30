@@ -1,0 +1,2933 @@
+{
+  "formato": "sig-low/gold",
+  "v": 1,
+  "docId": "C19",
+  "tipoDocumento": "contrato",
+  "fuente": "docx",
+  "archivo": "corpus/docs/C19.docx",
+  "conjunto": "reserva",
+  "semilla": "SIGLOW-CORPUS-B",
+  "esperado": {
+    "partes": [
+      {
+        "kind": "cuerpo",
+        "index": 1,
+        "longitud": 6528,
+        "sha256": "203675e2597b3bd391d610442929545dc9e40479d56773c0a16783fad85aec90"
+      }
+    ],
+    "advertencias": [],
+    "metadatos": [
+      "codigos_campo",
+      "propiedades_aplicacion",
+      "propiedades_documento"
+    ]
+  },
+  "listaDelCaso": [
+    {
+      "name": "Textiles Ficticios S.A.S.",
+      "role": "EMPRESA"
+    },
+    {
+      "name": "Mauricio Prueba Quintero",
+      "role": "CLIENTE"
+    },
+    {
+      "name": "Mónica Ejemplo Orozco",
+      "role": "CONTACTO"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "C19-E01",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:05",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E02",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-06",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E03",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "LISTA:Textiles Ficticios S.A.S.",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C19-E04",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:811000001",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E05",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "canonico": "DIR:TV 00B 00 1",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E06",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:hector fabio prueba guerrero",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E07",
+      "tipo": "CARGO",
+      "canonico": "CARGO:representante legal",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E08",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:1000000002",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E09",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "canonico": "LISTA:Mauricio Prueba Quintero",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C19-E10",
+      "tipo": "CE",
+      "rol": "CLIENTE",
+      "canonico": "CE:1000003",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E11",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "canonico": "DIR:CL 0A 0A 3 CS 19",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E12",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:el mirador ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E13",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:76",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E14",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 361 de 1997",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E15",
+      "tipo": "CARGO",
+      "canonico": "CARGO:rector",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E16",
+      "tipo": "VALOR",
+      "canonico": "VALOR:2100000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E17",
+      "tipo": "VALOR",
+      "canonico": "VALOR:SMMLV:2",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E18",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2028-12-22",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E19",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "canonico": "CORREO:talentohumano@textiles-ficticios.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E20",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "canonico": "TEL:3220000004",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E21",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:papeleria ficticia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E22",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:0000005",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E23",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:EPS000006",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E24",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:PILA2026000304",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E25",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:00000000700",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E26",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "canonico": "ORG:banco ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E27",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-09-04",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E28",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 64 del codigo sustantivo del trabajo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E29",
+      "tipo": "VALOR",
+      "canonico": "VALOR:1750905",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E30",
+      "tipo": "BARRIO",
+      "canonico": "BARRIO:el remanso ficticio",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E31",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:luz marina ficticia torres",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E32",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "canonico": "CC:8000008",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E33",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:3170000009",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E34",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "canonico": "TEL:0000010",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E35",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:articulo 159 del codigo sustantivo del trabajo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E36",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 2101 de 2021",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E37",
+      "tipo": "VALOR",
+      "canonico": "VALOR:350000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E38",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "canonico": "ORG:almacenes ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E39",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "canonico": "NIT:830000011",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E40",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2026-07-27",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E41",
+      "tipo": "VALOR",
+      "canonico": "VALOR:480000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E42",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:000000012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E43",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2027-02-14",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E44",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "canonico": "LISTA:Mónica Ejemplo Orozco",
+      "mismoTitular": [],
+      "enLista": true
+    },
+    {
+      "id": "C19-E45",
+      "tipo": "CARGO",
+      "canonico": "CARGO:directora regional",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E46",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "canonico": "CORREO:monica.ejemplo@correo.ejemplo.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E47",
+      "tipo": "TELEFONO",
+      "rol": "CONTACTO",
+      "canonico": "TEL:6050000013",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E48",
+      "tipo": "AFILIACION",
+      "canonico": "AFIL:AT00000014",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E49",
+      "tipo": "NIT",
+      "rol": "PROVEEDOR",
+      "canonico": "NIT:800000015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E50",
+      "tipo": "VALOR",
+      "canonico": "VALOR:20000000",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E51",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2027-08-10",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E52",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 997 civil municipal de palmira",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E53",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:ley 1581 de 2012",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E54",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:decreto 1074 de 2015",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E55",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "canonico": "CORREO:datospersonales@textiles-ficticios.test",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E56",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:500289",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E57",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "RAD:C2026000097",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E58",
+      "tipo": "CARGO",
+      "canonico": "CARGO:gerente general",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E59",
+      "tipo": "CUENTA",
+      "canonico": "CUENTA:055000000016",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E60",
+      "tipo": "CUENTA",
+      "rol": "EMPRESA",
+      "canonico": "CUENTA:BREB:@textiles.ejemplo",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E61",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "canonico": "CC:1000000017",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E62",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25269401098520240001800",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E63",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 993 civil del circuito de facatativa",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E64",
+      "tipo": "DEPARTAMENTO",
+      "canonico": "DEP:25",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E65",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-06-07",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E66",
+      "tipo": "RADICADO",
+      "canonico": "RAD:25899401092020220001900",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E67",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "canonico": "ORG:juzgado 994 civil municipal de chia",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E68",
+      "tipo": "FECHA",
+      "canonico": "FECHA:2025-12-27",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E69",
+      "tipo": "TARJETA",
+      "canonico": "CUENTA:4000000000000229",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E70",
+      "tipo": "RADICADO",
+      "canonico": "RAD:11999310395320210002400",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E71",
+      "tipo": "RADICADO",
+      "canonico": "NEG:050014003997",
+      "mismoTitular": [],
+      "enLista": false
+    },
+    {
+      "id": "C19-E72",
+      "tipo": "RADICADO_ADMIN",
+      "canonico": "NEG:05001",
+      "mismoTitular": [],
+      "enLista": false
+    }
+  ],
+  "anotaciones": [
+    {
+      "id": "C19-A001",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 61,
+      "end": 69,
+      "texto": "Medellín",
+      "tipo": "MUNICIPIO",
+      "entidad": "C19-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A002",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 77,
+      "end": 115,
+      "texto": "seis (6) días del mes de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C19-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C19-A003",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 151,
+      "end": 176,
+      "texto": "TEXTILES FICTICIOS S.A.S.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C19-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C19-A004",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 195,
+      "end": 208,
+      "texto": "811 000 001-1",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C19-E04",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C19-A005",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 227,
+      "end": 253,
+      "texto": "Transversal 00Bª No. 00-01",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C19-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C19-A006",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 257,
+      "end": 265,
+      "texto": "Medellín",
+      "tipo": "MUNICIPIO",
+      "entidad": "C19-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A007",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 295,
+      "end": 323,
+      "texto": "Héctor Fabio Prueba Guerrero",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C19-A008",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 354,
+      "end": 373,
+      "texto": "representante legal",
+      "tipo": "CARGO",
+      "entidad": "C19-E07",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C19-A009",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 399,
+      "end": 412,
+      "texto": "1.000.000.002",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E08",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C19-A010",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 477,
+      "end": 501,
+      "texto": "Mauricio Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A011",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 567,
+      "end": 576,
+      "texto": "1.000.003",
+      "tipo": "CE",
+      "rol": "CLIENTE",
+      "entidad": "C19-E10",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F09"
+      ]
+    },
+    {
+      "id": "C19-A012",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 593,
+      "end": 618,
+      "texto": "Calle 0A # 0A-03, casa 19",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C19-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C19-A013",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 627,
+      "end": 645,
+      "texto": "El Mirador Ejemplo",
+      "tipo": "BARRIO",
+      "entidad": "C19-E12",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C19-A014",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 647,
+      "end": 654,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C19-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C19-A015",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 802,
+      "end": 817,
+      "texto": "Ley 361 de 1997",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C19-E14",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C19-A016",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 957,
+      "end": 972,
+      "texto": "Prueba Guerrero",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F44",
+        "F51"
+      ]
+    },
+    {
+      "id": "C19-A017",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 998,
+      "end": 1004,
+      "texto": "rector",
+      "tipo": "CARGO",
+      "entidad": "C19-E15",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C19-A018",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1008,
+      "end": 1012,
+      "texto": "TEFI",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C19-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A019",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1020,
+      "end": 1039,
+      "texto": "Trans. 00Bª # 00-01",
+      "tipo": "DIRECCION",
+      "rol": "EMPRESA",
+      "entidad": "C19-E05",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C19-A020",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1043,
+      "end": 1051,
+      "texto": "Medellín",
+      "tipo": "MUNICIPIO",
+      "entidad": "C19-E01",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A021",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1110,
+      "end": 1121,
+      "texto": "$ 2.100.000",
+      "tipo": "VALOR",
+      "entidad": "C19-E16",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A022",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1152,
+      "end": 1159,
+      "texto": "2 SMMLV",
+      "tipo": "VALOR",
+      "entidad": "C19-E17",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C19-A023",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1304,
+      "end": 1327,
+      "texto": "22 de diciembre de 2028",
+      "tipo": "FECHA",
+      "entidad": "C19-E18",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C19-A024",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1379,
+      "end": 1416,
+      "texto": "talentohumano@textiles-ficticios.test",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "entidad": "C19-E19",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C19-A025",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1445,
+      "end": 1462,
+      "texto": "0057 322 000 0004",
+      "tipo": "TELEFONO",
+      "rol": "CLIENTE",
+      "entidad": "C19-E20",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11",
+        "F43"
+      ]
+    },
+    {
+      "id": "C19-A026",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1539,
+      "end": 1563,
+      "texto": "Papelería Ficticia Ltda.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C19-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C19-A027",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1599,
+      "end": 1606,
+      "texto": "0000005",
+      "tipo": "AFILIACION",
+      "entidad": "C19-E22",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C19-A028",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1643,
+      "end": 1653,
+      "texto": "EPS-000006",
+      "tipo": "AFILIACION",
+      "entidad": "C19-E23",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C19-A029",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1695,
+      "end": 1711,
+      "texto": "PILA-2026-000304",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C19-E24",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C19-A030",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1799,
+      "end": 1812,
+      "texto": "000-000007-00",
+      "tipo": "CUENTA",
+      "entidad": "C19-E25",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C19-A031",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1817,
+      "end": 1835,
+      "texto": "Banco Ejemplo S.A.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C19-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C19-A032",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1859,
+      "end": 1874,
+      "texto": "Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C19-A033",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 1914,
+      "end": 1920,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C19-A034",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2024,
+      "end": 2062,
+      "texto": "seis (6) días del mes de julio de 2026",
+      "tipo": "FECHA",
+      "entidad": "C19-E02",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C19-A035",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2072,
+      "end": 2082,
+      "texto": "04/09/2026",
+      "tipo": "FECHA",
+      "entidad": "C19-E27",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C19-A036",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2122,
+      "end": 2128,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C19-A037",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2266,
+      "end": 2311,
+      "texto": "artículo 64 del Código Sustantivo del Trabajo",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C19-E28",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C19-A038",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2329,
+      "end": 2342,
+      "texto": "COP 1.750.905",
+      "tipo": "VALOR",
+      "entidad": "C19-E29",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A039",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2440,
+      "end": 2466,
+      "texto": "Calle 0A N° 0A-03, casa 19",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C19-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F13"
+      ]
+    },
+    {
+      "id": "C19-A040",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2475,
+      "end": 2494,
+      "texto": "El Remanso Ficticio",
+      "tipo": "BARRIO",
+      "entidad": "C19-E30",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F15"
+      ]
+    },
+    {
+      "id": "C19-A041",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2499,
+      "end": 2506,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C19-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C19-A042",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2567,
+      "end": 2575,
+      "texto": "M. P. Q.",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "iniciales",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C19-A043",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2697,
+      "end": 2723,
+      "texto": "Luz Marina Ficticia Torres",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C19-A044",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2747,
+      "end": 2756,
+      "texto": "8.000.008",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06",
+        "F43"
+      ]
+    },
+    {
+      "id": "C19-A045",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2769,
+      "end": 2785,
+      "texto": "+57 317 000 0009",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C19-A046",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2796,
+      "end": 2804,
+      "texto": "000 0010",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E34",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C19-A047",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2899,
+      "end": 2945,
+      "texto": "artículo 159 del Código Sustantivo del Trabajo",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C19-E35",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C19-A048",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 2953,
+      "end": 2969,
+      "texto": "Ley 2101 de 2021",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C19-E36",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C19-A049",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3025,
+      "end": 3033,
+      "texto": "$350.000",
+      "tipo": "VALOR",
+      "entidad": "C19-E37",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A050",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3069,
+      "end": 3084,
+      "texto": "Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C19-A051",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3228,
+      "end": 3250,
+      "texto": "Almacenes Ejemplo S.A.",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C19-E38",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C19-A052",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3256,
+      "end": 3267,
+      "texto": "830000011-2",
+      "tipo": "NIT",
+      "rol": "EMPRESA",
+      "entidad": "C19-E39",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C19-A053",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3284,
+      "end": 3296,
+      "texto": "27 jul. 2026",
+      "tipo": "FECHA",
+      "entidad": "C19-E40",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C19-A054",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3306,
+      "end": 3354,
+      "texto": "cuatrocientos ochenta mil pesos M/CTE ($480.000)",
+      "tipo": "VALOR",
+      "entidad": "C19-E41",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F23",
+        "F24"
+      ]
+    },
+    {
+      "id": "C19-A055",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3453,
+      "end": 3462,
+      "texto": "000000012",
+      "tipo": "AFILIACION",
+      "entidad": "C19-E42",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C19-A056",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3497,
+      "end": 3550,
+      "texto": "catorce (14) de febrero de dos mil veintisiete (2027)",
+      "tipo": "FECHA",
+      "entidad": "C19-E43",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C19-A057",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3590,
+      "end": 3596,
+      "texto": "Prueba",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellido_suelto",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C19-A058",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3685,
+      "end": 3706,
+      "texto": "Mónica Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C19-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43"
+      ]
+    },
+    {
+      "id": "C19-A059",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3708,
+      "end": 3726,
+      "texto": "directora regional",
+      "tipo": "CARGO",
+      "entidad": "C19-E45",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C19-A060",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3730,
+      "end": 3734,
+      "texto": "TEFI",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C19-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A061",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3746,
+      "end": 3780,
+      "texto": "monica.ejemplo@correo.ejemplo.test",
+      "tipo": "CORREO",
+      "rol": "CONTACTO",
+      "entidad": "C19-E46",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C19-A062",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3795,
+      "end": 3820,
+      "texto": "+57 605 000 0013 Ext. 214",
+      "tipo": "TELEFONO",
+      "rol": "CONTACTO",
+      "entidad": "C19-E47",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F10"
+      ]
+    },
+    {
+      "id": "C19-A063",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3844,
+      "end": 3859,
+      "texto": "Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C19-A064",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3940,
+      "end": 3952,
+      "texto": "AT-0000-0014",
+      "tipo": "AFILIACION",
+      "entidad": "C19-E48",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F19"
+      ]
+    },
+    {
+      "id": "C19-A065",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3966,
+      "end": 3990,
+      "texto": "Papelería Ficticia Ltda.",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C19-E21",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C19-A066",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 3996,
+      "end": 4009,
+      "texto": "800.000.015-2",
+      "tipo": "NIT",
+      "rol": "PROVEEDOR",
+      "entidad": "C19-E49",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F07"
+      ]
+    },
+    {
+      "id": "C19-A067",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4038,
+      "end": 4058,
+      "texto": "20 millones de pesos",
+      "tipo": "VALOR",
+      "entidad": "C19-E50",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F24"
+      ]
+    },
+    {
+      "id": "C19-A068",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4068,
+      "end": 4117,
+      "texto": "diez (10) de agosto de dos mil veintisiete (2027)",
+      "tipo": "FECHA",
+      "entidad": "C19-E51",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F21"
+      ]
+    },
+    {
+      "id": "C19-A069",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4157,
+      "end": 4172,
+      "texto": "Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C19-A070",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4202,
+      "end": 4217,
+      "texto": "Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "apellidos",
+      "rotulado": false,
+      "caracteristicas": [
+        "F44"
+      ]
+    },
+    {
+      "id": "C19-A071",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4396,
+      "end": 4403,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C19-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F25"
+      ]
+    },
+    {
+      "id": "C19-A072",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4405,
+      "end": 4420,
+      "texto": "Valle del Cauca",
+      "tipo": "DEPARTAMENTO",
+      "entidad": "C19-E13",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A073",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4458,
+      "end": 4496,
+      "texto": "Juzgado 997 Civil Municipal de Palmira",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C19-E52",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C19-A074",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4489,
+      "end": 4496,
+      "texto": "Palmira",
+      "tipo": "MUNICIPIO",
+      "entidad": "C19-E13",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C19-A073",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C19-A075",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4512,
+      "end": 4533,
+      "texto": "Mónica Ejemplo Orozco",
+      "tipo": "PERSONA",
+      "rol": "CONTACTO",
+      "entidad": "C19-E44",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F43"
+      ]
+    },
+    {
+      "id": "C19-A076",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4646,
+      "end": 4662,
+      "texto": "Ley 1581 de 2012",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C19-E53",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C19-A077",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4669,
+      "end": 4689,
+      "texto": "Decreto 1074 de 2015",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C19-E54",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F30"
+      ]
+    },
+    {
+      "id": "C19-A078",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4813,
+      "end": 4852,
+      "texto": "datospersonales@textiles-ficticios.test",
+      "tipo": "CORREO",
+      "rol": "EMPRESA",
+      "entidad": "C19-E55",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F12"
+      ]
+    },
+    {
+      "id": "C19-A079",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 4881,
+      "end": 4905,
+      "texto": "Mauricio Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A080",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5115,
+      "end": 5121,
+      "texto": "500289",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C19-E56",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C19-A081",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5136,
+      "end": 5149,
+      "texto": "C-2026-000097",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C19-E57",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F46"
+      ]
+    },
+    {
+      "id": "C19-A082",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5219,
+      "end": 5245,
+      "texto": "Luz Marina Ficticia Torres",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E31",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C19-A083",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5247,
+      "end": 5262,
+      "texto": "gerente general",
+      "tipo": "CARGO",
+      "entidad": "C19-E58",
+      "debe_generalizarse": true,
+      "generalizacion": "CARGO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "bandera_esperada": "CARGO",
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F27"
+      ]
+    },
+    {
+      "id": "C19-A084",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5266,
+      "end": 5270,
+      "texto": "TEFI",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C19-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A085",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5294,
+      "end": 5301,
+      "texto": "8000008",
+      "tipo": "CC",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E32",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C19-A086",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5346,
+      "end": 5356,
+      "texto": "3170000009",
+      "tipo": "TELEFONO",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E33",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F11"
+      ]
+    },
+    {
+      "id": "C19-A087",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5458,
+      "end": 5472,
+      "texto": "0550-0000-0016",
+      "tipo": "CUENTA",
+      "entidad": "C19-E59",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C19-A088",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5492,
+      "end": 5509,
+      "texto": "@textiles.ejemplo",
+      "tipo": "CUENTA",
+      "rol": "EMPRESA",
+      "entidad": "C19-E60",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C19-A089",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5514,
+      "end": 5527,
+      "texto": "Banco Ejemplo",
+      "tipo": "PROVEEDOR",
+      "rol": "PROVEEDOR",
+      "entidad": "C19-E26",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51"
+      ]
+    },
+    {
+      "id": "C19-A090",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5556,
+      "end": 5580,
+      "texto": "Mauricio Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A091",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5654,
+      "end": 5682,
+      "texto": "Héctor Fabio Prueba Guerrero",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C19-E06",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F43",
+        "F51"
+      ]
+    },
+    {
+      "id": "C19-A092",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5685,
+      "end": 5689,
+      "texto": "TEFI",
+      "tipo": "EMPRESA",
+      "rol": "EMPRESA",
+      "entidad": "C19-E03",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "sigla",
+      "rotulado": false,
+      "caracteristicas": []
+    },
+    {
+      "id": "C19-A093",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5690,
+      "end": 5714,
+      "texto": "MAURICIO PRUEBA QUINTERO",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "mayusculas",
+      "rotulado": false,
+      "caracteristicas": [
+        "F01"
+      ]
+    },
+    {
+      "id": "C19-A094",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5722,
+      "end": 5732,
+      "texto": "1000000017",
+      "tipo": "CC",
+      "rol": "CLIENTE",
+      "entidad": "C19-E61",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F06"
+      ]
+    },
+    {
+      "id": "C19-A095",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5775,
+      "end": 5799,
+      "texto": "Mauricio Prueba Quintero",
+      "tipo": "PERSONA",
+      "rol": "CLIENTE",
+      "entidad": "C19-E09",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": true,
+      "claseVariante": "exacta",
+      "rotulado": false,
+      "caracteristicas": [
+        "F39"
+      ]
+    },
+    {
+      "id": "C19-A096",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5811,
+      "end": 5837,
+      "texto": "Cll. 0A No. 0A-03, casa 19",
+      "tipo": "DIRECCION",
+      "rol": "CLIENTE",
+      "entidad": "C19-E11",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F13",
+        "F39"
+      ]
+    },
+    {
+      "id": "C19-A097",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5895,
+      "end": 5925,
+      "texto": "25-269-40-10-985-2024-00018-00",
+      "tipo": "RADICADO",
+      "entidad": "C19-E62",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C19-A098",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5934,
+      "end": 5978,
+      "texto": "Juzgado 993 Civil del Circuito de Facatativá",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C19-E63",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C19-A099",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5968,
+      "end": 5978,
+      "texto": "Facatativá",
+      "tipo": "MUNICIPIO",
+      "entidad": "C19-E64",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C19-A098",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C19-A100",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 5992,
+      "end": 6002,
+      "texto": "07.06.2025",
+      "tipo": "FECHA",
+      "entidad": "C19-E65",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C19-A101",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6025,
+      "end": 6054,
+      "texto": "25899-40-10-920-2022-00019-00",
+      "tipo": "RADICADO",
+      "entidad": "C19-E66",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "valida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C19-A102",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6063,
+      "end": 6098,
+      "texto": "Juzgado 994 Civil Municipal de Chía",
+      "tipo": "ENTIDAD",
+      "rol": "ENTIDAD",
+      "entidad": "C19-E67",
+      "debe_generalizarse": true,
+      "generalizacion": "DESPACHO_A_GENERICO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F51",
+        "F54"
+      ]
+    },
+    {
+      "id": "C19-A103",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6094,
+      "end": 6098,
+      "texto": "Chía",
+      "tipo": "MUNICIPIO",
+      "entidad": "C19-E64",
+      "debe_generalizarse": true,
+      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "contenidaEn": "C19-A102",
+      "caracteristicas": [
+        "F25",
+        "F54"
+      ]
+    },
+    {
+      "id": "C19-A104",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6112,
+      "end": 6123,
+      "texto": "27-XII-2025",
+      "tipo": "FECHA",
+      "entidad": "C19-E68",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": false,
+      "caracteristicas": [
+        "F22"
+      ]
+    },
+    {
+      "id": "C19-A105",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6174,
+      "end": 6193,
+      "texto": "4000 0000 0000 0229",
+      "tipo": "TARJETA",
+      "entidad": "C19-E69",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F20"
+      ]
+    },
+    {
+      "id": "C19-A106",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6310,
+      "end": 6339,
+      "texto": "11999-31-03-953-2021-00024-00",
+      "tipo": "RADICADO",
+      "entidad": "C19-E70",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": false,
+      "estructura": "invalida",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F04"
+      ]
+    },
+    {
+      "id": "C19-A107",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6452,
+      "end": 6464,
+      "texto": "050014003997",
+      "tipo": "RADICADO",
+      "entidad": "C19-E71",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    },
+    {
+      "id": "C19-A108",
+      "docId": "C19",
+      "parte": {
+        "kind": "cuerpo",
+        "index": 1
+      },
+      "start": 6478,
+      "end": 6483,
+      "texto": "05001",
+      "tipo": "RADICADO_ADMIN",
+      "entidad": "C19-E72",
+      "debe_generalizarse": false,
+      "es_negativo_esperado": true,
+      "estructura": "no_aplica",
+      "enLista": false,
+      "rotulado": true,
+      "caracteristicas": [
+        "F53"
+      ]
+    }
+  ],
+  "revision": {
+    "estado": "borrador",
+    "discrepancias": 0,
+    "cambios": []
+  }
+}
