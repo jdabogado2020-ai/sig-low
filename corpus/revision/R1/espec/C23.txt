@@ -1,0 +1,43 @@
+PERSONA|Mario Ejemplo De la Cruz
+CORREO|mario.ejemplo@ejemplo.test
+PERSONA|Prueba Giraldo
+CORREO|sergio.prueba@correo.ejemplo.test
+FECHA|martes, [14 de abril de 2026], 15:22
+PERSONA|buenas [Sergio]
+PERSONA|consulte con [Sergio] primero
+PERSONA|édgar ejemplo cuervo
+CARGO|[director médico] de la empresa
+MATRICULA|matrícula de la casa es [300-00000002]
+MUNICIPIO|está en [Palmira], Valle
+DEPARTAMENTO|Palmira, [Valle del Cauca]
+PERSONA|Constanza Ficticia Ruiz
+PERSONA|le decimos [Cata]
+PERSONA|gloria inés ejemplo gonzález
+HECHO_LLAMATIVO|es [hijo de un congresista en ejercicio]
+PERSONA|negocio es de [Ejemplo] con
+EMPRESA|Tecnología Ficticia
+NIT|nit [830000003-3]
+VALOR|[$18'500.000]
+FECHA|factura del [07/10/2025]
+PERSONA|la dueña, [Ejemplo González],
+DIRECCION|apartamento en la [Cll. 00 Bis # 00-03]
+BARRIO|barrio [Los Almendros de Prueba]
+FECHA|antes del [26 abr. 2026]
+PLACA|placa [XYZ-005]
+PLACA|moto [ZZZ07A]
+FECHA|vence el [09.05.2026]
+FECHA|cumplo [44 años]
+FECHA|nací el [1980-06-09]
+CC|cédula es [1000000010]
+TELEFONO|cel [316 000 0011], por
+TELEFONO|fijo de la casa es [000 0012]
+EPS|la eps ([ESF])
+DIAGNOSTICO|diagnóstico de [enfermedad renal crónica estadio 5]
+AFILIACION|autorización [2026000014]
+MENOR|mi hija es [la menor]
+RADICADO|radicado del proceso es [25899 40 03 900 2026 00015 00]
+DESPACHO|[Juzgado 996 Civil Municipal de Palmira]
+MUNICIPIO|Civil Municipal de [Palmira]
+FECHA|citación para el [cuatro (4) de mayo de dos mil veintiséis (2026)]
+PERSONA|mario ejemplo de la cruz
+TELEFONO|cel [(+57) 316-000-0011]

@@ -1,0 +1,82 @@
+FECHA|a los [veinticinco (25) días del mes de julio de 2026]
+EMPRESA|Seguros Prueba S.A.
+EMPRESA|a nombre de [Seguros Prueba]
+NIT|NIT [800 000 001-1]
+DIRECCION|domicilio en [Tv. 00 n.º 0-00, torre 3]
+MUNICIPIO|Santiago de Cali
+PERSONA|Liliana Prueba Ruiz
+CARGO|calidad de [director regional]
+CC|C.C. [80.000.002]
+PERSONA|Álvaro Ficticio Salazar
+CC|ciudadanía No. [1.000.000.003]
+DIRECCION|domiciliado en [Cr. 0 n.º 0-03 Este, local 8]
+BARRIO|barrio [Villa Prueba]
+MUNICIPIO|Villa Prueba, [Sogamoso]
+VALOR|[treinta millones de pesos ($30.000.000)]
+PERSONA|razón [Ficticio] insiste
+PERSONA|Ficticio Salazar
+PERSONA|solidariamente con [Ficticio] al
+PERSONA|Ficticia Restrepo
+PERSONA|que [Ficticia] ha actuado
+VALOR|[$ 10.000.000]
+VALOR|[$10.000.000]
+FECHA|[veinticuatro (24) de agosto de dos mil veintiséis (2026)]
+CUENTA|ahorros No. [000-000004-00]
+ENTIDAD|Banco Ejemplo S.A.
+CORREO|alvaro.ficticio@mail.prueba.test
+TELEFONO|celular [310-000-0005]
+RADICADO_ADMIN|pagaré en blanco No. [PG-2026-00075]
+PLACA|placas [WWW-006]
+MATRICULA|inmobiliaria No. [100-000007]
+FECHA|antes del [8 de septiembre de 2026]
+VALOR|[20 millones de pesos]
+VALOR|hasta por [uno (1) salarios mínimos legales mensuales vigentes]
+DIRECCION|Cra. 0 # 0-03 Este, local 8
+BARRIO|barrio [Altos del Ejemplo]
+MUNICIPIO|Ejemplo, de [Sogamoso]
+EMPRESA|Restaurante Prueba S.A.S.
+NIT|NIT [900.000.008-3]
+PERSONA|José Miguel Ficticio Pérez
+CC|C.C. [52000009]
+PERSONA|y [Prueba Ruiz], quienes
+PERSONA|constancia [Prueba Ruiz] lo
+TELEFONO|celular [311 000 0010]
+TELEFONO|celular [3160000012]
+FECHA|[24/08/2026]
+FECHA|[2026-09-23]
+FECHA|[23.10.2026]
+PERSONA|Rosa Elena Ficticia Restrepo
+RADICADO_ADMIN|interno [500204]
+RADICADO_ADMIN|radicado [C-2026-000092]
+CORREO|datospersonales@seguros-prueba.test
+CC|C.C. [7.000.011]
+NIT|NIT [7.000.011-7]
+DIRECCION|domicilio en [Transversal 0 Bis No. 0A-00 Norte]
+DEPARTAMENTO|Sogamoso ([Boyacá])
+DESPACHO|Juzgado 997 Civil Municipal de Sogamoso
+MUNICIPIO|Civil Municipal de [Sogamoso]
+VALOR|pena equivalente a [cinco (5) salarios mínimos legales mensuales vigentes]
+VALOR|[SIETE MILLONES QUINIENTOS MIL PESOS M/CTE ($7.500.000)]
+CARGO|[jefe de talento humano] de SEPRU
+EMPRESA|SEPRU
+PERSONA|ÁLVARO FICTICIO SALAZAR
+CC|C.C. [1000000003]
+RADICADO|expediente [15-759-41-10-931-2019-00013-00]
+DESPACHO|Juzgado 990 de Familia de Dosquebradas
+MUNICIPIO|Familia de [Dosquebradas]
+FECHA|iniciado el [18-XI-2024]
+RADICADO|actuación [25899-41-05-976-2026-00014-00]
+DESPACHO|Juzgado 993 Civil del Circuito de Palmira
+MUNICIPIO|Circuito de [Palmira]
+FECHA|iniciado el [26-VII-2025]
+RADICADO|CUI [258996000962202300015]
+PERSONA|NIT de [Prueba Muñoz]
+NIT|como [80.000.017-9]
+NEG|Ley 1564 de 2012
+NEG|artículo 884 del Código de Comercio
+NEG|Decreto 624 de 1989
+NEG|Ley 1943 de 2018
+NEG|Ley 1581 de 2012
+NEG|Decreto 1074 de 2015
+NEG|código DANE [05001]
+NEG|código CUPS [871121]

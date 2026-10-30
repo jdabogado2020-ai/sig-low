@@ -1,0 +1,1042 @@
+{
+ "formato": "sig-low/revision-r1",
+ "v": 1,
+ "docId": "C14",
+ "anotaciones": [
+  {
+   "id": "C14-R001",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 0,
+   "end": 16,
+   "texto": "Santiago de Cali",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C14-R002",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 18,
+   "end": 38,
+   "texto": "10 de agosto de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R003",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 47,
+   "end": 78,
+   "texto": "Asesorías Legales Prueba S.A.S.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C14-R004",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 85,
+   "end": 106,
+   "texto": "subgerente científica",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C14-R005",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 109,
+   "end": 133,
+   "texto": "Esperanza Ejemplo Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R006",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 145,
+   "end": 166,
+   "texto": "Transversal 00 # 0-01",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C14-R007",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 168,
+   "end": 184,
+   "texto": "Santiago de Cali",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C14-R008",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 215,
+   "end": 254,
+   "texto": "artículo 23 de la Constitución Política",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C14-R009",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 255,
+   "end": 276,
+   "texto": "Santiago Prueba Rojas",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R010",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 338,
+   "end": 351,
+   "texto": "1.000'000.001",
+   "tipo": "CC"
+  },
+  {
+   "id": "C14-R011",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 366,
+   "end": 404,
+   "texto": "Avenida Calle 0 n.º 0A-03, oficina 502",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C14-R012",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 413,
+   "end": 436,
+   "texto": "Los Almendros de Prueba",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C14-R013",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 438,
+   "end": 442,
+   "texto": "Chía",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C14-R014",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 456,
+   "end": 472,
+   "texto": "+57 320 000 0002",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C14-R015",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 480,
+   "end": 488,
+   "texto": "000 0003",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C14-R016",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 497,
+   "end": 532,
+   "texto": "SANTIAGO.PRUEBA@CORREO.EJEMPLO.TEST",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C14-R017",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 661,
+   "end": 685,
+   "texto": "Esperanza Ejemplo Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R018",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 687,
+   "end": 716,
+   "texto": "secretaria de salud municipal",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C14-R019",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 769,
+   "end": 779,
+   "texto": "2026001013",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C14-R020",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 795,
+   "end": 807,
+   "texto": "Prueba Rojas",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R021",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 907,
+   "end": 915,
+   "texto": "la menor",
+   "tipo": "MENOR"
+  },
+  {
+   "id": "C14-R022",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 927,
+   "end": 945,
+   "texto": "Panadería Ficticia",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C14-R023",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 961,
+   "end": 982,
+   "texto": "SANTIAGO PRUEBA ROJAS",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R024",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1052,
+   "end": 1068,
+   "texto": "Prados de Prueba",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C14-R025",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1072,
+   "end": 1076,
+   "texto": "Chía",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C14-R026",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1084,
+   "end": 1117,
+   "texto": "Av. Calle 0 N° 0A-03, oficina 502",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C14-R027",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1159,
+   "end": 1183,
+   "texto": "Asesorías Legales Prueba",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C14-R028",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1209,
+   "end": 1221,
+   "texto": "Prueba Rojas",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R029",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1231,
+   "end": 1241,
+   "texto": "17/04/1965",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R030",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1247,
+   "end": 1254,
+   "texto": "61 años",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R031",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1397,
+   "end": 1405,
+   "texto": "S. P. R.",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R032",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1492,
+   "end": 1502,
+   "texto": "070-000005",
+   "tipo": "MATRICULA"
+  },
+  {
+   "id": "C14-R033",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1506,
+   "end": 1521,
+   "texto": "Ejemplo Castaño",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R034",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1576,
+   "end": 1588,
+   "texto": "000000000006",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C14-R035",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1627,
+   "end": 1636,
+   "texto": "@prueba26",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C14-R036",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1644,
+   "end": 1663,
+   "texto": "19 de junio de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R037",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1687,
+   "end": 1697,
+   "texto": "$1.250.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C14-R038",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1758,
+   "end": 1789,
+   "texto": "Isabel Cristina Ejemplo Castaño",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R039",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1807,
+   "end": 1830,
+   "texto": "Av. Calle 00B n.º 00-00",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C14-R040",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1864,
+   "end": 1873,
+   "texto": "$ 148.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C14-R041",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1919,
+   "end": 1931,
+   "texto": "311 000 0007",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C14-R042",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1980,
+   "end": 2004,
+   "texto": "Esperanza Ejemplo Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R043",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2006,
+   "end": 2033,
+   "texto": "administradora del conjunto",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C14-R044",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2086,
+   "end": 2096,
+   "texto": "2026001117",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C14-R045",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2125,
+   "end": 2146,
+   "texto": "Santiago Prueba Rojas",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R046",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2191,
+   "end": 2199,
+   "texto": "el menor",
+   "tipo": "MENOR"
+  },
+  {
+   "id": "C14-R047",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2211,
+   "end": 2235,
+   "texto": "Panadería Ficticia Ltda.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C14-R048",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2310,
+   "end": 2326,
+   "texto": "Prados de Prueba",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C14-R049",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2330,
+   "end": 2334,
+   "texto": "Chía",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C14-R050",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2342,
+   "end": 2374,
+   "texto": "Av. Calle 0 # 0A-03, oficina 502",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C14-R051",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2416,
+   "end": 2440,
+   "texto": "Asesorías Legales Prueba",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C14-R052",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2485,
+   "end": 2506,
+   "texto": "Santiago Prueba Rojas",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R053",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2532,
+   "end": 2544,
+   "texto": "Prueba Rojas",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R054",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2554,
+   "end": 2564,
+   "texto": "17/04/1965",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R055",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2570,
+   "end": 2577,
+   "texto": "61 años",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R056",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2709,
+   "end": 2730,
+   "texto": "Santiago Prueba Rojas",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R057",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2778,
+   "end": 2802,
+   "texto": "CONSTRUCTORA PRUEBA S.A.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C14-R058",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2812,
+   "end": 2825,
+   "texto": "811.000.009-8",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C14-R059",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2964,
+   "end": 2970,
+   "texto": "Prueba",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R060",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3097,
+   "end": 3114,
+   "texto": "Banco Prueba S.A.",
+   "tipo": "ENTIDAD"
+  },
+  {
+   "id": "C14-R061",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3119,
+   "end": 3133,
+   "texto": "0550-0000-0010",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C14-R062",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3164,
+   "end": 3174,
+   "texto": "2026-05-30",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R063",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3191,
+   "end": 3230,
+   "texto": "artículo 23 de la Constitución Política",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C14-R064",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3268,
+   "end": 3284,
+   "texto": "Ley 1755 de 2015",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C14-R065",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3351,
+   "end": 3367,
+   "texto": "Ley 1755 de 2015",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C14-R066",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3373,
+   "end": 3396,
+   "texto": "Sentencia T-230 de 2020",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C14-R067",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3469,
+   "end": 3503,
+   "texto": "artículo 14 de la Ley 1437 de 2011",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C14-R068",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3521,
+   "end": 3525,
+   "texto": "3600",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C14-R069",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3624,
+   "end": 3636,
+   "texto": "26 jun. 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R070",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3689,
+   "end": 3736,
+   "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C14-R071",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3801,
+   "end": 3836,
+   "texto": "santiago.prueba@correo.ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C14-R072",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3915,
+   "end": 3927,
+   "texto": "Prueba Rojas",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R073",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4036,
+   "end": 4043,
+   "texto": "1 SMMLV",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C14-R074",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4125,
+   "end": 4129,
+   "texto": "Chía",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C14-R075",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4146,
+   "end": 4181,
+   "texto": "santiago.prueba@correo.ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C14-R076",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4197,
+   "end": 4218,
+   "texto": "Santiago Prueba Rojas",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R077",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4224,
+   "end": 4234,
+   "texto": "1000000001",
+   "tipo": "CC"
+  },
+  {
+   "id": "C14-R078",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4292,
+   "end": 4321,
+   "texto": "25899/40/03/906/2022/00011/00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C14-R079",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4330,
+   "end": 4368,
+   "texto": "Juzgado 994 Civil Municipal de Palmira",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C14-R080",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4361,
+   "end": 4368,
+   "texto": "Palmira",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C14-R081",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4382,
+   "end": 4394,
+   "texto": "17 may. 2024",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R082",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4422,
+   "end": 4451,
+   "texto": "66170/41/05/912/2025/00012/00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C14-R083",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4460,
+   "end": 4499,
+   "texto": "Juzgado 990 de Familia de Floridablanca",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C14-R084",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4486,
+   "end": 4499,
+   "texto": "Floridablanca",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C14-R085",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4513,
+   "end": 4523,
+   "texto": "2025-12-24",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R086",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4537,
+   "end": 4562,
+   "texto": "Juan David Ejemplo Ospina",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C14-R087",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4594,
+   "end": 4603,
+   "texto": "1.000.014",
+   "tipo": "CE"
+  },
+  {
+   "id": "C14-R088",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4632,
+   "end": 4677,
+   "texto": "uno (1) de julio de dos mil veintiséis (2026)",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C14-R089",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4703,
+   "end": 4709,
+   "texto": "Balboa",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C14-R090",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4711,
+   "end": 4720,
+   "texto": "Risaralda",
+   "tipo": "DEPARTAMENTO"
+  },
+  {
+   "id": "C14-R091",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4782,
+   "end": 4784,
+   "texto": "95",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C14-R092",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4798,
+   "end": 4804,
+   "texto": "890201",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C14-R093",
+   "parte": {
+    "kind": "comentario",
+    "index": 1
+   },
+   "start": 20,
+   "end": 33,
+   "texto": "1.000.000.001",
+   "tipo": "CC"
+  },
+  {
+   "id": "C14-R094",
+   "parte": {
+    "kind": "comentario",
+    "index": 1
+   },
+   "start": 47,
+   "end": 59,
+   "texto": "320 000 0002",
+   "tipo": "TELEFONO"
+  }
+ ],
+ "sinCoincidencia": []
+}

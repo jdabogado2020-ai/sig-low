@@ -1,0 +1,32 @@
+PERSONA|Fabián Ejemplo Martínez
+CORREO|fabian.ejemplo@correo.ejemplo.test
+PERSONA|Prueba Del Valle
+CORREO|julian.prueba@correo.ejemplo.test
+FECHA|domingo, [26 de julio de 2026], 17:57
+PERSONA|hola [Julián]
+PERSONA|diana carolina ficticia mora
+MATRICULA|matrícula de la casa es [300-00000002]
+MUNICIPIO|está en [Envigado], Antioquia
+DEPARTAMENTO|Envigado, [Antioquia]
+PERSONA|Rosa Elena Prueba Torres
+PERSONA|le decimos [mi mamá]
+PERSONA|fabián ejemplo martínez
+TELEFONO|cel [+57 314 000 0003]
+PERSONA|Diana Carolina Ficticia Mora
+CORREO|diana.ficticia@mail.prueba.test
+FECHA|miércoles, [22 de julio de 2026], 08:38
+PERSONA|Señor(a) [Ejemplo],
+RADICADO_ADMIN|radicado interno [RH-2026-000125]
+TELEFONO|celular [+57 322 000 0006]
+EMPRESA|Tecnología Ficticia S.A.S.
+NIT|NIT [800000007-3]
+FECHA|terminó el [6 de julio de 2026]
+PERSONA|liquidación de [Ejemplo Martínez]
+CC|C.C. [2.000.000.008]
+VALOR|[$7'350.000]
+CUENTA|cuenta de ahorros [000-000010-00]
+EMPRESA|del [Banco Ejemplo]
+CARGO|– [coordinadora de cartera]
+TELEFONO|Tel. [(608) 000 0011]
+PERSONA|cédula de [Prueba Moreno]
+CC|figura como [249000013]

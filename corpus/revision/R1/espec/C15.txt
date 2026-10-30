@@ -1,0 +1,52 @@
+FECHA|Santiago de Cali, [8 DE SEPTIEMBRE DE 2026]
+MUNICIPIO|Santiago de Cali
+EMPRESA|Banco Prueba S.A.
+EMPRESA|Banco Prueba
+CARGO|Atn.: [secretaria de salud municipal]
+PERSONA|Mónica Ejemplo González
+DIRECCION|Dirección: [Avenida Calle 0 N° 00-00 Sur, local 3]
+PERSONA|Paola Andrea Ficticia Mora
+PERSONA|PAOLA ANDREA FICTICIA MORA
+CC|ciudadanía No. [9.000.001]
+DIRECCION|residente en [Tv. 0ª No. 0A-03]
+BARRIO|barrio [Santa Prueba]
+MUNICIPIO|Envigado
+TELEFONO|celular [+57 318 000 0002]
+TELEFONO|fijo [000 0003]
+CORREO|paola.ficticia@correo.ejemplo.test
+EMPRESA|TEXTILES FICTICIOS S.A.S.
+NIT|NIT [890.000.004-9]
+CUENTA|No. [0550-0000-0005]
+FECHA|[2026-07-07]
+FECHA|corte [03/05/2026]
+VALOR|[3.6 millones de pesos]
+MENOR|educación de [la menor]
+EMPRESA|Gimnasio Prueba
+PERSONA|manifestado [Ficticia] en
+PERSONA|Ficticia Mora
+RADICADO_ADMIN|consecutivo [PQRSD-2026-000355]
+FECHA|[veintinueve (29) de julio de dos mil veintiséis (2026)]
+FECHA|nació el [17/04/1965]
+FECHA|con [61 años]
+PERSONA|Mauricio Ejemplo Salazar
+DIRECCION|[Diag. 0 Bis A # 0-00 Sur, interior 8, oficina 502]
+VALOR|[$ 148.000]
+TELEFONO|al [321 000 0006]
+DIRECCION|[Transversal 0ª N° 0A-03]
+MATRICULA|inmobiliaria [100-000008]
+PERSONA|Ejemplo Salazar
+NEG|artículo 23 de la Constitución Política
+NEG|Ley 1755 de 2015
+NEG|Ley 222 de 1995
+NEG|Sentencia T-230 de 2020
+FECHA|facturación del [4 jun. 2026]
+VALOR|[doscientos cincuenta mil pesos M/CTE ($250.000)]
+VALOR|supera [1 SMMLV]
+DIRECCION|[Tv. 0ª N° 0A-03]
+CC|C.C. [9000001]
+RADICADO|radicado [05360410596120190000900]
+DESPACHO|Juzgado 993 Civil del Circuito de Chía
+MUNICIPIO|Circuito de [Chía]
+FECHA|iniciado el [11 feb. 2026]
+NEG|código postal [760001]
+NEG|UVT [$47.065]

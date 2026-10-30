@@ -1,0 +1,404 @@
+{
+ "formato": "sig-low/revision-r1",
+ "v": 1,
+ "docId": "C26",
+ "anotaciones": [
+  {
+   "id": "C26-R001",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4,
+   "end": 27,
+   "texto": "Fabián Ejemplo Martínez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R002",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 29,
+   "end": 63,
+   "texto": "fabian.ejemplo@correo.ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C26-R003",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 71,
+   "end": 87,
+   "texto": "Prueba Del Valle",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R004",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 89,
+   "end": 122,
+   "texto": "julian.prueba@correo.ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C26-R005",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 140,
+   "end": 159,
+   "texto": "26 de julio de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C26-R006",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 219,
+   "end": 225,
+   "texto": "Julián",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R007",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 258,
+   "end": 286,
+   "texto": "diana carolina ficticia mora",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R008",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 371,
+   "end": 383,
+   "texto": "300-00000002",
+   "tipo": "MATRICULA"
+  },
+  {
+   "id": "C26-R009",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 394,
+   "end": 402,
+   "texto": "Envigado",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C26-R010",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 404,
+   "end": 413,
+   "texto": "Antioquia",
+   "tipo": "DEPARTAMENTO"
+  },
+  {
+   "id": "C26-R011",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 461,
+   "end": 485,
+   "texto": "Rosa Elena Prueba Torres",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R012",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 506,
+   "end": 513,
+   "texto": "mi mamá",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R013",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 550,
+   "end": 573,
+   "texto": "fabián ejemplo martínez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R014",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 578,
+   "end": 594,
+   "texto": "+57 314 000 0003",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C26-R015",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 640,
+   "end": 668,
+   "texto": "Diana Carolina Ficticia Mora",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R016",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 670,
+   "end": 701,
+   "texto": "diana.ficticia@mail.prueba.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C26-R017",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 727,
+   "end": 761,
+   "texto": "fabian.ejemplo@correo.ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C26-R018",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 781,
+   "end": 800,
+   "texto": "22 de julio de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C26-R019",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 859,
+   "end": 866,
+   "texto": "Ejemplo",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R020",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 923,
+   "end": 937,
+   "texto": "RH-2026-000125",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C26-R021",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 972,
+   "end": 1003,
+   "texto": "diana.ficticia@mail.prueba.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C26-R022",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1023,
+   "end": 1039,
+   "texto": "+57 322 000 0006",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C26-R023",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1071,
+   "end": 1097,
+   "texto": "Tecnología Ficticia S.A.S.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C26-R024",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1103,
+   "end": 1114,
+   "texto": "800000007-3",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C26-R025",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1127,
+   "end": 1145,
+   "texto": "6 de julio de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C26-R026",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1226,
+   "end": 1242,
+   "texto": "Ejemplo Martínez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R027",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1249,
+   "end": 1262,
+   "texto": "2.000.000.008",
+   "tipo": "CC"
+  },
+  {
+   "id": "C26-R028",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1275,
+   "end": 1285,
+   "texto": "$7'350.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C26-R029",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1326,
+   "end": 1339,
+   "texto": "000-000010-00",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C26-R030",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1344,
+   "end": 1357,
+   "texto": "Banco Ejemplo",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C26-R031",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1374,
+   "end": 1402,
+   "texto": "Diana Carolina Ficticia Mora",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R032",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1405,
+   "end": 1428,
+   "texto": "coordinadora de cartera",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C26-R033",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1434,
+   "end": 1448,
+   "texto": "(608) 000 0011",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C26-R034",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1451,
+   "end": 1482,
+   "texto": "diana.ficticia@mail.prueba.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C26-R035",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1556,
+   "end": 1569,
+   "texto": "Prueba Moreno",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C26-R036",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1582,
+   "end": 1591,
+   "texto": "249000013",
+   "tipo": "CC"
+  }
+ ],
+ "sinCoincidencia": []
+}

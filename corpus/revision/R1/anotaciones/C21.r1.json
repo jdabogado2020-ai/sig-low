@@ -1,0 +1,1075 @@
+{
+ "formato": "sig-low/revision-r1",
+ "v": 1,
+ "docId": "C21",
+ "anotaciones": [
+  {
+   "id": "C21-R001",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 45,
+   "end": 61,
+   "texto": "Santiago de Cali",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C21-R002",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 69,
+   "end": 115,
+   "texto": "veinticinco (25) días del mes de julio de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C21-R003",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 152,
+   "end": 171,
+   "texto": "Seguros Prueba S.A.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C21-R004",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 190,
+   "end": 203,
+   "texto": "800 000 001-1",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C21-R005",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 222,
+   "end": 246,
+   "texto": "Tv. 00 n.º 0-00, torre 3",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C21-R006",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 250,
+   "end": 266,
+   "texto": "Santiago de Cali",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C21-R007",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 296,
+   "end": 315,
+   "texto": "Liliana Prueba Ruiz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R008",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 346,
+   "end": 363,
+   "texto": "director regional",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C21-R009",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 389,
+   "end": 399,
+   "texto": "80.000.002",
+   "tipo": "CC"
+  },
+  {
+   "id": "C21-R010",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 463,
+   "end": 486,
+   "texto": "Álvaro Ficticio Salazar",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R011",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 530,
+   "end": 543,
+   "texto": "1.000.000.003",
+   "tipo": "CC"
+  },
+  {
+   "id": "C21-R012",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 560,
+   "end": 588,
+   "texto": "Cr. 0 n.º 0-03 Este, local 8",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C21-R013",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 597,
+   "end": 609,
+   "texto": "Villa Prueba",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C21-R014",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 611,
+   "end": 619,
+   "texto": "Sogamoso",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C21-R015",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 765,
+   "end": 781,
+   "texto": "Ley 1564 de 2012",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C21-R016",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 887,
+   "end": 926,
+   "texto": "treinta millones de pesos ($30.000.000)",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C21-R017",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1179,
+   "end": 1214,
+   "texto": "artículo 884 del Código de Comercio",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C21-R018",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1230,
+   "end": 1238,
+   "texto": "Ficticio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R019",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1378,
+   "end": 1390,
+   "texto": "$ 10.000.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C21-R020",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1474,
+   "end": 1530,
+   "texto": "veinticuatro (24) de agosto de dos mil veintiséis (2026)",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C21-R021",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1549,
+   "end": 1572,
+   "texto": "Álvaro Ficticio Salazar",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R022",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1716,
+   "end": 1729,
+   "texto": "000-000004-00",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C21-R023",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1734,
+   "end": 1752,
+   "texto": "Banco Ejemplo S.A.",
+   "tipo": "ENTIDAD"
+  },
+  {
+   "id": "C21-R024",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1765,
+   "end": 1779,
+   "texto": "Seguros Prueba",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C21-R025",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1832,
+   "end": 1848,
+   "texto": "Ficticio Salazar",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R026",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1976,
+   "end": 1989,
+   "texto": "PG-2026-00075",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C21-R027",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2048,
+   "end": 2080,
+   "texto": "alvaro.ficticio@mail.prueba.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C21-R028",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2094,
+   "end": 2106,
+   "texto": "310-000-0005",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C21-R029",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2189,
+   "end": 2196,
+   "texto": "WWW-006",
+   "tipo": "PLACA"
+  },
+  {
+   "id": "C21-R030",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2214,
+   "end": 2230,
+   "texto": "Ficticio Salazar",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R031",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2300,
+   "end": 2310,
+   "texto": "100-000007",
+   "tipo": "MATRICULA"
+  },
+  {
+   "id": "C21-R032",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2416,
+   "end": 2439,
+   "texto": "8 de septiembre de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C21-R033",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2516,
+   "end": 2536,
+   "texto": "20 millones de pesos",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C21-R034",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2657,
+   "end": 2708,
+   "texto": "uno (1) salarios mínimos legales mensuales vigentes",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C21-R035",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2738,
+   "end": 2765,
+   "texto": "Cra. 0 # 0-03 Este, local 8",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C21-R036",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2774,
+   "end": 2791,
+   "texto": "Altos del Ejemplo",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C21-R037",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2796,
+   "end": 2804,
+   "texto": "Sogamoso",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C21-R038",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2820,
+   "end": 2828,
+   "texto": "Ficticio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R039",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2950,
+   "end": 2975,
+   "texto": "Restaurante Prueba S.A.S.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C21-R040",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2981,
+   "end": 2994,
+   "texto": "900.000.008-3",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C21-R041",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3116,
+   "end": 3142,
+   "texto": "José Miguel Ficticio Pérez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R042",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3149,
+   "end": 3157,
+   "texto": "52000009",
+   "tipo": "CC"
+  },
+  {
+   "id": "C21-R043",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3161,
+   "end": 3172,
+   "texto": "Prueba Ruiz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R044",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3219,
+   "end": 3231,
+   "texto": "311 000 0010",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C21-R045",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3341,
+   "end": 3360,
+   "texto": "Decreto 624 de 1989",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C21-R046",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3368,
+   "end": 3384,
+   "texto": "Ley 1943 de 2018",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C21-R047",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3410,
+   "end": 3442,
+   "texto": "alvaro.ficticio@mail.prueba.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C21-R048",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3494,
+   "end": 3504,
+   "texto": "24/08/2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C21-R049",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3505,
+   "end": 3516,
+   "texto": "$10.000.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C21-R050",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3519,
+   "end": 3529,
+   "texto": "2026-09-23",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C21-R051",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3530,
+   "end": 3541,
+   "texto": "$10.000.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C21-R052",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3544,
+   "end": 3554,
+   "texto": "23.10.2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C21-R053",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3555,
+   "end": 3567,
+   "texto": "$ 10.000.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C21-R054",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3595,
+   "end": 3623,
+   "texto": "Rosa Elena Ficticia Restrepo",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R055",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3830,
+   "end": 3836,
+   "texto": "500204",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C21-R056",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3851,
+   "end": 3864,
+   "texto": "C-2026-000092",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C21-R057",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3935,
+   "end": 3951,
+   "texto": "Ley 1581 de 2012",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C21-R058",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3958,
+   "end": 3978,
+   "texto": "Decreto 1074 de 2015",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C21-R059",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4102,
+   "end": 4137,
+   "texto": "datospersonales@seguros-prueba.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C21-R060",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4181,
+   "end": 4209,
+   "texto": "Rosa Elena Ficticia Restrepo",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R061",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4233,
+   "end": 4242,
+   "texto": "7.000.011",
+   "tipo": "CC"
+  },
+  {
+   "id": "C21-R062",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4252,
+   "end": 4263,
+   "texto": "7.000.011-7",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C21-R063",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4279,
+   "end": 4312,
+   "texto": "Transversal 0 Bis No. 0A-00 Norte",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C21-R064",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4343,
+   "end": 4351,
+   "texto": "Ficticio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R065",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4436,
+   "end": 4459,
+   "texto": "Álvaro Ficticio Salazar",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R066",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4635,
+   "end": 4641,
+   "texto": "Boyacá",
+   "tipo": "DEPARTAMENTO"
+  },
+  {
+   "id": "C21-R067",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4679,
+   "end": 4718,
+   "texto": "Juzgado 997 Civil Municipal de Sogamoso",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C21-R068",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4710,
+   "end": 4718,
+   "texto": "Sogamoso",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C21-R069",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4737,
+   "end": 4754,
+   "texto": "Ficticia Restrepo",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R070",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4886,
+   "end": 4939,
+   "texto": "cinco (5) salarios mínimos legales mensuales vigentes",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C21-R071",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4965,
+   "end": 5019,
+   "texto": "SIETE MILLONES QUINIENTOS MIL PESOS M/CTE ($7.500.000)",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C21-R072",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5127,
+   "end": 5153,
+   "texto": "José Miguel Ficticio Pérez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R073",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5155,
+   "end": 5177,
+   "texto": "jefe de talento humano",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C21-R074",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5181,
+   "end": 5186,
+   "texto": "SEPRU",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C21-R075",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5210,
+   "end": 5218,
+   "texto": "52000009",
+   "tipo": "CC"
+  },
+  {
+   "id": "C21-R076",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5263,
+   "end": 5273,
+   "texto": "3160000012",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C21-R077",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5302,
+   "end": 5310,
+   "texto": "Ficticia",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R078",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5459,
+   "end": 5475,
+   "texto": "Santiago de Cali",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C21-R079",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5482,
+   "end": 5528,
+   "texto": "veinticinco (25) días del mes de julio de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C21-R080",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5548,
+   "end": 5559,
+   "texto": "Prueba Ruiz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R081",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5640,
+   "end": 5659,
+   "texto": "Liliana Prueba Ruiz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R082",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5662,
+   "end": 5667,
+   "texto": "SEPRU",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C21-R083",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5668,
+   "end": 5691,
+   "texto": "ÁLVARO FICTICIO SALAZAR",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R084",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5699,
+   "end": 5709,
+   "texto": "1000000003",
+   "tipo": "CC"
+  },
+  {
+   "id": "C21-R085",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5768,
+   "end": 5798,
+   "texto": "15-759-41-10-931-2019-00013-00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C21-R086",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5807,
+   "end": 5845,
+   "texto": "Juzgado 990 de Familia de Dosquebradas",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C21-R087",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5833,
+   "end": 5845,
+   "texto": "Dosquebradas",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C21-R088",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5859,
+   "end": 5869,
+   "texto": "18-XI-2024",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C21-R089",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5892,
+   "end": 5921,
+   "texto": "25899-41-05-976-2026-00014-00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C21-R090",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5930,
+   "end": 5971,
+   "texto": "Juzgado 993 Civil del Circuito de Palmira",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C21-R091",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5964,
+   "end": 5971,
+   "texto": "Palmira",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C21-R092",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5985,
+   "end": 5996,
+   "texto": "26-VII-2025",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C21-R093",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6021,
+   "end": 6042,
+   "texto": "258996000962202300015",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C21-R094",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6083,
+   "end": 6095,
+   "texto": "Prueba Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C21-R095",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6107,
+   "end": 6119,
+   "texto": "80.000.017-9",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C21-R096",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6226,
+   "end": 6231,
+   "texto": "05001",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C21-R097",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6245,
+   "end": 6251,
+   "texto": "871121",
+   "tipo": "NEG"
+  }
+ ],
+ "sinCoincidencia": []
+}

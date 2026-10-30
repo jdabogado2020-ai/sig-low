@@ -1,0 +1,800 @@
+{
+ "formato": "sig-low/revision-r1",
+ "v": 1,
+ "docId": "C15",
+ "anotaciones": [
+  {
+   "id": "C15-R001",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 0,
+   "end": 16,
+   "texto": "Santiago de Cali",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C15-R002",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 18,
+   "end": 41,
+   "texto": "8 DE SEPTIEMBRE DE 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C15-R003",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 50,
+   "end": 67,
+   "texto": "Banco Prueba S.A.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C15-R004",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 74,
+   "end": 103,
+   "texto": "secretaria de salud municipal",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C15-R005",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 106,
+   "end": 129,
+   "texto": "Mónica Ejemplo González",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R006",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 141,
+   "end": 178,
+   "texto": "Avenida Calle 0 N° 00-00 Sur, local 3",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C15-R007",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 180,
+   "end": 196,
+   "texto": "Santiago de Cali",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C15-R008",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 227,
+   "end": 266,
+   "texto": "artículo 23 de la Constitución Política",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C15-R009",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 267,
+   "end": 293,
+   "texto": "Paola Andrea Ficticia Mora",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R010",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 355,
+   "end": 364,
+   "texto": "9.000.001",
+   "tipo": "CC"
+  },
+  {
+   "id": "C15-R011",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 379,
+   "end": 395,
+   "texto": "Tv. 0ª No. 0A-03",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C15-R012",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 404,
+   "end": 416,
+   "texto": "Santa Prueba",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C15-R013",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 418,
+   "end": 426,
+   "texto": "Envigado",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C15-R014",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 440,
+   "end": 456,
+   "texto": "+57\n318 000 0002",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C15-R015",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 464,
+   "end": 472,
+   "texto": "000 0003",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C15-R016",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 481,
+   "end": 515,
+   "texto": "paola.ficticia@correo.ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C15-R017",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 611,
+   "end": 636,
+   "texto": "TEXTILES FICTICIOS S.A.S.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C15-R018",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 646,
+   "end": 659,
+   "texto": "890.000.004-9",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C15-R019",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 863,
+   "end": 880,
+   "texto": "Banco\nPrueba S.A.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C15-R020",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 885,
+   "end": 899,
+   "texto": "0550-0000-0005",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C15-R021",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 930,
+   "end": 940,
+   "texto": "2026-07-07",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C15-R022",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 969,
+   "end": 995,
+   "texto": "Paola Andrea Ficticia Mora",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R023",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1073,
+   "end": 1083,
+   "texto": "03/05/2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C15-R024",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1091,
+   "end": 1112,
+   "texto": "3.6 millones de pesos",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C15-R025",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1194,
+   "end": 1202,
+   "texto": "la menor",
+   "tipo": "MENOR"
+  },
+  {
+   "id": "C15-R026",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1214,
+   "end": 1229,
+   "texto": "Gimnasio\nPrueba",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C15-R027",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1253,
+   "end": 1261,
+   "texto": "Ficticia",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R028",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1306,
+   "end": 1360,
+   "texto": "veintinueve (29) de julio de dos mil veintiséis (2026)",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C15-R029",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1380,
+   "end": 1397,
+   "texto": "PQRSD-2026-000355",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C15-R030",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1459,
+   "end": 1472,
+   "texto": "Ficticia Mora",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R031",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1508,
+   "end": 1521,
+   "texto": "Ficticia Mora",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R032",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1531,
+   "end": 1541,
+   "texto": "17/04/1965",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C15-R033",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1547,
+   "end": 1554,
+   "texto": "61 años",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C15-R034",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1662,
+   "end": 1686,
+   "texto": "Mauricio Ejemplo Salazar",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R035",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1704,
+   "end": 1753,
+   "texto": "Diag. 0 Bis A # 0-00 Sur, interior 8,\noficina 502",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C15-R036",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1787,
+   "end": 1796,
+   "texto": "$ 148.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C15-R037",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1842,
+   "end": 1854,
+   "texto": "321 000 0006",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C15-R038",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1873,
+   "end": 1899,
+   "texto": "Paola Andrea Ficticia Mora",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R039",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1965,
+   "end": 1977,
+   "texto": "Santa Prueba",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C15-R040",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1981,
+   "end": 1989,
+   "texto": "Envigado",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C15-R041",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 1997,
+   "end": 2020,
+   "texto": "Transversal 0ª N° 0A-03",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C15-R042",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2062,
+   "end": 2074,
+   "texto": "Banco Prueba",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C15-R043",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2119,
+   "end": 2145,
+   "texto": "Paola Andrea Ficticia Mora",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R044",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2238,
+   "end": 2248,
+   "texto": "100-000008",
+   "tipo": "MATRICULA"
+  },
+  {
+   "id": "C15-R045",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2252,
+   "end": 2267,
+   "texto": "Ejemplo Salazar",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R046",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2298,
+   "end": 2324,
+   "texto": "PAOLA ANDREA FICTICIA MORA",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R047",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2361,
+   "end": 2400,
+   "texto": "artículo 23 de la Constitución Política",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C15-R048",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2438,
+   "end": 2454,
+   "texto": "Ley 1755\nde 2015",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C15-R049",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2521,
+   "end": 2536,
+   "texto": "Ley 222 de 1995",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C15-R050",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2542,
+   "end": 2565,
+   "texto": "Sentencia T-230 de 2020",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C15-R051",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2660,
+   "end": 2671,
+   "texto": "4 jun. 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C15-R052",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2724,
+   "end": 2771,
+   "texto": "doscientos cincuenta mil pesos M/CTE ($250.000)",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C15-R053",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 1,
+    "page": 1
+   },
+   "start": 2836,
+   "end": 2870,
+   "texto": "paola.ficticia@correo.ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C15-R054",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 77,
+   "end": 90,
+   "texto": "Ficticia\nMora",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R055",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 199,
+   "end": 206,
+   "texto": "1 SMMLV",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C15-R056",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 248,
+   "end": 263,
+   "texto": "Tv. 0ª N° 0A-03",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C15-R057",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 265,
+   "end": 273,
+   "texto": "Envigado",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C15-R058",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 290,
+   "end": 324,
+   "texto": "paola.ficticia@correo.ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C15-R059",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 340,
+   "end": 366,
+   "texto": "PAOLA ANDREA FICTICIA MORA",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C15-R060",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 372,
+   "end": 379,
+   "texto": "9000001",
+   "tipo": "CC"
+  },
+  {
+   "id": "C15-R061",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 450,
+   "end": 473,
+   "texto": "05360410596120190000900",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C15-R062",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 482,
+   "end": 520,
+   "texto": "Juzgado\n993 Civil del Circuito de Chía",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C15-R063",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 516,
+   "end": 520,
+   "texto": "Chía",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C15-R064",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 534,
+   "end": 546,
+   "texto": "11 feb. 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C15-R065",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 615,
+   "end": 621,
+   "texto": "760001",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C15-R066",
+   "parte": {
+    "kind": "pagina_pdf",
+    "index": 2,
+    "page": 2
+   },
+   "start": 639,
+   "end": 646,
+   "texto": "$47.065",
+   "tipo": "NEG"
+  }
+ ],
+ "sinCoincidencia": []
+}

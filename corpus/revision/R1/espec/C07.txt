@@ -1,0 +1,154 @@
+PERSONA|BLANCA NUBIA FICTICIA MUÑOZ
+PERSONA|ALEJANDRO FICTICIO GÓMEZ
+DESPACHO|JUZGADO 998 CIVIL MUNICIPAL DE DOSQUEBRADAS
+MUNICIPIO|CIVIL MUNICIPAL DE [DOSQUEBRADAS]
+EPS|SALUD INTEGRAL PRUEBA EPS S.A.
+IPS|FUNDACIÓN HOSPITAL EJEMPLO
+PERSONA|Blanca Nubia Ficticia Muñoz
+CC|C.C. [1.000.000.001]
+MUNICIPIO|Dosquebradas
+BARRIO|barrio [Ejemplo], en
+DIRECCION|[Av. Calle 00B # 0A-01]
+MENOR|[el menor] Alejandro
+PERSONA|Alejandro Ficticio Gómez
+TI|T.I. [1.000.000.002]
+EPS|Salud Integral Prueba EPS S.A.
+EPS|Salud Integral Prueba EPS
+EPS|SIP
+FECHA|[18 de diciembre de 2020]
+AFILIACION|afiliación [EPS-000004]
+TELEFONO|celular [323 000 0003]
+PERSONA|Arturo Ficticio Orozco
+PERSONA|Ficticio Orozco
+PERSONA|Ficticio Gómez
+PERSONA|Ficticio
+PERSONA|Ficticia Muñoz
+NOT:PERSONA|El Tablón Ficticio
+HECHO_LLAMATIVO|[denunció públicamente al gerente del hospital]
+VALOR|[12 millones de pesos]
+VALOR|[diez (10) salarios mínimos legales mensuales vigentes]
+TELEFONO|PBX [601 000 0005 Ext. 102]
+CORREO|NOTIFICACIONES@SALUD-INTEGRAL-PRUEBA-EPS.TEST
+CORREO|servicioalcliente@salud-integral-prueba-eps.test
+EMPRESA|TECNOLOGÍA FICTICIA S.A.S.
+EMPRESA|Tecnología Ficticia S.A.S.
+NIT|NIT [900 000 006-9]
+NIT|NIT [900.000.006-9]
+CUENTA|No. [000-000007-00]
+ENTIDAD|Banco Ejemplo S.A.
+CUENTA|Bre-B [@ficticia1]
+VALOR|[$2.000.000]
+VALOR|[2 SMMLV]
+BARRIO|barrio [La Esperanza Ficticia] de
+TELEFONO|celular [+57 301 000 0008]
+CORREO|blanca.ficticia@mail.prueba.test
+PERSONA|A. F. G.
+IPS|FHE
+HC|HC [1000000002]
+DIAGNOSTICO|síndrome de Guillain-Barré
+DIAGNOSTICO|código [G61.0]
+DIAGNOSTICO|CIE-10 [G61.0]
+FECHA|[29 jun. 2026]
+DIRECCION|[Diag. 0A # 0A-00 Este]
+DIRECCION|[Dg. 0A # 0A-00 Este]
+MUNICIPIO|Bucaramanga
+RADICADO_ADMIN|radicado No. [E-2026-000177]
+RADICADO_ADMIN|radicado No. [E-2026-000310]
+FECHA|[20 de mayo de 2026]
+FECHA|nació el [22 de febrero de 2020]
+FECHA|tiene [6 años] de edad
+MATRICULA|inmobiliaria No. [100-000009]
+MATRICULA|inmobiliaria No. [50S-00000018]
+VALOR|[$ 650.000]
+FECHA|[veintiuno (21) de mayo de dos mil veintiséis (2026)]
+PERSONA|Rafael Prueba Cuervo
+TP|registro médico No. [000100]
+AFILIACION|autorización No. [2026000011]
+PERSONA|Paola Andrea Prueba Guerrero
+CARGO|[coordinadora de auditoría médica]
+CARGO|[subgerente científica]
+TARJETA|crédito [4000 0000 0000 0127]
+TARJETA|crédito [4000-0000-0000-0200]
+PERSONA|Gilberto Ficticio Salazar
+BARRIO|barrio [San Ejemplo]
+BARRIO|barrio [Ejemplo Norte]
+DIRECCION|[vereda El Ejemplo, ubicada en el kilómetro 7 de la vía a Bucaramanga]
+DIRECCION|[vereda El Tablón Ficticio]
+PLACA|placas [XXX013]
+PLACA|placas [XYZ-021]
+EMPRESA|Papelería Ficticia Ltda.
+EMPRESA|Papelería Ficticia
+VALOR|[cuarenta y ocho millones de pesos ($48.000.000)]
+CC|C.C. [9.000.015]
+CUENTA|No. [000-000016-00]
+VALOR|[un millón cuatrocientos veintitrés mil quinientos pesos ($1.423.500)]
+TELEFONO|fijo [(608) 000 0017]
+TELEFONO|celular [3010000008]
+HC|clínica No. [1.000.000.002]
+FECHA|[2026-06-12]
+FECHA|[8 de junio de 2026]
+FECHA|[veintitrés (23) de mayo de dos mil veintiséis (2026)]
+PERSONA|especialista [Prueba]
+AFILIACION|MIPRES [20260314000000000019]
+FECHA|[2 de diciembre de 2020]
+FECHA|[8 de junio de 2020]
+AFILIACION|afiliación [EPS-000022]
+AFILIACION|afiliación [EPS-000014]
+DEPARTAMENTO|([Risaralda])
+CORREO|contacto@salud-integral-prueba-eps.test
+NIT|NIT [811.000.024-9]
+DIRECCION|[Avenida Calle 0 No. 00-03 Este, torre 3]
+CC|C.C. [1000000001]
+CUENTA|cuenta [000-000025-00]
+FECHA|[2026-05-05]
+RADICADO|expediente [66170-41-05-942-2026-00027-00]
+DESPACHO|Juzgado 991 Laboral del Circuito de Dosquebradas
+FECHA|iniciado el [24/07/2026]
+RADICADO|radicado [66-170-41-03-946-2023-00028-00]
+DESPACHO|Juzgado 992 Promiscuo Municipal de Itagüí
+MUNICIPIO|Municipal de [Itagüí]
+FECHA|iniciado el [18.03.2026]
+RADICADO|actuación [25175 40 10 989 2019 00029 00]
+DESPACHO|Juzgado 994 Civil Municipal de Soacha
+MUNICIPIO|Municipal de [Soacha]
+FECHA|iniciado el [2025-05-13]
+RADICADO|CUI [258996000916202100030]
+PERSONA|Jairo Ejemplo Ortiz
+MENOR|Ortiz, [el menor],
+TI|T.I. [1.000.000.032]
+FECHA|nació el [14/03/2020]
+HC|es la No. [1.000.000.032]
+PERSONA|Leonardo Ficticio Torres
+PPT|Permanencia [1.000.034.890]
+FECHA|[26 de junio de 2026]
+PERSONA|Alba Lucía Prueba Guerrero
+CE|extranjería No. [1.000.036]
+FECHA|citada como testigo el [14/06/2026]
+MUNICIPIO|nació en [Córdoba]
+DEPARTAMENTO|Córdoba, [Bolívar]
+PERSONA|teléfono de [Ficticio Jiménez]
+TELEFONO|como [603 000 0038]
+TELEFONO|teléfono [+57 301 000 0008]
+TELEFONO|en [(602) 000 0026]
+NEG|artículo 86 de la Constitución Política
+NEG|Decreto 2591 de 1991
+NEG|Sentencia T-760 de 2008
+NEG|Sentencia SU-508 de 2020
+NEG|artículo 49 de la Constitución Política
+NEG|Ley 1751 de 2015
+NEG|Ley 1122 de 2007
+NEG|Sentencia SU-124 de 2018
+NEG|expediente T-9.000.004
+NEG|radicado [15759-31-03-967-2019-00023-00]
+NEG|Ley 100 de 1993
+NEG|código [110014003999]
+NEG|CIIU [8610]
+NEG|Sentencia T-074 de 2020
+NEG|Ley 1480 de 2011
+NEG|UVT [$47.065]
+NEG|código postal [680001]
+NEG|código de despacho [110014003999]
+PERSONA|Ficticia
+NOT:PERSONA|Papelería Ficticia
+NOT:PERSONA|Tecnología Ficticia
+NOT:PERSONA|La Esperanza Ficticia

@@ -1,0 +1,481 @@
+{
+ "formato": "sig-low/revision-r1",
+ "v": 1,
+ "docId": "C23",
+ "anotaciones": [
+  {
+   "id": "C23-R001",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4,
+   "end": 28,
+   "texto": "Mario Ejemplo De la Cruz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R002",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 30,
+   "end": 56,
+   "texto": "mario.ejemplo@ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C23-R003",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 64,
+   "end": 78,
+   "texto": "Prueba Giraldo",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R004",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 80,
+   "end": 113,
+   "texto": "sergio.prueba@correo.ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C23-R005",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 130,
+   "end": 149,
+   "texto": "14 de abril de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C23-R006",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 195,
+   "end": 201,
+   "texto": "Sergio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R007",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 219,
+   "end": 239,
+   "texto": "édgar ejemplo cuervo",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R008",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 241,
+   "end": 256,
+   "texto": "director médico",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C23-R009",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 299,
+   "end": 305,
+   "texto": "Sergio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R010",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 343,
+   "end": 355,
+   "texto": "300-00000002",
+   "tipo": "MATRICULA"
+  },
+  {
+   "id": "C23-R011",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 366,
+   "end": 373,
+   "texto": "Palmira",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C23-R012",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 375,
+   "end": 390,
+   "texto": "Valle del Cauca",
+   "tipo": "DEPARTAMENTO"
+  },
+  {
+   "id": "C23-R013",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 438,
+   "end": 461,
+   "texto": "Constanza Ficticia Ruiz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R014",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 482,
+   "end": 486,
+   "texto": "Cata",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R015",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 509,
+   "end": 537,
+   "texto": "gloria inés ejemplo gonzález",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R016",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 541,
+   "end": 576,
+   "texto": "hijo de un congresista en ejercicio",
+   "tipo": "HECHO_LLAMATIVO"
+  },
+  {
+   "id": "C23-R017",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 628,
+   "end": 635,
+   "texto": "Ejemplo",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R018",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 640,
+   "end": 659,
+   "texto": "Tecnología Ficticia",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C23-R019",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 665,
+   "end": 676,
+   "texto": "830000003-3",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C23-R020",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 688,
+   "end": 699,
+   "texto": "$18'500.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C23-R021",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 718,
+   "end": 728,
+   "texto": "07/10/2025",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C23-R022",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 795,
+   "end": 811,
+   "texto": "Ejemplo González",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R023",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 858,
+   "end": 877,
+   "texto": "Cll. 00 Bis # 00-03",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C23-R024",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 889,
+   "end": 912,
+   "texto": "Los Almendros de Prueba",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C23-R025",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 934,
+   "end": 946,
+   "texto": "26 abr. 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C23-R026",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 966,
+   "end": 973,
+   "texto": "XYZ-005",
+   "tipo": "PLACA"
+  },
+  {
+   "id": "C23-R027",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 985,
+   "end": 991,
+   "texto": "ZZZ07A",
+   "tipo": "PLACA"
+  },
+  {
+   "id": "C23-R028",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1012,
+   "end": 1022,
+   "texto": "09.05.2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C23-R029",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1043,
+   "end": 1050,
+   "texto": "44 años",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C23-R030",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1060,
+   "end": 1070,
+   "texto": "1980-06-09",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C23-R031",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1086,
+   "end": 1096,
+   "texto": "1000000010",
+   "tipo": "CC"
+  },
+  {
+   "id": "C23-R032",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1106,
+   "end": 1118,
+   "texto": "316 000 0011",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C23-R033",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1168,
+   "end": 1176,
+   "texto": "000 0012",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C23-R034",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1187,
+   "end": 1190,
+   "texto": "ESF",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C23-R035",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1233,
+   "end": 1267,
+   "texto": "enfermedad renal crónica estadio 5",
+   "tipo": "DIAGNOSTICO"
+  },
+  {
+   "id": "C23-R036",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1286,
+   "end": 1296,
+   "texto": "2026000014",
+   "tipo": "AFILIACION"
+  },
+  {
+   "id": "C23-R037",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1316,
+   "end": 1324,
+   "texto": "la menor",
+   "tipo": "MENOR"
+  },
+  {
+   "id": "C23-R038",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1373,
+   "end": 1402,
+   "texto": "25899 40 03 900 2026 00015 00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C23-R039",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1407,
+   "end": 1445,
+   "texto": "Juzgado 996 Civil Municipal de Palmira",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C23-R040",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1438,
+   "end": 1445,
+   "texto": "Palmira",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C23-R041",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1473,
+   "end": 1520,
+   "texto": "cuatro (4) de mayo de dos mil veintiséis (2026)",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C23-R042",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1545,
+   "end": 1569,
+   "texto": "mario ejemplo de la cruz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C23-R043",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1574,
+   "end": 1592,
+   "texto": "(+57) 316-000-0011",
+   "tipo": "TELEFONO"
+  }
+ ],
+ "sinCoincidencia": []
+}

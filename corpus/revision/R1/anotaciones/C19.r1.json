@@ -1,0 +1,1185 @@
+{
+ "formato": "sig-low/revision-r1",
+ "v": 1,
+ "docId": "C19",
+ "anotaciones": [
+  {
+   "id": "C19-R001",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 61,
+   "end": 69,
+   "texto": "Medellín",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C19-R002",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 77,
+   "end": 115,
+   "texto": "seis (6) días del mes de julio de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C19-R003",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 151,
+   "end": 176,
+   "texto": "TEXTILES FICTICIOS S.A.S.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C19-R004",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 195,
+   "end": 208,
+   "texto": "811 000 001-1",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C19-R005",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 227,
+   "end": 253,
+   "texto": "Transversal 00Bª No. 00-01",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C19-R006",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 257,
+   "end": 265,
+   "texto": "Medellín",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C19-R007",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 295,
+   "end": 323,
+   "texto": "Héctor Fabio Prueba Guerrero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R008",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 399,
+   "end": 412,
+   "texto": "1.000.000.002",
+   "tipo": "CC"
+  },
+  {
+   "id": "C19-R009",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 477,
+   "end": 501,
+   "texto": "Mauricio Prueba Quintero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R010",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 567,
+   "end": 576,
+   "texto": "1.000.003",
+   "tipo": "CE"
+  },
+  {
+   "id": "C19-R011",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 593,
+   "end": 618,
+   "texto": "Calle 0A # 0A-03, casa 19",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C19-R012",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 627,
+   "end": 645,
+   "texto": "El Mirador Ejemplo",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C19-R013",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 647,
+   "end": 654,
+   "texto": "Palmira",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C19-R014",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 802,
+   "end": 817,
+   "texto": "Ley 361 de 1997",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C19-R015",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 957,
+   "end": 972,
+   "texto": "Prueba Guerrero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R016",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 998,
+   "end": 1012,
+   "texto": "rector de TEFI",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C19-R017",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1008,
+   "end": 1012,
+   "texto": "TEFI",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C19-R018",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1020,
+   "end": 1039,
+   "texto": "Trans. 00Bª # 00-01",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C19-R019",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1043,
+   "end": 1051,
+   "texto": "Medellín",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C19-R020",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1110,
+   "end": 1121,
+   "texto": "$ 2.100.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C19-R021",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1152,
+   "end": 1159,
+   "texto": "2 SMMLV",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C19-R022",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1304,
+   "end": 1327,
+   "texto": "22 de diciembre de 2028",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C19-R023",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1379,
+   "end": 1416,
+   "texto": "talentohumano@textiles-ficticios.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C19-R024",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1445,
+   "end": 1462,
+   "texto": "0057 322 000 0004",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C19-R025",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1539,
+   "end": 1563,
+   "texto": "Papelería Ficticia Ltda.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C19-R026",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1599,
+   "end": 1606,
+   "texto": "0000005",
+   "tipo": "AFILIACION"
+  },
+  {
+   "id": "C19-R027",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1643,
+   "end": 1653,
+   "texto": "EPS-000006",
+   "tipo": "AFILIACION"
+  },
+  {
+   "id": "C19-R028",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1695,
+   "end": 1711,
+   "texto": "PILA-2026-000304",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C19-R029",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1799,
+   "end": 1812,
+   "texto": "000-000007-00",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C19-R030",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1817,
+   "end": 1835,
+   "texto": "Banco Ejemplo S.A.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C19-R031",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1859,
+   "end": 1874,
+   "texto": "Prueba Quintero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R032",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1914,
+   "end": 1920,
+   "texto": "Prueba",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R033",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2024,
+   "end": 2062,
+   "texto": "seis (6) días del mes de julio de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C19-R034",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2072,
+   "end": 2082,
+   "texto": "04/09/2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C19-R035",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2122,
+   "end": 2128,
+   "texto": "Prueba",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R036",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2266,
+   "end": 2311,
+   "texto": "artículo 64 del Código Sustantivo del Trabajo",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C19-R037",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2329,
+   "end": 2342,
+   "texto": "COP 1.750.905",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C19-R038",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2440,
+   "end": 2466,
+   "texto": "Calle 0A N° 0A-03, casa 19",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C19-R039",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2475,
+   "end": 2494,
+   "texto": "El Remanso Ficticio",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C19-R040",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2499,
+   "end": 2506,
+   "texto": "Palmira",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C19-R041",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2567,
+   "end": 2575,
+   "texto": "M. P. Q.",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R042",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2697,
+   "end": 2723,
+   "texto": "Luz Marina Ficticia Torres",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R043",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2747,
+   "end": 2756,
+   "texto": "8.000.008",
+   "tipo": "CC"
+  },
+  {
+   "id": "C19-R044",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2769,
+   "end": 2785,
+   "texto": "+57 317 000 0009",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C19-R045",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2796,
+   "end": 2804,
+   "texto": "000 0010",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C19-R046",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2899,
+   "end": 2945,
+   "texto": "artículo 159 del Código Sustantivo del Trabajo",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C19-R047",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2953,
+   "end": 2969,
+   "texto": "Ley 2101 de 2021",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C19-R048",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3025,
+   "end": 3033,
+   "texto": "$350.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C19-R049",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3069,
+   "end": 3084,
+   "texto": "Prueba Quintero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R050",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3228,
+   "end": 3250,
+   "texto": "Almacenes Ejemplo S.A.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C19-R051",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3256,
+   "end": 3267,
+   "texto": "830000011-2",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C19-R052",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3284,
+   "end": 3296,
+   "texto": "27 jul. 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C19-R053",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3306,
+   "end": 3354,
+   "texto": "cuatrocientos ochenta mil pesos M/CTE ($480.000)",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C19-R054",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3453,
+   "end": 3462,
+   "texto": "000000012",
+   "tipo": "AFILIACION"
+  },
+  {
+   "id": "C19-R055",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3497,
+   "end": 3550,
+   "texto": "catorce (14) de febrero de dos mil veintisiete (2027)",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C19-R056",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3590,
+   "end": 3596,
+   "texto": "Prueba",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R057",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3685,
+   "end": 3706,
+   "texto": "Mónica Ejemplo Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R058",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3708,
+   "end": 3734,
+   "texto": "directora regional de TEFI",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C19-R059",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3730,
+   "end": 3734,
+   "texto": "TEFI",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C19-R060",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3746,
+   "end": 3780,
+   "texto": "monica.ejemplo@correo.ejemplo.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C19-R061",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3795,
+   "end": 3820,
+   "texto": "+57 605 000 0013 Ext. 214",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C19-R062",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3844,
+   "end": 3859,
+   "texto": "Prueba Quintero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R063",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3940,
+   "end": 3952,
+   "texto": "AT-0000-0014",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C19-R064",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3966,
+   "end": 3990,
+   "texto": "Papelería Ficticia Ltda.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C19-R065",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3996,
+   "end": 4009,
+   "texto": "800.000.015-2",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C19-R066",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4038,
+   "end": 4058,
+   "texto": "20 millones de pesos",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C19-R067",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4068,
+   "end": 4117,
+   "texto": "diez (10) de agosto de dos mil veintisiete (2027)",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C19-R068",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4157,
+   "end": 4172,
+   "texto": "Prueba Quintero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R069",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4202,
+   "end": 4217,
+   "texto": "Prueba Quintero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R070",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4396,
+   "end": 4403,
+   "texto": "Palmira",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C19-R071",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4405,
+   "end": 4420,
+   "texto": "Valle del Cauca",
+   "tipo": "DEPARTAMENTO"
+  },
+  {
+   "id": "C19-R072",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4458,
+   "end": 4496,
+   "texto": "Juzgado 997 Civil Municipal de Palmira",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C19-R073",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4489,
+   "end": 4496,
+   "texto": "Palmira",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C19-R074",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4512,
+   "end": 4533,
+   "texto": "Mónica Ejemplo Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R075",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4646,
+   "end": 4662,
+   "texto": "Ley 1581 de 2012",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C19-R076",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4669,
+   "end": 4689,
+   "texto": "Decreto 1074 de 2015",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C19-R077",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4813,
+   "end": 4852,
+   "texto": "datospersonales@textiles-ficticios.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C19-R078",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4881,
+   "end": 4905,
+   "texto": "Mauricio Prueba Quintero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R079",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5115,
+   "end": 5121,
+   "texto": "500289",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C19-R080",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5136,
+   "end": 5149,
+   "texto": "C-2026-000097",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C19-R081",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5219,
+   "end": 5245,
+   "texto": "Luz Marina Ficticia Torres",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R082",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5247,
+   "end": 5270,
+   "texto": "gerente general de TEFI",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C19-R083",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5266,
+   "end": 5270,
+   "texto": "TEFI",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C19-R084",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5294,
+   "end": 5301,
+   "texto": "8000008",
+   "tipo": "CC"
+  },
+  {
+   "id": "C19-R085",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5346,
+   "end": 5356,
+   "texto": "3170000009",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C19-R086",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5458,
+   "end": 5472,
+   "texto": "0550-0000-0016",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C19-R087",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5492,
+   "end": 5509,
+   "texto": "@textiles.ejemplo",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C19-R088",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5514,
+   "end": 5527,
+   "texto": "Banco Ejemplo",
+   "tipo": "ENTIDAD"
+  },
+  {
+   "id": "C19-R089",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5556,
+   "end": 5580,
+   "texto": "Mauricio Prueba Quintero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R090",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5654,
+   "end": 5682,
+   "texto": "Héctor Fabio Prueba Guerrero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R091",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5685,
+   "end": 5689,
+   "texto": "TEFI",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C19-R092",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5690,
+   "end": 5714,
+   "texto": "MAURICIO PRUEBA QUINTERO",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R093",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5722,
+   "end": 5732,
+   "texto": "1000000017",
+   "tipo": "CC"
+  },
+  {
+   "id": "C19-R094",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5775,
+   "end": 5799,
+   "texto": "Mauricio Prueba Quintero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C19-R095",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5811,
+   "end": 5837,
+   "texto": "Cll. 0A No. 0A-03, casa 19",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C19-R096",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5895,
+   "end": 5925,
+   "texto": "25-269-40-10-985-2024-00018-00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C19-R097",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5934,
+   "end": 5978,
+   "texto": "Juzgado 993 Civil del Circuito de Facatativá",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C19-R098",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5968,
+   "end": 5978,
+   "texto": "Facatativá",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C19-R099",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5992,
+   "end": 6002,
+   "texto": "07.06.2025",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C19-R100",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6025,
+   "end": 6054,
+   "texto": "25899-40-10-920-2022-00019-00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C19-R101",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6063,
+   "end": 6098,
+   "texto": "Juzgado 994 Civil Municipal de Chía",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C19-R102",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6094,
+   "end": 6098,
+   "texto": "Chía",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C19-R103",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6112,
+   "end": 6123,
+   "texto": "27-XII-2025",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C19-R104",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6174,
+   "end": 6193,
+   "texto": "4000 0000 0000 0229",
+   "tipo": "TARJETA"
+  },
+  {
+   "id": "C19-R105",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6310,
+   "end": 6339,
+   "texto": "11999-31-03-953-2021-00024-00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C19-R106",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6452,
+   "end": 6464,
+   "texto": "050014003997",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C19-R107",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6478,
+   "end": 6483,
+   "texto": "05001",
+   "tipo": "NEG"
+  }
+ ],
+ "sinCoincidencia": []
+}

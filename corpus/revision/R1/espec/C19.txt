@@ -1,0 +1,85 @@
+EMPRESA|TEXTILES FICTICIOS S.A.S.
+NIT|NIT [811 000 001-1]
+DIRECCION|domicilio en [Transversal 00Bª No. 00-01]
+MUNICIPIO|Medellín
+FECHA|[seis (6) días del mes de julio de 2026]
+PERSONA|Héctor Fabio Prueba Guerrero
+CC|C.C. [1.000.000.002]
+PERSONA|Mauricio Prueba Quintero
+CE|extranjería No. [1.000.003]
+DIRECCION|domiciliado en [Calle 0A # 0A-03, casa 19]
+BARRIO|barrio [El Mirador Ejemplo]
+MUNICIPIO|Palmira
+DEPARTAMENTO|[Valle del Cauca]
+PERSONA|dirección de [Prueba Guerrero]
+CARGO|como [rector de TEFI]
+EMPRESA|TEFI
+DIRECCION|en la [Trans. 00Bª # 00-01]
+VALOR|[$ 2.100.000]
+VALOR|[2 SMMLV]
+FECHA|hasta el [22 de diciembre de 2028]
+CORREO|talentohumano@textiles-ficticios.test
+TELEFONO|[0057 322 000 0004]
+EMPRESA|Papelería Ficticia Ltda.
+AFILIACION|con el número [0000005]
+AFILIACION|código de afiliado [EPS-000006]
+RADICADO_ADMIN|radicado [PILA-2026-000304]
+CUENTA|nómina No. [000-000007-00]
+EMPRESA|Banco Ejemplo S.A.
+PERSONA|discutido por [Prueba] en su
+FECHA|hasta el [04/09/2026]
+VALOR|[COP 1.750.905]
+DIRECCION|Calle 0A N° 0A-03, casa 19
+BARRIO|barrio [El Remanso Ficticio]
+PERSONA|M. P. Q.
+PERSONA|Luz Marina Ficticia Torres
+CC|C.C. [8.000.008]
+TELEFONO|celular [+57 317 000 0009]
+TELEFONO|fijo [000 0010]
+PERSONA|Prueba Quintero
+VALOR|[$350.000]
+EMPRESA|Almacenes Ejemplo S.A.
+NIT|NIT [830000011-2]
+FECHA|[27 jul. 2026]
+VALOR|[cuatrocientos ochenta mil pesos M/CTE ($480.000)]
+AFILIACION|afiliado [000000012]
+FECHA|[catorce (14) de febrero de dos mil veintisiete (2027)]
+PERSONA|Mónica Ejemplo Orozco
+CARGO|[directora regional de TEFI]
+CORREO|monica.ejemplo@correo.ejemplo.test
+TELEFONO|teléfono [+57 605 000 0013 Ext. 214]
+RADICADO_ADMIN|póliza No. [AT-0000-0014]
+NIT|NIT [800.000.015-2]
+VALOR|[20 millones de pesos]
+FECHA|[diez (10) de agosto de dos mil veintisiete (2027)]
+DESPACHO|Juzgado 997 Civil Municipal de Palmira
+CORREO|datospersonales@textiles-ficticios.test
+RADICADO_ADMIN|interno [500289]
+RADICADO_ADMIN|radicado [C-2026-000097]
+CARGO|[gerente general de TEFI]
+CC|C.C. [8000008]
+TELEFONO|celular [3170000009]
+CUENTA|cuenta corriente [0550-0000-0016]
+CUENTA|llave Bre-B [@textiles.ejemplo]
+ENTIDAD|a la llave Bre-B @textiles.ejemplo del [Banco Ejemplo]
+CC|C.C. [1000000017]
+PERSONA|MAURICIO PRUEBA QUINTERO
+DIRECCION|domicilio [Cll. 0A No. 0A-03, casa 19]
+RADICADO|expediente [25-269-40-10-985-2024-00018-00]
+DESPACHO|Juzgado 993 Civil del Circuito de Facatativá
+MUNICIPIO|Circuito de [Facatativá]
+FECHA|iniciado el [07.06.2025]
+RADICADO|actuación [25899-40-10-920-2022-00019-00]
+DESPACHO|Juzgado 994 Civil Municipal de Chía
+MUNICIPIO|Municipal de [Chía]
+FECHA|iniciado el [27-XII-2025]
+TARJETA|tarjeta [4000 0000 0000 0229]
+RADICADO|radicado [11999-31-03-953-2021-00024-00]
+NEG|Ley 361 de 1997
+NEG|artículo 64 del Código Sustantivo del Trabajo
+NEG|artículo 159 del Código Sustantivo del Trabajo
+NEG|Ley 2101 de 2021
+NEG|Ley 1581 de 2012
+NEG|Decreto 1074 de 2015
+NEG|código de despacho [050014003997]
+NEG|código DANE [05001]

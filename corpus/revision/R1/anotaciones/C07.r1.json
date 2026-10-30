@@ -1,0 +1,2516 @@
+{
+ "formato": "sig-low/revision-r1",
+ "v": 1,
+ "docId": "C07",
+ "anotaciones": [
+  {
+   "id": "C07-R001",
+   "parte": {
+    "kind": "encabezado",
+    "index": 1
+   },
+   "start": 25,
+   "end": 52,
+   "texto": "BLANCA NUBIA FICTICIA MUÑOZ",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R002",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6,
+   "end": 49,
+   "texto": "JUZGADO 998 CIVIL MUNICIPAL DE DOSQUEBRADAS",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C07-R003",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 37,
+   "end": 49,
+   "texto": "DOSQUEBRADAS",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R004",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 110,
+   "end": 137,
+   "texto": "BLANCA NUBIA FICTICIA MUÑOZ",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R005",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 149,
+   "end": 173,
+   "texto": "ALEJANDRO FICTICIO GÓMEZ",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R006",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 185,
+   "end": 215,
+   "texto": "SALUD INTEGRAL PRUEBA EPS S.A.",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R007",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 227,
+   "end": 253,
+   "texto": "FUNDACIÓN HOSPITAL EJEMPLO",
+   "tipo": "IPS"
+  },
+  {
+   "id": "C07-R008",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 315,
+   "end": 342,
+   "texto": "Blanca Nubia Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R009",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 381,
+   "end": 394,
+   "texto": "1.000.000.001",
+   "tipo": "CC"
+  },
+  {
+   "id": "C07-R010",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 427,
+   "end": 439,
+   "texto": "Dosquebradas",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R011",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 464,
+   "end": 471,
+   "texto": "Ejemplo",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C07-R012",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 479,
+   "end": 500,
+   "texto": "Av. Calle 00B # 0A-01",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C07-R013",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 541,
+   "end": 549,
+   "texto": "el menor",
+   "tipo": "MENOR"
+  },
+  {
+   "id": "C07-R014",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 550,
+   "end": 574,
+   "texto": "Alejandro Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R015",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 598,
+   "end": 611,
+   "texto": "1.000.000.002",
+   "tipo": "TI"
+  },
+  {
+   "id": "C07-R016",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 701,
+   "end": 731,
+   "texto": "Salud Integral Prueba EPS S.A.",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R017",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 733,
+   "end": 736,
+   "texto": "SIP",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R018",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 862,
+   "end": 901,
+   "texto": "artículo 86 de la Constitución Política",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R019",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 907,
+   "end": 927,
+   "texto": "Decreto 2591 de 1991",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R020",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 977,
+   "end": 999,
+   "texto": "Arturo Ficticio Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R021",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1009,
+   "end": 1021,
+   "texto": "323 000 0003",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C07-R022",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1032,
+   "end": 1056,
+   "texto": "Alejandro Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R023",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1081,
+   "end": 1111,
+   "texto": "Salud Integral Prueba EPS S.A.",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R024",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1121,
+   "end": 1144,
+   "texto": "18 de diciembre de 2020",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R025",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1174,
+   "end": 1184,
+   "texto": "EPS-000004",
+   "tipo": "AFILIACION"
+  },
+  {
+   "id": "C07-R026",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1213,
+   "end": 1221,
+   "texto": "Ficticio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R027",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1222,
+   "end": 1267,
+   "texto": "denunció públicamente al gerente del hospital",
+   "tipo": "HECHO_LLAMATIVO"
+  },
+  {
+   "id": "C07-R028",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1350,
+   "end": 1370,
+   "texto": "12 millones de pesos",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C07-R029",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1408,
+   "end": 1461,
+   "texto": "diez (10) salarios mínimos legales mensuales vigentes",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C07-R030",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1490,
+   "end": 1504,
+   "texto": "Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R031",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1569,
+   "end": 1572,
+   "texto": "SIP",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R032",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1578,
+   "end": 1599,
+   "texto": "601 000 0005 Ext. 102",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C07-R033",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1608,
+   "end": 1653,
+   "texto": "NOTIFICACIONES@SALUD-INTEGRAL-PRUEBA-EPS.TEST",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C07-R034",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1697,
+   "end": 1723,
+   "texto": "TECNOLOGÍA FICTICIA S.A.S.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C07-R035",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1729,
+   "end": 1742,
+   "texto": "900 000 006-9",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C07-R036",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1754,
+   "end": 1769,
+   "texto": "Ficticio Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R037",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1877,
+   "end": 1895,
+   "texto": "Banco Ejemplo S.A.",
+   "tipo": "ENTIDAD"
+  },
+  {
+   "id": "C07-R038",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1900,
+   "end": 1913,
+   "texto": "000-000007-00",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C07-R039",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 1934,
+   "end": 1944,
+   "texto": "@ficticia1",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C07-R040",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2007,
+   "end": 2017,
+   "texto": "$2.000.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C07-R041",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2042,
+   "end": 2049,
+   "texto": "2 SMMLV",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C07-R042",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2069,
+   "end": 2090,
+   "texto": "La Esperanza Ficticia",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C07-R043",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2094,
+   "end": 2106,
+   "texto": "Dosquebradas",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R044",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2148,
+   "end": 2164,
+   "texto": "+57 301 000 0008",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C07-R045",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2177,
+   "end": 2209,
+   "texto": "blanca.ficticia@mail.prueba.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C07-R046",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2219,
+   "end": 2222,
+   "texto": "FHE",
+   "tipo": "IPS"
+  },
+  {
+   "id": "C07-R047",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2241,
+   "end": 2251,
+   "texto": "1000000002",
+   "tipo": "HC"
+  },
+  {
+   "id": "C07-R048",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2270,
+   "end": 2296,
+   "texto": "síndrome de Guillain-Barré",
+   "tipo": "DIAGNOSTICO"
+  },
+  {
+   "id": "C07-R049",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2305,
+   "end": 2310,
+   "texto": "G61.0",
+   "tipo": "DIAGNOSTICO"
+  },
+  {
+   "id": "C07-R050",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2334,
+   "end": 2342,
+   "texto": "A. F. G.",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R051",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2448,
+   "end": 2460,
+   "texto": "29 jun. 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R052",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2488,
+   "end": 2509,
+   "texto": "Diag. 0A # 0A-00 Este",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C07-R053",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2513,
+   "end": 2524,
+   "texto": "Bucaramanga",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R054",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2539,
+   "end": 2557,
+   "texto": "20 de mayo de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R055",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2580,
+   "end": 2583,
+   "texto": "SIP",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R056",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2601,
+   "end": 2614,
+   "texto": "E-2026-000177",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C07-R057",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2682,
+   "end": 2690,
+   "texto": "Ficticio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R058",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2700,
+   "end": 2721,
+   "texto": "22 de febrero de 2020",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R059",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2734,
+   "end": 2740,
+   "texto": "6 años",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R060",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2822,
+   "end": 2832,
+   "texto": "100-000009",
+   "tipo": "MATRICULA"
+  },
+  {
+   "id": "C07-R061",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2851,
+   "end": 2873,
+   "texto": "Arturo Ficticio Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R062",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2889,
+   "end": 2898,
+   "texto": "$ 650.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C07-R063",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2932,
+   "end": 2940,
+   "texto": "Ficticio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R064",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 2979,
+   "end": 3030,
+   "texto": "veintiuno (21) de mayo de dos mil veintiséis (2026)",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R065",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3042,
+   "end": 3062,
+   "texto": "Rafael Prueba Cuervo",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R066",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3105,
+   "end": 3111,
+   "texto": "000100",
+   "tipo": "TP"
+  },
+  {
+   "id": "C07-R067",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3162,
+   "end": 3172,
+   "texto": "2026000011",
+   "tipo": "AFILIACION"
+  },
+  {
+   "id": "C07-R068",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3196,
+   "end": 3223,
+   "texto": "Blanca Nubia Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R069",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3295,
+   "end": 3320,
+   "texto": "Salud Integral Prueba EPS",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R070",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3337,
+   "end": 3365,
+   "texto": "Paola Andrea Prueba Guerrero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R071",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3391,
+   "end": 3423,
+   "texto": "coordinadora de auditoría médica",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C07-R072",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3557,
+   "end": 3581,
+   "texto": "Alejandro Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R073",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3680,
+   "end": 3699,
+   "texto": "4000 0000 0000 0127",
+   "tipo": "TARJETA"
+  },
+  {
+   "id": "C07-R074",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3737,
+   "end": 3761,
+   "texto": "Alejandro Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R075",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3863,
+   "end": 3888,
+   "texto": "Gilberto Ficticio Salazar",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R076",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3908,
+   "end": 3919,
+   "texto": "San Ejemplo",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C07-R077",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3944,
+   "end": 3952,
+   "texto": "Ficticia",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R078",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 3988,
+   "end": 4012,
+   "texto": "Alejandro Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R079",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4118,
+   "end": 4186,
+   "texto": "vereda El Ejemplo, ubicada en el kilómetro 7 de la vía a Bucaramanga",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C07-R080",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4247,
+   "end": 4274,
+   "texto": "BLANCA NUBIA FICTICIA MUÑOZ",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R081",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4366,
+   "end": 4372,
+   "texto": "XXX013",
+   "tipo": "PLACA"
+  },
+  {
+   "id": "C07-R082",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4390,
+   "end": 4405,
+   "texto": "Ficticio Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R083",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4431,
+   "end": 4449,
+   "texto": "Papelería Ficticia",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C07-R084",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4474,
+   "end": 4482,
+   "texto": "Ficticia",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R085",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4539,
+   "end": 4563,
+   "texto": "Alejandro Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R086",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4588,
+   "end": 4618,
+   "texto": "Salud Integral Prueba EPS S.A.",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R087",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4628,
+   "end": 4646,
+   "texto": "8 de junio de 2020",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R088",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4676,
+   "end": 4686,
+   "texto": "EPS-000014",
+   "tipo": "AFILIACION"
+  },
+  {
+   "id": "C07-R089",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4705,
+   "end": 4713,
+   "texto": "Ficticio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R090",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4791,
+   "end": 4799,
+   "texto": "Ficticio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R091",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4800,
+   "end": 4845,
+   "texto": "denunció públicamente al gerente del hospital",
+   "tipo": "HECHO_LLAMATIVO"
+  },
+  {
+   "id": "C07-R092",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 4907,
+   "end": 4921,
+   "texto": "Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R093",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5002,
+   "end": 5026,
+   "texto": "Papelería Ficticia Ltda.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C07-R094",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5064,
+   "end": 5111,
+   "texto": "cuarenta y ocho millones de pesos ($48.000.000)",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C07-R095",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5160,
+   "end": 5174,
+   "texto": "Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R096",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5237,
+   "end": 5240,
+   "texto": "SIP",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R097",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5246,
+   "end": 5267,
+   "texto": "601 000 0005 Ext. 102",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C07-R098",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5276,
+   "end": 5324,
+   "texto": "servicioalcliente@salud-integral-prueba-eps.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C07-R099",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5364,
+   "end": 5378,
+   "texto": "Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R100",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5448,
+   "end": 5470,
+   "texto": "Arturo Ficticio Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R101",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5494,
+   "end": 5503,
+   "texto": "9.000.015",
+   "tipo": "CC"
+  },
+  {
+   "id": "C07-R102",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5516,
+   "end": 5542,
+   "texto": "Tecnología Ficticia S.A.S.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C07-R103",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5548,
+   "end": 5561,
+   "texto": "900.000.006-9",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C07-R104",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5625,
+   "end": 5652,
+   "texto": "Blanca Nubia Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R105",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5763,
+   "end": 5781,
+   "texto": "Banco Ejemplo S.A.",
+   "tipo": "ENTIDAD"
+  },
+  {
+   "id": "C07-R106",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5786,
+   "end": 5799,
+   "texto": "000-000016-00",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C07-R107",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5820,
+   "end": 5830,
+   "texto": "@ficticia1",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C07-R108",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5872,
+   "end": 5898,
+   "texto": "Tecnología Ficticia S.A.S.",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C07-R109",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 5917,
+   "end": 5985,
+   "texto": "un millón cuatrocientos veintitrés mil quinientos pesos ($1.423.500)",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C07-R110",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6057,
+   "end": 6071,
+   "texto": "Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R111",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6151,
+   "end": 6165,
+   "texto": "(608) 000 0017",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C07-R112",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6179,
+   "end": 6189,
+   "texto": "3010000008",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C07-R113",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6263,
+   "end": 6276,
+   "texto": "1.000.000.002",
+   "tipo": "HC"
+  },
+  {
+   "id": "C07-R114",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6278,
+   "end": 6292,
+   "texto": "Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R115",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6315,
+   "end": 6341,
+   "texto": "síndrome de Guillain-Barré",
+   "tipo": "DIAGNOSTICO"
+  },
+  {
+   "id": "C07-R116",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6350,
+   "end": 6355,
+   "texto": "G61.0",
+   "tipo": "DIAGNOSTICO"
+  },
+  {
+   "id": "C07-R117",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6429,
+   "end": 6437,
+   "texto": "Ficticio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R118",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6545,
+   "end": 6555,
+   "texto": "2026-06-12",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R119",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6583,
+   "end": 6602,
+   "texto": "Dg. 0A # 0A-00 Este",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C07-R120",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6606,
+   "end": 6617,
+   "texto": "Bucaramanga",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R121",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6633,
+   "end": 6651,
+   "texto": "8 de junio de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R122",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6674,
+   "end": 6677,
+   "texto": "SIP",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R123",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6695,
+   "end": 6708,
+   "texto": "E-2026-000310",
+   "tipo": "RADICADO_ADMIN"
+  },
+  {
+   "id": "C07-R124",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6773,
+   "end": 6781,
+   "texto": "Ficticio",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R125",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6791,
+   "end": 6812,
+   "texto": "22 de febrero de 2020",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R126",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6825,
+   "end": 6831,
+   "texto": "6 años",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R127",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6906,
+   "end": 6918,
+   "texto": "50S-00000018",
+   "tipo": "MATRICULA"
+  },
+  {
+   "id": "C07-R128",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6937,
+   "end": 6959,
+   "texto": "Arturo Ficticio Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R129",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 6975,
+   "end": 6984,
+   "texto": "$ 650.000",
+   "tipo": "VALOR"
+  },
+  {
+   "id": "C07-R130",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7013,
+   "end": 7021,
+   "texto": "Ficticia",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R131",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7075,
+   "end": 7127,
+   "texto": "veintitrés (23) de mayo de dos mil veintiséis (2026)",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R132",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7169,
+   "end": 7175,
+   "texto": "Prueba",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R133",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7240,
+   "end": 7260,
+   "texto": "20260314000000000019",
+   "tipo": "AFILIACION"
+  },
+  {
+   "id": "C07-R134",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7276,
+   "end": 7303,
+   "texto": "Blanca Nubia Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R135",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7394,
+   "end": 7419,
+   "texto": "Salud Integral Prueba EPS",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R136",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7436,
+   "end": 7464,
+   "texto": "Paola Andrea Prueba Guerrero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R137",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7490,
+   "end": 7511,
+   "texto": "subgerente científica",
+   "tipo": "CARGO"
+  },
+  {
+   "id": "C07-R138",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7645,
+   "end": 7672,
+   "texto": "Blanca Nubia Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R139",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7766,
+   "end": 7785,
+   "texto": "4000-0000-0000-0200",
+   "tipo": "TARJETA"
+  },
+  {
+   "id": "C07-R140",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7857,
+   "end": 7882,
+   "texto": "Gilberto Ficticio Salazar",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R141",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7902,
+   "end": 7915,
+   "texto": "Ejemplo Norte",
+   "tipo": "BARRIO"
+  },
+  {
+   "id": "C07-R142",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 7940,
+   "end": 7948,
+   "texto": "Ficticia",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R143",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8025,
+   "end": 8050,
+   "texto": "vereda El Tablón Ficticio",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C07-R144",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8071,
+   "end": 8083,
+   "texto": "Dosquebradas",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R145",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8139,
+   "end": 8163,
+   "texto": "ALEJANDRO FICTICIO GÓMEZ",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R146",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8238,
+   "end": 8245,
+   "texto": "XYZ-021",
+   "tipo": "PLACA"
+  },
+  {
+   "id": "C07-R147",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8263,
+   "end": 8278,
+   "texto": "Ficticio Orozco",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R148",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8304,
+   "end": 8322,
+   "texto": "Papelería Ficticia",
+   "tipo": "EMPRESA"
+  },
+  {
+   "id": "C07-R149",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8371,
+   "end": 8398,
+   "texto": "Blanca Nubia Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R150",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8422,
+   "end": 8446,
+   "texto": "Alejandro Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R151",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8471,
+   "end": 8501,
+   "texto": "Salud Integral Prueba EPS S.A.",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R152",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8511,
+   "end": 8533,
+   "texto": "2 de diciembre de 2020",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R153",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8563,
+   "end": 8573,
+   "texto": "EPS-000022",
+   "tipo": "AFILIACION"
+  },
+  {
+   "id": "C07-R154",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8597,
+   "end": 8605,
+   "texto": "Ficticia",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R155",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8697,
+   "end": 8720,
+   "texto": "Sentencia T-760 de 2008",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R156",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8779,
+   "end": 8803,
+   "texto": "Sentencia SU-508 de 2020",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R157",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8877,
+   "end": 8916,
+   "texto": "artículo 49 de la Constitución Política",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R158",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8922,
+   "end": 8938,
+   "texto": "Ley 1751 de 2015",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R159",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 8981,
+   "end": 8997,
+   "texto": "Ley 1122 de 2007",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R160",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9061,
+   "end": 9085,
+   "texto": "Sentencia SU-124 de 2018",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R161",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9107,
+   "end": 9129,
+   "texto": "expediente T-9.000.004",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R162",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9272,
+   "end": 9301,
+   "texto": "15759-31-03-967-2019-00023-00",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R163",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9356,
+   "end": 9371,
+   "texto": "Ley 100 de 1993",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R164",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9420,
+   "end": 9432,
+   "texto": "110014003999",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R165",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9491,
+   "end": 9495,
+   "texto": "8610",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R166",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9588,
+   "end": 9611,
+   "texto": "Sentencia T-760 de 2008",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R167",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9670,
+   "end": 9693,
+   "texto": "Sentencia T-074 de 2020",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R168",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9767,
+   "end": 9806,
+   "texto": "artículo 49 de la Constitución Política",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R169",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9812,
+   "end": 9828,
+   "texto": "Ley 1751 de 2015",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R170",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9871,
+   "end": 9887,
+   "texto": "Ley 1480 de 2011",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R171",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9951,
+   "end": 9974,
+   "texto": "Sentencia T-760 de 2008",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R172",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 9996,
+   "end": 10018,
+   "texto": "expediente T-9.000.004",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R173",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10107,
+   "end": 10131,
+   "texto": "Alejandro Ficticio Gómez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R174",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10146,
+   "end": 10149,
+   "texto": "SIP",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R175",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10262,
+   "end": 10288,
+   "texto": "síndrome de Guillain-Barré",
+   "tipo": "DIAGNOSTICO"
+  },
+  {
+   "id": "C07-R176",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10304,
+   "end": 10329,
+   "texto": "Salud Integral Prueba EPS",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R177",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10425,
+   "end": 10439,
+   "texto": "Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R178",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10504,
+   "end": 10514,
+   "texto": "2026-05-05",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R179",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10560,
+   "end": 10563,
+   "texto": "SIP",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R180",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10595,
+   "end": 10616,
+   "texto": "Av. Calle 00B # 0A-01",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C07-R181",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10618,
+   "end": 10630,
+   "texto": "Dosquebradas",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R182",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10632,
+   "end": 10641,
+   "texto": "Risaralda",
+   "tipo": "DEPARTAMENTO"
+  },
+  {
+   "id": "C07-R183",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10663,
+   "end": 10695,
+   "texto": "blanca.ficticia@mail.prueba.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C07-R184",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10706,
+   "end": 10722,
+   "texto": "+57 301 000 0008",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C07-R185",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10738,
+   "end": 10768,
+   "texto": "Salud Integral Prueba EPS S.A.",
+   "tipo": "EPS"
+  },
+  {
+   "id": "C07-R186",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10774,
+   "end": 10787,
+   "texto": "811.000.024-9",
+   "tipo": "NIT"
+  },
+  {
+   "id": "C07-R187",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10795,
+   "end": 10834,
+   "texto": "Avenida Calle 0 No. 00-03 Este, torre 3",
+   "tipo": "DIRECCION"
+  },
+  {
+   "id": "C07-R188",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10843,
+   "end": 10882,
+   "texto": "contacto@salud-integral-prueba-eps.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C07-R189",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10897,
+   "end": 10924,
+   "texto": "Blanca Nubia Ficticia Muñoz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R190",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10930,
+   "end": 10940,
+   "texto": "1000000001",
+   "tipo": "CC"
+  },
+  {
+   "id": "C07-R191",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10944,
+   "end": 10955,
+   "texto": "Bucaramanga",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R192",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 10998,
+   "end": 11030,
+   "texto": "blanca.ficticia@mail.prueba.test",
+   "tipo": "CORREO"
+  },
+  {
+   "id": "C07-R193",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11044,
+   "end": 11057,
+   "texto": "000-000025-00",
+   "tipo": "CUENTA"
+  },
+  {
+   "id": "C07-R194",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11145,
+   "end": 11174,
+   "texto": "66170-41-05-942-2026-00027-00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C07-R195",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11183,
+   "end": 11231,
+   "texto": "Juzgado 991 Laboral del Circuito de Dosquebradas",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C07-R196",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11219,
+   "end": 11231,
+   "texto": "Dosquebradas",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R197",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11245,
+   "end": 11255,
+   "texto": "24/07/2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R198",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11283,
+   "end": 11313,
+   "texto": "66-170-41-03-946-2023-00028-00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C07-R199",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11322,
+   "end": 11363,
+   "texto": "Juzgado 992 Promiscuo Municipal de Itagüí",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C07-R200",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11357,
+   "end": 11363,
+   "texto": "Itagüí",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R201",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11377,
+   "end": 11387,
+   "texto": "18.03.2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R202",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11410,
+   "end": 11439,
+   "texto": "25175 40 10 989 2019 00029 00",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C07-R203",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11448,
+   "end": 11485,
+   "texto": "Juzgado 994 Civil Municipal de Soacha",
+   "tipo": "DESPACHO"
+  },
+  {
+   "id": "C07-R204",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11479,
+   "end": 11485,
+   "texto": "Soacha",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R205",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11499,
+   "end": 11509,
+   "texto": "2025-05-13",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R206",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11534,
+   "end": 11555,
+   "texto": "258996000916202100030",
+   "tipo": "RADICADO"
+  },
+  {
+   "id": "C07-R207",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11568,
+   "end": 11587,
+   "texto": "Jairo Ejemplo Ortiz",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R208",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11589,
+   "end": 11597,
+   "texto": "el menor",
+   "tipo": "MENOR"
+  },
+  {
+   "id": "C07-R209",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11621,
+   "end": 11634,
+   "texto": "1.000.000.032",
+   "tipo": "TI"
+  },
+  {
+   "id": "C07-R210",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11645,
+   "end": 11655,
+   "texto": "14/03/2020",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R211",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11668,
+   "end": 11674,
+   "texto": "6 años",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R212",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11714,
+   "end": 11727,
+   "texto": "1.000.000.032",
+   "tipo": "HC"
+  },
+  {
+   "id": "C07-R213",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11741,
+   "end": 11765,
+   "texto": "Leonardo Ficticio Torres",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R214",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11811,
+   "end": 11824,
+   "texto": "1.000.034.890",
+   "tipo": "PPT"
+  },
+  {
+   "id": "C07-R215",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11853,
+   "end": 11872,
+   "texto": "26 de junio de 2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R216",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11887,
+   "end": 11913,
+   "texto": "Alba Lucía Prueba Guerrero",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R217",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11945,
+   "end": 11954,
+   "texto": "1.000.036",
+   "tipo": "CE"
+  },
+  {
+   "id": "C07-R218",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 11983,
+   "end": 11993,
+   "texto": "14/06/2026",
+   "tipo": "FECHA"
+  },
+  {
+   "id": "C07-R219",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 12018,
+   "end": 12025,
+   "texto": "Córdoba",
+   "tipo": "MUNICIPIO"
+  },
+  {
+   "id": "C07-R220",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 12027,
+   "end": 12034,
+   "texto": "Bolívar",
+   "tipo": "DEPARTAMENTO"
+  },
+  {
+   "id": "C07-R221",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 12088,
+   "end": 12104,
+   "texto": "Ficticio Jiménez",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R222",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 12110,
+   "end": 12122,
+   "texto": "603 000 0038",
+   "tipo": "TELEFONO"
+  },
+  {
+   "id": "C07-R223",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 12232,
+   "end": 12239,
+   "texto": "$47.065",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R224",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 12260,
+   "end": 12272,
+   "texto": "110014003999",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R225",
+   "parte": {
+    "kind": "cuerpo",
+    "index": 1
+   },
+   "start": 12288,
+   "end": 12294,
+   "texto": "680001",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R226",
+   "parte": {
+    "kind": "nota_final",
+    "index": 1
+   },
+   "start": 5,
+   "end": 28,
+   "texto": "Sentencia T-074 de 2020",
+   "tipo": "NEG"
+  },
+  {
+   "id": "C07-R227",
+   "parte": {
+    "kind": "nota_final",
+    "index": 1
+   },
+   "start": 45,
+   "end": 65,
+   "texto": "Rafael Prueba Cuervo",
+   "tipo": "PERSONA"
+  },
+  {
+   "id": "C07-R228",
+   "parte": {
+    "kind": "nota_final",
+    "index": 1
+   },
+   "start": 82,
+   "end": 96,
+   "texto": "(602) 000 0026",
+   "tipo": "TELEFONO"
+  }
+ ],
+ "sinCoincidencia": []
+}

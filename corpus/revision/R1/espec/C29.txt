@@ -1,0 +1,89 @@
+DIRECCION|Lugar: [Cll. 0 Bis A # 0A-03, apartamento 301]
+MUNICIPIO|Medellín
+FECHA|a los [dos (2) días del mes de mayo de 2026]
+DESPACHO|Juzgado 996 Civil Municipal de Envigado
+MUNICIPIO|Municipal de [Envigado]
+RADICADO|radicado [25899400395220240000100]
+PERSONA|Olga Lucía Ficticia Vargas
+CARGO|[jueza titular del despacho]
+PERSONA|Secretaria: [Ficticia López]
+PERSONA|CATALINA PRUEBA DEL VALLE
+CC|C.C. [39.000.002]
+PERSONA|CARMEN ROSA EJEMPLO MUÑOZ
+CC|C.C. [1000000003]
+PERSONA|Adriana Prueba Peña
+TP|T.P. [94]
+PERSONA|Carmen Rosa Ejemplo Muñoz
+CARGO|[subgerente científica]
+CARGO|[jefa de talento humano]
+PERSONA|Blanca Nubia Ejemplo Del Río
+CC|C.C. [2.000.005]
+CARGO|[gerente general]
+PERSONA|Wilson Ejemplo Muñoz
+CC|C.C. [63000006]
+PERSONA|Iván Darío Ejemplo Muñoz
+CC|C.C. [6.000.007]
+CARGO|[coordinador de cartera]
+EMPRESA|Restaurante Prueba S.A.S.
+RADICADO_ADMIN|radicado administrativo No. [20265001]
+RADICADO_ADMIN|consecutivo de salida [S-2026-000071]
+RADICADO_ADMIN|[20265011] y consecutivo
+RADICADO_ADMIN|consecutivo de salida [S-2026-000081]
+PERSONA|Catalina Prueba Del Valle
+EMPRESA|Constructora Prueba
+VALOR|[cuarenta y un millones de pesos M/CTE ($41.000.000)]
+VALOR|[cuarenta y un millones de pesos ($41.000.000)]
+FECHA|desde el [9 de noviembre de 2025]
+FECHA|desde el [5 de diciembre de 2025]
+EMPRESA|Comercializadora Ejemplo Ltda.
+NIT|NIT [830.000.008-1]
+PERSONA|representada por [Prueba Peña]
+DIRECCION|sede está en la [Dg. 0 Bis A n.º 0-01, interior 2]
+DIRECCION|sede está en la [Diag. 0 Bis A # 0-01, interior 2]
+RADICADO|proceso [15759-40-03-970-2019-00009-00]
+RADICADO|proceso [05001-40-03-930-2026-00015-00]
+DESPACHO|Juzgado 995 Civil Municipal de Envigado
+FECHA|hasta el [treinta y uno (31) de julio de dos mil veintiséis (2026)]
+PERSONA|Cristian Camilo Prueba De la Hoz
+DIRECCION|hechos en la [Av. Calle 00 # 00-00, apartamento 105]
+DIRECCION|hechos en la [Av. Calle 00 N° 00-00, apartamento 105]
+BARRIO|barrio [Ejemplo Norte]
+BARRIO|barrio [San Ejemplo]
+HECHO_LLAMATIVO|[denunció públicamente al gerente del hospital]
+HECHO_LLAMATIVO|[recibió amenazas del grupo armado que opera en la zona]
+PERSONA|que [Ejemplo] denunció
+PERSONA|que [Ejemplo] recibió
+PERSONA|razón [Ejemplo] insiste
+VALOR|[27.5 millones de pesos]
+VALOR|[diecinueve (19) salarios mínimos legales mensuales vigentes]
+MATRICULA|matrícula [50C-00000010]
+MATRICULA|matrícula [50N-00000016]
+PERSONA|C. R. E. M.
+PERSONA|Prueba Del Valle
+PERSONA|Ejemplo Muñoz
+TP|T.P. No. [101]
+CARGO|[conciliadora en derecho]
+VALOR|[$ 9.000.000]
+FECHA|[diecisiete (17) de mayo de dos mil veintiséis (2026)]
+CUENTA|ahorros [000-000012-00]
+ENTIDAD|Banco Prueba S.A.
+CORREO|catalina.prueba@ejemplo.test
+CORREO|carmen.ejemplo@mail.prueba.test
+TELEFONO|son [310 000 0013]
+TELEFONO|[(+57) 321-000-0014]
+PERSONA|Viviana Ficticia López
+CARGO|[presidenta de la junta]
+CARGO|[secretaria general]
+RADICADO|radicado [66170 40 05 936 2024 00017 00]
+DESPACHO|Juzgado 994 Civil Municipal de Ibagué
+MUNICIPIO|Municipal de [Ibagué]
+FECHA|iniciado el [1-II-2026]
+MUNICIPIO|nació en [Barbosa]
+DEPARTAMENTO|Barbosa, [Antioquia]
+CORREO|adriana.prueba@ejemplo.test
+TELEFONO|llamar al [321 000 0014]
+NEG|Ley 1437 de 2011
+NEG|Decreto 1069 de 2015
+NEG|Sentencia C-902 de 2008
+NEG|código DANE [05001]
+NEG|UVT [$47.065]

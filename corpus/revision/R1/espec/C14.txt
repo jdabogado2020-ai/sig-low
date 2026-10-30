@@ -1,0 +1,74 @@
+FECHA|Santiago de Cali, [10 de agosto de 2026]
+MUNICIPIO|Santiago de Cali
+EMPRESA|Asesorías Legales Prueba S.A.S.
+EMPRESA|Asesorías Legales Prueba
+CARGO|Atn.: [subgerente científica] –
+PERSONA|Esperanza Ejemplo Orozco
+DIRECCION|Dirección: [Transversal 00 # 0-01]
+PERSONA|Santiago Prueba Rojas
+PERSONA|SANTIAGO PRUEBA ROJAS
+CC|ciudadanía No. [1.000'000.001]
+DIRECCION|residente en [Avenida Calle 0 n.º 0A-03, oficina 502]
+BARRIO|barrio [Los Almendros de Prueba]
+MUNICIPIO|Chía
+TELEFONO|celular [+57 320 000 0002]
+TELEFONO|fijo [000 0003]
+CORREO|SANTIAGO.PRUEBA@CORREO.EJEMPLO.TEST
+CORREO|santiago.prueba@correo.ejemplo.test
+RADICADO_ADMIN|radicado interno No. [2026001013]
+RADICADO_ADMIN|radicado interno No. [2026001117]
+CARGO|[secretaria de salud municipal]
+CARGO|[administradora del conjunto]
+PERSONA|Prueba Rojas
+PERSONA|razón [Prueba] insiste
+PERSONA|S. P. R.
+MENOR|educación de [la menor]
+MENOR|Mi hijo [el menor]
+EMPRESA|Panadería Ficticia Ltda.
+EMPRESA|Panadería Ficticia
+BARRIO|barrio [Prados de Prueba]
+DIRECCION|[Av. Calle 0 N° 0A-03, oficina 502]
+DIRECCION|[Av. Calle 0 # 0A-03, oficina 502]
+FECHA|nació el [17/04/1965]
+FECHA|con [61 años]
+MATRICULA|inmobiliaria [070-000005]
+PERSONA|Ejemplo Castaño
+PERSONA|Isabel Cristina Ejemplo Castaño
+CUENTA|cuenta [000000000006]
+CUENTA|llave Bre-B [@prueba26]
+FECHA|[19 de junio de 2026]
+VALOR|[$1.250.000]
+DIRECCION|[Av. Calle 00B n.º 00-00]
+VALOR|[$ 148.000]
+TELEFONO|al [311 000 0007]
+EMPRESA|CONSTRUCTORA PRUEBA S.A.
+NIT|NIT [811.000.009-8]
+CUENTA|No. [0550-0000-0010]
+ENTIDAD|Banco Prueba S.A.
+FECHA|[2026-05-30]
+FECHA|[26 jun. 2026]
+VALOR|[doscientos cincuenta mil pesos M/CTE ($250.000)]
+VALOR|supera [1 SMMLV]
+CC|C.C. [1000000001]
+RADICADO|expediente [25899/40/03/906/2022/00011/00]
+DESPACHO|Juzgado 994 Civil Municipal de Palmira
+MUNICIPIO|Municipal de [Palmira]
+FECHA|iniciado el [17 may. 2024]
+RADICADO|radicado [66170/41/05/912/2025/00012/00]
+DESPACHO|Juzgado 990 de Familia de Floridablanca
+MUNICIPIO|Familia de [Floridablanca]
+FECHA|iniciado el [2025-12-24]
+PERSONA|Juan David Ejemplo Ospina
+CE|extranjería No. [1.000.014]
+FECHA|[uno (1) de julio de dos mil veintiséis (2026)]
+MUNICIPIO|queda en [Balboa]
+DEPARTAMENTO|Balboa ([Risaralda])
+CC|cédula [1.000.000.001]
+TELEFONO|celular [320 000 0002] antes
+NEG|artículo 23 de la Constitución Política
+NEG|Ley 1755 de 2015
+NEG|Sentencia T-230 de 2020
+NEG|artículo 14 de la Ley 1437 de 2011
+NEG|CIIU [3600]
+NEG|folio [95]
+NEG|CUPS [890201]
