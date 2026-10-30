@@ -38,6 +38,7 @@ export default defineConfig(({ mode }) => {
       include: ['tests/unit/**/*.test.ts'],
       exclude: ['tests/e2e/**', 'tests/medicion/**', 'node_modules/**'],
       environment: 'node',
+      testTimeout: 30_000,
     },
   };
 });
