@@ -1,0 +1,296 @@
+{
+  "modulo": "exclusiones",
+  "casos": [
+    {"texto":"Ley 1581 de 2012","exclusion":"E-NORMA-01","protege":[
+    {"texto":"1581","modo":"suprime"},
+    {"texto":"2012","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 1581)"},
+    {"texto":"Decreto 1069 de 2015","exclusion":"E-NORMA-01","protege":[
+    {"texto":"1069","modo":"suprime"},
+    {"texto":"2015","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 1069)"},
+    {"texto":"Ley 1581 del 17 de octubre de 2012","exclusion":"E-NORMA-01","protege":[
+    {"texto":"1581","modo":"suprime"},
+    {"texto":"17 de octubre de 2012","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 17 de octubre de 2012)"},
+    {"texto":"Ley 1581 de 2012 (protección de datos)","exclusion":"E-NORMA-01","protege":[
+    {"texto":"1581","modo":"suprime"},
+    {"texto":"2012","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 2012)"},
+    {"texto":"Acuerdo PSAA14-10248 de 2014","exclusion":"E-NORMA-01","protege":[
+    {"texto":"10248","modo":"suprime"},
+    {"texto":"2014","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 10248)"},
+    {"texto":"Decreto Ley 019 de 2012","exclusion":"E-NORMA-01","protege":[
+    {"texto":"019","modo":"suprime"},
+    {"texto":"2012","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 019)"},
+    {"texto":"Ley de víctimas","exclusion":"E-NORMA-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"Ana Ley, C.C. 1.000.000.001","exclusion":"E-NORMA-01","negativo":true,"protege":[],"nota":"apellido seguido de coma"},
+    {"texto":"Ana Ley 41.000.001","exclusion":"E-NORMA-01","negativo":true,"protege":[],"nota":"número de 8 dígitos agrupado"},
+    {"texto":"Resolución No. 4567 del 14 de marzo de 2026","exclusion":"E-NORMA-01","negativo":true,"protege":[],"nota":"acto que puede ser del caso (E-NORMA-02)"},
+    {"texto":"Resolución No. 000238 de 2025","exclusion":"E-NORMA-02","protege":[
+    {"texto":"000238","modo":"suprime"},
+    {"texto":"2025","modo":"baja"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 000238)"},
+    {"texto":"Resolución No. 4567 del 14 de marzo de 2026, por la cual Colpensiones negó la pensión","exclusion":"E-NORMA-02","protege":[
+    {"texto":"4567","modo":"suprime"},
+    {"texto":"14 de marzo de 2026","modo":"baja"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 14 de marzo de 2026)"},
+    {"texto":"mediante Oficio No. 1234 del 2 de febrero de 2026","exclusion":"E-NORMA-02","protege":[
+    {"texto":"1234","modo":"suprime"},
+    {"texto":"2 de febrero de 2026","modo":"baja"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 1234)"},
+    {"texto":"concepto 220 de 2024","exclusion":"E-NORMA-02","protege":[
+    {"texto":"220","modo":"suprime"},
+    {"texto":"2024","modo":"baja"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 2024)"},
+    {"texto":"oficio No. 2026-000123","exclusion":"E-NORMA-02","negativo":true,"protege":[],"nota":"consecutivo con guion"},
+    {"texto":"Resolución de la DIAN","exclusion":"E-NORMA-02","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"concepto jurídico favorable","exclusion":"E-NORMA-02","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"oficio remitido por la EPS","exclusion":"E-NORMA-02","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"artículo 23","exclusion":"E-ART-01","protege":[
+    {"texto":"23","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 23)"},
+    {"texto":"art. 3 lit. c","exclusion":"E-ART-01","protege":[
+    {"texto":"3","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 3)"},
+    {"texto":"parágrafo 2","exclusion":"E-ART-01","protege":[
+    {"texto":"2","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 2)"},
+    {"texto":"artículos 23 y 24","exclusion":"E-ART-01","protege":[
+    {"texto":"23 y 24","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 23 y 24)"},
+    {"texto":"art. 2.2.6.12.4.3","exclusion":"E-ART-01","protege":[
+    {"texto":"2.2.6.12.4.3","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 2.2.6.12.4.3)"},
+    {"texto":"numeral 4","exclusion":"E-ART-01","protege":[
+    {"texto":"4","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 4)"},
+    {"texto":"inciso 2","exclusion":"E-ART-01","protege":[
+    {"texto":"2","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 2)"},
+    {"texto":"artesanías 123","exclusion":"E-ART-01","negativo":true,"protege":[],"nota":"otra palabra"},
+    {"texto":"artículo de prensa","exclusion":"E-ART-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"Arturo 41000001","exclusion":"E-ART-01","negativo":true,"protege":[],"nota":"nombre propio"},
+    {"texto":"Parque 123","exclusion":"E-ART-01","negativo":true,"protege":[],"nota":"otra palabra"},
+    {"texto":"sentencia T-760 de 2008","exclusion":"E-SENT-01","protege":[
+    {"texto":"T-760","modo":"suprime"},
+    {"texto":"2008","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: T-760)"},
+    {"texto":"C-748 de 2011","exclusion":"E-SENT-01","protege":[
+    {"texto":"C-748","modo":"suprime"},
+    {"texto":"2011","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: C-748)"},
+    {"texto":"SU-214 de 2016","exclusion":"E-SENT-01","protege":[
+    {"texto":"SU-214","modo":"suprime"},
+    {"texto":"2016","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: SU-214)"},
+    {"texto":"T-760/08","exclusion":"E-SENT-01","protege":[
+    {"texto":"T-760","modo":"suprime"},
+    {"texto":"08","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: T-760)"},
+    {"texto":"T-9.000.001","exclusion":"E-SENT-01","negativo":true,"protege":[],"nota":"expediente con puntos"},
+    {"texto":"CC-1234","exclusion":"E-SENT-01","negativo":true,"protege":[],"nota":"prefijo dentro de una sigla"},
+    {"texto":"Sentencias del Consejo","exclusion":"E-SENT-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"T-12345 de 2020","exclusion":"E-SENT-01","negativo":true,"protege":[],"nota":"más de 4 dígitos: expediente"},
+    {"texto":"Expediente T-9.000.001","exclusion":"E-EXPCC-01","protege":[
+    {"texto":"9.000.001","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 9.000.001)"},
+    {"texto":"D-99.001","exclusion":"E-EXPCC-01","protege":[
+    {"texto":"99.001","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 99.001)"},
+    {"texto":"T-8000001","exclusion":"E-EXPCC-01","protege":[
+    {"texto":"8000001","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 8000001)"},
+    {"texto":"exp. OG-900.001","exclusion":"E-EXPCC-01","protege":[
+    {"texto":"900.001","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 900.001)"},
+    {"texto":"T-760 de 2008","exclusion":"E-EXPCC-01","negativo":true,"protege":[],"nota":"sentencia"},
+    {"texto":"C.C. 9.000.001","exclusion":"E-EXPCC-01","negativo":true,"protege":[],"nota":"cédula con rótulo"},
+    {"texto":"ABT-9.000.001","exclusion":"E-EXPCC-01","negativo":true,"protege":[],"nota":"prefijo dentro de una palabra"},
+    {"texto":"T 9.000.001","exclusion":"E-EXPCC-01","negativo":true,"protege":[],"nota":"sin guion"},
+    {"texto":"SC1234-2026","exclusion":"E-PROV-01","protege":[
+    {"texto":"SC1234-2026","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: SC1234-2026)"},
+    {"texto":"STC1234-2026","exclusion":"E-PROV-01","protege":[
+    {"texto":"STC1234-2026","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: STC1234-2026)"},
+    {"texto":"STP0001-2026","exclusion":"E-PROV-01","protege":[
+    {"texto":"STP0001-2026","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: STP0001-2026)"},
+    {"texto":"AL123-2020","exclusion":"E-PROV-01","protege":[
+    {"texto":"AL123-2020","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: AL123-2020)"},
+    {"texto":"SL4567-2025","exclusion":"E-PROV-01","protege":[
+    {"texto":"SL4567-2025","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: SL4567-2025)"},
+    {"texto":"SAS123-2026","exclusion":"E-PROV-01","negativo":true,"protege":[],"nota":"sigla no judicial"},
+    {"texto":"STC 1234 de 2026","exclusion":"E-PROV-01","negativo":true,"protege":[],"nota":"otra escritura"},
+    {"texto":"SC-1234","exclusion":"E-PROV-01","negativo":true,"protege":[],"nota":"sin año"},
+    {"texto":"XXX001","exclusion":"E-PROV-01","negativo":true,"protege":[],"nota":"placa"},
+    {"texto":"en la p. 45","exclusion":"E-FOLIO-01","protege":[
+    {"texto":"45","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 45)"},
+    {"texto":"Cfr. p. 12","exclusion":"E-FOLIO-01","protege":[
+    {"texto":"12","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 12)"},
+    {"texto":"pp. 12-15","exclusion":"E-FOLIO-01","protege":[
+    {"texto":"12-15","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 12-15)"},
+    {"texto":"folio 123","exclusion":"E-FOLIO-01","protege":[
+    {"texto":"123","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 123)"},
+    {"texto":"fls. 12-15","exclusion":"E-FOLIO-01","protege":[
+    {"texto":"12-15","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 12-15)"},
+    {"texto":"cuaderno 2","exclusion":"E-FOLIO-01","protege":[
+    {"texto":"2","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 2)"},
+    {"texto":"Hoja No. 3","exclusion":"E-FOLIO-01","protege":[
+    {"texto":"3","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 3)"},
+    {"texto":"página 4 de 10","exclusion":"E-FOLIO-01","protege":[
+    {"texto":"4","modo":"suprime"},
+    {"texto":"10","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 4)"},
+    {"texto":"folio de matrícula inmobiliaria 50C-00000001","exclusion":"E-FOLIO-01","negativo":true,"protege":[],"nota":"rótulo de matrícula"},
+    {"texto":"foliado completo","exclusion":"E-FOLIO-01","negativo":true,"protege":[],"nota":"otra palabra"},
+    {"texto":"página web","exclusion":"E-FOLIO-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"Ana Páginas Ficticia","exclusion":"E-FOLIO-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"T.P. No. 00098 del C.S. de la J.","exclusion":"E-FOLIO-01","negativo":true,"protege":[],"nota":"tarjeta profesional"},
+    {"texto":"P.E.P. 12345","exclusion":"E-FOLIO-01","negativo":true,"protege":[],"nota":"permiso especial"},
+    {"texto":"Diario Oficial No. 53.350","exclusion":"E-PUB-01","protege":[
+    {"texto":"53.350","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 53.350)"},
+    {"texto":"D.O. 45.327","exclusion":"E-PUB-01","protege":[
+    {"texto":"45.327","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 45.327)"},
+    {"texto":"Gaceta 51182","exclusion":"E-PUB-01","protege":[
+    {"texto":"51182","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 51182)"},
+    {"texto":"Gaceta del Congreso 094 de 1994","exclusion":"E-PUB-01","protege":[
+    {"texto":"094","modo":"suprime"},
+    {"texto":"1994","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 094)"},
+    {"texto":"diario de campo 123","exclusion":"E-PUB-01","negativo":true,"protege":[],"nota":"otra publicación"},
+    {"texto":"Gaceta","exclusion":"E-PUB-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"Oficial 41.000.001","exclusion":"E-PUB-01","negativo":true,"protege":[],"nota":"sin «Diario»"},
+    {"texto":"Gaceta 1234567","exclusion":"E-PUB-01","negativo":true,"protege":[],"nota":"7 dígitos"},
+    {"texto":"1.090 UVT","exclusion":"E-CANT-01","protege":[
+    {"texto":"1.090","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 1.090)"},
+    {"texto":"40 smlmv","exclusion":"E-CANT-01","protege":[
+    {"texto":"40","modo":"baja"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 40)"},
+    {"texto":"23 %","exclusion":"E-CANT-01","protege":[
+    {"texto":"23","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 23)"},
+    {"texto":"9,5 %","exclusion":"E-CANT-01","protege":[
+    {"texto":"9,5","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 9,5)"},
+    {"texto":"1.500.000 UVT","exclusion":"E-CANT-01","protege":[
+    {"texto":"1.500.000","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 1.500.000)"},
+    {"texto":"C.C. 1.000.000.001","exclusion":"E-CANT-01","negativo":true,"protege":[],"nota":"sin unidad"},
+    {"texto":"UVT","exclusion":"E-CANT-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"$1.750.905","exclusion":"E-CANT-01","negativo":true,"protege":[],"nota":"sin unidad normativa"},
+    {"texto":"10 años","exclusion":"E-CANT-01","negativo":true,"protege":[],"nota":"otra unidad"},
+    {"texto":"1.200.000 habitantes","exclusion":"E-UNIDAD-01","protege":[
+    {"texto":"1.200.000","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 1.200.000)"},
+    {"texto":"8.000 habitantes","exclusion":"E-UNIDAD-01","protege":[
+    {"texto":"8.000","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 8.000)"},
+    {"texto":"2.500 hectáreas","exclusion":"E-UNIDAD-01","protege":[
+    {"texto":"2.500","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 2.500)"},
+    {"texto":"1.000.000 de personas","exclusion":"E-UNIDAD-01","protege":[
+    {"texto":"1.000.000","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 1.000.000)"},
+    {"texto":"15 días","exclusion":"E-UNIDAD-01","protege":[
+    {"texto":"15","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 15)"},
+    {"texto":"1.000.000.001 de Bogotá","exclusion":"E-UNIDAD-01","negativo":true,"protege":[],"nota":"sin unidad"},
+    {"texto":"41.000.001 y","exclusion":"E-UNIDAD-01","negativo":true,"protege":[],"nota":"sin unidad"},
+    {"texto":"300 casos","exclusion":"E-UNIDAD-01","negativo":true,"protege":[],"nota":"unidad no listada"},
+    {"texto":"C.C. 41.000.001 habitante de","exclusion":"E-UNIDAD-01","negativo":true,"protege":[],"nota":"singular «habitante»"},
+    {"texto":"$48.000.000","exclusion":"E-DINERO-01","protege":[
+    {"texto":"48.000.000","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 48.000.000)"},
+    {"texto":"$ 48'000.000","exclusion":"E-DINERO-01","protege":[
+    {"texto":"48'000.000","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 48'000.000)"},
+    {"texto":"COP 1.750.905","exclusion":"E-DINERO-01","protege":[
+    {"texto":"1.750.905","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 1.750.905)"},
+    {"texto":"48.000.000 de pesos","exclusion":"E-DINERO-01","protege":[
+    {"texto":"48.000.000","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 48.000.000)"},
+    {"texto":"1.000.000 m/cte","exclusion":"E-DINERO-01","protege":[
+    {"texto":"1.000.000","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 1.000.000)"},
+    {"texto":"$4800000","exclusion":"E-DINERO-01","protege":[
+    {"texto":"4800000","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 4800000)"},
+    {"texto":"C.C. 1.000.000.001","exclusion":"E-DINERO-01","negativo":true,"protege":[],"nota":"sin moneda"},
+    {"texto":"pesos","exclusion":"E-DINERO-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"41.000.001 de Bogotá","exclusion":"E-DINERO-01","negativo":true,"protege":[],"nota":"sin moneda"},
+    {"texto":"cuenta No. 123456","exclusion":"E-DINERO-01","negativo":true,"protege":[],"nota":"sin moneda"},
+    {"texto":"código DANE 11001","exclusion":"E-DANE-01","protege":[
+    {"texto":"11001","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 11001)"},
+    {"texto":"DIVIPOLA 05001","exclusion":"E-DANE-01","protege":[
+    {"texto":"05001","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 05001)"},
+    {"texto":"cód. DANE: 88564","exclusion":"E-DANE-01","protege":[
+    {"texto":"88564","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 88564)"},
+    {"texto":"código DIVIPOLA 88564000","exclusion":"E-DANE-01","protege":[
+    {"texto":"88564000","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 88564000)"},
+    {"texto":"11001","exclusion":"E-DANE-01","negativo":true,"protege":[],"nota":"sin rótulo"},
+    {"texto":"DANE informó","exclusion":"E-DANE-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"código DANE del municipio","exclusion":"E-DANE-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"DANE 1234567890","exclusion":"E-DANE-01","negativo":true,"protege":[],"nota":"10 dígitos"},
+    {"texto":"código postal 110231","exclusion":"E-POSTAL-01","protege":[
+    {"texto":"110231","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 110231)"},
+    {"texto":"Código Postal: 050021","exclusion":"E-POSTAL-01","protege":[
+    {"texto":"050021","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 050021)"},
+    {"texto":"C.P. 760001","exclusion":"E-POSTAL-01","protege":[
+    {"texto":"760001","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 760001)"},
+    {"texto":"cód. postal 110111","exclusion":"E-POSTAL-01","protege":[
+    {"texto":"110111","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 110111)"},
+    {"texto":"C.P. Ana Ficticia Rojas","exclusion":"E-POSTAL-01","negativo":true,"protege":[],"nota":"consejero ponente"},
+    {"texto":"código postal","exclusion":"E-POSTAL-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"código postal 1234","exclusion":"E-POSTAL-01","negativo":true,"protege":[],"nota":"4 dígitos"},
+    {"texto":"C.P. 1234567","exclusion":"E-POSTAL-01","negativo":true,"protege":[],"nota":"7 dígitos"},
+    {"texto":"CIIU 6910","exclusion":"E-CIIU-01","protege":[
+    {"texto":"6910","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 6910)"},
+    {"texto":"código CIIU: 4752","exclusion":"E-CIIU-01","protege":[
+    {"texto":"4752","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 4752)"},
+    {"texto":"actividad económica 6910","exclusion":"E-CIIU-01","protege":[
+    {"texto":"6910","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 6910)"},
+    {"texto":"código de actividad 8621","exclusion":"E-CIIU-01","protege":[
+    {"texto":"8621","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 8621)"},
+    {"texto":"CIIU","exclusion":"E-CIIU-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"CIIU 123","exclusion":"E-CIIU-01","negativo":true,"protege":[],"nota":"3 dígitos"},
+    {"texto":"actividad 6910","exclusion":"E-CIIU-01","negativo":true,"protege":[],"nota":"sin «económica»"},
+    {"texto":"CIIU 691011","exclusion":"E-CIIU-01","negativo":true,"protege":[],"nota":"6 dígitos"},
+    {"texto":"CIE-10 E11.9","exclusion":"E-CIE10-01","protege":[
+    {"texto":"E11.9","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: E11.9)"},
+    {"texto":"diagnóstico J45","exclusion":"E-CIE10-01","protege":[
+    {"texto":"J45","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: J45)"},
+    {"texto":"Dx: C50.9","exclusion":"E-CIE10-01","protege":[
+    {"texto":"C50.9","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: C50.9)"},
+    {"texto":"código CIE10 G35","exclusion":"E-CIE10-01","protege":[
+    {"texto":"G35","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: G35)"},
+    {"texto":"diagnóstico reservado","exclusion":"E-CIE10-01","negativo":true,"protege":[],"nota":"sin código"},
+    {"texto":"Dx pendiente","exclusion":"E-CIE10-01","negativo":true,"protege":[],"nota":"sin código"},
+    {"texto":"CIE-10 123","exclusion":"E-CIE10-01","negativo":true,"protege":[],"nota":"sin letra"},
+    {"texto":"diagnóstico 2026","exclusion":"E-CIE10-01","negativo":true,"protege":[],"nota":"sin letra"},
+    {"texto":"código del despacho 110014003001","exclusion":"E-DESP-01","protege":[
+    {"texto":"110014003001","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 110014003001)"},
+    {"texto":"código despacho: 11-001-40-03-001","exclusion":"E-DESP-01","protege":[
+    {"texto":"11-001-40-03-001","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 11-001-40-03-001)"},
+    {"texto":"Código del despacho 050013103001","exclusion":"E-DESP-01","protege":[
+    {"texto":"050013103001","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 050013103001)"},
+    {"texto":"despacho judicial código 760014189003","exclusion":"E-DESP-01","protege":[
+    {"texto":"760014189003","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 760014189003)"},
+    {"texto":"despacho del juez","exclusion":"E-DESP-01","negativo":true,"protege":[],"nota":"sin código"},
+    {"texto":"código del despacho","exclusion":"E-DESP-01","negativo":true,"protege":[],"nota":"sin número"},
+    {"texto":"código del despacho 1100140030","exclusion":"E-DESP-01","negativo":true,"protege":[],"nota":"10 dígitos"},
+    {"texto":"radicado 11001-31-03-999-2026-00123-00","exclusion":"E-DESP-01","negativo":true,"protege":[],"nota":"radicado completo"},
+    {"texto":"radicado 110014003001","exclusion":"E-DESP-02","protege":[
+    {"texto":"110014003001","modo":"baja"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 110014003001)"},
+    {"texto":"050013103001","exclusion":"E-DESP-02","protege":[
+    {"texto":"050013103001","modo":"baja"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 050013103001)"},
+    {"texto":"(110013103001)","exclusion":"E-DESP-02","protege":[
+    {"texto":"110013103001","modo":"baja"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 110013103001)"},
+    {"texto":"760014189003","exclusion":"E-DESP-02","protege":[
+    {"texto":"760014189003","modo":"baja"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: 760014189003)"},
+    {"texto":"999994003001","exclusion":"E-DESP-02","negativo":true,"protege":[],"nota":"código DANE inexistente"},
+    {"texto":"110019903001","exclusion":"E-DESP-02","negativo":true,"protege":[],"nota":"código de corporación no listado"},
+    {"texto":"1100140030","exclusion":"E-DESP-02","negativo":true,"protege":[],"nota":"10 dígitos"},
+    {"texto":"11001400300120","exclusion":"E-DESP-02","negativo":true,"protege":[],"nota":"14 dígitos"},
+    {"texto":"LEY 100","exclusion":"E-SIGLA-01","protege":[
+    {"texto":"LEY 100","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: LEY 100)"},
+    {"texto":"ART 123","exclusion":"E-SIGLA-01","protege":[
+    {"texto":"ART 123","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: ART 123)"},
+    {"texto":"CRA 123","exclusion":"E-SIGLA-01","protege":[
+    {"texto":"CRA 123","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: CRA 123)"},
+    {"texto":"SAS123","exclusion":"E-SIGLA-01","protege":[
+    {"texto":"SAS123","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: SAS123)"},
+    {"texto":"OFC 301 TORRE 2","exclusion":"E-SIGLA-01","protege":[
+    {"texto":"OFC 301","modo":"suprime"}],"nota":"positivo del laboratorio 07a (tramo de la tabla: OFC 301)"},
+    {"texto":"XXX001","exclusion":"E-SIGLA-01","negativo":true,"protege":[],"nota":"no es sigla excluida"},
+    {"texto":"XXX-002","exclusion":"E-SIGLA-01","negativo":true,"protege":[],"nota":"no es sigla excluida"},
+    {"texto":"LEYES 100","exclusion":"E-SIGLA-01","negativo":true,"protege":[],"nota":"otra palabra"},
+    {"texto":"ley 100","exclusion":"E-SIGLA-01","negativo":true,"protege":[],"nota":"minúsculas"},
+    {"texto":"Ana Ficticia Rojas, C.C. 00.000.000, radicado 11001-00-00-000-2026-00000-00, HC 000123, Placa XXX000, correo ana.ficticia@ejemplo.test","integral":true,"resolver":true,"nota":"I-01","esperado":[{"type":"CC","texto":"00.000.000","confidence":"media"},{"type":"RADICADO","texto":"11001-00-00-000-2026-00000-00","confidence":"media"},{"type":"HC","texto":"000123","confidence":"alta"},{"type":"PLACA","texto":"XXX000","confidence":"alta"},{"type":"CORREO","texto":"ana.ficticia@ejemplo.test","confidence":"alta"}]},
+    {"texto":"C.C. 1.000.000.001 y NIT 900.000.001-2","integral":true,"resolver":true,"nota":"I-03","esperado":[{"type":"CC","texto":"1.000.000.001","confidence":"alta"},{"type":"NIT","texto":"900.000.001-2","confidence":"alta"}]},
+    {"texto":"Ley 1581 de 2012, artículo 23, folio 123, Diario Oficial No. 45.327","integral":true,"resolver":true,"nota":"I-04","esperado":[],"negativo":true},
+    {"texto":"radicado 11001400399920260000100 y tarjeta 4111 1111 1111 1111","integral":true,"resolver":true,"nota":"I-05","esperado":[{"type":"RADICADO","texto":"11001400399920260000100","confidence":"alta"},{"type":"TARJETA","texto":"4111 1111 1111 1111","confidence":"alta"}]},
+    {"texto":"radicado No. 2026000001","integral":true,"resolver":true,"nota":"I-07","esperado":[{"type":"RADICADO_ADMIN","texto":"2026000001","confidence":"alta"}]},
+    {"texto":"NIT 80.000.002-6 y C.C. 80.000.002","integral":true,"resolver":true,"nota":"I-09","esperado":[{"type":"NIT","texto":"80.000.002-6","confidence":"alta"},{"type":"CC","texto":"80.000.002","confidence":"alta"}]},
+    {"texto":"Testigos: Juan Ejemplo Prueba 41000001; Ana Ficticia Rojas 80000002","integral":true,"resolver":true,"nota":"I-12","esperado":[{"type":"CC","texto":"41000001","confidence":"baja"},{"type":"CC","texto":"80000002","confidence":"baja"}]},
+    {"texto":"Rad. 11001-31-03-999-2026-\n00123-00","integral":true,"resolver":true,"parte":"pagina_pdf","nota":"I-13 (PDF)","esperado":[{"type":"RADICADO","texto":"11001-31-03-999-2026-\n00123-00","confidence":"alta"}]},
+    {"texto":"HC CC 1000000001 del paciente, C.C. 1.000.000.001","integral":true,"resolver":true,"nota":"I-15","esperado":[{"type":"HC","texto":"1000000001","confidence":"alta"},{"type":"CC","texto":"1.000.000.001","confidence":"alta"}]},
+    {"texto":"Llave Bre-B: @anaficti1, celular 300 000 0001","integral":true,"resolver":true,"nota":"I-16","esperado":[{"type":"CUENTA","texto":"@anaficti1","confidence":"alta"},{"type":"TELEFONO","texto":"300 000 0001","confidence":"alta"}]},
+    {"texto":"Tel: 300 000 0001 / 601 000 0001","integral":true,"resolver":true,"nota":"I-22","esperado":[{"type":"TELEFONO","texto":"300 000 0001","confidence":"alta"},{"type":"TELEFONO","texto":"601 000 0001","confidence":"media"}]},
+    {"texto":"Ana Ficticia Rojas 41.000.001 300 000 0001 310 000 0002","integral":true,"resolver":true,"parte":"pagina_pdf","nota":"I-27 (PDF)","esperado":[{"type":"CC","texto":"41.000.001","confidence":"media"},{"type":"TELEFONO","texto":"300 000 0001","confidence":"media"},{"type":"TELEFONO","texto":"310 000 0002","confidence":"media"}]},
+    {"texto":"C.C. No. 1.000.\n000.017 y NIT 900.000.\n002-1","integral":true,"resolver":true,"parte":"pagina_pdf","nota":"I-28 (PDF)","esperado":[{"type":"CC","texto":"1.000.\n000.017","confidence":"alta"},{"type":"NIT","texto":"900.000.\n002-1","confidence":"alta"}]},
+    {"texto":"T.P. No. 00098 del C.S. de la J. y P.E.P. 12345","integral":true,"resolver":true,"nota":"I-30","esperado":[{"type":"TP","texto":"00098","confidence":"alta"},{"type":"PEP","texto":"12345","confidence":"alta"}]},
+    {"texto":"la menor, identificada con registro civil de nacimiento NUIP 1.000.000.017","integral":true,"resolver":true,"nota":"I-31","esperado":[{"type":"DOCUMENTO","texto":"1.000.000.017","confidence":"media"}]},
+    {"texto":"C.C. 1.000.000.001.\n2. El accionante","integral":true,"resolver":true,"nota":"I-32","esperado":[{"type":"CC","texto":"1.000.000.001","confidence":"alta"}]},
+    {"texto":"$48.000.000","integral":true,"resolver":false,"modulos":["ids"],"soloExclusion":true,"nota":"PA-2: E-DINERO-01 quita la lectura como cédula","esperado":[],"negativo":true},
+    {"texto":"48.000.000 de pesos","integral":true,"resolver":false,"modulos":["ids"],"soloExclusion":true,"nota":"PA-2: E-DINERO-01","esperado":[],"negativo":true},
+    {"texto":"Expediente T-9.000.001","integral":true,"resolver":false,"modulos":["ids"],"soloExclusion":true,"nota":"PA-2: E-EXPCC-01 (R-RAD_ADMIN-03 propone el expediente, no una cédula)","esperado":[],"negativo":true},
+    {"texto":"1.200.000 habitantes","integral":true,"resolver":false,"modulos":["ids"],"soloExclusion":true,"nota":"PA-2: E-UNIDAD-01","esperado":[],"negativo":true},
+    {"texto":"1.500.000 UVT","integral":true,"resolver":false,"modulos":["ids"],"soloExclusion":true,"nota":"PA-2: E-CANT-01","esperado":[],"negativo":true},
+    {"texto":"$4800000","integral":true,"resolver":false,"modulos":["ids"],"soloExclusion":true,"nota":"PA-2: E-DINERO-01","esperado":[],"negativo":true},
+    {"texto":"LEY 100 DE 1993","integral":true,"resolver":false,"modulos":["rotulados"],"soloExclusion":true,"nota":"PA-5: E-SIGLA-01 (placa)","esperado":[],"negativo":true},
+    {"texto":"ART 123","integral":true,"resolver":false,"modulos":["rotulados"],"soloExclusion":true,"nota":"PA-5: E-SIGLA-01","esperado":[],"negativo":true},
+    {"texto":"CRA 123 # 45-67","integral":true,"resolver":false,"modulos":["rotulados"],"soloExclusion":true,"nota":"PA-5: E-SIGLA-01","esperado":[],"negativo":true},
+    {"texto":"SAS123","integral":true,"resolver":false,"modulos":["rotulados"],"soloExclusion":true,"nota":"PA-5: E-SIGLA-01","esperado":[],"negativo":true},
+    {"texto":"folio 123-125","integral":true,"resolver":false,"modulos":["rotulados"],"soloExclusion":true,"nota":"PA-5: E-FOLIO-01","esperado":[],"negativo":true}
+  ]
+}
