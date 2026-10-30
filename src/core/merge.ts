@@ -1,0 +1,423 @@
+// Precedencia y resolución de solapamientos (plan 6.2.4, 6.4.2 y 7.11). PB-2.
+// Función pura y determinista: sin estado global mutable, sin reloj, sin azar, sin DOM ni red.
+// Los tipos vienen de types.local.ts (arranque anticipado); al rebasar sobre main se importan de types.ts.
+import type {
+  Confidence, DataType, DetectableType, DetectionCandidate, DetectionSource, MergedCandidate,
+  NerLabel, NormalizationProfile, Part, PartKind, RuleRegistry, SearchView,
+} from './types.local';
+import { FLAG_TYPES, ORG_CLASSES } from './types.local';
+
+type Precedence = MergedCandidate['precedence'];
+/** Candidato de trabajo. `source` admite 'manual' (precedencia 1, 6.2.4), que DetectionCandidate excluye. */
+type Work = Omit<MergedCandidate, 'source'> & { source: DetectionSource };
+
+// ---------------------------------------------------------------------------------------------
+// Catálogos
+// ---------------------------------------------------------------------------------------------
+
+/** 7.11.3 · Orden fijo de tipos (solo para empates totales). */
+const TYPE_ORDER: readonly DetectableType[] = [
+  'RADICADO', 'RADICADO_ADMIN', 'TARJETA', 'CUENTA', 'NIT', 'CC', 'TI', 'CE', 'PPT', 'PEP', 'PASAPORTE', 'TP',
+  'DOCUMENTO', 'HC', 'AFILIACION', 'MATRICULA', 'PLACA', 'TELEFONO', 'CORREO', 'DIRECCION', 'BARRIO', 'VALOR',
+  'FECHA', 'PERSONA', 'EMPRESA', 'EPS', 'IPS', 'ENTIDAD', 'PROVEEDOR', 'MUNICIPIO', 'DEPARTAMENTO', 'LUGAR',
+];
+const TYPE_RANK: ReadonlyMap<DataType, number> = new Map(TYPE_ORDER.map((t, i) => [t, i]));
+const SOURCE_RANK: Readonly<Record<DetectionSource, number>> = { manual: 0, lista: 1, regla: 2, modelo: 3 };
+const CONF_RANK: Readonly<Record<Confidence, number>> = { alta: 3, media: 2, baja: 1 };
+/** 6.2.4 · Puntaje nominal de las fuentes que no son el modelo. */
+const NOMINAL: Readonly<Record<Confidence, number>> = { alta: 0.9, media: 0.6, baja: 0.3 };
+const FLAG_SET: ReadonlySet<DataType> = new Set(FLAG_TYPES);
+const ORG_SET: ReadonlySet<DataType> = new Set(ORG_CLASSES);
+/** 7.11.1 paso 4b: tipos cuyos dígitos quedan como pista de titular al ser absorbidos por un NIT. */
+const HOLDER_ABSORBED: ReadonlySet<DataType> = new Set(['CC', 'TI', 'CE']);
+/** 6.6.1 · Prefijo de la clave por tipo (para la clave de fragmento `<PREFIJO>:~<vista lista>`). */
+const KEY_PREFIX: Partial<Readonly<Record<DetectableType, string>>> = {
+  PERSONA: 'PER', EMPRESA: 'ORG', EPS: 'ORG', IPS: 'ORG', ENTIDAD: 'ORG', PROVEEDOR: 'ORG',
+  RADICADO: 'RAD', RADICADO_ADMIN: 'RAD', TELEFONO: 'TEL', DIRECCION: 'DIR', MATRICULA: 'MAT',
+  AFILIACION: 'AFIL', TARJETA: 'CUENTA', MUNICIPIO: 'DEP', DEPARTAMENTO: 'DEP',
+};
+
+/** R-MOD-03 · Palabras de función y tratamientos (vista `lista`). */
+const FW = 'de|del|la|las|los|el|lo|y|e|o|u|a|al|en|por|para|con|sin|su|sus|que|se|un|una|unos|unas|senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr|mrs|mr|ms';
+const FW_SET: ReadonlySet<string> = new Set(FW.split('|'));
+const RE_TRIM_LEFT = new RegExp(String.raw`^(?:[\s\p{P}\p{S}]+|(?:` + FW + String.raw`)(?=[\s\p{P}\p{S}]|$))+`, 'u');
+const RE_TRIM_RIGHT = new RegExp(String.raw`(?:[\s\p{P}\p{S}]+|(?<=^|[\s\p{P}\p{S}])(?:` + FW + String.raw`))+$`, 'u');
+/** Paso 2: lo que el modelo agrega no puede ser palabra de función ni tratamiento (R-MOD-03 y R-LST-03). */
+const NAME_STOP: ReadonlySet<string> = new Set([...FW_SET, 'ingeniera', 'ingeniero', 'ing', 'abogada', 'abogado', 'abg',
+  'licenciada', 'licenciado', 'lic', 'magistrada', 'magistrado', 'jueza', 'juez', 'profesora', 'profesor', 'prof']);
+const HYPHENS = '\\-\u2010\u2011';
+const RE_NOT_NAME_CHAR = new RegExp(`[^\\p{L}\\p{M}\\s${HYPHENS}]`, 'u');
+const RE_NAME_SPLIT = new RegExp(`[\\s${HYPHENS}]+`, 'u');
+const RE_UPPER_INITIAL = /^\p{Lu}/u;
+const RE_WORD_SPLIT = /[\s\p{P}\p{S}]+/u;
+const RE_EDGE_LEFT = /^[\s\p{P}\p{S}]*/u;
+const RE_EDGE_RIGHT = /[\s\p{P}\p{S}]*$/u;
+const RE_LETTER_OR_DIGIT = /[\p{L}\p{N}]/u;
+
+/** R-MRG-01 · Unión por paréntesis (vista `reglas`). */
+const RE_HUECO = /^[ \t]{0,2}\([ \t]{0,2}$/u;
+const RE_CIERRE = /^[ \t]{0,2}\)/u;
+const CIERRE_WINDOW = 256;
+
+/** R-LST-05 (sufijo societario final) y R-LST-06 (token de salud), vista `lista`: núcleo de la clave ORG (6.6.1). */
+const SUFIJO = String.raw`(?:s\. ?a\. ?s\.?|s ?a ?s|s\. ?a\.?|s ?a|ltda\.?|limitada|e\. ?s\. ?p\.?|esp|e\. ?s\. ?e\.?|e\. ?u\.?|(?:&|y) ?cia\.?(?: ?s\. ?en ?c\.?)?|s\. ?en ?c\.?(?: ?s\.?)?|s\. ?c\. ?a\.?|sociedad por acciones simplificada|sociedad anonima|empresa unipersonal)`;
+const RE_SUFIJO_FINAL = new RegExp(String.raw`(?:,? )(?:` + SUFIJO + String.raw`)$`, 'u');
+const SALUD = String.raw`(?<![\p{L}\p{N}])(?:e\. ?p\. ?s\.?|eps|i\. ?p\. ?s\.?|ips)(?![\p{L}\p{N}])`;
+const RE_SALUD_FIRST = new RegExp(SALUD, 'u');
+const RE_SALUD_ALL = new RegExp(SALUD, 'gu');   // solo con replace (no guarda estado entre llamadas)
+
+// ---------------------------------------------------------------------------------------------
+// Vista normalizada mínima (6.1.2, 7.1.2 y 7.1.3).
+// Implementación local hasta que PA-1 fusione normalize.ts; entonces se reemplaza por buildSearchView.
+// Sin los saltos unidos de 7.1.5: merge.ts solo la usa sobre tramos cortos (hueco, cierre, recorte y claves).
+// ---------------------------------------------------------------------------------------------
+
+function reglasChar(cp: number): string {
+  if (cp === 0xa0 || cp === 0x1680 || (cp >= 0x2000 && cp <= 0x200a) || cp === 0x202f || cp === 0x205f || cp === 0x3000) return ' ';
+  if ((cp >= 0x2010 && cp <= 0x2015) || cp === 0x2212 || cp === 0xfe58 || cp === 0xfe63 || cp === 0xff0d) return '-';
+  if (cp === 0x2018 || cp === 0x2019 || cp === 0x02bc || cp === 0x00b4 || cp === 0x2032) return "'";
+  if (cp === 0x00b0) return 'º';
+  if (cp === 0x2116 || cp === 0xff03) return '#';
+  if (cp === 0x00ad || (cp >= 0x200b && cp <= 0x200f) || cp === 0x2060 || cp === 0xfeff
+    || (cp >= 0x202a && cp <= 0x202e) || (cp >= 0x2066 && cp <= 0x2069)) return '';
+  return String.fromCodePoint(cp);
+}
+
+function localSearchView(text: string, profile: Exclude<NormalizationProfile, 'digitos'>, _partKind: PartKind): SearchView {
+  const ch: string[] = []; const sm: number[] = []; const em: number[] = [];
+  const push = (u: string, s: number, e: number): void => {
+    if (u === ' ' && ch.length > 0 && ch[ch.length - 1] === ' ') { em[em.length - 1] = e; return; }
+    for (let k = 0; k < u.length; k++) { ch.push(u[k] as string); sm.push(s); em.push(e); }
+  };
+  let i = 0;
+  while (i < text.length) {
+    const cp = text.codePointAt(i) as number;
+    const len = cp > 0xffff ? 2 : 1;
+    let r = reglasChar(cp);
+    if (profile === 'lista' && r !== '') {
+      r = /^\s$/u.test(r) ? ' ' : r.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/gu, '');
+    }
+    if (r !== '') push(r, i, i + len);
+    i += len;
+  }
+  sm.push(text.length);
+  return { profile, text: ch.join(''), startMap: Uint32Array.from(sm), endMap: Uint32Array.from(em) };
+}
+
+/** Tramo de la vista [nStart, nEnd), nEnd > nStart → tramo canónico (6.1.2). */
+function toCanonical(v: SearchView, nStart: number, nEnd: number): { start: number; end: number } {
+  return { start: v.startMap[nStart] as number, end: v.endMap[nEnd - 1] as number };
+}
+
+const fold = (s: string, kind: PartKind): string => localSearchView(s, 'lista', kind).text;
+
+// ---------------------------------------------------------------------------------------------
+// Utilidades
+// ---------------------------------------------------------------------------------------------
+
+const isHigh = (u: number): boolean => u >= 0xd800 && u <= 0xdbff;
+const isLow = (u: number): boolean => u >= 0xdc00 && u <= 0xdfff;
+/** 6.1.3: un límite dentro de un par sustituto se amplía al punto de código completo. */
+function widenStart(t: string, i: number): number {
+  return i > 0 && i < t.length && isLow(t.charCodeAt(i)) && isHigh(t.charCodeAt(i - 1)) ? i - 1 : i;
+}
+function widenEnd(t: string, i: number): number {
+  return i > 0 && i < t.length && isLow(t.charCodeAt(i)) && isHigh(t.charCodeAt(i - 1)) ? i + 1 : i;
+}
+const cmpStr = (a: string | undefined, b: string | undefined): number => {
+  const x = a ?? ''; const y = b ?? '';
+  return x < y ? -1 : x > y ? 1 : 0;
+};
+const overlaps = (a: { start: number; end: number }, s: number, e: number): boolean => a.start < e && s < a.end;
+const countDigits = (s: string): number => (s.match(/[0-9]/gu) ?? []).length;
+
+/** 6.2.4 · Precedencia según la fuente, el validador y el rótulo. */
+export function precedenceOf(c: Pick<Work, 'source' | 'validator' | 'label'>): Precedence {
+  switch (c.source) {
+    case 'manual': return 1;
+    case 'lista': return 2;
+    case 'modelo': return 6;
+    case 'regla': {
+      const v = c.validator;
+      if (v !== undefined && v.passed) {
+        if (v.name === 'DV_NIT' || v.name === 'RADICADO' || v.name === 'CORREO') return 3;
+        if (v.name === 'LUHN' && c.label !== undefined) return 3;
+      }
+      return c.label !== undefined ? 4 : 5;
+    }
+  }
+}
+
+/** Desempates finales, después de los cinco criterios de 7.11.1 paso 3: hacen el orden total. */
+function tieBreak(a: Work, b: Work): number {
+  return CONF_RANK[b.confidence] - CONF_RANK[a.confidence] || b.score - a.score
+    || cmpStr(a.canonicalKey, b.canonicalKey) || cmpStr(a.ruleId, b.ruleId) || cmpStr(a.caseEntityId, b.caseEntityId)
+    || cmpStr(a.role, b.role) || cmpStr(a.nerLabel, b.nerLabel) || cmpStr(a.variantClass, b.variantClass);
+}
+/** 7.11.1 paso 3: precedencia ↑, longitud ↓, inicio ↑, orden fijo de tipos, fuente. */
+function byPriority(a: Work, b: Work): number {
+  return a.precedence - b.precedence || (b.end - b.start) - (a.end - a.start) || a.start - b.start
+    || (TYPE_RANK.get(a.type) ?? TYPE_ORDER.length) - (TYPE_RANK.get(b.type) ?? TYPE_ORDER.length)
+    || SOURCE_RANK[a.source] - SOURCE_RANK[b.source] || tieBreak(a, b);
+}
+function byPosition(a: Work, b: Work): number {
+  return a.start - b.start || a.end - b.end || byPriority(a, b);
+}
+
+function finish(w: Work, text: string): Work {
+  w.start = widenStart(text, w.start);
+  w.end = widenEnd(text, w.end);
+  w.precedence = precedenceOf(w);
+  return w;
+}
+function withoutValidator(c: Work): Work {
+  const copy: Work = { ...c };
+  delete copy.validator;
+  return copy;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Claves de los remanentes del modelo (6.6.1, 7.12.1)
+// ---------------------------------------------------------------------------------------------
+
+function perKey(s: string, kind: PartKind): string {
+  return 'PER:' + fold(s, kind).replace(/[^\p{L}\p{N} -]+/gu, ' ').replace(/ +/gu, ' ').trim();
+}
+function orgKey(s: string, kind: PartKind): string {
+  let f = fold(s, kind).trim().replace(RE_SUFIJO_FINAL, '');
+  const h = RE_SALUD_FIRST.exec(f);
+  const clase = h === null ? '' : h[0].replace(/[^a-z]/gu, '') === 'eps' ? 'EPS:' : 'IPS:';
+  f = f.replace(RE_SALUD_ALL, ' ').replace(/[^\p{L}\p{N}& ]+/gu, ' ').replace(/ +/gu, ' ').trim();
+  return `ORG:${clase}${f}`;
+}
+function remainderKeyFromModel(c: Work, s: string, kind: PartKind): string {
+  if (c.type === 'PERSONA') return perKey(s, kind);
+  if (ORG_SET.has(c.type)) return orgKey(s, kind);
+  if (c.type === 'LUGAR') return 'LUGAR:' + fold(s, kind).trim();
+  return c.canonicalKey;
+}
+
+// ---------------------------------------------------------------------------------------------
+// 7.11.2 · Remanentes
+// ---------------------------------------------------------------------------------------------
+
+/** R-MOD-03 sobre la vista `lista` del tramo; devuelve posiciones relativas al tramo o null si queda vacío. */
+function trimFunctionWords(s: string, kind: PartKind): { start: number; end: number } | null {
+  const v = localSearchView(s, 'lista', kind);
+  const l = RE_TRIM_LEFT.exec(v.text);
+  const ns = l === null ? 0 : l[0].length;
+  const r = RE_TRIM_RIGHT.exec(v.text.slice(ns));
+  const ne = v.text.length - (r === null ? 0 : r[0].length);
+  if (ne <= ns) return null;
+  return toCanonical(v, ns, ne);
+}
+
+/**
+ * 7.11.2 · Resuelve el remanente [start, end) de un candidato partido: modelo → recorte R-MOD-03;
+ * regla → `rules.rerun` o fragmento (≥ 3 dígitos); lista y manual → se descarta (pasada 3, 7.13.5).
+ * Exportada para la pasada 3 de residuos (7.13.5, PB-4). Devuelve un candidato nuevo o null.
+ */
+export function resolveRemainder(part: Part, c: DetectionCandidate | MergedCandidate, start: number, end: number,
+  rules: RuleRegistry): MergedCandidate | null {
+  const text = part.text;
+  const s0 = Math.max(0, Math.min(text.length, start));
+  const e0 = Math.max(s0, Math.min(text.length, end));
+  if (e0 <= s0) return null;
+  const base: Work = { ...(c as Work), precedence: precedenceOf(c as Work) };
+  const piece = text.slice(s0, e0);
+  switch (base.source) {
+    case 'modelo': {
+      const t = trimFunctionWords(piece, part.kind);
+      if (t === null) return null;
+      const ns = s0 + t.start; const ne = s0 + t.end;
+      const sub = text.slice(ns, ne);
+      if ([...sub].length < 2) return null;
+      const named = sub.split(RE_WORD_SPLIT).some((w) => RE_UPPER_INITIAL.test(w) && !FW_SET.has(fold(w, part.kind)));
+      if (!named) return null;
+      return asMerged(finish({ ...base, start: ns, end: ne, confidence: 'baja', canonicalKey: remainderKeyFromModel(base, sub, part.kind) }, text));
+    }
+    case 'regla': {
+      const found = base.ruleId === undefined ? null : rules.rerun(base.ruleId, piece);
+      if (found !== null && Number.isInteger(found.start) && Number.isInteger(found.end)
+        && found.start >= 0 && found.end <= piece.length && found.start < found.end) {
+        const w = withoutValidator({ ...base, start: s0 + found.start, end: s0 + found.end, canonicalKey: found.canonicalKey });
+        delete w.fragment;
+        return asMerged(finish(w, text));
+      }
+      if (countDigits(piece) >= 3) {
+        // Sin blancos ni signos en los bordes; los dígitos nunca se recortan.
+        const lead = (RE_EDGE_LEFT.exec(piece) as RegExpExecArray)[0].length;
+        const trail = (RE_EDGE_RIGHT.exec(piece.slice(lead)) as RegExpExecArray)[0].length;
+        const ns = s0 + lead; const ne = e0 - trail;
+        const core = text.slice(ns, ne);
+        const prefix = KEY_PREFIX[base.type as DetectableType] ?? base.type;
+        const w = withoutValidator({ ...base, start: ns, end: ne, confidence: 'baja', score: NOMINAL.baja,
+          canonicalKey: `${prefix}:~${fold(core, part.kind).trim()}`, fragment: true });
+        return asMerged(finish(w, text));
+      }
+      return null;
+    }
+    case 'lista':
+    case 'manual':
+      return null;
+  }
+}
+
+/** Partes de [c.start, c.end) que no cubre ningún aceptado. */
+function uncovered(c: Work, over: readonly Work[]): Array<[number, number]> {
+  const out: Array<[number, number]> = [];
+  let cur = c.start;
+  for (const a of [...over].sort((x, y) => x.start - y.start || x.end - y.end)) {
+    if (a.start > cur) out.push([cur, Math.min(a.start, c.end)]);
+    cur = Math.max(cur, a.end);
+    if (cur >= c.end) break;
+  }
+  if (cur < c.end) out.push([cur, c.end]);
+  return out.filter(([s, e]) => e > s);
+}
+
+// ---------------------------------------------------------------------------------------------
+// 7.11.1 pasos 1 y 2
+// ---------------------------------------------------------------------------------------------
+
+/** Paso 1 · R-MRG-01: VALOR + VALOR o FECHA + FECHA con la misma clave, separados solo por « (». */
+function joinParen(work: Work[], part: Part): Work[] {
+  const text = part.text;
+  let out = work;
+  for (;;) {
+    const cand = out.filter((c) => c.type === 'VALOR' || c.type === 'FECHA').sort(byPosition);
+    let joined: { a: Work; b: Work; w: Work } | null = null;
+    for (let i = 0; i < cand.length && joined === null; i++) {
+      const A = cand[i] as Work;
+      for (let j = 0; j < cand.length; j++) {
+        const B = cand[j] as Work;
+        if (A === B || A.type !== B.type || A.canonicalKey !== B.canonicalKey || A.end > B.start) continue;
+        const gap = text.slice(A.end, B.start);
+        if (RE_LETTER_OR_DIGIT.test(gap) || !RE_HUECO.test(localSearchView(gap, 'reglas', part.kind).text)) continue;
+        let end = B.end;
+        let tail = text.slice(B.end, Math.min(text.length, B.end + CIERRE_WINDOW));
+        const nl = tail.indexOf('\n');
+        if (nl >= 0) tail = tail.slice(0, nl);
+        const v = localSearchView(tail, 'reglas', part.kind);
+        const m = RE_CIERRE.exec(v.text);
+        if (m !== null) end = B.end + (v.endMap[m[0].length - 1] as number);
+        const best = A.precedence < B.precedence ? A : B.precedence < A.precedence ? B
+          : CONF_RANK[B.confidence] > CONF_RANK[A.confidence] ? B : A;
+        const conf = CONF_RANK[A.confidence] >= CONF_RANK[B.confidence] ? A.confidence : B.confidence;
+        joined = { a: A, b: B, w: { ...best, start: A.start, end, confidence: conf, score: Math.max(A.score, B.score), precedence: best.precedence } };
+        break;
+      }
+    }
+    if (joined === null) return out;
+    const { a, b, w } = joined;
+    out = out.filter((c) => c !== a && c !== b);
+    out.push(w);
+  }
+}
+
+function nerLabelOf(c: Work): NerLabel | undefined {
+  if (c.nerLabel !== undefined) return c.nerLabel;
+  if (c.type === 'PERSONA') return 'PER';
+  return ORG_SET.has(c.type) ? 'ORG' : undefined;
+}
+/** Lo que el modelo agrega: vacío, o solo palabras con mayúscula inicial que no son de función ni tratamientos,
+ *  sin signos salvo guion. */
+function onlyNameWords(extra: string, kind: PartKind): boolean {
+  if (extra === '') return true;
+  if (RE_NOT_NAME_CHAR.test(extra)) return false;
+  const words = extra.split(RE_NAME_SPLIT).filter((w) => w !== '');
+  return words.length > 0 && words.every((w) => RE_UPPER_INITIAL.test(w) && !NAME_STOP.has(fold(w, kind)));
+}
+
+/** Paso 2 · Lista extendida por el modelo. */
+function extendWithModel(work: Work[], part: Part): Work[] {
+  const text = part.text;
+  let out = work;
+  const listas = out.filter((c) => c.source === 'lista').sort(byPosition);
+  for (const L of listas) {
+    const want: NerLabel | undefined = L.type === 'PERSONA' ? 'PER' : ORG_SET.has(L.type) ? 'ORG' : undefined;
+    if (want === undefined) continue;
+    const options = out
+      .filter((M) => M.source === 'modelo' && nerLabelOf(M) === want && M.start <= L.start && M.end >= L.end
+        && M.end - M.start > L.end - L.start)
+      .sort(byPriority);
+    for (const M of options) {
+      if (!onlyNameWords(text.slice(M.start, L.start), part.kind) || !onlyNameWords(text.slice(L.end, M.end), part.kind)) continue;
+      // Lo agregado no puede pisar otro candidato que no sea del modelo: sería otra entidad u otro dato.
+      const blocked = out.some((X) => X !== L && X !== M && X.source !== 'modelo'
+        && (overlaps(X, M.start, L.start) || overlaps(X, L.end, M.end)));
+      if (blocked) continue;
+      const ext: Work = { ...L, start: M.start, end: M.end, confidence: 'media', score: NOMINAL.media, extended: true };
+      out = out.filter((c) => c !== L && c !== M);
+      out.push(ext);
+      break;
+    }
+  }
+  return out;
+}
+
+function asMerged(w: Work): MergedCandidate {
+  // 'manual' llega solo cuando el llamador reprocesa manuales (7.11); el contrato de 6.4.2 no lo modela.
+  return w as unknown as MergedCandidate;
+}
+
+// ---------------------------------------------------------------------------------------------
+// 7.11.1 · Algoritmo determinista
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * Fusiona los candidatos de una parte (6.4.2, 7.11). Devuelve candidatos sin solapes (INV-R02), con
+ * `precedence` según 6.2.4 (INV-R04), ordenados por inicio. Un validador fallido nunca descarta (INV-R03).
+ * Ignora las banderas (las recorta generalize.ts, 6.4.6) y los candidatos de otra parte.
+ */
+export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[], rules: RuleRegistry): MergedCandidate[] {
+  const text = part.text;
+
+  // 0. Normalizar: límites dentro de un par sustituto, duplicados exactos y precedencia.
+  const unique = new Map<string, Work>();
+  for (const c of cands as ReadonlyArray<DetectionCandidate | Work>) {
+    if (c.partId !== part.id || FLAG_SET.has(c.type)) continue;
+    if (!Number.isFinite(c.start) || !Number.isFinite(c.end)) continue;
+    const s = widenStart(text, Math.max(0, Math.min(text.length, Math.trunc(c.start))));
+    const e = widenEnd(text, Math.max(0, Math.min(text.length, Math.trunc(c.end))));
+    if (e <= s) continue;
+    const w: Work = { ...(c as Work), start: s, end: e, precedence: 5 };
+    w.precedence = precedenceOf(w);
+    const k = `${s}\u0000${e}\u0000${w.type}\u0000${w.source}\u0000${w.canonicalKey}`;
+    const prev = unique.get(k);
+    if (prev === undefined || CONF_RANK[w.confidence] > CONF_RANK[prev.confidence]
+      || (w.confidence === prev.confidence && (w.score > prev.score || (w.score === prev.score && byPriority(w, prev) < 0)))) {
+      unique.set(k, w);
+    }
+  }
+  let work = [...unique.values()];
+
+  // 1. Unir por paréntesis (R-MRG-01).
+  work = joinParen(work, part);
+  // 2. Extender la lista con el modelo.
+  work = extendWithModel(work, part);
+  // 3. Ordenar.
+  work.sort(byPriority);
+
+  // 4. Colocar en orden.
+  const accepted: Work[] = [];
+  for (const c of work) {
+    const over = accepted.filter((a) => overlaps(a, c.start, c.end));
+    if (over.length === 0) { accepted.push(c); continue; }
+    const container = over.find((a) => a.start <= c.start && c.end <= a.end);
+    if (container !== undefined) {
+      if (container.type === 'NIT' && HOLDER_ABSORBED.has(c.type)) {
+        const d = text.slice(c.start, c.end).replace(/[^0-9]/gu, '');
+        if (d !== '') container.holderDigits = d;
+      }
+      continue;
+    }
+    for (const [s, e] of uncovered(c, over)) {
+      const r = resolveRemainder(part, asMerged(c), s, e, rules);
+      if (r !== null) accepted.push(r as unknown as Work);
+    }
+  }
+
+  // 5. Devolver ordenado por inicio.
+  return accepted.sort((a, b) => a.start - b.start || a.end - b.end).map(asMerged);
+}
