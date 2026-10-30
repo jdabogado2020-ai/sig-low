@@ -129,6 +129,7 @@ export type ParseWarningCode =
   | 'PAGINA_SIN_TEXTO'              // PDF: < pdfMinCharsPerPage caracteres no blancos
   | 'TEXTO_ILEGIBLE'                // PDF: proporción alta de U+FFFD o U+E000–U+F8FF
   | 'ORDEN_LECTURA_PDF'
+  | 'CONTENIDO_PDF_NO_LEIDO'        // contrato del integrador, 30-oct (P0-6a de PE-4, M-2): adjuntos, URI de enlaces y títulos de marcadores, solo contados
   | 'CARACTERES_CONTROL';           // se quitarán al exportar .docx
 /** [P] Sin texto libre. */
 export interface ParseWarning { code: ParseWarningCode; partId?: PartId; page?: number; count: number; }
