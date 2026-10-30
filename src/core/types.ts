@@ -328,7 +328,7 @@ export type PlanBCause = 'no_descargado' | 'desactivado' | 'fallo_carga' | 'memo
 export type ModelProgress =
   | { kind: 'en_curso'; ventanas: number; ventanasTotales: number }     // ventanasTotales 0 hasta que `ner` informa el total
   | { kind: 'terminado'; ventanas: number; respaldo: boolean }          // respaldo: lo hizo x-base
-  | { kind: 'plan_b'; causa: PlanBCause };                              // declarado en el informe (6.8)
+  | { kind: 'plan_b'; causa: PlanBCause; ventanas?: number; ventanasTotales?: number };   // declarado en el informe (6.8); ventanas: contrato del integrador, 30-oct (PB-6: «3 de 23»)
 export interface ExportGate { ok: boolean; reasons: GateReason[]; }
 export type ExportGateFn = (state: ReviewState, residue: ResidueResult | null, reminder: ReminderConfirmation) => ExportGate;
 // ok ⇔ 0 detecciones 'pendiente' ∧ 0 banderas sin acknowledged
@@ -572,7 +572,10 @@ export type DetectRequest =
       ventana?: number; ventanasTotales?: number }>   // una ventana del modelo; sin ventana: todo el resultado de una vez (pasada 3 y plan B: ner null)
   | WorkerRequest<'liberar', { sessionId: string }>
   | CancelRequest;
-export interface DetectionSet { detections: Detection[]; entities: Entity[]; flags: Flag[]; suggestions: Suggestion[]; }
+export interface DetectionSet {
+  detections: Detection[]; entities: Entity[]; flags: Flag[]; suggestions: Suggestion[];
+  spanEdits?: SpanEdit[];   // contrato del integrador, 30-oct (PB-6): ediciones del rótulo preaplicado (TI, CE, PPT, PEP)
+}
 export type DetectResult =
   | { kind: 'detectar'; set: DetectionSet; counts: { reglas: number; lista: number; banderas: number; sugerencias: number } }   // reglas y lista: aparecen en segundos
   | { kind: 'fusionar'; set: DetectionSet; ventana?: number }   // con `ventana`, solo el delta de esa ventana (6.4.4, incorporar_modelo)
