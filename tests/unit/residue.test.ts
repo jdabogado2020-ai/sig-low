@@ -637,6 +637,44 @@ describe('7.13.5 · pasada 3: recorte a la parte copiada y texto reemplazado', (
     expect(run.result.hits).toEqual([]);
   });
 
+  it('INV-R07 B-60 (PB-2-r7): si el revisor rechaza la regla que absorbió la palabra de la lista, la pasada 3 no la vuelve a absorber en la regla rechazada: la palabra vuelve como detección de la lista, pendiente', async () => {
+    const CAS_F = 'cas_0000000000000000000000000000000f' as CaseEntityId;
+    const lista: CaseEntity[] = refreshVariants([
+      { id: CAS, name: 'Ana Ejemplo Rojas', variants: [], kind: 'persona', role: 'DEMANDANTE' },
+      { id: CAS_F, name: 'Ferretería Ejemplo S.A.S.', variants: [], kind: 'organizacion', role: 'EMPRESA' },
+    ]);
+    const texto = 'La demandante Ana Ejemplo Rojas vive en el barrio Altos del Ejemplo. Escriba a notificaciones@ferreteria-ejemplo.test hoy. '
+      + 'Ferretería Ejemplo S.A.S. responde.';
+    const s = scenario([['cuerpo', texto]], [
+      { p: 0, sub: 'Ana Ejemplo Rojas', type: 'PERSONA', key: `LISTA:${CAS}`, role: 'DEMANDANTE', src: 'lista', cas: CAS },
+      { p: 0, sub: 'Ferretería Ejemplo S.A.S.', type: 'EMPRESA', key: `LISTA:${CAS_F}`, role: 'EMPRESA', src: 'lista', cas: CAS_F },
+      // El revisor rechaza el barrio y el correo (los cree datos públicos).
+      { p: 0, sub: 'Altos del Ejemplo', type: 'BARRIO', key: 'BARRIO:altos del ejemplo', decide: { rechazar: 'DATO_PUBLICO' } },
+      { p: 0, sub: 'notificaciones@ferreteria-ejemplo.test', type: 'CORREO', key: 'CORREO:notificaciones@ferreteria-ejemplo.test',
+        decide: { rechazar: 'DATO_PUBLICO' } },
+    ], lista);
+    const r = await check(s);
+    expect(r.out.sections[0]?.text).toContain('barrio Altos del Ejemplo. Escriba a notificaciones@ferreteria-ejemplo.test hoy.');
+    // Con el código anterior la búsqueda pasaba limpia (0 impactos, 0 nuevas) con «Ejemplo» y «ferreteria-ejemplo» a la vista.
+    const part = s.doc.parts[0] as Part;
+    expect(r.run.nuevas.map((c) => `${c.source}:${part.text.slice(c.start, c.end)}`).sort()).toEqual(['lista:Ejemplo', 'lista:ferreteria-ejemplo']);
+    expect(r.run.nuevas.every((c) => c.caseEntityId !== undefined)).toBe(true);
+    expect(hitsOf(r)).toEqual(['cuerpo 1|variante|Ejemplo', 'cuerpo 1|variante|ferreteria-ejemplo']);
+    // El barrio y el correo rechazados no vuelven (7.13.6).
+    expect(r.run.nuevas.some((c) => c.type === 'BARRIO' || c.type === 'CORREO')).toBe(false);
+  });
+
+  it('INV-R07 B-60 control: si el revisor acepta el barrio, la pasada 3 no encuentra nada (la palabra va dentro del marcador)', async () => {
+    const lista: CaseEntity[] = refreshVariants([{ id: CAS, name: 'Ana Ejemplo Rojas', variants: [], kind: 'persona', role: 'DEMANDANTE' }]);
+    const s = scenario([['cuerpo', 'La demandante Ana Ejemplo Rojas vive en el barrio Altos del Ejemplo.']], [
+      { p: 0, sub: 'Ana Ejemplo Rojas', type: 'PERSONA', key: `LISTA:${CAS}`, role: 'DEMANDANTE', src: 'lista', cas: CAS },
+      { p: 0, sub: 'Altos del Ejemplo', type: 'BARRIO', key: 'BARRIO:altos del ejemplo' },
+    ], lista);
+    const r = await check(s);
+    expect(r.run.result.hits).toEqual([]);
+    expect(r.run.nuevas).toEqual([]);
+  });
+
   it('sin secciones incluidas no hay impactos', async () => {
     const s = scenario([['cuerpo', 'Ana Ficticia Rojas.', 'Cuerpo', false]], []);
     const r = await check(s);

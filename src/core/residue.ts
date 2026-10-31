@@ -1,7 +1,7 @@
 // Búsqueda de residuos sobre la salida (plan 7.13, 6.9): tres pasadas (literal y plegada, dígitos tolerantes a separadores,
 // reglas y lista sobre la salida). PB-4. Código puro de core/: sin DOM ni red. Los valores buscados son [M]: nada de aquí
 // va a la consola, al informe (solo se cuenta `valuesSearched`), al título ni a la URL (F-02, F-03).
-import { LST } from './caselist.ts';
+import { LST, searchCaseList } from './caselist.ts';
 import { nitCheckDigit } from './entities.ts';
 import { resolveRemainder } from './merge.ts';
 import { buildSearchView, toCanonicalSpan } from './normalize.ts';
@@ -174,6 +174,32 @@ function cleanCandidate(d: DetectionCandidate, start: number, end: number): Dete
   if (d.validator !== undefined) c.validator = d.validator;
   if (d.context !== undefined) c.context = d.context;
   return c;
+}
+
+/**
+ * B-60 (PB-2-r7) · Menciones de la lista del caso de una sola palabra (sin blancos) estrictamente dentro de las reglas de la pasada 3
+ * que el revisor rechazó (`excluidas`), en la parte copiada de la salida y sin superviviente propio en el mismo tramo. Son las que
+ * la fusión absorbe en la regla (D-06, 7.11.1): sin esto, rechazar la regla dejaba la palabra a la vista y la búsqueda pasaba.
+ */
+function listaDentroDeExcluidas(excluidas: readonly Survivor[], survivors: readonly Survivor[], secs: readonly Sec[],
+  tmpById: ReadonlyMap<PartId, Part>, caseList: readonly CaseEntity[]): Survivor[] {
+  const out: Survivor[] = [];
+  if (excluidas.length === 0 || caseList.length === 0) return out;
+  const menciones = new Map<PartId, DetectionCandidate[]>();
+  for (const rv of excluidas) {
+    const part = tmpById.get(rv.cand.partId);
+    const sec = secs[rv.si];
+    if (part === undefined || sec === undefined) continue;
+    let ms = menciones.get(part.id);
+    if (ms === undefined) { ms = searchCaseList(part, caseList); menciones.set(part.id, ms); }
+    for (const L of ms) {
+      if (!(rv.start <= L.start && L.end <= rv.end && L.end - L.start < rv.end - rv.start) || /\s/u.test(part.text.slice(L.start, L.end).trim())) continue;
+      if ([...survivors, ...out].some((o) => o.si === rv.si && o.start === L.start && o.end === L.end)) continue;
+      const loc = locate(sec, L.start, L.end);
+      if (loc.kind === 'copy') out.push({ si: rv.si, start: L.start, end: L.end, cand: cleanCandidate(L, L.start, L.end), loc });
+    }
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -368,18 +394,27 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
   const keyOfEntity = (r: Detection): string => state.entities[r.entityId]?.canonicalKey ?? r.canonicalKey;
 
   const kept: Survivor[] = [];
-  for (const sv of survivors) {
+  /** Aplica la decisión del revisor a un superviviente; devuelve false si queda excluido. */
+  const decidir = (sv: Survivor): boolean => {
     const loc = sv.loc as Extract<Loc, { kind: 'copy' }>;
     const t = targetFor(sv.cand);
     const excluded = rejected.some((r) => insideRejected(r, sv.cand.partId, loc.partStart, loc.partEnd)
       && (t !== undefined ? r.entityId === t.entity.id : keyOfEntity(r) === sv.cand.canonicalKey || r.canonicalKey === sv.cand.canonicalKey));
-    if (excluded) continue;
+    if (excluded) return false;
     kept.push(sv);
     if (t !== undefined) {
       push({ si: sv.si, start: sv.start, end: sv.end, target: t, mode: 'variante', loc, conf: sv.cand.confidence, p3: true,
         ...(sv.cand.variantClass !== undefined ? { cls: sv.cand.variantClass } : {}) });
     }
-  }
+    return true;
+  };
+  const reglasExcluidas: Survivor[] = [];
+  for (const sv of survivors) if (!decidir(sv) && sv.cand.source === 'regla') reglasExcluidas.push(sv);
+  // B-60 (PB-2-r7) · La fusión de la pasada 3 vuelve a absorber la palabra de la lista en la regla estructural (D-06), y esa regla,
+  // igual a la que el revisor rechazó, se excluye arriba: la palabra quedaría a la vista sin que nada la encuentre. No se absorbe
+  // en una regla excluida: cada detección de la lista de una sola palabra estrictamente dentro de ella vuelve como superviviente
+  // propio (y pasa por la misma decisión del revisor), así que sale como residuo o como detección nueva de la lista, pendiente.
+  for (const sv of listaDentroDeExcluidas(reglasExcluidas, survivors, secs, tmpById, ctx.caseList)) decidir(sv);
 
   // ---- Pasadas 1 y 2: un rechazo explícito (motivo distinto de SIN_MOTIVO) de la misma entidad y el mismo tramo también excluye.
   // El rechazo por defecto no: es el caso de «rechazada por error» (T-RS-02, T-RS-10, T-RS-13). La pasada 3 ya se filtró arriba.
