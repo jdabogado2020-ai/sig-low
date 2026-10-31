@@ -128,6 +128,11 @@ export interface MetricsReport {
   idsAfectados?: IdsAfectados;
   residuos: {
     antesDelBucle: number; despuesDelBucle: number; omisiones: number;
+    /**
+     * PB-4-r2 (M-60) · Lo que la definición por dato mueve frente a la letra de 10.3.4, contado aparte para que se vea: las menciones
+     * con algo copiado que no lleva dato (pasan a «protegida») y las omisiones que la letra habría contado como residuo.
+     */
+    copiasSinDato?: number; omisionesPorLaLetra?: number;
     porDocumento: Array<{ docId: CorpusDocId; residuos: number; omisiones: number; idsAnotacion: string[] }>;
     concordanciaResidueTs: boolean;
   };
@@ -600,6 +605,8 @@ export interface ResultadoResiduo {
   g: GoldAnnotation;
   clase: ClaseMencion;
   copiados: number;
+  /** PB-4-r2 · La clase que daría la letra de 10.3.4 (entidad tocada, en la lista o de un mismo titular tocado); solo para contar aparte lo que mueve la definición por dato. */
+  letra: ClaseMencion;
 }
 
 /**
@@ -610,18 +617,23 @@ export interface ResultadoResiduo {
 export const FUNCION_RMOD03: ReadonlySet<string> = new Set(('de|del|la|las|los|el|lo|y|e|o|u|a|al|en|por|para|con|sin|su|sus|que|se|un|una|'
   + 'unos|unas|senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr|mrs|mr|ms').split('|'));
 export const SUFIJO_RLST05 = String.raw`(?:s\. ?a\. ?s\.?|s ?a ?s|s\. ?a\.?|s ?a|ltda\.?|limitada|e\. ?s\. ?p\.?|esp|e\. ?s\. ?e\.?|e\. ?u\.?|(?:&|y) ?cia\.?(?: ?s\. ?en ?c\.?)?|s\. ?en ?c\.?(?: ?s\.?)?|s\. ?c\. ?a\.?|sociedad por acciones simplificada|sociedad anonima|empresa unipersonal)`;
-const RE_SUFIJO_MED = new RegExp(String.raw`(?<![\p{L}\p{N}])` + SUFIJO_RLST05 + String.raw`(?![\p{L}\p{N}])`, 'gu');
+/** El sufijo societario solo al final del texto (con blancos y signos detrás): «S.A.» de una razón social; nunca el apellido «Sá» del medio ni de una persona. */
+const RE_SUFIJO_FINAL = new RegExp(String.raw`(?<![\p{L}\p{N}])` + SUFIJO_RLST05 + String.raw`[\s\p{P}\p{S}]*$`, 'u');
 
 /** Lo que identifica en un trozo de texto (10.3.4, PB-4-r1): palabras, iniciales y dígitos. */
 export interface DatoCopiado { palabras: string[]; iniciales: string[]; digitos: string }
 
 /**
  * El dato que lleva un trozo: palabras de 2 letras o más que no son de función ni tratamiento (R-MOD-03), iniciales («A.») y los
- * dígitos. El sufijo societario (R-LST-05), los blancos y los signos no identifican; tampoco menos de 3 dígitos sueltos (la regla
- * de remanentes de 7.11.2 descarta un trozo así). Sobre la vista `lista` (sin tildes ni mayúsculas).
+ * dígitos. Los blancos y los signos no identifican; tampoco menos de 3 dígitos sueltos (la regla de remanentes de 7.11.2 descarta un
+ * trozo así). Sobre la vista `lista` (sin tildes ni mayúsculas).
+ *
+ * PB-4-r2 (M-60, G4) · El sufijo societario (R-LST-05) solo se quita al final y solo de una organización (`sufijo`, por defecto
+ * `true`): el apellido «Sá» de una persona es «sa» en la vista `lista` y no es un sufijo.
  */
-export function datoDe(texto: string): DatoCopiado {
-  const v = buildSearchView(texto, 'lista', 'cuerpo').text.replace(RE_SUFIJO_MED, ' ');
+export function datoDe(texto: string, sufijo = true): DatoCopiado {
+  const vista = buildSearchView(texto, 'lista', 'cuerpo').text;
+  const v = sufijo ? vista.replace(RE_SUFIJO_FINAL, ' ') : vista;
   const palabras: string[] = [];
   const iniciales: string[] = [];
   for (const m of v.matchAll(/\p{L}+(\.)?/gu)) {
@@ -633,44 +645,100 @@ export function datoDe(texto: string): DatoCopiado {
 }
 const conDato = (d: DatoCopiado): boolean => d.palabras.length > 0 || d.iniciales.length > 0 || d.digitos.length >= 3;
 
+const esOrganizacion = (t: DataType): boolean => ORGS.includes(t);
+const esDeNombre = (t: DataType): boolean => t === 'PERSONA' || esOrganizacion(t);
+
+/** Una variante que la lista del caso genera para un nombre (7.9): su texto y su clase (`exacta`, `apellidos`, `iniciales`, `sigla`…). */
+export interface FormaGenerada { texto: string; clase: string }
+/**
+ * PB-4-r2 (M-60) · El generador de variantes de la lista (`newCaseEntity` y `refreshVariants` de `src/core/caselist.ts`). No se importa
+ * por lo mismo que `FUNCION_RMOD03`: el módulo no carga con Node sin Vite. La corrida de medición lo da (tests/medicion/lib/formas-lista.ts),
+ * con el generador real; sin él, solo cuentan el nombre de la lista y lo que el motor reemplazó.
+ */
+export type GeneradorDeFormas = (nombre: string, tipo: DataType) => readonly FormaGenerada[];
+
+/** Lo que el motor conoce de cada entidad gold (10.3.4): palabras, primeras letras y dígitos, y las iniciales y siglas que la lista genera. */
+interface Conocido { palabras: Set<string>; iniciales: Set<string>; digitos: string[]; formas: Set<string>; comodines: Set<string> }
+const nuevoConocido = (): Conocido => ({ palabras: new Set<string>(), iniciales: new Set<string>(), digitos: [], formas: new Set<string>(), comodines: new Set<string>() });
+
+const letrasDe = (texto: string): string[] => buildSearchView(texto, 'lista', 'cuerpo').text.match(/\p{L}+/gu) ?? [];
+
+/**
+ * Las letras de unas iniciales o una sigla, sin puntos ni blancos («A. F. R.», «A F R» y «AFR» dan «afr»; «IFV», «ifv»), o null si el
+ * texto no tiene esa forma: tres letras o más, sueltas (con o sin punto) o pegadas en una sola palabra.
+ */
+export function letrasDeIniciales(texto: string): string | null {
+  const t = letrasDe(texto);
+  const letras = t.join('');
+  return letras.length >= 3 && (t.length === 1 || t.every((x) => x.length === 1)) ? letras : null;
+}
+
+/** Guarda las iniciales y siglas de las variantes que la lista genera. «A. F. _.» (dos iniciales y una letra cualquiera) queda como comodín. */
+function guardarFormas(k: Conocido, formas: readonly FormaGenerada[]): void {
+  for (const f of formas) {
+    if (f.clase !== 'iniciales' && f.clase !== 'sigla') continue;
+    const letras = letrasDe(f.texto).join('');
+    if (letras.length > 0) (f.texto.includes('_') ? k.comodines : k.formas).add(letras);
+  }
+}
+
+/** ¿El texto es una inicial o sigla que la lista genera para alguna de estas entidades? Con o sin punto: es el mismo dato. */
+function esFormaGenerada(texto: string, ks: readonly Conocido[]): boolean {
+  const l = letrasDeIniciales(texto);
+  return l !== null && ks.some((k) => k.formas.has(l) || [...k.comodines].some((c) => l.length === c.length + 1 && l.startsWith(c)));
+}
+
 /** Trozos [start, end) de la parte dentro de [g.start, g.end) que caen en segmentos copiados (`copiado`) o reemplazados. */
-function trozos(segmentos: readonly SegmentoSalida[], g: Tramo, copiado: boolean): Array<{ start: number; end: number; tipo?: DataType }> {
-  const out: Array<{ start: number; end: number; tipo?: DataType }> = [];
+function trozos(segmentos: readonly SegmentoSalida[], g: Tramo, copiado: boolean): Array<{ start: number; end: number; deteccion: boolean }> {
+  const out: Array<{ start: number; end: number; deteccion: boolean }> = [];
   for (const s of segmentos) {
     const reemplazado = s.detectionId !== undefined || s.spanEditId !== undefined;
     if (reemplazado === copiado) continue;
     const a = Math.max(s.partStart, g.start);
     const b = Math.min(s.partEnd, g.end);
-    if (b > a) out.push({ start: a, end: b, ...(s.tipo === undefined ? {} : { tipo: s.tipo }) });
+    if (b > a) out.push({ start: a, end: b, deteccion: s.detectionId !== undefined });
   }
   return out;
 }
 
-/**
- * Lo que el motor conoce de cada entidad gold: el nombre que el usuario dio en la lista del caso (`canonico` «LISTA:<nombre>») y
- * lo que reemplazó dentro de sus menciones (palabras, primeras letras y dígitos).
- */
-interface Conocido { palabras: Set<string>; iniciales: Set<string>; digitos: string[] }
+/** Lo que queda de la mención detrás del trozo es solo blancos y signos: el trozo es el final de la mención. */
+const alFinalDeLaMencion = (g: GoldAnnotation, t: Tramo): boolean => /^[\s\p{P}\p{S}]*$/u.test(g.texto.slice(t.end - g.start));
 
-function conocidoPorEntidad(gold: GoldDocument, segs: ReadonlyMap<string, readonly SegmentoSalida[]>): Map<string, Conocido> {
+/**
+ * Lo que el motor conoce de cada entidad gold: el nombre que el usuario dio en la lista del caso (`canonico` «LISTA:<nombre>»), lo que
+ * reemplazó dentro de sus menciones (palabras, primeras letras y dígitos) y, con el generador de la lista, las iniciales y siglas que
+ * genera para esos nombres (PB-4-r2).
+ */
+function conocidoPorEntidad(gold: GoldDocument, segs: ReadonlyMap<string, readonly SegmentoSalida[]>, generar?: GeneradorDeFormas): Map<string, Conocido> {
   const out = new Map<string, Conocido>();
-  const nuevo = (): Conocido => ({ palabras: new Set<string>(), iniciales: new Set<string>(), digitos: [] });
+  const generadas = new Map<string, readonly FormaGenerada[]>();
+  const formasDe = (nombre: string, tipo: DataType): readonly FormaGenerada[] => {
+    if (generar === undefined || !esDeNombre(tipo) || letrasDe(nombre).length < 2) return [];
+    const clave = `${tipo}\u0000${nombre}`;
+    let f = generadas.get(clave);
+    if (f === undefined) { f = generar(nombre, tipo); generadas.set(clave, f); }
+    return f;
+  };
   for (const e of gold.entidades) {
     if (!e.enLista || !e.canonico.startsWith('LISTA:')) continue;
-    const k = nuevo();
-    const d = datoDe(e.canonico.slice('LISTA:'.length));
+    const k = nuevoConocido();
+    const nombre = e.canonico.slice('LISTA:'.length);
+    const d = datoDe(nombre, esOrganizacion(e.tipo));
     for (const p of d.palabras) { k.palabras.add(p); k.iniciales.add(p.charAt(0)); }
+    guardarFormas(k, formasDe(nombre, e.tipo));
     out.set(e.id, k);
   }
   for (const g of gold.anotaciones.filter(esPositiva)) {
-    const k = out.get(g.entidad) ?? nuevo();
+    const k = out.get(g.entidad) ?? nuevoConocido();
     out.set(g.entidad, k);
     let dig = '';
     for (const t of trozos(segs.get(claveParte(g.parte)) ?? [], g, false)) {
-      const d = datoDe(g.texto.slice(t.start - g.start, t.end - g.start));
+      const texto = g.texto.slice(t.start - g.start, t.end - g.start);
+      const d = datoDe(texto, esOrganizacion(g.tipo) && alFinalDeLaMencion(g, t));
       for (const p of d.palabras) { k.palabras.add(p); k.iniciales.add(p.charAt(0)); }
       for (const i of d.iniciales) k.iniciales.add(i);
       dig += d.digitos;
+      if (t.deteccion) guardarFormas(k, formasDe(texto.trim(), g.tipo));
     }
     if (dig.length >= 3) k.digitos.push(dig);
   }
@@ -679,50 +747,71 @@ function conocidoPorEntidad(gold: GoldDocument, segs: ReadonlyMap<string, readon
 
 /**
  * Clasifica cada mención gold positiva tras la revisión (10.3.4). **Protegida**: lo copiado no lleva dato (ningún carácter copiado,
- * o solo blancos, signos, palabras de función, sufijo societario o menos de 3 dígitos). **Residuo**: lo copiado lleva un dato que el
- * motor conocía de esa entidad (o de un `mismoTitular`): una palabra, inicial o cifra que reemplazó en otra de sus menciones; o la
- * mención quedó reemplazada a medias por una detección de su mismo grupo de tipo (límites cortos). **Omisión**: lo copiado lleva
- * dato y el motor nunca lo conoció (un apodo que nada detectó, o una mención tocada solo por la detección de otro dato).
+ * o solo blancos, signos, palabras de función, el sufijo societario al final de una organización o menos de 3 dígitos). **Residuo**:
+ * lo copiado lleva un dato que el motor conocía de esa entidad (o de un `mismoTitular`): una palabra, inicial o cifra que reemplazó
+ * en otra de sus menciones o está en el nombre de la lista; una forma que la lista genera para ella (iniciales con o sin punto,
+ * sigla); o la mención quedó reemplazada a medias por una detección aceptada, de cualquier tipo (límites cortos), salvo que esa
+ * detección caiga sobre otra anotación positiva de otra entidad. **Omisión**: lo copiado lleva dato y el motor nunca lo conoció (un
+ * apodo que nada detectó, o una mención tocada solo por la detección de otro dato).
  *
- * PB-4-r1: antes bastaba un carácter copiado cualquiera y que la entidad tuviera alguna mención tocada o estuviera en la lista; eso
- * contaba como residuo el blanco entre dos marcadores, el punto final de «S. P. R.», «Doña» o el apodo «mi mamá» que el motor
- * nunca vio. La condición de 10.4.1 sigue siendo la misma: lo que el motor conoce no puede quedar en la salida.
+ * PB-4-r2 (M-60, D-14 decisión 1) · Una forma que el motor conoce o que la lista genera nunca es «protegida» ni «omisión».
+ * Cierra los huecos de PB-4-r1: las iniciales sin punto («A F R»), «AFR» y la sigla («IFV») eran protegida u omisión; los límites cortos
+ * dependían del tipo de la detección (una persona aceptada como empresa dejaba su resto como omisión); y el apellido «Sá» se tomaba
+ * por el sufijo «S.A.».
  */
-export function clasificarMenciones(gold: GoldDocument, salida: readonly SalidaParte[]): ResultadoResiduo[] {
+export function clasificarMenciones(gold: GoldDocument, salida: readonly SalidaParte[], generar?: GeneradorDeFormas): ResultadoResiduo[] {
   const segs = new Map(salida.map((s) => [s.parte, s.segmentos]));
-  const conocido = conocidoPorEntidad(gold, segs);
+  const conocido = conocidoPorEntidad(gold, segs, generar);
   const entPorId = new Map(gold.entidades.map((e) => [e.id, e]));
-  const vacio: Conocido = { palabras: new Set(), iniciales: new Set(), digitos: [] };
-  const deEntidad = (id: string): Conocido[] => [conocido.get(id) ?? vacio, ...(entPorId.get(id)?.mismoTitular ?? []).map((o) => conocido.get(o) ?? vacio)];
-  return gold.anotaciones.filter(esPositiva).map((g): ResultadoResiduo => {
+  const vacio = nuevoConocido();
+  const titulares = (id: string): string[] => [id, ...(entPorId.get(id)?.mismoTitular ?? [])];
+  const deEntidad = (id: string): Conocido[] => titulares(id).map((o) => conocido.get(o) ?? vacio);
+  const positivas = gold.anotaciones.filter(esPositiva);
+  // La letra de 10.3.4: entidad con alguna mención reemplazada, en la lista del caso, o con un `mismoTitular` en alguno de los dos casos.
+  const tocadas = new Set<string>();
+  for (const g of positivas) if (caracteresCopiados(segs.get(claveParte(g.parte)) ?? [], g.start, g.end) < g.end - g.start) tocadas.add(g.entidad);
+  const tocadaPorLaLetra = (id: string): boolean => titulares(id).some((o) => tocadas.has(o) || entPorId.get(o)?.enLista === true);
+  /** El tramo reemplazado cae sobre otra anotación positiva de otra entidad (que no es del mismo titular): es la detección de otro dato. */
+  const sobreOtroDato = (g: GoldAnnotation, t: Tramo): boolean => {
+    const propios = new Set(titulares(g.entidad));
+    return positivas.some((o) => !propios.has(o.entidad) && claveParte(o.parte) === claveParte(g.parte) && solapa(o, t));
+  };
+  return positivas.map((g): ResultadoResiduo => {
     const s = segs.get(claveParte(g.parte)) ?? [];
     const copiados = caracteresCopiados(s, g.start, g.end);
-    if (copiados === 0) return { g, clase: 'protegida', copiados: 0 };
-    const dato = datoDe(trozos(s, g, true).map((t) => g.texto.slice(t.start - g.start, t.end - g.start)).join(' '));
-    if (!conDato(dato)) return { g, clase: 'protegida', copiados };
+    if (copiados === 0) return { g, clase: 'protegida', copiados: 0, letra: 'protegida' };
+    const letra: ClaseMencion = tocadaPorLaLetra(g.entidad) ? 'residuo' : 'omision';
+    const piezas = trozos(s, g, true);
+    const textos = piezas.map((t) => g.texto.slice(t.start - g.start, t.end - g.start));
     const ks = deEntidad(g.entidad);
+    if ([...textos, textos.join(' ')].some((x) => esFormaGenerada(x, ks))) return { g, clase: 'residuo', copiados, letra };
+    const ultima = piezas[piezas.length - 1];
+    const dato = datoDe(textos.join(' '), esOrganizacion(g.tipo) && ultima !== undefined && alFinalDeLaMencion(g, ultima));
+    if (!conDato(dato)) return { g, clase: 'protegida', copiados, letra };
     const sabida = dato.palabras.some((p) => ks.some((k) => k.palabras.has(p)))
       || dato.iniciales.some((i) => ks.some((k) => k.iniciales.has(i)))
       || (dato.digitos.length >= 3 && ks.some((k) => k.digitos.some((d) => d.includes(dato.digitos) || (d.length >= 5 && dato.digitos.includes(d)))));
-    const grupo = grupoDeTipo(g.tipo);
-    const corta = trozos(s, g, false).some((t) => t.tipo !== undefined && grupoDeTipo(t.tipo) === grupo
-      && conDato(datoDe(g.texto.slice(t.start - g.start, t.end - g.start))));
-    return { g, clase: sabida || corta ? 'residuo' : 'omision', copiados };
+    const corta = trozos(s, g, false).some((t) => t.deteccion
+      && conDato(datoDe(g.texto.slice(t.start - g.start, t.end - g.start), esOrganizacion(g.tipo) && alFinalDeLaMencion(g, t))) && !sobreOtroDato(g, t));
+    return { g, clase: sabida || corta ? 'residuo' : 'omision', copiados, letra };
   });
 }
 
 /**
  * Textos gold que el escáner independiente busca (10.3.4, PB-4-r1): los de las menciones positivas cuyo dato el motor ya conocía
- * entero (cada palabra, inicial y cifra está en lo que reemplazó de esa entidad). Un apodo que nada detectó no es una forma conocida.
+ * entero (cada palabra, inicial y cifra está en lo que reemplazó de esa entidad), y (PB-4-r2) las que son una inicial o sigla que la
+ * lista genera para ella. Un apodo que nada detectó no es una forma conocida.
  */
-export function valoresDelEscaner(gold: GoldDocument, salida: readonly SalidaParte[]): string[] {
+export function valoresDelEscaner(gold: GoldDocument, salida: readonly SalidaParte[], generar?: GeneradorDeFormas): string[] {
   const segs = new Map(salida.map((s) => [s.parte, s.segmentos]));
-  const conocido = conocidoPorEntidad(gold, segs);
+  const conocido = conocidoPorEntidad(gold, segs, generar);
   const out = new Set<string>();
   for (const g of gold.anotaciones.filter(esPositiva)) {
     const k = conocido.get(g.entidad);
-    const d = datoDe(g.texto);
-    if (k === undefined || !conDato(d)) continue;
+    if (k === undefined) continue;
+    if (esFormaGenerada(g.texto, [k])) { out.add(g.texto); continue; }
+    const d = datoDe(g.texto, esOrganizacion(g.tipo));
+    if (!conDato(d)) continue;
     const ok = d.palabras.every((p) => k.palabras.has(p)) && d.iniciales.every((i) => k.iniciales.has(i))
       && (d.digitos.length < 3 || k.digitos.some((x) => x.includes(d.digitos)));
     if (ok) out.add(g.texto);
@@ -799,7 +888,7 @@ export function concordancia(
 // ===================================================================================================================
 
 export function construirInforme(
-  entradas: readonly EntradaDocumento[], corrida: CorridaInfo, opciones: { escanerEstricto?: boolean } = {},
+  entradas: readonly EntradaDocumento[], corrida: CorridaInfo, opciones: { escanerEstricto?: boolean; formas?: GeneradorDeFormas } = {},
 ): MetricsReport {
   const evals = entradas.map(evaluarDocumento);
   const filas = gruposDeCierre(corrida.vista).map((def) => calcularFila(def, evals));
@@ -841,6 +930,8 @@ export function construirInforme(
   let antes = 0;
   let despues = 0;
   let omisionesTotal = 0;
+  let copiasSinDato = 0;
+  let omisionesPorLaLetra = 0;
   const porDocumento: MetricsReport['residuos']['porDocumento'] = [];
   const escaneres: HallazgoEscaner[] = [];
   const residue: Array<{ parte: string; start: number; end: number }> = [];
@@ -849,17 +940,19 @@ export function construirInforme(
     despues += en.hitsUltimaVuelta ?? 0;
     residue.push(...(en.hitsResidue ?? []));
     if (en.salida === undefined) continue;
-    const primera = clasificarMenciones(en.gold, en.salida);
     // Residuos y omisiones se cuentan tras el bucle (`salidaFinal`); sin ella, sobre la salida entregada.
-    const clases = en.salidaFinal === undefined ? primera : clasificarMenciones(en.gold, en.salidaFinal);
+    const clases = clasificarMenciones(en.gold, en.salidaFinal ?? en.salida, opciones.formas);
     const res = clases.filter((c) => c.clase === 'residuo');
     const omi = clases.filter((c) => c.clase === 'omision');
     omisionesTotal += omi.length;
+    // PB-4-r2 (M-60) · Lo que la definición por dato mueve frente a la letra de 10.3.4, aparte para que se vea.
+    copiasSinDato += clases.filter((c) => c.clase === 'protegida' && c.copiados > 0).length;
+    omisionesPorLaLetra += omi.filter((c) => c.letra === 'residuo').length;
     porDocumento.push({ docId: en.gold.docId, residuos: res.length, omisiones: omi.length, idsAnotacion: [...res, ...omi].map((c) => c.g.id) });
     // El escáner busca los textos gold cuyo dato el motor ya conocía (`valoresDelEscaner`); solo para comparar posiciones. Cuenta lo
     // que cae sobre una mención positiva (la clasificación por posición, 10.3.4): el mismo texto en otro sitio que el gold no marca
     // («PERÍODO DE PRUEBA», un homónimo que el revisor rechazó) no es un residuo que `residue.ts` deba ver.
-    const valores = valoresDelEscaner(en.gold, en.salida);
+    const valores = valoresDelEscaner(en.gold, en.salida, opciones.formas);
     for (const s of en.salida) {
       const positivas = en.gold.anotaciones.filter((g) => esPositiva(g) && claveParte(g.parte) === s.parte);
       const sobreMencion = (h: HallazgoEscaner): boolean => s.segmentos.some((g) => g.detectionId === undefined && g.spanEditId === undefined
@@ -885,7 +978,7 @@ export function construirInforme(
     generalizacion: [...gen.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([tipo, v]) => ({ tipo, ...v })),
     idsAfectados: afectados,
     residuos: {
-      antesDelBucle: antes, despuesDelBucle: despues, omisiones: omisionesTotal, porDocumento,
+      antesDelBucle: antes, despuesDelBucle: despues, omisiones: omisionesTotal, copiasSinDato, omisionesPorLaLetra, porDocumento,
       concordanciaResidueTs: concordancia(escaneres, residue),
     },
     tiempos: entradas.flatMap((e) => (e.tiempos === undefined ? [] : [e.tiempos])),
@@ -924,7 +1017,7 @@ export function tablaTexto(r: MetricsReport): string {
   l.push(`consistencia: ${r.consistencia.consistentes}/${r.consistencia.evaluadas} · colisiones ${r.consistencia.colisiones} · fusiones ${r.consistencia.fusiones}`);
   l.push(`negativos: ${r.negativos.conDeteccion}/${r.negativos.total} con detección · citas con bandera ${r.negativos.banderasPresentes}/${r.negativos.citasConRadicado}`);
   for (const g of r.generalizacion) l.push(`generalización ${g.tipo}: ${g.presentes}/${g.esperadas}`);
-  l.push(`residuos: primera vuelta ${r.residuos.antesDelBucle} · última ${r.residuos.despuesDelBucle} · omisiones ${r.residuos.omisiones} · concordancia residue.ts ${r.residuos.concordanciaResidueTs ? 'sí' : 'NO'}`);
+  l.push(`residuos: primera vuelta ${r.residuos.antesDelBucle} · última ${r.residuos.despuesDelBucle} · omisiones ${r.residuos.omisiones} · copias sin dato ${r.residuos.copiasSinDato ?? 0} · omisiones que la letra contaba como residuo ${r.residuos.omisionesPorLaLetra ?? 0} · concordancia residue.ts ${r.residuos.concordanciaResidueTs ? 'sí' : 'NO'}`);
   for (const d of r.residuos.porDocumento) {
     if (d.residuos + d.omisiones > 0) l.push(`  ${d.docId}: residuos ${d.residuos} · omisiones ${d.omisiones} · ${d.idsAnotacion.join(' ')}`);
   }

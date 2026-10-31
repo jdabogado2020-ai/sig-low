@@ -5,9 +5,10 @@ import { describe, expect, it } from 'vitest';
 import {
   caracteresCopiados, claveParte, clasificarMenciones, codigoDeSalida, concordancia, construirInforme, coberturaAceptable, calcularFila,
   escanearResiduos, esExacta, esPositiva, esSolape, esVerdadera, evaluarDocumento, exceso, f2, gruposDeCierre, iou, nombreInforme, omisionesPermitidas,
-  razon, tablaTexto, datoDe, FUNCION_RMOD03, SUFIJO_RLST05, valoresDelEscaner,
+  razon, tablaTexto, datoDe, letrasDeIniciales, FUNCION_RMOD03, SUFIJO_RLST05, valoresDelEscaner,
 } from '../../scripts/metrics.ts';
 import { LST } from '../../src/core/caselist.ts';
+import { formasDeLaLista } from '../medicion/lib/formas-lista.ts';
 import { PALABRAS_DE_FUNCION } from '../../src/core/merge.ts';
 import type {
   BanderaMedida, CorridaInfo, DeteccionMedida, EntradaDocumento, GoldAnnotation, GoldEntity, SalidaParte, SegmentoSalida, SugerenciaMedida,
@@ -598,13 +599,14 @@ describe('T-ME-01 · PB-4-r1 · residuo = dato que el motor conocía (10.3.4)', 
     expect(clases(an, s)).toEqual(['a:protegida', 'b:protegida', 'c:protegida', 'd:protegida', 'e:protegida']);
   });
 
-  it('lo que el motor nunca vio es omisión: el apodo «mi mamá» de una persona reemplazada y el «Banco» que tocó el apellido de otra', () => {
+  it('lo que el motor nunca vio es omisión: el apodo «mi mamá» de una persona reemplazada y el «Banco» que tocó la detección de otro dato', () => {
     const an = [
       m('a1', 'PERSONA', 0, 'Olga Lucía Prueba Cruz', 'EA'), m('a2', 'PERSONA', 40, 'mi mamá', 'EA'),
       m('b1', 'PROVEEDOR', 60, 'Banco Ejemplo', 'EB'),
+      m('c1', 'PERSONA', 66, 'Ejemplo', 'EC'),          // PB-4-r2: «Ejemplo» es, además, la mención de otra entidad: la detección es de otro dato
     ];
     const s = [seg(0, 22, 'PERSONA'), seg(22, 66), seg(66, 73, 'PERSONA'), seg(73, 400)];
-    expect(clases(an, s)).toEqual(['a1:protegida', 'a2:omision', 'b1:omision']);
+    expect(clases(an, s)).toEqual(['a1:protegida', 'a2:omision', 'b1:omision', 'c1:protegida']);
   });
 
   it('es residuo lo que el motor conocía: la forma reemplazada en otra mención, el nombre de la lista, las cifras del mismo titular y los límites cortos', () => {
@@ -641,5 +643,120 @@ describe('T-ME-01 · PB-4-r1 · residuo = dato que el motor conocía (10.3.4)', 
     // «PRUEBA» del título no cae sobre ninguna mención positiva: basta con que residue.ts vea a3 y a4.
     expect(conHits([o('Ana Prueba'), o('Prueba asintió')])).toBe(true);
     expect(conHits([o('Ana Prueba')])).toBe(false);
+  });
+});
+
+// PB-4-r2 (M-60, D-14 decisión 1) · Una forma que el motor conoce o que la lista del caso genera nunca es «protegida» ni «omisión».
+// Los casos G1 a G4 de la sonda M2 de la revisión de PB-4-r1, con el generador real de la lista (tests/medicion/lib/formas-lista.ts).
+describe('T-ME-01 · PB-4-r2 · las formas que el motor conoce o genera son residuo (M-60)', () => {
+  const seg = (a: number, b: number, tipo?: DataType): SegmentoSalida =>
+    ({ outStart: a, outEnd: b, partStart: a, partEnd: b, ...(tipo === undefined ? {} : { detectionId: `det-${a}`, tipo }) });
+  const m = (id: string, tipo: DataType, start: number, texto: string, entidad: string): GoldAnnotation =>
+    ({ ...ann(id, tipo, start, start + texto.length, entidad), texto });
+  const gold = (anotaciones: GoldAnnotation[], entidades: GoldEntity[] = []) =>
+    ({ docId: 'T01', conjunto: 'desarrollo' as const, entidades, anotaciones });
+  const salida = (segmentos: SegmentoSalida[]): SalidaParte[] => [{ parte: PARTE, texto: '·'.repeat(400), segmentos }];
+  const clases = (anotaciones: GoldAnnotation[], segmentos: SegmentoSalida[], entidades: GoldEntity[] = [], generar = formasDeLaLista): string[] =>
+    clasificarMenciones(gold(anotaciones, entidades), salida(segmentos), generar).map((x) => `${x.g.id.slice(4)}:${x.clase}`);
+  const ANA = ent('EA', 'PERSONA', { enLista: true, canonico: 'LISTA:Ana Ficticia Rojas' });
+  const IFV = ent('EI', 'EMPRESA', { enLista: true, canonico: 'LISTA:Inversiones Ficticias del Valle S.A.S.' });
+
+  it('G1 · «Pedro Ejemplo» aceptado como EMPRESA y «Gómez» copiado: residuo (los límites cortos no dependen del tipo de la detección)', () => {
+    const an = [m('a', 'PERSONA', 0, 'Pedro Ejemplo Gómez', 'EA')];
+    // Con el código anterior daba omisión: la detección era de otro grupo de tipo (organizaciones, no personas).
+    expect(clases(an, [seg(0, 13, 'EMPRESA'), seg(13, 400)])).toEqual(['a:residuo']);
+    expect(clases(an, [seg(0, 13, 'PERSONA'), seg(13, 400)])).toEqual(['a:residuo']);
+  });
+
+  it('G1 · si la detección cae sobre otra anotación positiva de otra entidad es otro dato: omisión, no límites cortos', () => {
+    const an = [m('a', 'PERSONA', 0, 'Pedro Ejemplo Gómez', 'EA'), m('b', 'DIRECCION', 6, 'Ejemplo', 'EB')];
+    expect(clases(an, [seg(0, 13, 'DIRECCION'), seg(13, 400)])).toEqual(['a:omision', 'b:protegida']);
+    // Del mismo titular no es otro dato.
+    const mismo = [m('a', 'PERSONA', 0, 'Pedro Ejemplo Gómez', 'EA'), m('b', 'PERSONA', 6, 'Ejemplo', 'EB')];
+    const e = [ent('EA', 'PERSONA', { mismoTitular: ['T01-EB'] }), ent('EB', 'PERSONA', { mismoTitular: ['T01-EA'] })];
+    expect(clases(mismo, [seg(0, 13, 'PERSONA'), seg(13, 400)], e)).toEqual(['a:residuo', 'b:protegida']);
+  });
+
+  it('G2 · iniciales sin punto de una persona de la lista: «A F R», «AFR» y «A. F. R.» son residuo; otras letras, omisión', () => {
+    const an = [m('a', 'PERSONA', 0, 'A F R', 'EA'), m('b', 'PERSONA', 20, 'AFR', 'EA'), m('c', 'PERSONA', 40, 'A. F. R.', 'EA'),
+      m('d', 'PERSONA', 60, 'XYZ', 'EA')];
+    // Con el código anterior: «A F R» protegida (letras sueltas sin punto) y «AFR» omisión.
+    expect(clases(an, [seg(0, 400)], [ANA])).toEqual(['a:residuo', 'b:residuo', 'c:residuo', 'd:omision']);
+  });
+
+  it('G2 · el comodín de dos iniciales de la lista («A. F. _.» de «Ana Ficticia») cubre una tercera letra cualquiera', () => {
+    const E = ent('EA', 'PERSONA', { enLista: true, canonico: 'LISTA:Ana Ficticia' });
+    const an = [m('a', 'PERSONA', 0, 'A F M', 'EA'), m('b', 'PERSONA', 20, 'X F M', 'EA')];
+    expect(clases(an, [seg(0, 400)], [E])).toEqual(['a:residuo', 'b:protegida']);   // otras letras sueltas sin punto no llevan dato
+  });
+
+  it('G2 · iniciales de un nombre que el motor reemplazó (no está en la lista): «A E O» de «Alejandro Ejemplo Orozco»', () => {
+    const an = [m('a', 'PERSONA', 0, 'Alejandro Ejemplo Orozco', 'EA'), m('b', 'PERSONA', 40, 'A E O', 'EA')];
+    expect(clases(an, [seg(0, 24, 'PERSONA'), seg(24, 400)])).toEqual(['a:protegida', 'b:residuo']);
+  });
+
+  it('G2c · la sigla de una razón social de la lista: «IFV» es residuo; «IFX» no es una forma de la lista: omisión', () => {
+    const an = [m('a', 'EMPRESA', 0, 'IFV', 'EI'), m('b', 'EMPRESA', 20, 'IFX', 'EI')];
+    // Con el código anterior: «IFV» omisión (la sigla no se contaba como forma conocida).
+    expect(clases(an, [seg(0, 400)], [IFV])).toEqual(['a:residuo', 'b:omision']);
+  });
+
+  it('sin el generador de la lista (Node sin Vite) quedan el nombre de la lista y lo reemplazado: las iniciales sin punto no se ven', () => {
+    const an = [m('a', 'PERSONA', 0, 'A F R', 'EA')];
+    expect(clasificarMenciones(gold(an, [ANA]), salida([seg(0, 400)])).map((x) => x.clase)).toEqual(['protegida']);
+  });
+
+  it('G4 · el apellido «Sá» de una persona de la lista copiado es residuo (no se toma por el sufijo «S.A.»)', () => {
+    const SA = ent('ES', 'PERSONA', { enLista: true, canonico: 'LISTA:Pedro Ejemplo Sá' });
+    const an = [m('a', 'PERSONA', 0, 'Pedro Ejemplo Sá', 'ES')];
+    // Con el código anterior: protegida, porque la vista `lista` da «sa» y R-LST-05 lo quitaba como sufijo.
+    expect(clases(an, [seg(0, 14, 'PERSONA'), seg(14, 400)], [SA])).toEqual(['a:residuo']);
+    expect(clases(an, [seg(0, 400)], [SA])).toEqual(['a:residuo']);
+  });
+
+  it('G4 · el sufijo societario solo se quita al final de una organización: «S.A.» sigue sin ser dato; «Sá» en una persona o en medio de la razón social, sí', () => {
+    expect(datoDe('Sá', false).palabras).toEqual(['sa']);
+    expect(datoDe('Pedro Ejemplo Sá', false).palabras).toEqual(['pedro', 'ejemplo', 'sa']);
+    expect(datoDe(' S.A.', true)).toEqual({ palabras: [], iniciales: [], digitos: '' });
+    expect(datoDe('Comercial Ejemplo S.A.S.', true).palabras).toEqual(['comercial', 'ejemplo']);
+    expect(datoDe('S.A. Ejemplo', true)).toMatchObject({ palabras: ['ejemplo'], iniciales: ['s', 'a'] });   // no es el final: no se quita
+    const an = [m('a', 'EMPRESA', 0, 'Comercial Ejemplo S.A.', 'EC')];
+    expect(clases(an, [seg(0, 17, 'EMPRESA'), seg(17, 400)])).toEqual(['a:protegida']);
+  });
+
+  it('letrasDeIniciales · iniciales con y sin punto y siglas dan las mismas letras; una palabra corta o una frase no son iniciales', () => {
+    expect(letrasDeIniciales('A. F. R.')).toBe('afr');
+    expect(letrasDeIniciales('A F R')).toBe('afr');
+    expect(letrasDeIniciales('AFR')).toBe('afr');
+    expect(letrasDeIniciales('IFV')).toBe('ifv');
+    expect(letrasDeIniciales('A F')).toBeNull();
+    expect(letrasDeIniciales('Ana Rojas')).toBeNull();
+    expect(letrasDeIniciales('')).toBeNull();
+  });
+
+  it('el escáner busca también las iniciales y siglas que la lista genera, y la concordancia las exige a residue.ts', () => {
+    const an = [m('a', 'PERSONA', 0, 'A F R', 'EA'), m('b', 'EMPRESA', 20, 'IFV', 'EI'), m('c', 'PERSONA', 40, 'XYZ', 'EA')];
+    const g = gold(an, [ANA, IFV]);
+    const s = salida([seg(0, 400)]);
+    expect(valoresDelEscaner(g, s, formasDeLaLista)).toEqual(['A F R', 'IFV']);
+    expect(valoresDelEscaner(g, s)).toEqual([]);
+    const texto = `A F R${' '.repeat(15)}IFV${' '.repeat(17)}XYZ`;
+    const informe = (hitsResidue: Array<{ parte: string; start: number; end: number }>) => construirInforme([{ gold: g, detecciones: [], banderas: [],
+      sugerencias: [], paginas: 1, salida: [{ parte: PARTE, texto, segmentos: [seg(0, 400)] }], hitsResidue }], CORRIDA,
+    { escanerEstricto: true, formas: formasDeLaLista }).residuos;
+    expect(informe([]).concordanciaResidueTs).toBe(false);
+    expect(informe([{ parte: PARTE, start: 0, end: 5 }, { parte: PARTE, start: 20, end: 23 }]).concordanciaResidueTs).toBe(true);
+  });
+
+  it('el informe cuenta aparte las copias sin dato y las omisiones que la letra de 10.3.4 contaba como residuo', () => {
+    const an = [
+      m('a', 'PERSONA', 0, 'S. P. R.', 'EP'),       // «S. P. R» reemplazado y el punto copiado: sin dato → protegida (la letra: residuo)
+      m('b', 'PERSONA', 20, 'mi mamá', 'EP'),       // lo que el motor nunca vio, en una entidad tocada → omisión (la letra: residuo)
+      m('c', 'PERSONA', 60, 'mi tía', 'EQ'),        // entidad sin tocar → omisión (la letra: omisión)
+    ];
+    const informe = construirInforme([{ gold: gold(an), detecciones: [], banderas: [], sugerencias: [], paginas: 1,
+      salida: salida([seg(0, 7, 'PERSONA'), seg(7, 400)]) }], CORRIDA);
+    expect(informe.residuos).toMatchObject({ omisiones: 2, copiasSinDato: 1, omisionesPorLaLetra: 1 });
+    expect(tablaTexto(informe)).toContain('copias sin dato 1 · omisiones que la letra contaba como residuo 1');
   });
 });

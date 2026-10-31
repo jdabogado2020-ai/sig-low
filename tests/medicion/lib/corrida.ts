@@ -5,6 +5,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { cpus, totalmem, release, type } from 'node:os';
 import { join } from 'node:path';
 import { construirInforme, nombreInforme } from '../../../scripts/metrics.ts';
+import { formasDeLaLista } from './formas-lista.ts';
 import type { EntradaDocumento, MetricsReport, RunConfig, RunVista } from '../../../scripts/metrics.ts';
 import type { NerLoadResult } from '../../../src/core/types.ts';
 import { modeloDeConfig } from './cache.ts';
@@ -92,7 +93,7 @@ export async function correr(a: ArgsCorrida): Promise<Corrida> {
     navegador: `node ${process.version}`,
     equipo: { nucleosLogicos: cpus().length, memoriaGB: Math.round(totalmem() / 2 ** 30), descripcion: `${type()} ${release()} · ${cpus()[0]?.model ?? 'cpu'}` },
     fecha: fechaLocal(),
-  }, { escanerEstricto: true });
+  }, { escanerEstricto: true, formas: formasDeLaLista });
   return { informe, entradas, procesados, oraculo };
 }
 
