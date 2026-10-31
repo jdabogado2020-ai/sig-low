@@ -1761,3 +1761,76 @@ test.describe('Listo (PC-5)', () => {
     await expect(page.locator('[data-prueba="banda-residuos"]')).not.toContainText('Pedro Ejemplo');
   });
 });
+
+// P0-3 (9.3, punto de control H3:30): el flujo de la demo en el build real (dist/, sin ganchos de medición), con la
+// interfaz de PC-1 a PC-5 y el service worker de PD-1: pegar → Revisión → decidir → «Continuar» → residuos →
+// recordatorio → copiar. Se repite sin conexión tras la primera carga (la app sale de la caché del SW).
+test.describe('P0-3 flujo de la demo en el build real', () => {
+  test.describe.configure({ timeout: 180_000 });
+  test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
+
+  const TEXTO_DEMO = [
+    'Señora Ana Ficticia Rojas, identificada con cédula de ciudadanía número 1.000.000.001, correo ana.ficticia@ejemplo.test, teléfono 3000000000.',
+    'El demandado Pedro Ejemplo Prueba, con cédula 1.000.000.002, presentó la contestación.',
+    'La señora Ana Ficticia Rojas solicitó el reemplazo.',
+  ].join('\n');
+  const ORIGINALES_DEMO = ['Ana Ficticia', 'Pedro Ejemplo', '1.000.000.001', '1000000001', '1.000.000.002', '1000000002', 'ana.ficticia', '3000000000'];
+
+  async function demo(page: Page, context: BrowserContext): Promise<void> {
+    await crearAsunto(page, 'PRUEBA-DEMO');
+    await pegarLista(page, 'Ana Ficticia Rojas; demandante\nPedro Ejemplo Prueba; demandado');
+    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
+    await page.getByRole('button', { name: 'Continuar' }).click();
+    await expect(h1(page, 'Entrada')).toBeVisible();
+    await areaTexto(page).fill(TEXTO_DEMO);
+    await analizar(page).click();
+    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 30_000 });
+    // Decide cada mención con el teclado, como el abogado (no hay aprobación masiva del documento: INV-R06).
+    const marcas = panelTexto(page).locator('[data-det]');
+    const total = await marcas.count();
+    expect(total).toBeGreaterThan(0);
+    for (let i = 0; i < total; i++) {
+      if (/, pendiente, /.test((await marcas.nth(i).getAttribute('aria-label')) ?? '')) {
+        await marcas.nth(i).focus();
+        await page.keyboard.press('a');
+      }
+    }
+    await expect(contador(page)).toHaveText('No quedan detecciones pendientes ni banderas sin confirmar.');
+    await expect(continuar(page)).not.toHaveAttribute('aria-disabled', 'true');
+    await continuar(page).click();
+    await expect(h1(page, 'Listo')).toBeVisible();
+    await esperarBusqueda(page);
+    const b = botones(page);
+    await expect(b.copiar).toHaveAttribute('aria-disabled', 'true');
+    await marcarRecordatorio(page);
+    await expect(b.copiar).not.toHaveAttribute('aria-disabled', 'true');
+    const salida = await textoDeLaVista(page);
+    for (const o of ORIGINALES_DEMO) expect(salida).not.toContain(o);
+    expect(salida).toMatch(/\[[A-ZÁÉÍÓÚÑ_]+_1\]/);
+    await b.copiar.click();
+    await expect(page.locator('[data-aviso="M-84"]')).toBeVisible();
+    expect((await leerPortapapeles(context)).texto.replace(/\r\n/g, '\n')).toBe(salida);
+    await page.bringToFront();
+  }
+
+  test('T-IU-04 @humo P0-3 pegar → Revisión → residuos → recordatorio → copiar en el build real, también sin conexión', async ({ page, context, baseURL }) => {
+    const origen = new URL(baseURL!).origin;
+    const ajenas: string[] = [];
+    page.on('request', (r) => { const u = new URL(r.url()); if (u.origin !== origen && u.protocol !== 'blob:' && u.protocol !== 'data:') ajenas.push(u.origin); });
+    await abrirInicio(page);
+    await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
+    await demo(page, context);
+    // Sin conexión tras la primera carga: la app sale de la caché del service worker y el flujo completo funciona igual.
+    await context.setOffline(true);
+    try {
+      const nav = await page.reload();
+      expect(nav?.fromServiceWorker()).toBe(true);
+      await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
+      expect(await page.evaluate(() => crossOriginIsolated)).toBe(true);
+      await demo(page, context);
+    } finally {
+      await context.setOffline(false);
+    }
+    expect(ajenas).toEqual([]);
+  });
+});
