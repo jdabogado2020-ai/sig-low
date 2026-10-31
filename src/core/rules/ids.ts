@@ -17,8 +17,11 @@ const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
  * Entre el rótulo y el valor (7.2.0). `[ \t]*(?:[:.][ \t]*)?` es el mismo lenguaje que `[ \t]*[:.]?[ \t]*` sin su ambigüedad: con
  * los dos cuantificadores separados por un opcional, el retroceso probaba cada reparto de la racha de blancos y era cuadrático
  * (PB-2-r5, pedido del integrador: «cc», 40.000 tabuladores y otra cosa, 2,1 s en R-CC-01).
+ * El salto de línea de 7.1.5 («GAP admite un salto entre rótulo y valor») cabe antes del signo de número («Cédula⏎No. 1») y
+ * también después («pasaporte No.⏎VE000002», una línea de PDF que acaba en «No.»); PA-ids-r1. Cada tramo opcional empieza
+ * por un carácter distinto, así que el lenguaje sigue sin ambigüedad.
  */
-const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?)?`;
+const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?)?`;
 /**
  * NOHC: el tipo de documento escrito dentro de una historia clínica («HC: CC 1000000001») es de R-HC-01. Los blancos del
  * lookbehind llevan tope (M-14, PB-2-r5): con `[ \t]*` sin tope, el retroceso en una racha de tabuladores antes del rótulo era
@@ -49,7 +52,9 @@ export const L = {
 // Valores (7.2.0)
 const V_DOC = R`\d{1,3}(?:(?:\.\d{3}){1,5}|(?: \d{3}){1,5})|\d{4,16}`;
 export const V = {
-  CC: R`\d{1,3}(?:'\d{3}(?:\.\d{3}){1,2}|(?:\.\d{3}){1,3}|(?: \d{3}){1,3})|\d{3,10}`,
+  // El apóstrofo de millones (7.2.3: «41'000.001») también separa los millones de los miles cuando hay miles de millones
+  // («2.000'000.003»): `(?:\.\d{3})?` antes del apóstrofo (PA-ids-r1).
+  CC: R`\d{1,3}(?:(?:\.\d{3})?'\d{3}(?:\.\d{3}){1,2}|(?:\.\d{3}){1,3}|(?: \d{3}){1,3})|\d{3,10}`,
   TI: R`\d{1,3}(?:(?:\.\d{3}){1,3}|(?: \d{3}){1,3})|\d{6,11}`,
   DOC: V_DOC,
   DOCU: R`${V_DOC}|(?=[A-Za-z0-9\-]*\d)[A-Za-z0-9]+(?:-[A-Za-z0-9]+){0,3}`,
@@ -110,7 +115,7 @@ const rCC01: RuleSpec = {
 
 const rCC02: RuleSpec = {
   id: 'R-CC-02', type: 'CC', flags: 'dgu',
-  source: R`${NL}(?<v>[12]\.\d{3}\.\d{3}\.\d{3}|\d{1,2}(?:\.|')\d{3}\.\d{3})${NR}`,
+  source: R`${NL}(?<v>[12]\.\d{3}\.\d{3}\.\d{3}|[12]\.\d{3}'\d{3}\.\d{3}|\d{1,2}(?:\.|')\d{3}\.\d{3})${NR}`,
   assess(m: RegExpExecArray): RuleVerdict {
     const d = digits(valor(m));
     return { confidence: verosimilCC(d) ? 'media' : 'baja', canonicalKey: 'CC:' + d };

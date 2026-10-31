@@ -585,6 +585,13 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
   const ambiguos: Array<[string, string, string]> = [
     ['R-CC-01', 'GAP (ids.ts): «cc», tabuladores y otra cosa', 'cc' + TB + 'x'],
     ['R-CC-01', 'GAP con NUMSIGN (ids.ts): «cc:», tabuladores, «No.» y tabuladores', 'cc:' + TB + 'No.' + TB + 'x'],
+    // PA-ids-r1: el salto de línea tras el signo de número y la sigla del radicado administrativo, también lineales.
+    ['R-CC-01', 'GAP tras NUMSIGN (ids.ts): «cc», «No.», tabuladores, un salto y tabuladores', 'cc No.' + TB + '\n' + TB + 'x'],
+    ['R-CC-01', 'V.CC con apóstrofo de millones (ids.ts): «cc 1.000» y apóstrofos', 'cc 1.000' + "'".repeat(K) + 'x'],
+    ['R-CUENTA-01', 'GAP tras NUMSIGN (rotulados.ts): «cuenta», «No.», tabuladores, un salto y tabuladores', 'cuenta No.' + TB + '\n' + TB + 'x'],
+    ['R-RAD_ADMIN-01', 'sigla y GAP (radicado.ts): «radicado», espacios, una sigla y espacios', 'radicado' + SP + 'AB' + SP + 'x'],
+    ['R-RAD_ADMIN-01', 'rótulo «consecutivo de salida» (radicado.ts): «consecutivo» y espacios', 'consecutivo' + SP + 'x'],
+    ['R-TEL-03', 'GAP tras NUMSIGN (contacto.ts): «tel», «No.», tabuladores, un salto y tabuladores', 'tel No.' + TB + '\n' + TB + 'x'],
     ['R-TEL-03', 'GAP (contacto.ts): «fax» y tabuladores', 'fax' + TB + 'x'],
     ['R-TEL-01', 'EXT (contacto.ts): un celular y espacios', '300 000 0001' + SP + 'x'],
     ['R-TEL-01', 'EXT (contacto.ts): un celular, «ext» y espacios', '300 000 0001 ext' + SP + 'x'],

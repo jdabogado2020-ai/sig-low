@@ -13,15 +13,17 @@ const NL = R`(?<![\p{L}\p{N}_]|\p{N}[.,'\-\/])`;
 const NR = R`(?![\p{L}\p{N}_]|[.,'\-\/]\p{N})`;
 const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
 // GAP y GAP_CS sin cuantificadores de blancos separados por un opcional (PB-2-r5): `B*(?:S B*)?` es el lenguaje de `B* S? B*`
-// sin su retroceso cuadrático.
-const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?)?`;
+// sin su retroceso cuadrático. El salto de línea de 7.1.5 cabe también después del signo de número («radicado No.⏎2026…»,
+// PA-ids-r1): cada tramo opcional empieza por un carácter distinto. GAP_CS (R-RAD_ADMIN-02 y -03) no cambia.
+const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?)?`;
 const NUMSIGN_CS = R`(?:[Nn]\.?[ ]?º|N[Oo]\.?|no\.?|[Nn]ro\.?|NRO\.?|[Nn][úu]m\.?|N[ÚU]M\.?|[Nn][úu]mero|N[ÚU]MERO|[Nn]\.|#)`;
 const GAP_CS = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN_CS}[ \t]*(?:[:.][ \t]*)?)?`;
 
 // ---- rótulos (7.2.1) ----
 const L_RAD = R`radicad[oa]|rad\.|rdo\.|radicaci[óo]n|expediente|exp\.|proceso(?:[ ]+(?:ejecutivo|ordinario|verbal(?:[ ]+sumario)?|declarativo|penal|laboral|civil|monitorio|abreviado))?|ref(?:erencia)?\.?|c\.?[ ]?u\.?[ ]?i\.?|n\.?[ ]?u\.?[ ]?n\.?[ ]?c\.?|spoa|n[úu]mero[ ]+[úu]nico(?:[ ]+de[ ]+noticia[ ]+criminal)?|c[óo]digo[ ]+[úu]nico(?:[ ]+de[ ]+investigaci[óo]n)?|noticia[ ]+criminal`;
 const L_RADC = R`rad(?:icad[oa])?\.?|radicaci[óo]n|expediente|exp\.|proceso|ref\.?`;
-const L_RADA_F = R`radicad[oa](?:[ ]+(?:de[ ]+)?(?:salida|entrada|interno))?|n[úu]mero[ ]+de[ ]+radicad[oa]|radicaci[óo]n|rad\.|pqrs?d?f?`;
+// «consecutivo de salida / entrada» (PA-ids-r1): 7.2.4 describe R-RAD_ADMIN-01 como la regla de «consecutivos de salida y entrada».
+const L_RADA_F = R`radicad[oa](?:[ ]+(?:de[ ]+)?(?:salida|entrada|interno))?|consecutivo[ ]+de[ ]+(?:salida|entrada)|n[úu]mero[ ]+de[ ]+radicad[oa]|radicaci[óo]n|rad\.|pqrs?d?f?`;
 const L_RADA_D = R`solicitud|caso|ticket|consecutivo|petici[óo]n|queja|reclamo|referencia|ref\.`;
 const L_NI = R`NI|N\.[ ]?I\.|[Rr]adicado[ ]+[Ii]nterno|RADICADO[ ]+INTERNO|[Nn][úu]mero[ ]+[Ii]nterno|N[ÚU]MERO[ ]+INTERNO`;
 const L_EXP = R`[Ee]xpediente|EXPEDIENTE|[Ee]xp\.|EXP\.`;
@@ -198,7 +200,9 @@ export const rules: RuleSpec[] = [
     id: 'R-RAD_ADMIN-01',
     type: 'RADICADO_ADMIN',
     flags: 'dgiu',
-    source: R`${BL}(?<l>${L_RADA_F}|${L_RADA_D})(?:[ ]+[A-Z]{2,6}\.?)?${GAP}(?<v>${V_RADA})${NR}`,
+    // La sigla de entidad termina en una frontera de palabra (PA-ids-r1): sin ella, «consecutivo PQRSD-2026-000355» tomaba
+    // «PQRS» como sigla y el tramo empezaba en «D-2026…», cuatro caracteres tarde.
+    source: R`${BL}(?<l>${L_RADA_F}|${L_RADA_D})(?:[ ]+[A-Z]{2,6}\.?(?![\p{L}\p{N}_]))?${GAP}(?<v>${V_RADA})${NR}`,
     assess: assessRadAdmin01,
   },
   {

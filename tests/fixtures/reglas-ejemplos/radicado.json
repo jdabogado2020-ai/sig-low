@@ -550,6 +550,75 @@
       "negativo": true,
       "esperado": [],
       "nota": "sentencia de 4 dígitos"
+    },
+    {
+      "texto": "Radiqué la queja con el consecutivo PQRSD-2026-000355 y a la fecha no recibo respuesta",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "PQRSD-2026-000355", "ruleId": "R-RAD_ADMIN-01", "confidence": "media", "canonicalKey": "RAD:PQRSD2026000355" }
+      ],
+      "nota": "PA-ids-r1: prefijo PQRSD- completo (la sigla ya no corta «PQRS»)"
+    },
+    {
+      "texto": "solicitud EPS123456 de la usuaria",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "EPS123456", "ruleId": "R-RAD_ADMIN-01", "confidence": "media", "canonicalKey": "RAD:EPS123456" }
+      ],
+      "nota": "PA-ids-r1: sigla pegada al número: el tramo la incluye"
+    },
+    {
+      "texto": "radicado SNR 50S2026EE00001",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "50S2026EE00001", "ruleId": "R-RAD_ADMIN-01", "confidence": "alta", "canonicalKey": "RAD:50S2026EE00001" }
+      ],
+      "nota": "PA-ids-r1: la sigla separada sigue fuera del tramo"
+    },
+    {
+      "texto": "con radicado administrativo No. 20265004 y consecutivo de salida S-2026-000074.",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "S-2026-000074", "ruleId": "R-RAD_ADMIN-01", "confidence": "alta", "canonicalKey": "RAD:S2026000074" }
+      ],
+      "nota": "PA-ids-r1: «consecutivo de salida» como rótulo de 7.2.4 (consecutivos de salida y entrada)"
+    },
+    {
+      "texto": "consecutivo de entrada E-2026-000123",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "E-2026-000123", "ruleId": "R-RAD_ADMIN-01", "confidence": "alta", "canonicalKey": "RAD:E2026000123" }
+      ],
+      "nota": "PA-ids-r1: «consecutivo de entrada»"
+    },
+    {
+      "texto": "consecutivo de salida del documento",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PA-ids-r1: sin número tras el rótulo"
+    },
+    {
+      "texto": "consecutivo PQRSD sin número",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PA-ids-r1: sigla sin dígitos"
+    },
+    {
+      "texto": "radicado No.\n2026000001",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "2026000001", "ruleId": "R-RAD_ADMIN-01", "confidence": "alta", "canonicalKey": "RAD:2026000001" }
+      ],
+      "nota": "PA-ids-r1: salto de línea tras «No.» (7.1.5)"
+    },
+    {
+      "texto": "radicado No.\n\n2026000001",
+      "reglas": ["R-RAD_ADMIN-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PA-ids-r1: un párrafo en blanco no es un salto de línea de PDF"
     }
   ]
 }

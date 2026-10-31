@@ -14,7 +14,7 @@ const NR = R`(?![\p{L}\p{N}_]|[.,'\-\/]\p{N})`;
 const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
 // GAP y EXT sin cuantificadores de blancos separados por un opcional (PB-2-r5): `B*(?:S B*)?` es el lenguaje de `B* S? B*` sin
 // su retroceso cuadrático.
-const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?)?`;
+const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?)?`;   // 7.1.5: el salto también tras «No.» (PA-ids-r1)
 const PFX = R`(?:\(\+57\)|\+[ ]?57|0057|\(57\)|57)`;
 const SUB7 = R`\d{3}(?:[ \-.]?\d{4}|[ \-.]\d{2}[ \-.]\d{2})`;
 const EXT = R`(?:[ ]*(?:,[ ]*)?(?:ext\.?|extensi[óo]n)[ ]*(?::[ ]*)?\d{1,5})?`;

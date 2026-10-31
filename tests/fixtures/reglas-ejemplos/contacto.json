@@ -545,6 +545,21 @@
       "negativo": true,
       "esperado": [],
       "nota": "celular: lo toma R-TEL-01"
+    },
+    {
+      "texto": "Tel. No.\n601 000 0001",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "601 000 0001", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:6010000001" }
+      ],
+      "nota": "PA-ids-r1: salto de línea tras «No.» en R-TEL-03 (7.1.5)"
+    },
+    {
+      "texto": "Tel. No.\n\n601 000 0001",
+      "reglas": ["R-TEL-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PA-ids-r1: un párrafo en blanco no es un salto de línea de PDF"
     }
   ]
 }

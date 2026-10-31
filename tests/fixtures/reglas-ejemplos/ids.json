@@ -161,6 +161,15 @@
     {"texto":"Ley 1581 de 2012, artículo 23, folio 123, Diario Oficial No. 45.327","negativo":true,"esperado":[]},
     {"texto":"pasaporte Nº AB123456 y PA No. XY1234567","esperado":[{"type":"PASAPORTE","texto":"AB123456","ruleId":"R-PASAPORTE-01","confidence":"alta","canonicalKey":"PASAPORTE:AB123456"},{"type":"PASAPORTE","texto":"XY1234567","ruleId":"R-PASAPORTE-01","confidence":"alta","canonicalKey":"PASAPORTE:XY1234567"}]},
     {"texto":"tarjeta de identidad 1000000002 de la menor Ana Ficticia","esperado":[{"type":"CC","texto":"1000000002","ruleId":"R-CC-03","confidence":"baja","canonicalKey":"CC:1000000002"},{"type":"TI","texto":"1000000002","ruleId":"R-TI-01","confidence":"alta","canonicalKey":"TI:1000000002"}]},
-    {"texto":"CC 1.000.000.001-7","esperado":[{"type":"CC","texto":"1.000.000.001-7","ruleId":"R-CC-01","confidence":"alta","canonicalKey":"CC:1000000001"},{"type":"NIT","texto":"1.000.000.001-7","ruleId":"R-NIT-02","confidence":"baja","canonicalKey":"NIT:1000000001"}]}
+    {"texto":"CC 1.000.000.001-7","esperado":[{"type":"CC","texto":"1.000.000.001-7","ruleId":"R-CC-01","confidence":"alta","canonicalKey":"CC:1000000001"},{"type":"NIT","texto":"1.000.000.001-7","ruleId":"R-NIT-02","confidence":"baja","canonicalKey":"NIT:1000000001"}]},
+    {"texto":"Patricia Prueba Mora, identificada con cédula de ciudadanía No. 2.000'000.003, domiciliada en Bogotá","reglas":["R-CC-01"],"esperado":[{"type":"CC","texto":"2.000'000.003","ruleId":"R-CC-01","confidence":"alta","canonicalKey":"CC:2000000003"}]},
+    {"texto":"C.C. 1.000'000.017","reglas":["R-CC-01"],"esperado":[{"type":"CC","texto":"1.000'000.017","ruleId":"R-CC-01","confidence":"alta","canonicalKey":"CC:1000000017"}]},
+    {"texto":"Testigo: Ana Ficticia Rojas 2.000'000.003","reglas":["R-CC-02"],"esperado":[{"type":"CC","texto":"2.000'000.003","ruleId":"R-CC-02","confidence":"media","canonicalKey":"CC:2000000003"}]},
+    {"texto":"C.C. 2.000'000.0031","reglas":["R-CC-01","R-CC-02"],"negativo":true,"esperado":[]},
+    {"texto":"Testigo 3.000'000.003","reglas":["R-CC-02"],"negativo":true,"esperado":[]},
+    {"texto":"el titular del pasaporte No.\nVE000002, actúa en nombre propio","reglas":["R-PASAPORTE-01"],"esperado":[{"type":"PASAPORTE","texto":"VE000002","ruleId":"R-PASAPORTE-01","confidence":"alta","canonicalKey":"PASAPORTE:VE000002"}]},
+    {"texto":"pasaporte venezolano:\nNo. VE000002","reglas":["R-PASAPORTE-01"],"esperado":[{"type":"PASAPORTE","texto":"VE000002","ruleId":"R-PASAPORTE-01","confidence":"alta","canonicalKey":"PASAPORTE:VE000002"}]},
+    {"texto":"pasaporte No.\n\nVE000002","reglas":["R-PASAPORTE-01"],"negativo":true,"esperado":[]},
+    {"texto":"cédula de ciudadanía No.\n41.000.001","reglas":["R-CC-01"],"esperado":[{"type":"CC","texto":"41.000.001","ruleId":"R-CC-01","confidence":"alta","canonicalKey":"CC:41000001"}]}
   ]
 }

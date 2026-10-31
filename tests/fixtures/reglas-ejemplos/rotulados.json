@@ -1399,6 +1399,45 @@
       "negativo": true,
       "esperado": [],
       "nota": "negativo del laboratorio 07a: 2 dígitos"
+    },
+    {
+      "texto": "se consignarán en la cuenta de ahorros No.\n000-000006-00 del Banco Prueba S.A.",
+      "reglas": ["R-CUENTA-01"],
+      "esperado": [
+        { "type": "CUENTA", "texto": "000-000006-00", "ruleId": "R-CUENTA-01", "confidence": "alta", "canonicalKey": "CUENTA:00000000600" }
+      ],
+      "nota": "PA-ids-r1: salto de línea de PDF tras «No.» (7.1.5, GAP)"
+    },
+    {
+      "texto": "cuenta de ahorros\nNo. 000-000007-00",
+      "reglas": ["R-CUENTA-01"],
+      "esperado": [
+        { "type": "CUENTA", "texto": "000-000007-00", "ruleId": "R-CUENTA-01", "confidence": "alta", "canonicalKey": "CUENTA:00000000700" }
+      ],
+      "nota": "PA-ids-r1: salto antes del signo de número (ya admitido)"
+    },
+    {
+      "texto": "cuenta de ahorros No.\n\n000-000006-00",
+      "reglas": ["R-CUENTA-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PA-ids-r1: un párrafo en blanco no es un salto de línea de PDF"
+    },
+    {
+      "texto": "historia clínica No.\n1.000.000.001",
+      "reglas": ["R-HC-01"],
+      "esperado": [
+        { "type": "HC", "texto": "1.000.000.001", "ruleId": "R-HC-01", "confidence": "alta", "canonicalKey": "HC:1000000001" }
+      ],
+      "nota": "PA-ids-r1: salto de línea tras «No.» en R-HC-01"
+    },
+    {
+      "texto": "placa No.\nXXX001 del vehículo",
+      "reglas": ["R-PLACA-01"],
+      "esperado": [
+        { "type": "PLACA", "texto": "XXX001", "ruleId": "R-PLACA-01", "confidence": "alta", "canonicalKey": "PLACA:XXX001" }
+      ],
+      "nota": "PA-ids-r1: salto de línea tras «No.» en R-PLACA-01"
     }
   ]
 }
