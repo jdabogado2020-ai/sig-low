@@ -2,7 +2,8 @@
 // TypeScript puro: sin DOM, sin red, sin registro. `assess` es una función pura sobre la vista `reglas` (nunca conserva el texto).
 // La clave canónica urbana sigue la forma estandarizada DANE/MinTIC (7.4.6): «Calle 00 n.º 00-00», «Cl. 00 # 00-00» y
 // «CL 00 00 00» producen la misma clave `DIR:CL 00 00 0`.
-import type { Confidence, RuleContext, RuleSpec, RuleVerdict } from '../types.ts';
+import divipolaRaw from '../../../data/divipola.json';
+import type { Confidence, DivipolaFile, RuleContext, RuleSpec, RuleVerdict } from '../types.ts';
 import { H, LB, alt, v3, vistaLista } from './fechas.ts';
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -70,7 +71,13 @@ const VIA = alt([...todas(VIA_FORMS), ...Object.keys(VIA_SINGLE)]);
 const VIA_NOSINGLE = alt(todas(VIA_FORMS));
 const QUAD = alt(['Sur', 'SUR', 'sur', 'Norte', 'NORTE', 'norte', 'Este', 'ESTE', 'Oeste', 'OESTE', 'Occidente', 'OCCIDENTE', 'Oriente', 'ORIENTE', 'S', 'N', 'E', 'W']) + '(?!\\p{L})';
 const SEP = alt(['#', 'No.', 'No', 'NO.', 'NO', 'no.', 'Nº.', 'Nº', 'nº.', 'nº', 'n.º', 'N.º', 'Nro.', 'Nro', 'NRO.', 'NRO', 'nro.', 'nro', 'Núm.', 'Núm', 'núm.', 'núm', 'Número', 'número', 'NÚMERO']) + '(?!\\p{L})';
-const LET = `(?!${H}?(?:NO|No|no)(?!\\p{L}))(?:[A-Za-z]{1,2}|${H}[A-Z]{1,2})(?!\\p{L})`;
+// PA-4-r1: la letra admite el ordinal pegado («0Aª», «00Bª Bis A»); «Nº» sigue siendo el separador, nunca una letra.
+const LET = `(?!${H}?(?:NO|No|no)(?!\\p{L}))(?!${H}?[Nn]º)(?:[A-Za-z]{1,2}|${H}[A-Z]{1,2})(?:[ºª])?(?!\\p{L})`;
+/** Blanco de una dirección: horizontal o un salto de línea suelto, nunca una línea en blanco (los PDF parten las direcciones; PA-4-r1). */
+const HU = `(?:${H}|\\r?\\n(?!${H}*\\r?\\n))`;
+/** Cuadrante tras un salto de línea: solo la palabra completa y cerrando el renglón o seguida de signo (no «\nNorte de Santander», ni «\nE-mail»). */
+const QUAD_PALABRA = alt(['Sur', 'SUR', 'Norte', 'NORTE', 'Este', 'ESTE', 'Oeste', 'OESTE', 'Occidente', 'OCCIDENTE', 'Oriente', 'ORIENTE'])
+  + `(?!\\p{L})(?=${H}*(?:[,;.]|\\r?\\n|$))`;
 const BIS = `${H}*(?:BIS|Bis|bis)(?!\\p{L})(?:${H}?[A-Z](?!\\p{L}))?`;
 const GEN = `\\d{1,3}(?!\\d)(?:\\.?[ºª])?(?:${LET})?(?!\\p{L})(?:${BIS})?`;
 const KWSTOP = alt([...todas(COMP_NUM), ...todas(COMP_NAME), ...COMP_EQ, 'No', 'NO', 'Nº']) + '(?!\\p{L})';
@@ -78,14 +85,17 @@ const CONN = '(?:de|del|la|las|los|el|y)';
 const NAMEW = "\\p{Lu}(?:[\\p{L}']|[.-](?=\\p{L}))*";
 const NAME = `${NAMEW}(?:${H}+(?:${CONN}${H}+){0,2}(?:${NAMEW}|\\d{1,3}(?!\\p{N}))){0,3}`;
 const NAME_ADDR = `${NAMEW}(?:${H}+(?:${CONN}${H}+){0,2}(?:(?!${KWSTOP})${NAMEW}|\\d{1,3}(?!\\p{N}))){0,3}`;
-const COMP_ITEM = `(?:${alt(todas(COMP_NUM))}(?!\\p{L})\\.?${H}*(?:(?:No\\.?|#|Nº)${H}*)?[A-Z0-9]{1,5}(?:-[A-Z0-9]{1,4})?(?![\\p{L}\\p{N}])`
+const COMP_ITEM = `(?:${alt(todas(COMP_NUM))}(?!\\p{L})\\.?${HU}*(?:(?:No\\.?|#|Nº)${HU}*)?[A-Z0-9]{1,5}(?:-[A-Z0-9]{1,4})?(?![\\p{L}\\p{N}])`
   + `|${alt(todas(COMP_NAME))}(?!\\p{L})${H}+${NAME_ADDR}|${alt(COMP_EQ)}(?!\\p{L}))`;
 // COMPS y R-BAR-01 sin cuantificadores de blancos separados por un opcional (PB-2-r5): `B*(?:S B*)?` es el lenguaje de
 // `B* S? B*` sin su retroceso cuadrático.
-const COMPS = `(?:${H}*(?:,${H}*)?${COMP_ITEM})*`;
+const COMPS = `(?:${HU}*(?:,${HU}*)?${COMP_ITEM})*`;
 const ADDR_LABEL = `(?:(?:[Dd]omiciliad[oa]s?|[Rr]esidenciad[oa]s?|[Uu]bicad[oa]s?|[Ss]ituad[oa]s?|[Rr]esidentes?|[Rr]eside|[Vv]ive|[Cc]on${H}+domicilio)${H}+en|(?:[Dd]irecci[oó]n|DIRECCI[OÓ]N|[Dd]omicilio|DOMICILIO)(?:${H}+de${H}+notificaci[oó]n(?:es)?)?${H}*:?)`;
 const AVNAMED = alt(['Avenida', 'AVENIDA', 'avenida', 'Av.', 'Av', 'AV.', 'AV', 'Avda.', 'Autopista', 'AUTOPISTA', 'autopista', 'Autop.', 'Vía', 'VÍA', 'vía', 'Variante', 'VARIANTE', 'variante', 'Circunvalar', 'CIRCUNVALAR', 'Troncal', 'TRONCAL', 'Calle', 'CALLE', 'Carrera', 'CARRERA', 'Cl.', 'Cra.']);
-const NAME_BAR = `(?:${NAME}|\\d{1,2}${H}+del?${H}+\\p{Lu}\\p{L}+)`;
+// PA-4-r1: el nombre de un barrio admite un salto de línea justo después de un conector o artículo («barrio La⏎Esperanza Ficticia»).
+const JN = `(?:${H}+|(?<=(?<![\\p{L}\\p{N}])(?:de|del|la|las|los|el|y|De|Del|La|Las|Los|El))\\r?\\n${H}*)`;
+const NAME_BARW = `${NAMEW}(?:${JN}(?:${CONN}${JN}){0,2}(?:${NAMEW}|\\d{1,3}(?!\\p{N}))){0,3}`;
+const NAME_BAR = `(?:${NAME_BARW}|\\d{1,2}${H}+del?${H}+\\p{Lu}\\p{L}+)`;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Utilidades de aceptación y de clave (7.4.6)
@@ -107,7 +117,7 @@ const ADDR_LABEL_BEFORE = new RegExp(`${ADDR_LABEL}${H}+(?:(?:la|el|La|El)${H}+)
 const hasAddrLabelBefore = (t: string, s: number): boolean => ADDR_LABEL_BEFORE.test(t.slice(Math.max(0, s - 45), s));
 
 const COMP_PARSE = new RegExp(
-  `(${alt(todas(COMP_NUM))})(?!\\p{L})\\.?${H}*(?:(?:No\\.?|#|Nº)${H}*)?([A-Z0-9]{1,5}(?:-[A-Z0-9]{1,4})?)`
+  `(${alt(todas(COMP_NUM))})(?!\\p{L})\\.?${HU}*(?:(?:No\\.?|#|Nº)${HU}*)?([A-Z0-9]{1,5}(?:-[A-Z0-9]{1,4})?)`
   + `|(${alt(todas(COMP_NAME))})(?!\\p{L})${H}+(${NAME_ADDR})|(${alt(COMP_EQ)})(?!\\p{L})`, 'gu');
 function canonComps(s: string): string[] {
   const out: string[] = [];
@@ -121,7 +131,7 @@ function canonComps(s: string): string[] {
   return out;
 }
 
-const GEN_PARSE = /^(\d{1,3})(?:\.?[ºª])?(?:[ \t]?([A-Za-z]{1,2})(?![A-Za-z]))?(?:[ \t]*(?:BIS|Bis|bis)(?:[ \t]?([A-Z]))?)?/u;
+const GEN_PARSE = /^(\d{1,3})(?:\.?[ºª])?(?:[ \t]?([A-Za-z]{1,2})(?![A-Za-z])[ºª]?)?(?:[ \t]*(?:BIS|Bis|bis)(?:[ \t]?([A-Z]))?)?/u;
 /** Número de la vía generadora: letras pegadas en mayúscula, ordinal omitido, `BIS` completo con su letra separada. */
 function canonGen(s: string): string {
   const m = GEN_PARSE.exec(s);
@@ -147,11 +157,12 @@ const GEOMETRIA = /matriz|matrices|v[ée]rtice|tri[áa]ngulo|pol[íi]gono|geomet
 // ---------------------------------------------------------------------------------------------------------------------
 // R-DIR-01 · Dirección urbana completa
 // ---------------------------------------------------------------------------------------------------------------------
-const SRC_DIR01 = `${LB}(?<via>${VIA})(?!\\p{L})${H}*(?<num>\\d{1,3})(?!\\d)(?:\\.?[ºª])?(?<let>${LET})?(?<bis>${BIS})?(?:${H}+(?<q1>${QUAD}))?`
-  + `(?:${H}*(?<l>${SEP})${H}*(?<gen>${GEN})(?:${H}*-${H}*|${H}+)(?<pl>\\d{1,3})(?!\\d)`
+// PA-4-r1: con separador, un salto de línea suelto vale como blanco (`HU`); sin separador (ramas 2 y 3) solo blancos horizontales.
+const SRC_DIR01 = `${LB}(?<via>${VIA})(?!\\p{L})${HU}*(?<num>\\d{1,3})(?!\\d)(?:\\.?[ºª])?(?<let>${LET})?(?<bis>${BIS})?(?:${H}+(?<q1>${QUAD}))?`
+  + `(?:${HU}*(?<l>${SEP})${HU}*(?<gen>${GEN})(?:${HU}*-${HU}*|${HU}+)(?<pl>\\d{1,3})(?!\\d)`
   + `|${H}+(?<gen2>${GEN})${H}*-${H}*(?<pl2>\\d{1,3})(?!\\d)`
   + `|${H}+(?<gen3>${GEN})${H}+(?<pl3>\\d{1,3})(?!\\d))`
-  + `(?:${H}+(?<q2>${QUAD}))?(?<comp>${COMPS})`;
+  + `(?:${H}+(?<q2>${QUAD})|${H}*\\r?\\n${H}*(?<q3>${QUAD_PALABRA}))?(?<comp>${COMPS})`;
 /** Versión pegajosa de R-DIR-01 (la usa R-DIR-03 para ceder ante una dirección completa). */
 const RE_DIR01_PEGAJOSA = new RegExp(SRC_DIR01, 'uy');
 
@@ -168,9 +179,9 @@ function assessDir01(m: RegExpExecArray, ctx: RuleContext): RuleVerdict | null {
   if (sep === undefined && /^[a-záéíóú]{4,}$/u.test(via)) confidence = 'baja';
   if (hasAddrLabelBefore(t, m.index)) confidence = 'alta';
   const letra = gOpt(m, 'let');
-  const letCuadrante = letra !== undefined && /^[ \t][SNW]$/u.test(letra) && gOpt(m, 'q1') === undefined && gOpt(m, 'q2') === undefined ? letra.trim() : null;
-  const quads = [...new Set([gOpt(m, 'q1'), gOpt(m, 'q2'), letCuadrante ?? undefined].filter((x): x is string => x !== undefined).map(canonQuad))];
-  let numPart = g(m, 'num') + (letra !== undefined && letCuadrante === null ? letra.replace(/[ \t]/gu, '').toUpperCase() : '');
+  const letCuadrante = letra !== undefined && /^[ \t][SNW]$/u.test(letra) && gOpt(m, 'q1') === undefined && gOpt(m, 'q2') === undefined && gOpt(m, 'q3') === undefined ? letra.trim() : null;
+  const quads = [...new Set([gOpt(m, 'q1'), gOpt(m, 'q2'), gOpt(m, 'q3'), letCuadrante ?? undefined].filter((x): x is string => x !== undefined).map(canonQuad))];
+  let numPart = g(m, 'num') + (letra !== undefined && letCuadrante === null ? letra.replace(/[ \tºª]/gu, '').toUpperCase() : '');
   const bis = gOpt(m, 'bis');
   if (bis !== undefined) {
     const b = /(?:BIS|Bis|bis)(?:[ \t]?([A-Z]))?/u.exec(bis);
@@ -188,8 +199,9 @@ const rDIR01: RuleSpec = { id: 'R-DIR-01', type: 'DIRECCION', flags: 'dgu', sour
 // ---------------------------------------------------------------------------------------------------------------------
 // R-DIR-02 · Avenida o vía con nombre propio y placa
 // ---------------------------------------------------------------------------------------------------------------------
-const SRC_DIR02 = `${LB}(?<via>${AVNAMED})(?!\\p{L})${H}+(?<name>(?:(?:de|del|DE|DEL)(?:${H}+(?:la|las|los|el|LA|LAS|LOS|EL))?${H}+)?${NAME_ADDR})${H}*`
-  + `(?:(?<l>${SEP})${H}*(?<gen>${GEN})(?:${H}*-${H}*|${H}+)(?<pl>\\d{1,3})|(?<gen2>${GEN})${H}*-${H}*(?<pl2>\\d{1,3}))(?!\\d)`
+const SRC_DIR02 = `${LB}(?<via>${AVNAMED})(?!\\p{L})${H}+(?<name>(?:(?:de|del|DE|DEL)(?:${H}+(?:la|las|los|el|LA|LAS|LOS|EL))?${H}+)?${NAME_ADDR})`
+  // PA-4-r1: entre el nombre y el separador cabe el número de la vía («Av. Ficticia 00B Bis No. 00-00»), `vn`.
+  + `(?:(?:${H}+(?<vn>${GEN}))?${H}*(?<l>${SEP})${H}*(?<gen>${GEN})(?:${H}*-${H}*|${H}+)(?<pl>\\d{1,3})|${H}*(?<gen2>${GEN})${H}*-${H}*(?<pl2>\\d{1,3}))(?!\\d)`
   + `(?:${H}+(?<q2>${QUAD}))?(?<comp>${COMPS})`;
 
 function assessDir02(m: RegExpExecArray, ctx: RuleContext): RuleVerdict | null {
@@ -206,7 +218,8 @@ function assessDir02(m: RegExpExecArray, ctx: RuleContext): RuleVerdict | null {
   const quads = q2 !== undefined ? [canonQuad(q2)] : [];
   const generadora = gOpt(m, 'gen') ?? g(m, 'gen2');
   const placa = gOpt(m, 'pl') ?? g(m, 'pl2');
-  const key = ['DIR:' + code, upperName(name), canonGen(generadora), canonPlaca(placa), ...quads, ...canonComps(g(m, 'comp'))].join(' ');
+  const vn = gOpt(m, 'vn');
+  const key = ['DIR:' + code, upperName(name), ...(vn !== undefined ? [canonGen(vn)] : []), canonGen(generadora), canonPlaca(placa), ...quads, ...canonComps(g(m, 'comp'))].join(' ');
   const v: RuleVerdict = { confidence, canonicalKey: key };
   if (sep !== undefined) v.labelId = 'ROT_DIR_1';
   return v;
@@ -265,8 +278,9 @@ const SRC_DIR05 = `${LB}(?<l>${alt(VEREDA_KW)})(?!\\p{L})(?:${H}*:${H}*|${H}+)(?
 function assessDir05(m: RegExpExecArray): RuleVerdict | null {
   const nm = span(m, 'name');
   if (nm === undefined) return null;
+  // PA-4-r1: el tramo arranca en el rótulo («vereda La Ficticia»), como lo anota el gold; el rótulo sigue en `LabelHit`.
   return {
-    nStart: nm[0], nEnd: nm[1], confidence: 'alta', labelId: 'ROT_DIR_4',
+    nStart: m.index, nEnd: nm[1], confidence: 'alta', labelId: 'ROT_DIR_4',
     canonicalKey: 'DIR:' + upperName(g(m, 'l')) + ' ' + upperName(g(m, 'name')),
   };
 }
@@ -292,11 +306,46 @@ const BARRIO_KW = ['barrio', 'Barrio', 'BARRIO', 'B/', 'Bº', 'urbanización', '
   'conjunto residencial', 'Conjunto Residencial', 'CONJUNTO RESIDENCIAL', 'Conj. Res.', 'ciudadela', 'Ciudadela', 'CIUDADELA', 'condominio', 'Condominio', 'CONDOMINIO'];
 const SRC_BAR01 = `(?<![\\p{L}\\p{N}])(?<l>${alt(BARRIO_KW)})(?:(?<=[/º])|(?!\\p{L}))${H}*(?::${H}*)?(?:(?:de|del)${H}+)?[«"“]?(?<name>${NAME_BAR})`;
 
+// PA-4-r1: «barrio La Prueba de Facatativá»: el «de <municipio>» final no es del nombre del barrio (lo toma R-MUN-03 como ancla).
+const MUN_ALIAS: readonly string[] = ['bogota', 'bogota d.c.', 'cali', 'cucuta', 'cartagena', 'ubate', 'mompox', 'mompos', 'tumaco', 'buga', 'mariquita', 'tolu'];
+let munSet: ReadonlySet<string> | null = null;
+function esMunicipio(nombre: string): boolean {
+  munSet ??= new Set([...(divipolaRaw as DivipolaFile).map((r) => vistaLista(r.munNombre)), ...MUN_ALIAS]);
+  return munSet.has(vistaLista(nombre));
+}
+const DE_MUN = /(?<![\p{L}\p{N}])(?:de|del|De|Del)[ \t\r\n]+/gu;
+/** Largo del nombre sin el «de <municipio>» del final; el nombre entero si no lo tiene. */
+function largoSinMunicipio(name: string): number {
+  for (const c of name.matchAll(DE_MUN)) {
+    if (c.index === 0) continue;
+    const resto = name.slice(c.index + c[0].length);
+    if (esMunicipio(resto) || esMunicipio(resto.replace(/[ \t,]*D\.?[ \t]?C\.?$/u, ''))) return name.slice(0, c.index).trimEnd().length;
+  }
+  return name.length;
+}
+
 function assessBar01(m: RegExpExecArray): RuleVerdict | null {
   const nm = span(m, 'name');
   if (nm === undefined) return null;
-  return { nStart: nm[0], nEnd: nm[1], confidence: 'alta', labelId: 'ROT_BAR_1', canonicalKey: 'BARRIO:' + vistaLista(g(m, 'name')) };
+  const name = g(m, 'name');
+  const largo = largoSinMunicipio(name);
+  return { nStart: nm[0], nEnd: nm[0] + largo, confidence: 'alta', labelId: 'ROT_BAR_1', canonicalKey: 'BARRIO:' + vistaLista(name.slice(0, largo)) };
 }
 const rBAR01: RuleSpec = { id: 'R-BAR-01', type: 'BARRIO', flags: 'dgu', source: SRC_BAR01, assess: assessBar01 };
+
+/**
+ * Finales (en la vista `reglas`) de los barrios rotulados, sin el «de <municipio>» final: los usa R-MUN-03 como ancla de «barrio X
+ * de Facatativá» y «barrio X, Soacha» (generalize.ts). No guarda el texto.
+ */
+export function finalesDeBarrio(texto: string): number[] {
+  const out: number[] = [];
+  const re = new RegExp(SRC_BAR01, 'dgu');
+  for (let m = re.exec(texto); m !== null; m = re.exec(texto)) {
+    if (m[0].length === 0) { re.lastIndex++; continue; }
+    const nm = span(m, 'name');
+    if (nm !== undefined) out.push(nm[0] + largoSinMunicipio(g(m, 'name')));
+  }
+  return out;
+}
 
 export const rules: RuleSpec[] = [rDIR01, rDIR02, rDIR03, rDIR04, rDIR05, rDIR06, rBAR01];

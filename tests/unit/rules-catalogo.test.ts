@@ -523,6 +523,9 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     ['guiones y barras alternados', '1-2/3-4/5-6/'.repeat(N / 12)],
     ['siglas y números', 'LEY 100 ART 123 SAS123 '.repeat(N / 23)],
     ['direcciones sin cerrar', 'Calle 45 Sur # '.repeat(N / 15)],
+    ['PA-4-r1: avenidas con número de la vía sin placa', 'Av. Ficticia 0C # '.repeat(N / 18)],
+    ['PA-4-r1: separador, salto de línea y nada más', 'Cra 5 #\n'.repeat(N / 8)],
+    ['PA-4-r1: barrios partidos por un salto de línea', 'barrio La\n'.repeat(N / 10)],
     ['mayúsculas encadenadas', 'Edificio Prueba Ejemplo Ficticio Real '.repeat(N / 37)],
     ['folios y artículos encadenados', 'artículo 1, 2, 3, 4, 5 y 6 al 7 '.repeat(N / 31)],
     // PA-6-r1: `{NUMPH}` ya no recorre toda una racha de numerales desde cada uno (tope de 16) ni cruza más de un salto seguido.
@@ -611,6 +614,13 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     ['R-TARJETA-02', 'R-TARJETA-02 (rotulados.ts): «terminada» y espacios', 'terminada' + SP + 'x'],
     ['R-DIR-01', 'COMPS (direccion.ts): una dirección y tabuladores', 'Calle 00 # 00-00' + TB + 'x'],
     ['R-BAR-01', 'R-BAR-01 (direccion.ts): «barrio» y tabuladores', 'barrio' + TB + 'x'],
+    ['R-DIR-02', 'PA-4-r1 número de la vía (direccion.ts): una avenida, un número y espacios', 'Av. Ficticia 0C' + SP + 'x'],
+    ['R-DIR-02', 'PA-4-r1 nombre de avenida (direccion.ts): una avenida y espacios', 'Av. Ficticia' + SP + 'x'],
+    ['R-DIR-01', 'PA-4-r1 HU (direccion.ts): una dirección, un salto de línea y espacios', 'Calle 00 # 00-00\n' + SP + 'x'],
+    ['R-DIR-01', 'PA-4-r1 HU (direccion.ts): separador y 40.000 saltos de línea', 'Cl. 00B No.' + '\n'.repeat(K) + 'x'],
+    ['R-DIR-01', 'PA-4-r1 HU (direccion.ts): separador y tabuladores con saltos de línea', 'Calle 00 #' + '\t\n'.repeat(K / 2) + 'x'],
+    ['R-DIR-01', 'PA-4-r1 cuadrante (direccion.ts): una dirección, espacios, salto de línea y espacios', 'Calle 00 # 00-00' + SP + '\n' + SP + 'x'],
+    ['R-BAR-01', 'PA-4-r1 JN (direccion.ts): «barrio La», un salto de línea y tabuladores', 'barrio La\n' + TB + 'x'],
     ['R-FEC-04', 'R-FEC-04 (fechas.ts): un día de la semana y tabuladores', 'lunes' + TB + 'x'],
     ['R-FEC-09', 'R-FEC-09 (fechas.ts): «14 de marzo» y tabuladores', '14 de marzo' + TB + 'x'],
     // PA-6-r1: el separador con un salto de línea (HN) es `H+(?:⏎H*)?|⏎H*`: cada rama empieza distinto y el salto es único.
