@@ -80,7 +80,10 @@ export function main(argv: readonly string[]): number {
     process.stdout.write(`\n== medir: ${c.config} · ${c.vista} · ${c.hilos} h · ${c.conjunto}${c.rapido ? ' · rápida' : ''} ==\n`);
     if (lanzar(c) !== 0) codigo = 1;
   }
-  const usaModelo = args.corridas.some((c) => c.config === 'x-large' && !c.rapido) || args.soloVeredicto;
+  // El veredicto lee todos los informes guardados e imprime la reserva aparte: solo corre con el corpus completo (`todo`) o con
+  // --solo-veredicto, nunca tras una medición de desarrollo, para que ningún ajuste vea cifras de la reserva (D-01).
+  const soloCompleto = args.corridas.every((c) => c.conjunto === 'todo');
+  const usaModelo = (args.corridas.some((c) => c.config === 'x-large' && !c.rapido) && soloCompleto) || args.soloVeredicto;
   if (usaModelo) {
     process.stdout.write('\n== veredicto de 10.4.1 ==\n');
     const v = veredicto([]);
