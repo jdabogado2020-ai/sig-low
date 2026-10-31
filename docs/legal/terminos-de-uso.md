@@ -1,12 +1,12 @@
 # Términos de uso de Sig-Low
 
-> **Borrador para revisión del dueño.** Este texto no es definitivo ni se publica hasta que el dueño, como abogado, lo apruebe por escrito. Todo lo marcado [VERIFICAR] está pendiente de confirmación.
+> **Borrador para revisión del dueño.** Este texto no es definitivo ni se publica hasta que el dueño, como abogado, lo apruebe por escrito. No quedan datos pendientes de verificar. La fecha de vigencia `{FECHA_V1}` se completa con la fecha de publicación de la versión 1.0.0.
 
-Versión del borrador: 1 · Fecha del borrador: 30 de octubre de 2026 · Fecha de vigencia: [VERIFICAR: la fija el dueño al aprobar el texto]
+Versión del borrador: 2 · Fecha del borrador: 31 de octubre de 2026 · Fecha de vigencia: {FECHA_V1}
 
 ## 1. Aceptación
 
-Al usar Sig-Low usted declara que leyó estos términos y la política de privacidad (`docs/legal/politica-de-privacidad.md`) y que los acepta [VERIFICAR: mecanismo de aceptación; la aplicación no tiene hoy casilla de aceptación]. Si no está de acuerdo, no la use.
+Al usar Sig-Low usted declara que leyó estos términos y la política de privacidad (`docs/legal/politica-de-privacidad.md`) y que los acepta. La aplicación no tiene casilla de aceptación: el uso implica la aceptación. Si no está de acuerdo, no la use.
 
 ## 2. Qué es Sig-Low
 
@@ -18,7 +18,7 @@ Su única promesa es esta, tal como aparece en la aplicación:
 
 ## 3. Qué no es Sig-Low
 
-- No es asesoría jurídica ni sustituye el criterio profesional ni el deber de reserva del abogado [VERIFICAR: referencia normativa aplicable al deber de reserva].
+- No es asesoría jurídica ni sustituye el criterio profesional ni el deber de reserva y de secreto profesional del abogado.
 - No detecta todos los datos de un documento. Puede dejar datos sin reemplazar y puede reemplazar texto que no era un dato personal.
 - No anonimiza. Reemplazar nombres por marcadores es seudonimizar: con la tabla de correspondencia, los datos siguen siendo personales, y los datos indirectos combinados pueden permitir identificar a una persona.
 - No controla lo que ocurre fuera de ella (punto 6).
@@ -32,12 +32,16 @@ Usted es responsable de:
 3. Cumplir la ley de protección de datos personales y sus deberes profesionales respecto de los datos de sus documentos, incluidos los sensibles y los de niñas, niños y adolescentes.
 4. Usar un perfil del navegador solo para Sig-Low, sin extensiones, sin sesión iniciada y sin sincronización; no compartir ni grabar la pantalla con un documento abierto; no invocar asistentes de IA del navegador con un documento abierto.
 5. Conservar su frase de paso y exportar copias cifradas de la tabla: la frase no tiene recuperación.
-6. Usar solo la dirección oficial `sig-low.vergarameloabogado.site` [VERIFICAR: nombre exacto al publicar] y, si su organización lo exige, verificar cada versión con los códigos publicados.
+6. Usar solo la dirección oficial `https://sig-low.vergarameloabogado.site` y, si su organización lo exige, verificar cada versión con los códigos publicados.
 7. No usar Sig-Low para fines ilícitos ni para ocultar información que la ley o una autoridad ordene conservar o entregar.
 
 ## 5. Datos y privacidad
 
-El contenido de sus documentos se procesa en su equipo y no se envía a ningún servidor. Lo que ve el sitio que aloja la aplicación (dirección IP, hora y rutas de recursos estáticos), lo que se guarda en su navegador y sus derechos como titular están en la política de privacidad. Sig-Low no usa cookies ni rastreo.
+El contenido de sus documentos se procesa en su equipo y no se envía a ningún servidor. Lo que ve el sitio que aloja la aplicación (dirección IP, fecha y hora, y rutas de recursos estáticos), que se informa con un aviso de privacidad visible en «Acerca de», y que Cloudflare trata como encargado del tratamiento por cuenta del responsable, lo que se guarda en su navegador y sus derechos como titular están en la política de privacidad. Sig-Low no usa cookies ni rastreo.
+
+### Quién trata qué
+
+Sig-Low procesa los documentos solo en el navegador de quien la usa. Ni GRUPO EMPRESARIAL NEW WAY S.A.S ni el alojamiento reciben, ven ni almacenan el texto de los documentos, los datos detectados, la tabla de reemplazos ni la bóveda cifrada. Por eso la sociedad no es responsable ni encargada del tratamiento de los datos personales que contienen los documentos del usuario: el usuario (el abogado o la firma) sigue siendo el único responsable de esos datos frente a sus titulares, y de sus deberes bajo la Ley 1581 de 2012 y del secreto profesional. Lo único que trata la sociedad, por medio de su encargado, son los registros técnicos de acceso descritos en la política de privacidad (puntos 5 y 6). Esto describe cómo funciona la aplicación y no añade ninguna promesa a la del punto 2.
 
 ## 6. Límites que la aplicación no puede impedir
 
@@ -45,23 +49,23 @@ Fuera del control de Sig-Low quedan, entre otros: asistentes de IA y extensiones
 
 ## 7. Disponibilidad, versiones y cambios
 
-Sig-Low se ofrece en el estado en que se encuentra, sin compromiso de disponibilidad continua ni de resultados determinados. Las versiones nuevas se aplican al abrir la aplicación con todas sus pestañas cerradas. El dueño puede modificar, suspender o retirar la herramienta o cualquiera de sus versiones [VERIFICAR: aviso previo y procedimiento de retiro].
+Sig-Low se ofrece en el estado en que se encuentra, sin compromiso de disponibilidad continua ni de resultados determinados. Las versiones nuevas se aplican al abrir la aplicación con todas sus pestañas cerradas. El responsable puede modificar, suspender o retirar la herramienta o cualquiera de sus versiones.
 
 ## 8. Licencia, propiedad y marca
 
-El código de Sig-Low se distribuye bajo la licencia que consta en el archivo `LICENSE` del repositorio [VERIFICAR: Apache-2.0, conforme a la decisión de abrir el repositorio]. Los componentes de terceros conservan sus propias licencias, listadas en «Créditos y licencias» y en `LICENSES.md`. La licencia del código no concede el uso del nombre «Sig-Low» como marca [VERIFICAR: estado del registro de la marca].
+El código de Sig-Low se distribuye bajo la Licencia Apache, Versión 2.0, que consta en el archivo `LICENSE` del repositorio; su titular de derechos de autor, según el archivo `NOTICE`, es Juan David Vergara Melo, y es una persona distinta del responsable del tratamiento de datos (punto 11). Los componentes de terceros conservan sus propias licencias, listadas en «Créditos y licencias» y en `LICENSES.md`. La licencia del código no concede el uso del nombre «Sig-Low» como marca.
 
 ## 9. Responsabilidad
 
-En la medida que la ley lo permita, el dueño no responde por los daños que resulten de decisiones tomadas con base en el resultado de Sig-Low, de datos que la herramienta no detectó, de la pérdida de la tabla o de la frase de paso, de lo que ocurra fuera de la aplicación (punto 6) o del uso de una copia no oficial [VERIFICAR: alcance y límite de responsabilidad con asesoría legal; las normas de protección del consumidor y los derechos irrenunciables no se afectan].
+En la medida que la ley lo permita, el responsable no responde por los daños que resulten de decisiones tomadas con base en el resultado de Sig-Low, de datos que la herramienta no detectó, de la pérdida de la tabla o de la frase de paso, de lo que ocurra fuera de la aplicación (punto 6) o del uso de una copia no oficial. Las normas de protección del consumidor y los derechos irrenunciables no se afectan.
 
 ## 10. Ley aplicable y controversias
 
-Estos términos se rigen por las leyes de la República de Colombia. Las controversias se someterán a la jurisdicción competente [VERIFICAR: ciudad, jurisdicción y eventual mecanismo de solución previa].
+Estos términos se rigen por las leyes de la República de Colombia. Las controversias se someterán a la jurisdicción competente de Colombia.
 
-## 11. Contacto
+## 11. Contacto y responsable
 
-[VERIFICAR: correo de contacto y datos del responsable].
+El responsable de Sig-Low y de los registros del alojamiento es GRUPO EMPRESARIAL NEW WAY S.A.S, NIT 901.855.061-7, con domicilio y dirección de notificación judicial en Calle 66 #59-31, Bogotá D.C., Colombia. Para consultas y reclamos sobre datos personales escriba a `info@vergarameloabogado.site`; el procedimiento y los plazos están en la política de privacidad (punto 10).
 
 ## 12. Créditos y licencias
 

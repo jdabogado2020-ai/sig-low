@@ -21,6 +21,12 @@ function Acerca({ huellas }: { huellas: Huellas | null }) {
         <p>{t('M-01')}</p>
         {lista(['M-132', 'M-133', 'M-134', 'M-135'])}
       </section>
+      <section aria-labelledby="ac-aviso" data-prueba="acerca-aviso">
+        <h3 id="ac-aviso">{t('M-1901')}</h3>
+        <p>{t('M-1902')}</p>
+        <p>{t('M-1903')}</p>
+        <p>{t('M-1904')}</p>
+      </section>
       <section aria-labelledby="ac-no">
         <h3 id="ac-no">{t('M-136')}</h3>
         {lista(['M-137', 'M-138', 'M-139', 'M-140', 'M-141', 'M-142', 'M-143', 'M-144', 'M-145', 'M-146'])}

@@ -174,6 +174,18 @@ test.describe('T-PV-09 «Acerca de»: versión, SHA-256 y dirección oficial', (
     await expect(page.locator('[data-prueba="version"]')).toHaveText('Versión 1.0.0 · compilación ' + esperadoIndex.slice(0, 12), { timeout: 5000 });
   });
 
+  test('T-PV-09 @humo «Acerca de» trae el aviso de privacidad de los registros del alojamiento, como texto y sin enlaces (D-09)', async ({ page }) => {
+    await abrirInicio(page);
+    const dialogo = await abrirAcerca(page);
+    const aviso = dialogo.locator('[data-prueba="acerca-aviso"]');
+    await expect(aviso).toBeVisible();
+    await expect(aviso.getByRole('heading', { name: 'Aviso de privacidad' })).toBeVisible();
+    await expect(aviso).toContainText('dirección IP');
+    await expect(aviso).toContainText('encargado del tratamiento');
+    await expect(aviso).toContainText('docs/legal/politica-de-privacidad.md');
+    expect(await aviso.locator('a, [href], [target]').count()).toBe(0);
+  });
+
   test('T-PV-09 con la caché vacía «Acerca de» dice «No disponible» (M-154)', async ({ page }) => {
     await abrirInicio(page);
     await page.evaluate(async () => { for (const k of await caches.keys()) await caches.delete(k); });

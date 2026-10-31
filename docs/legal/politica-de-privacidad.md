@@ -1,14 +1,14 @@
 # Política de privacidad de Sig-Low
 
-> **Borrador para revisión del dueño.** Este texto no es definitivo ni se publica hasta que el dueño, como abogado, lo apruebe por escrito. Todo lo marcado [VERIFICAR] está pendiente de confirmación.
+> **Borrador para revisión del dueño.** Este texto no es definitivo ni se publica hasta que el dueño, como abogado, lo apruebe por escrito. No quedan datos pendientes de verificar. La fecha de vigencia `{FECHA_V1}` se completa con la fecha de publicación de la versión 1.0.0.
 
-Versión del borrador: 1 · Fecha del borrador: 30 de octubre de 2026 · Fecha de vigencia: [VERIFICAR: la fija el dueño al aprobar el texto]
+Versión del borrador: 2 · Fecha del borrador: 31 de octubre de 2026 · Fecha de vigencia: {FECHA_V1}
 
 ## 1. Qué es Sig-Low y a quién se dirige este texto
 
-Sig-Low es una herramienta web para abogados y despachos. Ayuda a reemplazar nombres, números de identificación, direcciones y otros datos de un documento jurídico por marcadores, antes de que la persona use el texto en otra herramienta. La dirección oficial es `sig-low.vergarameloabogado.site` [VERIFICAR: nombre exacto del subdominio al publicar].
+Sig-Low es una herramienta web para abogados y despachos. Ayuda a reemplazar nombres, números de identificación, direcciones y otros datos de un documento jurídico por marcadores, antes de que la persona use el texto en otra herramienta. La dirección oficial es `https://sig-low.vergarameloabogado.site`.
 
-Este texto explica qué datos trata Sig-Low, cuáles no trata, qué ve el sitio que la aloja y qué queda bajo el control de quien la usa. Está escrito conforme a la Ley 1581 de 2012 (régimen general de protección de datos personales) y a las normas que la reglamentan [VERIFICAR: normas reglamentarias vigentes al publicar].
+Este texto explica qué datos trata Sig-Low, cuáles no trata, qué ve el sitio que la aloja y qué queda bajo el control de quien la usa. Está escrito conforme a la Ley 1581 de 2012 (régimen general de protección de datos personales) y a las normas que la reglamentan.
 
 ## 2. La promesa de Sig-Low
 
@@ -25,6 +25,8 @@ No hay otra promesa en este texto ni en la aplicación.
 3. **Usted aprueba cada reemplazo.** La herramienta propone y le muestra lo que puede quedar sin reemplazar; usted decide antes de copiar o descargar el resultado.
 4. **No le pide datos para funcionar.** Sig-Low no pide registro, no crea cuentas y no le solicita sus datos personales.
 
+**Quién trata qué.** Tal como está construida, Sig-Low procesa los documentos solo en el navegador de quien la usa. Ni GRUPO EMPRESARIAL NEW WAY S.A.S ni el alojamiento reciben, ven ni almacenan el texto de los documentos, los datos detectados, la tabla de reemplazos ni la bóveda cifrada. Por eso la sociedad no es responsable ni encargada del tratamiento de los datos personales que contienen los documentos del usuario: el usuario (el abogado o la firma) sigue siendo el único responsable de esos datos frente a sus titulares, y de sus deberes bajo la Ley 1581 de 2012 y del secreto profesional (punto 7). Lo único que trata la sociedad, por medio de su encargado, son los registros técnicos de acceso que describen los puntos 5 y 6. Esto describe cómo funciona la aplicación; no es una promesa distinta de la del punto 2.
+
 ## 4. Qué se guarda en su equipo
 
 Sig-Low puede guardar información **solo en el navegador de su equipo**, nunca en un servidor:
@@ -39,7 +41,7 @@ Sig-Low no usa cookies, no usa herramientas de analítica ni de rastreo y no ins
 
 Lo que usted copie o descargue fuera de Sig-Low (el original, el texto con marcadores, el texto reinsertado, la tabla) deja de estar bajo el control de la aplicación y queda bajo su cuidado.
 
-## 5. Qué ve el sitio que aloja Sig-Low
+## 5. Qué ve el sitio que aloja Sig-Low (aviso de privacidad)
 
 Toda página web, para cargarse, deja unos datos mínimos de la visita en el sitio que la sirve. Sig-Low está alojada en Cloudflare Pages, mediante carga directa de los archivos, sin funciones de servidor y sin el servicio de analítica web del proveedor.
 
@@ -47,32 +49,30 @@ Al cargar la aplicación, el alojamiento puede ver y registrar:
 
 - su **dirección IP**;
 - la **fecha y hora** de la solicitud;
-- las **rutas de los recursos estáticos** que su navegador pide (por ejemplo, `/`, `/sw.js` o los archivos del modelo) y los datos técnicos que todo navegador envía en esas solicitudes [VERIFICAR: lista exacta de campos que registra el proveedor].
+- las **rutas de los recursos estáticos** que su navegador pide (por ejemplo, `/`, `/sw.js` o los archivos del modelo) y los datos técnicos que todo navegador envía en esas solicitudes.
 
 El alojamiento **no ve el contenido de sus documentos**, porque este nunca se envía. Por defecto, el proveedor agrega a sus respuestas una cabecera técnica de acceso entre orígenes (`Access-Control-Allow-Origin`); es una instrucción para el navegador y no expone contenido.
 
-Estos registros son una consecuencia de cualquier carga web. Sig-Low no los usa para identificarlo, perfilarlo ni rastrearlo. Por prudencia, este texto los trata como datos personales (Ley 1581 de 2012, artículo 3, literal c) [VERIFICAR: criterio definitivo con asesoría legal].
-
-[VERIFICAR: qué acceso tiene el dueño al panel del proveedor y qué plazo de retención aplica el proveedor.]
+Estos registros son técnicos, mínimos e inevitables para entregar la página. Sig-Low no los usa para identificarlo, perfilarlo ni rastrearlo. Este texto los trata como datos personales (Ley 1581 de 2012, artículo 3, literal c) y por eso los informa mediante este aviso de privacidad, que también se muestra, en forma breve y visible, en «Acerca de» dentro de la aplicación. Quién los trata, durante cuánto tiempo y bajo qué condiciones se explica en el punto 6.
 
 El sitio personal del dueño es otro origen: no comparte con Sig-Low almacenamiento, caché ni cookies, y Sig-Low no lee cookies.
 
-## 6. Responsable, finalidad, conservación y transferencia
+## 6. Responsable, encargado, finalidad, conservación y transmisión
 
 | Aspecto | Contenido |
 |---|---|
-| Responsable de los registros del alojamiento | [VERIFICAR: nombre completo, documento, domicilio y correo de contacto del dueño o de la persona jurídica que publica Sig-Low] |
-| Encargado | Cloudflare, como proveedor del alojamiento [VERIFICAR: calidad de encargado, contrato y condiciones aplicables] |
+| Responsable de los registros del alojamiento | Razón social: GRUPO EMPRESARIAL NEW WAY S.A.S; NIT: 901.855.061-7. Domicilio y dirección de notificación judicial: Calle 66 #59-31, Bogotá D.C., Colombia. Correo para consultas y reclamos sobre datos personales: `info@vergarameloabogado.site`. |
+| Encargado del tratamiento | Cloudflare, como proveedor del alojamiento (Cloudflare Pages). Trata los registros por cuenta del responsable, como encargado del tratamiento (Ley 1581 de 2012, artículo 3, literal d), según su contrato de procesamiento de datos (Cloudflare Data Processing Addendum, «DPA») y su política de privacidad (Cloudflare Privacy Policy). |
 | Finalidad | Entregar la aplicación a quien la abre y mantener el servicio. No hay finalidad comercial, de publicidad ni de perfilamiento. |
-| Conservación | La que aplica el proveedor del alojamiento [VERIFICAR: plazo]. |
-| Transferencia o transmisión internacional | El proveedor puede tratar los registros fuera de Colombia [VERIFICAR: ubicación y condiciones contractuales; Ley 1581 de 2012, artículos 26 y 27, y normas reglamentarias]. |
-| Autorización | El uso de Sig-Low implica la carga de la página y, con ella, los registros descritos en el punto 5 [VERIFICAR: si se requiere aviso o autorización expresa y cómo se obtiene]. |
+| Conservación | Cloudflare conserva estos registros durante el tiempo que determinan su política de privacidad y su contrato de procesamiento de datos, según la finalidad para la que los recoge (operación y protección de su red). No publica un plazo único para este servicio. GRUPO EMPRESARIAL NEW WAY S.A.S no conserva copia propia de estos registros. |
+| Transmisión internacional | El encargado puede tratar los registros fuera de Colombia. Se informa como una transmisión de datos a un encargado, amparada en el contrato de procesamiento de datos (DPA) del proveedor, conforme a los artículos 26 y 27 de la Ley 1581 de 2012 y su reglamentación. |
+| Aviso y autorización | Los registros se informan con aviso de privacidad visible (punto 5 y «Acerca de»), y no con autorización expresa, porque son registros técnicos mínimos e inevitables para entregar la página y Sig-Low no los usa para identificar a nadie. |
 
 ## 7. Los datos de sus documentos
 
 Sig-Low no recibe los documentos que usted procesa. Por eso:
 
-- quien usa Sig-Low (el abogado o el despacho) sigue siendo responsable del tratamiento de los datos personales de esos documentos, incluidos los datos sensibles y los de niñas, niños y adolescentes, y de la autorización o la base legal con que los trata [VERIFICAR: redacción con asesoría legal];
+- quien usa Sig-Low (el abogado o el despacho) sigue siendo responsable del tratamiento de los datos personales de esos documentos, incluidos los datos sensibles y los de niñas, niños y adolescentes, y de la autorización o la base legal con que los trata;
 - la revisión del resultado es **responsabilidad del abogado**: Sig-Low propone y puede dejar datos sin detectar; la persona lee todo el texto antes de copiarlo;
 - reemplazar nombres por marcadores es **seudonimizar**, no anonimizar: con la tabla de correspondencia, los datos siguen siendo personales, y combinados con otros datos indirectos pueden permitir identificar a una persona.
 
@@ -97,13 +97,13 @@ Sig-Low está dirigida a profesionales del derecho. No recoge datos de menores p
 
 ## 10. Derechos y contacto
 
-Como titular de datos personales, usted puede conocer, actualizar, rectificar y suprimir sus datos, solicitar prueba de la autorización, ser informado del uso que se les da, presentar quejas ante la Superintendencia de Industria y Comercio y revocar la autorización en los casos que la ley permita (Ley 1581 de 2012, artículo 8) [VERIFICAR: alcance frente a registros que lleva un proveedor externo].
+Como titular de datos personales, usted puede conocer, actualizar, rectificar y suprimir sus datos, solicitar prueba de la autorización cuando esta exista, ser informado del uso que se les da, presentar quejas ante la Superintendencia de Industria y Comercio y revocar la autorización en los casos que la ley permita (Ley 1581 de 2012, artículo 8).
 
-Para ejercerlos, escriba a [VERIFICAR: correo de contacto]. El responsable atenderá las consultas y los reclamos en los plazos de la ley [VERIFICAR: procedimiento y plazos].
+Para ejercerlos, escriba a `info@vergarameloabogado.site`. El responsable atiende las consultas en un máximo de diez (10) días hábiles, prorrogables por cinco (5) más, y los reclamos en un máximo de quince (15) días hábiles, prorrogables por ocho (8) más (Ley 1581 de 2012, artículos 14 y 15). Los registros del alojamiento los trata el encargado por cuenta del responsable, que es quien atiende su solicitud (punto 6).
 
 ## 11. Cambios
 
-Este texto puede cambiar. La versión vigente es la que acompaña a la versión de Sig-Low que usted usa. Las versiones nuevas de la aplicación se aplican al abrir Sig-Low con todas sus pestañas cerradas [VERIFICAR: cómo se avisará un cambio de esta política].
+Este texto puede cambiar. La versión vigente es la que acompaña a la versión de Sig-Low que usted usa, con su fecha de vigencia. Las versiones nuevas de la aplicación se aplican al abrir Sig-Low con todas sus pestañas cerradas, y el aviso de «Acerca de» corresponde siempre a la versión que usted tiene abierta.
 
 ## 12. Créditos y licencias
 

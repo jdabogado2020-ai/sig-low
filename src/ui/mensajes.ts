@@ -87,6 +87,11 @@ const EXTRA = {
   // Actualización con varias pestañas (PD-1-r1, B-11)
   'M-1212': 'Cierre las otras pestañas de Sig-Low para actualizar ahora.',
   'M-1213': 'Sig-Low se actualizó desde otra pestaña. Esta pestaña sigue con la versión anterior y algunas funciones pueden fallar: guarde o exporte la tabla y después recárguela.',
+  // Aviso de privacidad de «Acerca de» (DOC-3-r1, D-09): registros del alojamiento, sin enlaces ni datos del responsable.
+  'M-1901': 'Aviso de privacidad',
+  'M-1902': 'Para entregarle esta página, el sitio que la aloja registra su dirección IP, la fecha y hora de la solicitud y las rutas de los archivos que su navegador pide. Son registros técnicos mínimos: no incluyen el contenido de sus documentos y Sig-Low no los usa para identificarlo.',
+  'M-1903': 'Cloudflare trata esos registros como encargado del tratamiento, por cuenta del responsable y según su contrato de procesamiento de datos (DPA), y puede hacerlo fuera de Colombia, conforme a los artículos 26 y 27 de la Ley 1581 de 2012.',
+  'M-1904': 'La política de privacidad completa, con la identificación y el correo del responsable y sus derechos como titular, está en el archivo docs/legal/politica-de-privacidad.md del repositorio de Sig-Low.',
 } as const;
 
 const TODO: Record<string, string> = { ...CATALOGO, ...EXTRA };

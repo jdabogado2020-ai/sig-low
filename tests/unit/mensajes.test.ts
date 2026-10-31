@@ -219,6 +219,53 @@ describe('T-IU-02 INV-I06 el informe legible y los documentos', () => {
   });
 });
 
+describe('T-IU-02 T-PV-26 aviso de privacidad de «Acerca de» y textos legales (D-09, DOC-3-r1)', () => {
+  const leer = (n: string): string => readFileSync(join(RAIZ, 'docs/legal', n), 'utf8');
+
+  it('T-IU-02 M-1901 a M-1904 (rango libre M-19xx) existen, cuentan lo que ve el alojamiento y no llevan enlaces ni datos del responsable', () => {
+    const textos = (['M-1901', 'M-1902', 'M-1903', 'M-1904'] as const).map((id) => t(id));
+    const todo = textos.join('\n');
+    expect(todo).toContain('dirección IP');
+    expect(todo).toContain('Cloudflare');
+    expect(todo).toContain('encargado del tratamiento');
+    expect(todo).toContain('DPA');
+    expect(todo).toContain('artículos 26 y 27 de la Ley 1581 de 2012');
+    expect(todo).toContain('docs/legal/politica-de-privacidad.md');
+    expect(todo).not.toMatch(/https?:|www\.|mailto:|@/i);
+    expect(hallazgos(textos)).toEqual([]);
+  });
+
+  it('T-PV-26 los dos textos legales no dejan ningún [VERIFICAR] y conservan el marcador {FECHA_V1} de la vigencia', () => {
+    const politica = leer('politica-de-privacidad.md');
+    const terminos = leer('terminos-de-uso.md');
+    for (const texto of [politica, terminos]) {
+      expect(texto).not.toMatch(/\[VERIFICAR/);
+      expect(texto).toContain('Fecha de vigencia: {FECHA_V1}');
+    }
+  });
+
+  it('T-PV-26 ambos textos explican que la sociedad no es responsable ni encargada de los datos de los documentos y que el usuario sigue siéndolo', () => {
+    for (const n of ['politica-de-privacidad.md', 'terminos-de-uso.md']) {
+      const texto = leer(n);
+      expect(texto, n).toContain('Quién trata qué');
+      expect(texto, n).toContain('reciben, ven ni almacenan el texto de los documentos, los datos detectados, la tabla de reemplazos ni la bóveda cifrada');
+      expect(texto, n).toContain('no es responsable ni encargada del tratamiento de los datos personales que contienen los documentos del usuario');
+      expect(texto, n).toContain('sigue siendo el único responsable de esos datos frente a sus titulares');
+      expect(texto, n).toContain('Lo único que trata la sociedad, por medio de su encargado, son los registros técnicos de acceso');
+    }
+  });
+
+  it('T-PV-26 la política nombra a Cloudflare como encargado con su DPA y su política, y la transmisión según los artículos 26 y 27', () => {
+    const politica = leer('politica-de-privacidad.md');
+    expect(politica).toContain('Cloudflare Data Processing Addendum');
+    expect(politica).toContain('Cloudflare Privacy Policy');
+    expect(politica).toContain('encargado del tratamiento');
+    expect(politica).toContain('artículos 26 y 27 de la Ley 1581 de 2012 y su reglamentación');
+    expect(politica).toMatch(/aviso de privacidad visible/);
+    expect(politica).toMatch(/y no con autorización expresa/);
+    expect(politica).toContain('no conserva copia propia de estos registros');  });
+});
+
 describe('INV-G13 dist/ (si el build existe)', () => {
   const dist = join(RAIZ, 'dist');
   const licencias = GRUPOS_LICENCIAS.flatMap((g) => [g.titulo, g.intro ?? '', ...g.avisos.flatMap((a) => [a.componente, a.version ?? '', a.licencia, ...a.aviso])]);
