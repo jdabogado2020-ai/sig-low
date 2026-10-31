@@ -12,8 +12,9 @@ import { fileURLToPath } from 'node:url';
 const ID = /INV-[A-Z]\d{2}/g;
 const IGNORAR = new Set(['node_modules', 'dist', '.git']);
 
-/** it( … ), test( … ) y sus modificadores (it.only, it.skipIf(c)(…), test.each(…)(…)); it.skip y it.todo no cubren nada. */
-const LLAMADA = /\b(?:it|test)((?:\.[A-Za-z]+(?:\((?:[^()]|\([^()]*\))*\))?)*)\s*\(\s*(['"`])((?:\\[\s\S]|(?!\2)[^\\])*)\2/g;
+/** it( … ), test( … ), los test extendidos con fixtures (testArnes, testMedicion: test + mayúscula) y sus modificadores
+ * (it.only, it.skipIf(c)(…), test.each(…)(…)); it.skip y it.todo no cubren nada. */
+const LLAMADA = /\b(?:it|test(?:[A-Z][A-Za-z]*)?)((?:\.[A-Za-z]+(?:\((?:[^()]|\([^()]*\))*\))?)*)\s*\(\s*(['"`])((?:\\[\s\S]|(?!\2)[^\\])*)\2/g;
 
 export function idsDeTitulos(fuente) {
   const ids = new Set();
