@@ -1,0 +1,45 @@
+Sig-Low
+Copyright 2026 Juan David Vergara Melo
+
+Este producto se distribuye bajo la Licencia Apache, Versión 2.0 (archivo LICENSE).
+La licencia cubre solo el código fuente de este repositorio. No concede el uso del
+nombre «Sig-Low» como marca (sección 6 de la licencia).
+
+Este producto incluye o usa software, modelos y datos de terceros, cada uno con su
+propia licencia. El texto de cada licencia y el detalle de versiones están en
+LICENSES.md y, dentro de la aplicación, en «Créditos y licencias» (Acerca de).
+
+Avisos que las licencias exigen conservar:
+
+  pdf.js (pdfjs-dist 6.4.299, versión legacy)
+    Copyright 2024 Mozilla Foundation. Apache License 2.0.
+    Incluye core-js 3.50.0, MIT: © 2013–2025 Denis Pushkarev (zloirock.ru),
+    2025–2026 CoreJS Company (core-js.io).
+
+  @huggingface/tokenizers 0.2.0
+    Hugging Face. Apache License 2.0.
+
+  GLiNER-X large y GLiNER-X base (versión cuantizada a 8 bits)
+    Knowledgator (knowledgator/gliner-x-large, knowledgator/gliner-x-base).
+    Apache License 2.0. Modelos base mT5 de Google, Apache License 2.0.
+    Se descargan aparte; no forman parte de este repositorio.
+
+  Código incorporado de @piighost/ner-web 0.3.0 (src/core/ner/gliner/)
+    Copyright (c) 2025 Athroniaeth. MIT License.
+    Modificado para Sig-Low (cada archivo lo anota; incluye el parche para
+    tokenizadores basados en mT5).
+
+  onnxruntime-web 1.31.0-dev.20260914-8d85527a0
+    Copyright (c) Microsoft Corporation. MIT License.
+
+  Preact 10.29.8: Copyright (c) 2015-present Jason Miller. MIT License.
+  fflate 0.8.3: Copyright (c) 2026 Arjun Barrett. MIT License.
+  @xmldom/xmldom 0.9.12: Copyright 2019 - present Christopher J. Brody y
+    colaboradores; Copyright 2012 - 2017 @jindw y colaboradores. MIT License.
+
+  Datos de la DIVIPOLA (data/divipola.json)
+    Fuente: Departamento Administrativo Nacional de Estadística (DANE),
+    datos.gov.co, conjunto gdxc-w37w, corte 2024-12-30.
+    Licencia CC BY-SA 4.0. El archivo es una adaptación (recorte de columnas) y
+    se distribuye bajo la misma licencia (compartir igual). Esa licencia no se
+    extiende al resto de la aplicación.
