@@ -237,6 +237,79 @@ describe('T-LE-03 .docx: límites y contenedores (V-41)', () => {
     expect(performance.now() - t0).toBeLessThan(3000);
   });
 
+  // PE-3-r1 · B-13: los bytes descomprimidos son texto del documento; los trozos intermedios de `inflar` y la parte que no se
+  // entrega (`out`) se ponen en cero antes de lanzar. Se espía `fill` (instalado después de armar los archivos de prueba).
+  describe('B-13 · memoria descomprimida en cero en los caminos de error', () => {
+    afterEach(() => { vi.restoreAllMocks(); });
+    // Texto poco comprimible (determinista): el flujo supera varios pasos de 16 KiB y produce varios trozos al descomprimir.
+    function ruido(n: number): string {
+      let x = 12345;
+      let s = '';
+      while (s.length < n) { x = (x * 1103515245 + 12345) % 2147483648; s += (x >> 8).toString(36) + (x % 7 === 0 ? ' Ana Ficticia Rojas ' : ' '); }
+      return s.slice(0, n);
+    }
+    function espiarFill(): Array<{ ref: Uint8Array; habiaDatos: boolean }> {
+      const original = Uint8Array.prototype.fill;
+      const vistos: Array<{ ref: Uint8Array; habiaDatos: boolean }> = [];
+      vi.spyOn(Uint8Array.prototype, 'fill').mockImplementation(function (this: Uint8Array, ...args: [number, number?, number?]) {
+        vistos.push({ ref: this, habiaDatos: this.some((x) => x !== 0) });
+        return original.apply(this, args);
+      });
+      return vistos;
+    }
+    const conDatos = (v: Array<{ ref: Uint8Array; habiaDatos: boolean }>, entrada: Uint8Array): Uint8Array[] =>
+      v.filter((x) => x.habiaDatos && x.ref.length > 1000 && x.ref.buffer !== entrada.buffer).map((x) => x.ref); // sin el buffer de entrada ni las partes pequeñas (`[Content_Types].xml`, relaciones), que xmlDe siempre pone en cero
+
+    it('T-LE-03 B-13 tamaño declarado menor que el real: los trozos ya descomprimidos quedan en cero', () => {
+      const d = construirDocx({ cuerpo: pt(ruido(300_000)) });
+      const falso = parchearCentral(d, 'word/document.xml', 24, 1000);
+      const vistos = espiarFill();
+      expect(codigo(() => leer(falso))).toBe('PARTE_TRUNCADA');
+      const rastro = conDatos(vistos, falso);
+      expect(rastro.length).toBeGreaterThan(0);
+      for (const t of rastro) expect(t.every((x) => x === 0)).toBe(true);
+    });
+
+    it('T-LE-03 B-13 tamaño declarado mayor que el real: la parte no entregada (`out`) queda en cero', () => {
+      const d = construirDocx({ cuerpo: pt(ruido(2000)) });
+      const falso = parchearCentral(d, 'word/document.xml', 24, 1_000_000);
+      const vistos = espiarFill();
+      expect(codigo(() => leer(falso))).toBe('PARTE_TRUNCADA');
+      const rastro = conDatos(vistos, falso);
+      expect(rastro.length).toBeGreaterThan(0);
+      expect(rastro.some((t) => t.length > 500)).toBe(true);
+      for (const t of rastro) expect(t.every((x) => x === 0)).toBe(true);
+    });
+
+    it('T-LE-03 B-13 flujo deflate dañado a mitad de la parte: los trozos previos quedan en cero', () => {
+      const d = construirDocx({ cuerpo: pt(ruido(300_000)) });
+      const roto = d.slice();
+      // Se corrompe el flujo comprimido de word/document.xml (después de la cabecera local) para que falle a mitad de camino.
+      const nombre = strToU8('word/document.xml');
+      let ini = -1;
+      for (let i = 0; i + 30 + nombre.length < roto.length; i++) {
+        if (roto[i] === 0x50 && roto[i + 1] === 0x4b && roto[i + 2] === 3 && roto[i + 3] === 4 && nombre.every((b, k) => roto[i + 30 + k] === b)) { ini = i + 30 + nombre.length; break; }
+      }
+      expect(ini).toBeGreaterThan(0);
+      for (let k = 40_000; k < 40_064; k++) roto[ini + k] = 0xff;
+      const vistos = espiarFill();
+      expect(codigo(() => leer(roto))).not.toBe('NO_LANZA');
+      expect(conDatos(vistos, roto).length).toBeGreaterThan(0);
+      for (const t of conDatos(vistos, roto)) expect(t.every((x) => x === 0)).toBe(true);
+    });
+
+    it('T-LE-03 B-13 camino feliz con varios trozos: se unen, el resultado sale íntegro y los trozos intermedios quedan en cero', () => {
+      const largo = 300_000;
+      const d = construirDocx({ cuerpo: pt(ruido(largo)) });
+      const vistos = espiarFill();
+      const doc = leer(d, { ...LIM, maxXmlPartBytes: 8 * 1024 * 1024, maxUncompressedTotal: 16 * 1024 * 1024 });
+      expect(doc.parts[0]?.text.length).toBe(largo);
+      const rastro = conDatos(vistos, d);
+      expect(rastro.length).toBeGreaterThan(0);
+      expect(rastro.some((t) => t.length > 0 && t.length < largo)).toBe(true); // al menos un trozo intermedio, no solo la parte entera
+    });
+  });
+
   it('ZIP64 malformado y directorio central dañado → ZIP_INVALIDO (nunca un bucle)', () => {
     const real = docMin();
     // Tamaño saturado (0xFFFFFFFF) sin campo extra ZIP64.

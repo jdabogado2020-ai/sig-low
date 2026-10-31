@@ -120,6 +120,8 @@ function inflar(comp: Uint8Array, su: number): Uint8Array {
   const trozos: Uint8Array[] = [];
   let n = 0;
   const inf = new Inflate((c) => { trozos.push(c); n += c.length; });
+  // B-13: los trozos descomprimidos son texto del documento; en cualquier error, o tras unirlos, no quedan en memoria.
+  const ceroTrozos = (): void => { for (const t of trozos) t.fill(0); };
   try {
     let i = 0;
     do {
@@ -129,15 +131,23 @@ function inflar(comp: Uint8Array, su: number): Uint8Array {
       i = fin;
     } while (i < comp.length);
   } catch (e) {
+    ceroTrozos();
     if (e instanceof SiglowError || e instanceof RangeError) throw e;
     // fflate: código 0 = fin inesperado de datos; el resto, flujo deflate inválido.
     const codigo = (e as { code?: unknown } | null)?.code;
     throw new SiglowError(codigo === 0 ? 'PARTE_TRUNCADA' : 'ZIP_INVALIDO');
   }
   if (trozos.length === 1) return trozos[0] ?? new Uint8Array(0);
-  const out = new Uint8Array(n);
+  let out: Uint8Array;
+  try {
+    out = new Uint8Array(n);
+  } catch (e) {
+    ceroTrozos();
+    throw e;
+  }
   let o = 0;
   for (const t of trozos) { out.set(t, o); o += t.length; }
+  ceroTrozos();
   return out;
 }
 
@@ -161,9 +171,10 @@ function leerEntrada(d: Uint8Array, e: EntradaZip, limits: IoLimits, acum: Acumu
   } else {
     throw new SiglowError('ZIP_INVALIDO');
   }
-  if (out.length !== e.su || crc32(out) !== e.crc) throw new SiglowError('PARTE_TRUNCADA');
+  // B-13: si la parte no se entrega (tamaño o CRC falsos, tope total), sus bytes descomprimidos se ponen en cero antes de lanzar.
+  if (out.length !== e.su || crc32(out) !== e.crc) { out.fill(0); throw new SiglowError('PARTE_TRUNCADA'); }
   acum.total += out.length;
-  if (acum.total > limits.maxUncompressedTotal) throw new SiglowError('DESCOMPRIMIDO_EXCEDE_LIMITE');
+  if (acum.total > limits.maxUncompressedTotal) { out.fill(0); throw new SiglowError('DESCOMPRIMIDO_EXCEDE_LIMITE'); }
   acum.consumido += e.sc;
   return out;
 }

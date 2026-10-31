@@ -6,6 +6,8 @@ import { test, expect } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { build, defaultClientConditions } from 'vite';
 
+import { construirDocx, decl, p, pt, r, raiz, tipoRel } from '../fixtures/docx/docx-builder';
+
 const sha256 = (t: string): string => createHash('sha256').update(t).digest('hex');
 
 // Fase mínima de P0-1 (10.5.1). PD-5a y PD-5b agregan el servidor que registra, el señuelo, STUN y las fases.
@@ -74,6 +76,91 @@ test('@cero-red fase pegar: pegar → Procesando → Revisión sin peticiones aj
     expect(decodeURIComponent(p.url)).not.toContain('Ficticia');
     expect(p.cuerpo).not.toContain('Ficticia');
     expect(p.cuerpo).not.toContain('1.000.000.017');
+  }
+});
+
+// Fase «docx» (PE-3-r1, B-14; 10.5.1): crear asunto, cargar un .docx ficticio armado con el docx-builder (cuerpo, encabezado,
+// comentario con autor, texto eliminado, propiedades y un vínculo externo), analizar y llegar a Revisión. 0 peticiones fuera del
+// origen, 0 violaciones de CSP (página y workers, el `io` incluido), 0 mensajes de consola y nada del documento en URL ni cuerpos.
+test('@cero-red fase docx: cargar .docx → Procesando → Revisión sin peticiones ajenas, sin violaciones de CSP (página y workers) ni texto en la red', async ({ page, baseURL }) => {
+  const origen = new URL(baseURL!).origin;
+  const ajenas: string[] = [];
+  const fallidas: string[] = [];
+  const peticiones: Array<{ url: string; cuerpo: string }> = [];
+  const consola: string[] = [];
+  const workers: string[] = [];
+  page.on('request', (rq) => {
+    const u = new URL(rq.url());
+    if (u.origin !== origen && u.protocol !== 'blob:' && u.protocol !== 'data:') ajenas.push(u.origin);
+    peticiones.push({ url: rq.url(), cuerpo: rq.postData() ?? '' });
+  });
+  page.on('requestfailed', (rq) => { fallidas.push(new URL(rq.url()).origin); });
+  page.on('console', (m) => { consola.push(m.type()); });
+  page.on('pageerror', () => { consola.push('pageerror'); });
+  page.on('worker', (w) => {
+    workers.push(w.url());
+    w.on('console', (m) => { consola.push(`worker:${m.type()}`); });
+    // Un worker vive poco: su `securitypolicyviolation` se convierte en un mensaje de consola que sí llega aquí.
+    w.evaluate(() => {
+      addEventListener('securitypolicyviolation', (e) => { console.error(`CSP ${e.violatedDirective}`); });
+    }).catch(() => undefined);
+  });
+  await page.addInitScript(() => {
+    (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
+    addEventListener('securitypolicyviolation', (e) => {
+      (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective);
+    });
+  });
+
+  const tipoMeta = 'http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties';
+  const docx = construirDocx({
+    cuerpo:
+      p(r('Ana Ficticia Rojas, C.C. 1.000.000.017, vive en la Calle 00 n.º 00-00. Correo: ana.ficticia@ejemplo.test.')) +
+      pt('Contrato de Prueba entre Ana Ficticia Rojas y Empresa Ejemplo S.A.S., NIT 000.000.000-0.') +
+      p('<w:del w:id="1" w:author="Revisor Ficticio" w:date="2020-01-01T00:00:00Z"><w:r><w:delText>Clausula eliminada de Ana Ficticia</w:delText></w:r></w:del>') +
+      p('<w:hyperlink r:id="rId99"><w:r><w:t>enlace de prueba</w:t></w:r></w:hyperlink>'),
+    extras: [
+      { nombre: 'cabecera.xml', tipo: 'header', xml: raiz('hdr', pt('Encabezado de Prueba de Ana Ficticia Rojas')) },
+      { nombre: 'comentarios.xml', tipo: 'comments', xml: raiz('comments', `<w:comment w:id="0" w:author="Autora Ejemplo" w:initials="AE" w:date="2020-01-01T00:00:00Z">${pt('Comentario de prueba sobre Ana Ficticia')}</w:comment>`) },
+    ],
+    relacionesDocumento: `<Relationship Id="rId99" Type="${tipoRel('hyperlink')}" Target="https://ejemplo.test/ficticia" TargetMode="External"/>`,
+    relacionesPaquete: `<Relationship Id="rId7" Type="${tipoMeta}" Target="docProps/core.xml"/>`,
+    entradas: {
+      'docProps/core.xml': `${decl}<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:creator>Autora Ejemplo</dc:creator></cp:coreProperties>`,
+    },
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+  await page.getByLabel('Código del asunto').fill('PRUEBA-DOCX');
+  await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
+  await page.getByRole('button', { name: 'Crear asunto' }).click();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await page.getByRole('tab', { name: 'Cargar archivo' }).click();
+  await page.locator('input[type="file"]').setInputFiles({
+    name: 'Contrato de Prueba.docx',
+    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    buffer: Buffer.from(docx),
+  });
+  await expect(page.locator('[data-prueba="archivo-cargado"]')).toContainText('Archivo cargado: .docx, ', { timeout: 15_000 });
+  await expect(page.getByRole('checkbox', { name: /^Encabezado 1 · \d+ caracteres$/ })).toBeChecked();
+  await expect(page.getByRole('checkbox', { name: /^Comentario 1 · \d+ caracteres$/ })).toBeChecked();
+  await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 15_000 });
+
+  const violaciones = await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones);
+  expect(workers.some((u) => /io/.test(new URL(u).pathname))).toBe(true); // la lectura corrió en el worker `io` del mismo origen
+  expect(workers.every((u) => new URL(u).origin === origen)).toBe(true);
+  expect(ajenas).toEqual([]);
+  expect(fallidas).toEqual([]);
+  expect(violaciones).toEqual([]);
+  expect(consola.filter((c) => c.endsWith('error') || c.endsWith('warning') || c === 'pageerror')).toEqual([]);
+  for (const q of peticiones) {
+    const url = decodeURIComponent(q.url);
+    for (const secreto of ['Ficticia', 'Rojas', '1.000.000.017', 'ejemplo.test', 'Autora Ejemplo', 'Revisor', 'Contrato de Prueba']) {
+      expect(url).not.toContain(secreto);
+      expect(q.cuerpo).not.toContain(secreto);
+    }
   }
 });
 
