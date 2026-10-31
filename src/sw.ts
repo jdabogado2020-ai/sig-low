@@ -130,13 +130,23 @@ function conCabeceras(r: Response, ruta: string, v: Version): Response {
   return new Response(r.body, { status: 200, statusText: 'OK', headers: cabecerasDe(ruta, v) });
 }
 
+/**
+ * ÚNICA salida a la red del service worker (B-19; check-dist admite un solo `fetch(` en sw.js). La usan la instalación y el
+ * archivo faltante del precache (`cache: 'reload'`) y la descarga del modelo (`cache: 'no-store'`, con `signal`). Nunca se relaja:
+ * GET, ruta del propio sitio sin query (la misma forma que la lista), sin credenciales, sin referente y una redirección es un error.
+ */
+function pedirAlOrigen(ruta: string, cache: 'reload' | 'no-store', signal?: AbortSignal): Promise<Response> {
+  if (!RUTA.test(ruta)) throw new TypeError('RUTA');
+  return fetch(new URL(ruta, self.location.origin).href, {
+    method: 'GET', cache, credentials: 'omit', mode: 'same-origin', redirect: 'error', referrerPolicy: 'no-referrer', ...(signal ? { signal } : {}),
+  });
+}
+
 /** Pide al propio origen un archivo de la lista y lo devuelve solo si su SHA-256 es el esperado. */
 async function traerVerificado(ruta: string, v: Version): Promise<Response | null> {
   if (ruta === RUTA_LISTA) return new Response(v.lista.slice(), { status: 200, headers: { 'Content-Type': 'application/json' } });
   try {
-    const r = await fetch(new URL(ruta, self.location.origin).href, {
-      cache: 'reload', credentials: 'omit', mode: 'same-origin', redirect: 'error', referrerPolicy: 'no-referrer',
-    });
+    const r = await pedirAlOrigen(ruta, 'reload');
     if (r.status !== 200 || r.type !== 'basic') return null;
     const cuerpo = await r.arrayBuffer();
     if ((await sha256Hex(cuerpo)) !== v.hashes.get(ruta)) return null;
@@ -351,10 +361,7 @@ async function descargarArchivo(m: ManifiestoSw, a: ArchivoModelo, puerto: Messa
     const bytes = new Uint8Array(a.tamano); // búfer del tamaño declarado: lo que sobre o falte es una alteración
     let escrito = 0;
     try {
-      const res = await fetch(new URL(url, self.location.origin).href, {
-        method: 'GET', cache: 'no-store', credentials: 'omit', mode: 'same-origin', redirect: 'error', referrerPolicy: 'no-referrer',
-        signal: control.signal,
-      });
+      const res = await pedirAlOrigen(url, 'no-store', control.signal);
       if (res.status !== 200 || res.type !== 'basic' || !res.body) return { ok: false, code: 'MODELO_NO_DESCARGADO' };
       const lector = res.body.getReader();
       let ultimo = 0;

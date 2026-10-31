@@ -307,6 +307,12 @@ describe('T-PV-07 · manifiestos del modelo versionados (principal: 25 trozos; r
     expect(sw).toContain(`const MAX_TROZO = ${String(MAX_TROZO).replace(/(\d)(?=(\d{3})+$)/g, '$1_')};`);
     expect(sw).toContain(`const ONNX = '${RUTA_ONNX}';`);
   });
+  it('T-PV-07 el .gitignore de la raíz deja fuera trozos y auxiliares y conserva los manifiestos (y no queda un .gitignore dentro de public/models)', () => {
+    const g = readFileSync('.gitignore', 'utf8').split(/\r?\n/).map((l) => l.trim());
+    expect(g).toContain('public/models/*/*');
+    expect(g).toContain('!public/models/*/manifest.json');
+    expect(readdirSync(join('public', 'models')).filter((n) => n.startsWith('.'))).toEqual([]);
+  });
   it('T-PV-07 clasificar(): solo los manifiestos del modelo entran al precache; trozos y auxiliares quedan fuera; lo demás detiene el build', () => {
     expect(clasificar('models/gliner-x-large/manifest.json')).toBe('precache');
     expect(clasificar('models/gliner-x-base/manifest.json')).toBe('precache');

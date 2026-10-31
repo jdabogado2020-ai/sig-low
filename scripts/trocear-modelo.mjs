@@ -5,7 +5,7 @@
 //                                   [--sin-trozos] [--verificar]
 //
 // - Por defecto escribe en public/models/<id>/: `manifest.json` (se versiona), los trozos en `onnx/` y los dos auxiliares
-//   que el motor necesita (`tokenizer.json`, `tokenizer_config.json`). public/models/.gitignore deja fuera todo menos el
+//   que el motor necesita (`tokenizer.json`, `tokenizer_config.json`). el .gitignore de la raíz deja fuera todo menos el
 //   manifiesto: los artefactos se regeneran en cada despliegue desde este script.
 // - `--sin-trozos` escribe solo el manifiesto (el cálculo es el mismo: los hashes salen del archivo de origen).
 // - `--verificar` no escribe: recalcula el manifiesto y falla si difiere del versionado (exit 1).

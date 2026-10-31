@@ -1,5 +1,0 @@
-# Artefactos del modelo: se generan con scripts/trocear-modelo.mjs; solo se versionan los manifiestos (PF-2)
-*/*
-!*/
-!*/manifest.json
-!.gitignore

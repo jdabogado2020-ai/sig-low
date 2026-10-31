@@ -8,5 +8,6 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
-# Artefactos del modelo: se generan desde h0/ con scripts/trocear-modelo.mjs (PF-2)
-public/models/*/onnx/
+# Artefactos del modelo: se generan desde h0/ con scripts/trocear-modelo.mjs (PF-2); solo se versionan los manifiestos
+public/models/*/*
+!public/models/*/manifest.json

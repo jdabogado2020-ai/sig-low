@@ -43,7 +43,6 @@ export function clasificar(rel: string): 'precache' | 'fuera' | null {
   // Modelo (PF-2, 3.2): solo los dos manifiestos entran al precache (con ellos el SW arma la lista blanca del modelo y la
   // tarjeta muestra el tamaño real sin red). Los trozos y los auxiliares se descargan a pedido a siglow-modelo-<sha>: fuera.
   if (/^models\/(gliner-x-large|gliner-x-base)\/manifest\.json$/.test(rel)) return 'precache';
-  if (rel === 'models/.gitignore') return 'fuera'; // reglas de git de public/models/ (los artefactos no se versionan)
   if (/^models\/(gliner-x-large|gliner-x-base)\/(onnx\/model_quantized\.onnx\.part\d{3}|tokenizer\.json|tokenizer_config\.json)$/.test(rel)) return 'fuera';
   return null;
 }
