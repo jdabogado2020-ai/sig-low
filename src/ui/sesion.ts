@@ -1,7 +1,7 @@
 // Estado en memoria [M] de la sesión (6.6.5): lista del caso y tabla de correspondencia en claro.
 // Se vacía en bloqueo, «Cerrar asunto», `pagehide` y «Borrar todo» (INV-G09). Nunca se serializa: solo la bóveda
 // (módulo `vault`, cifrado) puede persistirla. Las demás pantallas registran aquí lo que deben vaciar con registrarLimpieza().
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useState } from 'preact/hooks';
 import type { AsuntoId, CaseEntity, MappingTable } from '../core/types.ts';
 import type { MessageId, MsgParam } from './mensajes.ts';
 
@@ -64,6 +64,12 @@ export function marcarFraseEscrita(formulario: object, escrita: boolean): void {
 }
 export function hayFraseEscrita(): boolean {
   return frasesEscritas.size > 0;
+}
+/** El formulario que lo usa cuenta como «frase escrita» mientras `escrita` sea true y esté montado (M-7). */
+export function useFraseEscrita(escrita: boolean): void {
+  const [formulario] = useState(() => ({}));
+  useLayoutEffect(() => { marcarFraseEscrita(formulario, escrita); }, [formulario, escrita]);
+  useLayoutEffect(() => () => { marcarFraseEscrita(formulario, false); }, [formulario]);
 }
 /**
  * Vacía todo el estado [M] (INV-G09). Cada limpieza registrada corre aunque otra falle. Inicio registra la suya: vuelve a montar

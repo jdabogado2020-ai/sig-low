@@ -8,7 +8,7 @@ import { evaluarFrase } from './frase.ts';
 import { alterno, mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
 import { tomarPreseleccion } from './boveda/preseleccion.ts';
 import { persistenciaDelModelo } from './modelo-puerto.ts';
-import { agregarAvisoAsunto, fijarListaDelCaso, fijarTabla, marcarFraseEscrita, registrarLimpieza, tablaVacia } from './sesion.ts';
+import { agregarAvisoAsunto, fijarListaDelCaso, fijarTabla, registrarLimpieza, tablaVacia, useFraseEscrita } from './sesion.ts';
 import { codigoDeError, puertos, type AsuntoListado } from './servicios.ts';
 
 const REGEX_CODIGO = /^(?=.*[A-Za-z0-9])[A-Za-z0-9 ._/-]{1,40}$/u;
@@ -22,13 +22,6 @@ function useGeneracionDeFormularios(): number {
   const [n, setN] = useState(0);
   useLayoutEffect(() => registrarLimpieza(() => { setN((x) => x + 1); }), []);
   return n;
-}
-
-/** M-7: un formulario con la frase escrita hace correr el bloqueo por inactividad aunque no haya asunto abierto. */
-function useFraseEscrita(escrita: boolean): void {
-  const [formulario] = useState(() => ({}));
-  useLayoutEffect(() => { marcarFraseEscrita(formulario, escrita); }, [formulario, escrita]);
-  useLayoutEffect(() => () => { marcarFraseEscrita(formulario, false); }, [formulario]);
 }
 
 function useAvisoInicio() {
