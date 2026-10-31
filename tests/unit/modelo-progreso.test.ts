@@ -458,6 +458,27 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
     expect(modelo(bien(incorporarModelo(manualRechazada, 1, 1, w1, ctx)))).toEqual([`${NOMBRE}:media:pendiente`]);
   });
 
+  it('INV-R12 B-55 (PB-4-r1) el usuario marca a mano un tramo que corta una palabra («Ficticia Gó», «Fic»): el resto en minúscula entra y no quedan letras a la vista', async () => {
+    const doc = documento([T]);
+    const b = banco();
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await b.enviar('detectar', { sessionId: 'ses_1', doc, caseList: [], table: TABLA, options: OPCIONES }));
+    const ctx = ctxDe(doc);
+    const st0 = estadoDe(doc, det.set);
+    const desde = T.indexOf(NOMBRE);
+    const w1 = await ventana(b, 1, 1, { [PRT(1)]: [tramo(T, NOMBRE, 'PER', 0.95)] });
+    const corte = (sub: string): ReviewState => {
+      const i = T.indexOf(sub, desde);
+      return bien(applyReviewAction(st0, { kind: 'agregar_manual', span: { partId: PRT(1), start: i, end: i + sub.length }, type: 'PERSONA', propagate: false }, ctx));
+    };
+    // Con el código anterior, «Ficticia Gó» dejaba «mez» a la vista: el resto empieza en minúscula y 7.11.2 lo descartaba.
+    for (const [sub, restos] of [['Ficticia Gó', ['Pedro Luis:baja:pendiente', 'mez:baja:pendiente']],
+      ['Fic', ['Pedro Luis:baja:pendiente', 'ticia Gómez:baja:pendiente']]] as const) {
+      const despues = bien(incorporarModelo(corte(sub), 1, 1, w1, ctx));
+      expect(modelo(despues), sub).toEqual([...restos].sort());
+      expect(letrasALaVista(doc, despues, desde, NOMBRE.length), sub).toEqual([]);
+    }
+  });
+
   it('INV-R12 D-03 E la detección de la lista intacta toma el nombre completo del modelo por ventana; tras una acción, el resto entra aparte', async () => {
     const t = 'La demandante Ana Ficticia Rojas Prueba presentó la tutela.';
     const caseList = refreshVariants([newCaseEntity('Ana Ficticia Rojas', 'persona', 'DEMANDANTE', ids) as CaseEntity]);

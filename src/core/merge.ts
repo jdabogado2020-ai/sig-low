@@ -70,6 +70,8 @@ const RE_WORD_SPLIT = /[\s\p{P}\p{S}]+/u;
 const RE_EDGE_LEFT = /^[\s\p{P}\p{S}]*/u;
 const RE_EDGE_CHAR = /^[\s\p{P}\p{S}]$/u;
 const RE_LETTER_OR_DIGIT = /[\p{L}\p{N}]/u;
+/** B-55 · Letra (o marca combinante) a un lado del borde de un resto: el corte cayó dentro de una palabra. */
+const RE_LETTER_ONLY = /[\p{L}\p{M}]/u;
 
 /**
  * D-06 decisión 5 (7.11.1, corrección del 31-oct) · Tipos de las reglas estructurales que absorben una detección de la lista de
@@ -214,8 +216,12 @@ export function resolveRemainder(part: Part, c: DetectionCandidate | MergedCandi
       if (t === null) return null;
       const ns = s0 + t.start; const ne = s0 + t.end;
       const sub = text.slice(ns, ne);
-      if ([...sub].length < 2) return null;
-      const named = sub.split(RE_WORD_SPLIT).some((w) => RE_UPPER_INITIAL.test(w) && !FW_SET.has(fold(w, part.kind)));
+      // B-55 (PB-4-r1, 7.11.2) · Un resto que continúa una palabra cortada (letra a los dos lados del borde: la detección del usuario
+      // «Ficticia Gó» dentro de «Gómez») es la cola de una palabra que el modelo vio entera: no se le exige mayúscula inicial ni largo.
+      const corta = (ns === s0 && s0 > 0 && RE_LETTER_ONLY.test(text.charAt(s0 - 1)) && RE_LETTER_ONLY.test(text.charAt(s0)))
+        || (ne === e0 && e0 < text.length && RE_LETTER_ONLY.test(text.charAt(e0 - 1)) && RE_LETTER_ONLY.test(text.charAt(e0)));
+      if ([...sub].length < 2 && !corta) return null;
+      const named = corta || sub.split(RE_WORD_SPLIT).some((w) => RE_UPPER_INITIAL.test(w) && !FW_SET.has(fold(w, part.kind)));
       if (!named) return null;
       return finish({ ...base, start: ns, end: ne, confidence: 'baja', canonicalKey: remainderKeyFromModel(base, sub, part.kind) }, text);
     }
