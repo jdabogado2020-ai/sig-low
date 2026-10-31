@@ -5,6 +5,7 @@ import { Inicio } from './Inicio.tsx';
 import { Entrada } from './Entrada.tsx';
 import { ListaCaso } from './ListaCaso.tsx';
 import { Procesando } from './Procesando.tsx';
+import { RevisionBase } from './review/base/RevisionBase.tsx';
 import { useShell, type Screen } from './estado.ts';
 import { NOMBRE_PANTALLA } from './Armazon.tsx';
 import { t } from './mensajes.ts';
@@ -19,6 +20,7 @@ export const PANTALLAS: Partial<Record<Screen, ComponentType>> = {
   lista: ListaCaso,
   entrada: Entrada,
   procesando: Procesando,
+  revision: RevisionBase,
 };
 
 export function componenteDe(pantalla: Screen): ComponentType {

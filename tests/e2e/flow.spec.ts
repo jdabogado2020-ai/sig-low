@@ -1,3 +1,6 @@
+import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
+import { existsSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { test, expect, type Page } from '@playwright/test';
 import {
   configurarSimulador, DOCUMENTO_DE_TRES_PARTES, instalarSimulador, leerSimulador, soltarRetenidos,
@@ -705,5 +708,321 @@ test.describe('T-IU-05 Procesando: progreso por etapa, cancelar y errores', () =
     await analizar(page).click();
     await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole('heading', { level: 1, name: 'Procesando' })).toHaveCount(0);
+  });
+});
+
+// ===== PC-3 · Revisión I (8.2.6, 8.4, 8.6) =====
+// Estas pruebas usan un `DetectionSet` fijo que sale del build de medición (`vite build --mode medicion`, ranura del gancho), nunca de
+// `dist/`: la prueba lo construye si está desactualizado y lo sirve con el mismo servidor de cabeceras en otro puerto. Datos ficticios.
+
+const PUERTO_MEDICION = Number(process.env.PORT ?? 4173) + 100;
+const URL_MEDICION = `http://127.0.0.1:${PUERTO_MEDICION}`;
+let servidorMedicion: ChildProcess | undefined;
+
+function masNuevo(dir: string): number {
+  let m = 0;
+  for (const n of readdirSync(dir)) {
+    const p = join(dir, n);
+    const s = statSync(p);
+    m = Math.max(m, s.isDirectory() ? masNuevo(p) : s.mtimeMs);
+  }
+  return m;
+}
+async function levantarMedicion(): Promise<void> {
+  const indice = join('dist-medicion', 'index.html');
+  if (!existsSync(indice) || statSync(indice).mtimeMs < masNuevo('src')) {
+    const r = spawnSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build', '--mode', 'medicion'], { stdio: 'ignore' });
+    if (r.status !== 0) throw new Error('No se pudo construir el build de medición');
+  }
+  servidorMedicion = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', 'dist-medicion', '--port', String(PUERTO_MEDICION)], { stdio: 'ignore' });
+  for (let i = 0; i < 50; i++) {
+    try { if ((await fetch(URL_MEDICION + '/')).ok) return; } catch { /* aún no escucha */ }
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  throw new Error('El servidor de medición no respondió');
+}
+
+const TEXTO_REVISION = [
+  'Señora Ana Ficticia Rojas, identificada con cédula de ciudadanía número 1.000.000.001, correo ana.ficticia@ejemplo.test, teléfono 3000000000.',
+  'El demandado Pedro Ejemplo Prueba, con cédula 1.000.000.002, vive en la Calle 100 # 00-00 de Bogotá.',
+  'La señora Ana Ficticia Rojas solicitó el reemplazo. Contacto: 3000000000.',
+].join('\n');
+
+type Gancho = {
+  cargar(texto: string, modelo?: string): Promise<number>;
+  revision(): number;
+  estado(): { revision: number; estados: Record<string, number> };
+  detalle(): Array<{ texto: string; source: string; precedence: number; confidence: string; status: string; type: string }>;
+};
+const gancho = (page: Page) => ({
+  revision: () => page.evaluate(() => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.revision()),
+  estado: () => page.evaluate(() => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.estado()),
+  detalle: () => page.evaluate(() => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.detalle()),
+});
+
+async function abrirRevision(page: Page, texto = TEXTO_REVISION, lista = 'Ana Ficticia Rojas; demandante\nPedro Ejemplo Prueba; demandado'): Promise<number> {
+  await abrirInicio(page);
+  await crearAsunto(page);
+  if (lista !== '') {
+    await pegarLista(page, lista);
+    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
+  }
+  await page.waitForFunction(() => '__siglowRevisionPrueba' in globalThis);
+  const n = await page.evaluate((t) => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.cargar(t, 'plan_b'), texto);
+  await expect(h1(page, 'Revisión')).toBeVisible();
+  return n;
+}
+const panelTexto = (page: Page) => page.getByRole('region', { name: 'Documento con detecciones' });
+
+/** Selecciona texto del panel entre dos tramos (por fragmento y desplazamiento) y simula el fin del arrastre con el ratón. */
+async function seleccionarEnPanel(page: Page, inicio: [string, number], fin: [string, number]): Promise<void> {
+  await page.evaluate(([a, b]) => {
+    const panel = document.querySelector('[data-prueba="panel-texto"]') as HTMLElement;
+    const nodo = (frag: string): Text => {
+      const run = [...panel.querySelectorAll('[data-o]')].find((r) => (r.textContent ?? '').includes(frag)) as HTMLElement;
+      return run.firstChild as Text;
+    };
+    const na = nodo(a[0] as string);
+    const nb = nodo(b[0] as string);
+    const rango = document.createRange();
+    rango.setStart(na, (na.textContent ?? '').indexOf(a[0] as string) + (a[1] as number));
+    rango.setEnd(nb, (nb.textContent ?? '').indexOf(b[0] as string) + (b[1] as number));
+    const sel = getSelection() as Selection;
+    sel.removeAllRanges();
+    sel.addRange(rango);
+    panel.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+  }, [inicio, fin] as const);
+}
+
+test.describe('Revisión I (PC-3)', () => {
+  test.describe.configure({ timeout: 90_000 });
+  test.use({ baseURL: URL_MEDICION });
+  test.beforeAll(async () => { await levantarMedicion(); });
+  test.afterAll(() => { servidorMedicion?.kill(); });
+
+  test('T-IU-05 la Revisión muestra el texto con resaltados por tipo y M-70; sin detecciones muestra M-69 (INV-G03)', async ({ page }) => {
+    const n = await abrirRevision(page);
+    expect(n).toBe(9);
+    const panel = panelTexto(page);
+    await expect(panel.locator('[data-det]')).toHaveCount(9);
+    await expect(page.locator('[data-prueba="numeracion-provisional"]')).toHaveText('Los números de los marcadores pueden cambiar hasta que copie o exporte por primera vez.');
+    await expect(panel.getByRole('button', { name: 'Persona, pendiente, confianza alta: Ana Ficticia Rojas' }).first()).toBeVisible();
+    await expect(page.getByRole('treegrid', { name: 'Detecciones' })).toBeVisible();
+    await expect(page.getByRole('row', { name: 'Persona, [DEMANDANTE_1], 2 menciones, 2 pendientes' })).toBeVisible();
+    // Sin detecciones: M-69 y ningún resaltado.
+    const sin = await page.evaluate(() => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.cargar('Texto de prueba sin datos personales.', 'plan_b'));
+    expect(sin).toBe(0);
+    await expect(page.locator('[data-prueba="sin-detecciones"]')).toHaveText('No se encontraron datos para reemplazar. Lea el texto completo: puede agregar reemplazos a mano.');
+    await expect(panel.locator('[data-det]')).toHaveCount(0);
+  });
+
+  test('T-IU-05 INV-R08: aceptar, rechazar, editar y restablecer con el teclado suben revision en 1 por acción y cambian el estado', async ({ page }) => {
+    await abrirRevision(page);
+    const panel = panelTexto(page);
+    const marcas = panel.locator('[data-det]');
+    expect(await gancho(page).revision()).toBe(0);
+    await marcas.nth(0).focus();
+    await page.keyboard.press('a');
+    await expect(marcas.nth(0)).toHaveAccessibleName('Persona, aceptada como [DEMANDANTE_1], confianza alta: Ana Ficticia Rojas');
+    expect(await gancho(page).revision()).toBe(1);
+    await marcas.nth(1).focus();
+    await page.keyboard.press('r');
+    await expect(marcas.nth(1)).toHaveAccessibleName(/^Cédula de ciudadanía, rechazada, confianza \w+: 1\.000\.000\.001$/);
+    expect(await gancho(page).revision()).toBe(2);
+    await page.keyboard.press('u');
+    await expect(marcas.nth(1)).toHaveAccessibleName(/^Cédula de ciudadanía, pendiente, /);
+    expect(await gancho(page).revision()).toBe(3);
+    await page.keyboard.press('e');
+    const editor = page.getByLabel('Texto del reemplazo');
+    await expect(editor).toBeFocused();
+    await editor.fill('REEMPLAZO FICTICIO');
+    await page.keyboard.press('Enter');
+    await expect(marcas.nth(1)).toHaveAccessibleName(/^Cédula de ciudadanía, editada como REEMPLAZO FICTICIO, /);
+    await expect(marcas.nth(1)).toBeFocused();
+    expect(await gancho(page).revision()).toBe(4);
+    // Esc cancela una edición sin tocar el estado.
+    await page.keyboard.press('e');
+    await page.getByLabel('Texto del reemplazo').fill('OTRO');
+    await page.keyboard.press('Escape');
+    await expect(page.getByLabel('Texto del reemplazo')).toHaveCount(0);
+    expect(await gancho(page).revision()).toBe(4);
+    // Los botones de la fila de la cuadrícula.
+    const entidad = page.getByRole('row', { name: /^Persona, \[DEMANDANTE_1\], 2 menciones, / });
+    await entidad.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(entidad).toHaveAttribute('aria-expanded', 'true');
+    await page.getByRole('button', { name: 'Rechazar mención 2 de Persona' }).click();
+    expect(await gancho(page).revision()).toBe(5);
+    await expect(marcas.nth(7)).toHaveAccessibleName(/^Persona, rechazada, /);
+  });
+
+  test('T-IU-05 INV-R06 INV-R08: «Aceptar todas las menciones» solo acepta las pendientes de esa entidad y anuncia M-74', async ({ page }) => {
+    await abrirRevision(page);
+    const antes = await gancho(page).estado();
+    expect(antes.estados).toEqual({ pendiente: 9 });
+    await page.getByRole('button', { name: 'Aceptar todas las menciones (2) de Persona' }).first().click();
+    const despues = await gancho(page).estado();
+    expect(despues.revision).toBe(1);
+    expect(despues.estados).toEqual({ aceptada: 2, pendiente: 7 });
+    await expect(page.locator('[data-prueba="anuncio-revision"]')).toHaveText('Se aceptaron 2 menciones de [DEMANDANTE_1]. Quedan 7 pendientes.');
+    await expect(page.getByRole('row', { name: 'Persona, [DEMANDANTE_1], 2 menciones, 0 pendientes' })).toBeVisible();
+    // Rechazar todas las de otra entidad.
+    await page.getByRole('button', { name: 'Rechazar todas las menciones de Teléfono' }).click();
+    expect((await gancho(page).estado()).estados).toEqual({ aceptada: 2, rechazada: 2, pendiente: 5 });
+    expect(await gancho(page).revision()).toBe(2);
+  });
+
+  test('T-IU-08 INV-R06: la Revisión no ofrece aceptar todo el documento; «aceptar todas las menciones de la entidad» sí, una por entidad', async ({ page }) => {
+    await abrirRevision(page);
+    await expect(page.getByRole('button', { name: /aceptar todo|aceptar todas las (detecciones|menciones) del documento|aceptar el documento/i })).toHaveCount(0);
+    const porEntidad = page.getByRole('button', { name: /^Aceptar todas las menciones \(\d+\) de / });
+    const filas = page.locator('[role="row"][aria-level="1"]');
+    await expect(porEntidad).toHaveCount(await filas.count());
+    // Ninguna acción cambia a la vez el estado de todas las detecciones: tres entidades aceptadas dejan el resto pendiente.
+    for (let i = 0; i < 3; i++) await porEntidad.nth(i).click();
+    const e = (await gancho(page).estado()).estados;
+    expect(e['pendiente'] ?? 0).toBeGreaterThan(0);
+  });
+
+  test('T-IU-05 reemplazo manual: la selección abre «Agregar reemplazo» y crea una detección manual con precedence 1 (+1 revision)', async ({ page }) => {
+    await abrirRevision(page);
+    const r0 = await gancho(page).revision();
+    await seleccionarEnPanel(page, ['solicitó el reemplazo', 12], ['solicitó el reemplazo', 21]);
+    await page.getByRole('button', { name: 'Agregar reemplazo' }).click();
+    const dialogo = page.getByRole('dialog', { name: 'Agregar reemplazo' });
+    await expect(dialogo.locator('[data-prueba="reemplazo-texto"]')).toHaveText('reemplazo');
+    await dialogo.getByLabel('Tipo de dato del reemplazo').selectOption('LUGAR');
+    await dialogo.getByRole('button', { name: 'Agregar reemplazo' }).click();
+    await expect(dialogo).toBeHidden();
+    const d = (await gancho(page).detalle()).find((x) => x.source === 'manual');
+    expect(d).toMatchObject({ texto: 'reemplazo', source: 'manual', precedence: 1, confidence: 'alta', status: 'aceptada', type: 'LUGAR' });
+    expect(await gancho(page).revision()).toBe(r0 + 1);
+    await expect(panelTexto(page).locator('[data-det]', { hasText: 'reemplazo' })).toHaveAccessibleName(/^Lugar, aceptada como \[[A-ZÁÉÍÓÚ_]+_\d+\], confianza alta: reemplazo$/);
+  });
+
+  test('T-IU-05 INV-R08: una selección que corta a medias otra detección da M-603 y no cambia revision', async ({ page }) => {
+    await abrirRevision(page);
+    const r0 = await gancho(page).revision();
+    await seleccionarEnPanel(page, ['Ana Ficticia Rojas', 4], [', identificada con', 8]);
+    await page.getByRole('button', { name: 'Agregar reemplazo' }).click();
+    const dialogo = page.getByRole('dialog', { name: 'Agregar reemplazo' });
+    await dialogo.getByRole('button', { name: 'Agregar reemplazo' }).click();
+    await expect(dialogo.getByRole('alert')).toHaveText('La selección corta a medias otra detección. Amplíela para cubrirla completa o ajústela para no tocarla.');
+    expect(await gancho(page).revision()).toBe(r0);
+    await dialogo.getByRole('button', { name: 'Cancelar' }).click();
+    await expect(dialogo).toBeHidden();
+  });
+
+  test('T-IU-05 «Descartar documento» pide M-75, borra la revisión y vuelve a Entrada; Bloquear vacía la memoria (INV-G09)', async ({ page }) => {
+    await abrirRevision(page);
+    await page.getByRole('button', { name: 'Descartar documento' }).click();
+    const d = page.getByRole('dialog', { name: 'Descartar documento' });
+    await expect(d).toContainText('Se descartará este documento y su revisión. La tabla del asunto no cambia.');
+    await d.getByRole('button', { name: 'Cancelar' }).click();
+    await expect(h1(page, 'Revisión')).toBeVisible();
+    await page.getByRole('button', { name: 'Descartar documento' }).click();
+    await page.getByRole('dialog', { name: 'Descartar documento' }).getByRole('button', { name: 'Descartar documento' }).click();
+    await expect(h1(page, 'Entrada')).toBeVisible();
+    expect(await gancho(page).revision()).toBe(-1);
+    // Bloquear con una revisión abierta.
+    await page.evaluate((t) => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.cargar(t, 'plan_b'), TEXTO_REVISION);
+    await expect(h1(page, 'Revisión')).toBeVisible();
+    await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+    await expect(h1(page, 'Inicio')).toBeVisible();
+    expect(await gancho(page).revision()).toBe(-1);
+    await expect(page.locator('body')).not.toContainText('Ana Ficticia Rojas');
+    await expect(page.locator('body')).not.toContainText('Pedro Ejemplo');
+  });
+
+  test('T-IU-04 copia desde el original: escribe solo text/plain tomado de Part.text, sin insignias ni marcadores; «Ver salida» no se copia (8.7)', async ({ page }) => {
+    await abrirRevision(page);
+    await seleccionarEnPanel(page, ['Señora', 0], [', identificada con cédula de ciudadanía número ', 20]);
+    const r = await page.evaluate(() => {
+      const panel = document.querySelector('[data-prueba="panel-texto"]') as HTMLElement;
+      const dt = new DataTransfer();
+      const ev = new ClipboardEvent('copy', { clipboardData: dt, bubbles: true, cancelable: true });
+      panel.dispatchEvent(ev);
+      return { tipos: [...dt.types], texto: dt.getData('text/plain'), prevenido: ev.defaultPrevented };
+    });
+    expect(r.prevenido).toBe(true);
+    expect(r.tipos).toEqual(['text/plain']);
+    expect(r.texto).toBe(TEXTO_REVISION.slice(0, TEXTO_REVISION.indexOf(', identificada con cédula de ciudadanía número ') + 20));
+    expect(r.texto).not.toMatch(/PER|\[/);
+    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await expect(page.locator('[data-prueba="aviso-salida"]')).toContainText('La salida se puede copiar cuando se cumplan las condiciones del paso Listo');
+    await expect(panelTexto(page)).toHaveCount(0);
+    const salida = page.getByRole('region', { name: 'Documento con los marcadores como fichas' });
+    await expect(salida.getByRole('img', { name: 'Marcador [DEMANDANTE_1]' }).first()).toBeVisible();
+    const s = await page.evaluate(() => {
+      const panel = document.querySelector('[data-prueba="panel-texto"]') as HTMLElement;
+      const dt = new DataTransfer();
+      const ev = new ClipboardEvent('copy', { clipboardData: dt, bubbles: true, cancelable: true });
+      panel.dispatchEvent(ev);
+      const drag = new DragEvent('dragstart', { bubbles: true, cancelable: true });
+      panel.dispatchEvent(drag);
+      return { tipos: [...dt.types], prevenido: ev.defaultPrevented, drag: drag.defaultPrevented, sel: getComputedStyle(panel).userSelect };
+    });
+    expect(s).toEqual({ tipos: [], prevenido: true, drag: true, sel: 'none' });
+    await expect(salida).not.toContainText('Ana Ficticia');
+  });
+
+  test('T-IU-05 virtualización (8.8): con más de 1.000 detecciones solo se montan unos pocos bloques y filas, y la navegación monta lo no montado', async ({ page }) => {
+    const lineas = Array.from({ length: 560 }, (_, i) => `Línea ${i}: Pedro Ejemplo Prueba, cédula 1.000.${String(i).padStart(3, '0')}.${String((i * 7) % 1000).padStart(3, '0')}.`);
+    const n = await abrirRevision(page, lineas.join('\n'));
+    expect(n).toBeGreaterThan(1000);
+    expect(await page.locator('.bloque-texto').count()).toBeLessThanOrEqual(5);
+    expect(await panelTexto(page).locator('[data-det]').count()).toBeLessThan(250);
+    expect(await page.getByRole('treegrid').getByRole('row').count()).toBeLessThan(40);
+    await expect(page.getByRole('treegrid')).toHaveAttribute('aria-rowcount', /^\d+$/);
+    // Una tecla sobre un resaltado actúa sobre el estado, no sobre el DOM; «Mayús+N» va al último pendiente aunque no esté montado.
+    const primero = panelTexto(page).locator('[data-det]').first();
+    await primero.focus();
+    await page.keyboard.press('a');
+    expect((await gancho(page).estado()).estados['aceptada']).toBe(1);
+    await page.keyboard.press('Shift+N');
+    await expect.poll(() => page.evaluate(() => (document.activeElement as HTMLElement | null)?.getAttribute('aria-label') ?? '')).toMatch(/pendiente/);
+    await expect(panelTexto(page).locator('[data-det]').last()).toBeVisible();
+    expect(await page.locator('.bloque-texto').count()).toBeLessThanOrEqual(5);
+  });
+
+  test('T-IU-05 marcador específico de TI: pasa de [DOCUMENTO_n] a [TI_n], restituye el rótulo y se deshace (M-177, M-178)', async ({ page }) => {
+    await abrirRevision(page, 'El menor Juan Ejemplo Prueba, con T.I. 1.000.000.003, y su madre, con C.E. 1.000.000.004.', '');
+    const panel = panelTexto(page);
+    await expect(panel.locator('.res.edicion')).toHaveCount(2);
+    const ti = panel.getByRole('button', { name: /^Tarjeta de identidad, pendiente/ });
+    await ti.click();
+    const ficha = page.getByRole('region', { name: 'Ficha de la detección' });
+    await expect(ficha.locator('[data-prueba="ficha-marcador"]')).toHaveText('[DOCUMENTO_1]');
+    const r0 = await gancho(page).revision();
+    await ficha.getByRole('button', { name: 'Usar marcador específico (TI)' }).click();
+    await expect(ficha.locator('[data-prueba="ficha-marcador"]')).toHaveText('[TI_1]');
+    await expect(panel.locator('.res.edicion')).toHaveCount(1);
+    await expect(page.locator('[data-prueba="anuncio-revision"]')).toHaveText('Marcador específico aplicado: [TI_1].');
+    expect(await gancho(page).revision()).toBe(r0 + 1);
+    await ficha.getByRole('button', { name: 'Volver al marcador general' }).click();
+    await expect(ficha.locator('[data-prueba="ficha-marcador"]')).toHaveText('[DOCUMENTO_1]');
+    await expect(panel.locator('.res.edicion')).toHaveCount(2);
+    await expect(page.locator('[data-prueba="anuncio-revision"]')).toHaveText('Marcador general restablecido: [DOCUMENTO_1].');
+  });
+
+  test('T-IU-05 detecciones que llegan del modelo: insignia NUEVA, el foco y la selección no se mueven y se anuncia M-166', async ({ page }) => {
+    const texto = 'La señora Marta Ficticia Gómez, con cédula 1.000.000.005, firma.';
+    await abrirRevision(page, texto, '');
+    await page.evaluate((t) => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.cargar(t, 'en_curso'), texto);
+    const marcas = panelTexto(page).locator('[data-det]');
+    await expect(marcas).toHaveCount(1);
+    const cc = panelTexto(page).locator('[data-det]', { hasText: '1.000.000.005' });
+    await cc.click();
+    await cc.focus();
+    const n = await page.evaluate(() => (globalThis as unknown as { __siglowRevisionPrueba: { incorporarVentana(t: string[], v: number, total: number): Promise<number> } }).__siglowRevisionPrueba.incorporarVentana(['Marta Ficticia Gómez'], 1, 2));
+    expect(n).toBe(1);
+    await expect(marcas).toHaveCount(2);
+    await expect(panelTexto(page).locator('.nueva')).toHaveCount(1);
+    await expect(cc).toBeFocused();
+    await expect(cc).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator('[data-prueba="anuncio-revision"]')).toHaveText('El modelo de apoyo agregó 1 detecciones pendientes.');
+    // Al enfocar o seleccionar la nueva, pierde la marca.
+    await panelTexto(page).locator('[data-det]', { hasText: 'Marta' }).click();
+    await expect(panelTexto(page).locator('.nueva')).toHaveCount(0);
   });
 });
