@@ -518,3 +518,37 @@ describe('T-ME-01 · AJ-2: la edad de un menor (MENOR con EDAD_A_RANGO) en las b
     expect(ENT_AJ2([menor], [], [SUG]).generalizacion).toEqual([{ tipo: 'MENOR', esperadas: 1, presentes: 0 }]);
   });
 });
+
+// ---------------------------------------------------------------------------------------------------------------- AJ-4 (D-12)
+describe('T-ME-01 · AJ-4 (D-12): la fila de banderas cuenta las positivas que traen bandera_esperada', () => {
+  const ENT_AJ4 = (anotaciones: GoldAnnotation[], banderas: BanderaMedida[]): ReturnType<typeof evaluarDocumento> =>
+    evaluarDocumento({ gold: { docId: 'T01', conjunto: 'desarrollo', entidades: anotaciones.map((a) => ent(a.entidad, a.tipo)), anotaciones },
+      detecciones: [], banderas, sugerencias: [], paginas: 1 });
+  const CARGO = ann('K1', 'CARGO', 100, 120, 'E01', { debe_generalizarse: true, generalizacion: 'CARGO_A_GENERICO', bandera_esperada: 'CARGO' });
+  const DIAG = ann('K2', 'DIAGNOSTICO', 200, 215, 'E02', { debe_generalizarse: true, generalizacion: 'DIAGNOSTICO_A_GENERICO', bandera_esperada: 'DIAGNOSTICO' });
+  const MEN = ann('K3', 'MENOR', 300, 310, 'E03', { debe_generalizarse: true, generalizacion: 'MENOR_A_GENERICO', bandera_esperada: 'MENOR' });
+  const HECHO = ann('K4', 'HECHO_LLAMATIVO', 400, 430, 'E04', { debe_generalizarse: true, generalizacion: 'HECHO_A_GENERICO', bandera_esperada: 'HECHO_LLAMATIVO' });
+  const CITA = ann('K5', 'RADICADO', 500, 530, 'E05', { es_negativo_esperado: true, bandera_esperada: 'CITA_JURISPRUDENCIAL' });
+  const bandera = (tipo: BanderaMedida['tipo'], start: number, end: number): BanderaMedida => ({ tipo, parte: PARTE, start, end });
+
+  it('CARGO, DIAGNOSTICO, MENOR y HECHO_LLAMATIVO con bandera_esperada se cuentan, cada uno en su tipo', () => {
+    const ev = ENT_AJ4([CARGO, DIAG, MEN, HECHO], [bandera('CARGO', 100, 120), bandera('MENOR', 300, 310)]);
+    expect(ev.generalizacion).toEqual([
+      { tipo: 'CARGO', esperadas: 1, presentes: 1 }, { tipo: 'DIAGNOSTICO', esperadas: 1, presentes: 0 },
+      { tipo: 'HECHO_LLAMATIVO', esperadas: 1, presentes: 0 }, { tipo: 'MENOR', esperadas: 1, presentes: 1 },
+    ]);
+    expect(ev.idsAfectados.generalizacion).toEqual({ DIAGNOSTICO: ['T01-K2'], HECHO_LLAMATIVO: ['T01-K4'] });
+  });
+
+  it('una bandera de otro tipo, de otra parte o que no solapa no cubre la anotación', () => {
+    const otraParte: BanderaMedida = { ...bandera('CARGO', 100, 120), parte: claveParte({ kind: 'cuerpo', index: 2 }) };
+    const ev = ENT_AJ4([CARGO], [bandera('DIAGNOSTICO', 100, 120), otraParte, bandera('CARGO', 120, 140)]);
+    expect(ev.generalizacion).toEqual([{ tipo: 'CARGO', esperadas: 1, presentes: 0 }]);
+  });
+
+  it('las citas siguen en negativos: no entran en la generalización ni en las banderas esperadas', () => {
+    const ev = ENT_AJ4([CARGO, CITA], [bandera('CITA_JURISPRUDENCIAL', 500, 530), bandera('CARGO', 100, 120)]);
+    expect(ev.generalizacion).toEqual([{ tipo: 'CARGO', esperadas: 1, presentes: 1 }]);
+    expect(ev.negativos).toMatchObject({ total: 0, citasConRadicado: 1, banderasPresentes: 1 });
+  });
+});

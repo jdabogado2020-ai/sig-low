@@ -458,7 +458,10 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
   };
   for (const g of todas) {
     const k = claveParte(g.parte);
-    if (g.bandera_esperada !== undefined || !g.debe_generalizarse) continue;   // las citas se cuentan en `negativos`
+    // AJ-4 (D-12): las citas se cuentan en `negativos`. Una anotación positiva que lleva `bandera_esperada` (CARGO, DIAGNOSTICO, MENOR,
+    // HECHO_LLAMATIVO: 199 en el gold, una desviación de 10.2.3 que el escáner tolera sin tocar el gold, S-10.4) SÍ se cuenta; antes se
+    // saltaba y la fila de banderas nunca midió CARGO ni DIAGNOSTICO.
+    if (g.bandera_esperada === 'CITA_JURISPRUDENCIAL' || !g.debe_generalizarse) continue;
     const esFlag = (FLAG_TYPES as readonly string[]).includes(g.tipo);
     if (esFlag) {
       // AJ-2 (D-06, 10.3.2): la edad de un menor lleva el tipo `MENOR` (RG-r1) y `generalizacion: 'EDAD_A_RANGO'`, y «se mide con la
