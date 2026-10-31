@@ -548,8 +548,13 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
     // Antes de PB-2-r5: ningún candidato; «Pedro Ejemplo Gómez» y «Seguros Ficticios S.A.» quedaban a la vista.
     expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}:${c.confidence}:${c.source}:${c.canonicalKey}`)).toEqual([
       'EMPRESA:Pedro Ejemplo Gómez:baja:modelo:ORG:pedro ejemplo gomez', 'EMPRESA:Seguros Ficticios S.A.:baja:modelo:ORG:seguros ficticios']);
-    // Si fuera del despacho no queda nada, o solo palabras de función, no hay candidato.
+    // Si fuera del despacho no queda nada, solo palabras de función o solo un lugar de la DIVIPOLA, no hay candidato.
     expect(de([tramo(t, 'el Juzgado Civil Municipal de Ubaté', 'ORG', 0.95)]).candidates).toEqual([]);
+    const t2 = 'Lo remitió el Juzgado 1 Civil del Circuito de Cartago (Valle) ayer.';
+    const p2 = documento([t2]).parts[0]!;
+    const conValle = candidatesFromNer([tramo(t2, 'Juzgado 1 Civil del Circuito de Cartago (Valle)', 'ORG', 0.95)], { part: p2, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    expect(conValle.suggestions.map((s) => s.originalText)).toEqual(['Juzgado 1 Civil del Circuito de Cartago']);
+    expect(conValle.candidates).toEqual([]);
   });
 
   it('B-34 7.10.8 la autoridad con nombre propio y municipio recibe la sugerencia de despacho (o1 y o2 de R-DESP-01); si no casa con R-DESP-01, ENTIDAD baja', () => {

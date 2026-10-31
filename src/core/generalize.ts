@@ -569,10 +569,11 @@ export function getEdadRegex(): RegExp {
   const NUMPH = `${NW}(?:${H}+(?:y${H}+)?${NW})*`;
   // M-14 (PB-2-r5): el contexto anterior es un lookbehind que se evalúa en cada posición; con `${H}+` sin tope era cuadrático en
   // una racha de blancos (la vista `reglas` colapsa los espacios, no los tabuladores: 20.000 tabuladores, 6,5 s). Con a lo sumo
-  // 8 blancos por separador (H8) es lineal y el banco no cambia.
+  // 8 blancos por separador (H8) es lineal y el banco no cambia. `(?=[\p{L}\p{N}])` no cambia lo que casa (la edad empieza
+  // por una palabra o una cifra) y evita evaluar el lookbehind en cada blanco.
   edadRx = {
     re: new RegExp(
-      `${LB}(?<!(?:m[aá]s|menos|mayor(?:es)?|menor(?:es)?|pena|condena|prisi[oó]n|t[eé]rmino|plazo|per[ií]odo|lapso|vigencia|duraci[oó]n|antig[uü]edad|experiencia|cerca|alrededor|hace|despu[eé]s|antes|dentro|unos|unas)${H8}(?:de${H8})?)`
+      `${LB}(?=[\\p{L}\\p{N}])(?<!(?:m[aá]s|menos|mayor(?:es)?|menor(?:es)?|pena|condena|prisi[oó]n|t[eé]rmino|plazo|per[ií]odo|lapso|vigencia|duraci[oó]n|antig[uü]edad|experiencia|cerca|alrededor|hace|despu[eé]s|antes|dentro|unos|unas)${H8}(?:de${H8})?)`
       + `(?:(?<pre>de|con|tiene|ten[ií]a|cumpli[oó]|edad${H}*:|edad${H}+de)${H}+)?(?<n>\\d{1,3}|${NUMPH})(?:${H}*\\(${H}*(?<nd>\\d{1,3})${H}*\\))?${H}+`
       + `(?<u>a[ñn]os(?:${H}+de${H}+edad)?|a[ñn]o${H}+de${H}+edad|meses${H}+de${H}+edad)`
       + `(?!${H}+de${H}+(?:servicio|experiencia|prisi[oó]n|c[aá]rcel|pena|cotizaci[oó]n|antig[uü]edad|labor|trabajo|matrimonio|convivencia|vigencia|duraci[oó]n|casad[oa]s))(?!${H}+(?:atr[aá]s|despu[eé]s|antes))`,

@@ -25,8 +25,8 @@ import { mergeCandidates, mergeIntoFused, PALABRAS_DE_FUNCION, resolveRemainder,
 import type { EsVarianteDe } from './merge.ts';
 import { buildDetectionSet, cryptoIds, orgKey, personKey } from './entities.ts';
 import {
-  DIVIPOLA, VOCABULARIO_DESPACHO, candidateFromLoc, departamentosDeRadicados, despachoDesdeTramo, detectPlaces, generalize,
-  municipiosPorNombre, vistaLista,
+  DIVIPOLA, VOCABULARIO_DESPACHO, candidateFromLoc, departamentoPorNombre, departamentosDeRadicados, despachoDesdeTramo, detectPlaces,
+  generalize, municipiosPorNombre, vistaLista,
 } from './generalize.ts';
 import type { GenDetection, GeneralizeResult } from './generalize.ts';
 
@@ -155,6 +155,9 @@ function restosFueraDelDespacho(part: Part, s: number, e: number, despacho: { st
     const r = resolveRemainder(part, base, a, b, SIN_REGLAS);
     if (r === null) continue;
     const piece = part.text.slice(r.start, r.end);
+    // Un resto que es solo un lugar de la DIVIPOLA («… de Cartago (Valle)» → «Valle») no es una organización: lo ven las reglas
+    // de lugares y la sugerencia del despacho.
+    if (municipiosPorNombre(piece).length > 0 || departamentoPorNombre(piece) !== null) continue;
     const lista = vistaLista(piece);
     const type: DetectionCandidate['type'] | null = RE_EPS.test(lista) ? 'EPS' : RE_IPS.test(lista) ? 'IPS'
       : RE_AUTORIDAD.test(lista) ? (autoridadConNombrePropio(piece) ? 'ENTIDAD' : null) : 'EMPRESA';
