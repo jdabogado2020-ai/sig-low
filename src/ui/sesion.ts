@@ -52,7 +52,23 @@ export function registrarLimpieza(fn: () => void): () => void {
   limpiezas.add(fn);
   return () => { limpiezas.delete(fn); };
 }
-/** Vacía todo el estado [M] (INV-G09). Cada limpieza registrada corre aunque otra falle. */
+/**
+ * Formularios con una frase de paso escrita fuera de un asunto abierto (Inicio, M-7). Con alguno, el bloqueo por inactividad
+ * corre aunque no haya asunto: una frase escrita y olvidada no queda en pantalla para quien llegue después (6.6.5). Solo se
+ * guarda quién tiene frase, nunca la frase.
+ */
+const frasesEscritas = new Set<object>();
+export function marcarFraseEscrita(formulario: object, escrita: boolean): void {
+  if (escrita) frasesEscritas.add(formulario);
+  else frasesEscritas.delete(formulario);
+}
+export function hayFraseEscrita(): boolean {
+  return frasesEscritas.size > 0;
+}
+/**
+ * Vacía todo el estado [M] (INV-G09). Cada limpieza registrada corre aunque otra falle. Inicio registra la suya: vuelve a montar
+ * sus formularios, con los campos de frase vacíos (M-7).
+ */
 export function vaciarEstadoM(): void {
   for (const l of [...limpiezas]) {
     try { l(); } catch { /* una limpieza que falla no detiene a las demás; el error no lleva contenido */ }
@@ -60,6 +76,7 @@ export function vaciarEstadoM(): void {
   listaDelCaso = [];
   tabla = null;
   avisosAsunto = [];
+  frasesEscritas.clear();
   avisar();
 }
 export function useAvisosAsunto(): readonly AvisoAsunto[] {

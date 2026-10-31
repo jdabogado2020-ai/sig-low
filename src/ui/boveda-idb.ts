@@ -11,7 +11,7 @@ import type { AsuntoId, AsuntoRecord, IsoDateTime, VaultPayload } from '../core/
 import { randomIds } from '../io/txt-read.ts';
 import { descargarBytes, nombreDescarga } from '../io/txt-write.ts';
 import {
-  aBase64, abrirRegistro, abrirSiglow, analizarEncabezado, bytesAleatorios, calibrarIteraciones, claveParaFraseNueva, derivarClave, exportarSiglow,
+  aBase64, abrirRegistro, abrirSiglow, analizarEncabezado, bytesAleatorios, calibrarIteraciones, claveParaFraseNueva, derivarClave, descifrar, exportarSiglow,
   SAL_BYTES, sellarRegistro, serializarPayload, validatePassphrase, type DatosAsunto,
 } from '../vault/crypto.ts';
 import { CODIGO_RE, payloadDe, validarPayload } from '../vault/export.ts';
@@ -48,9 +48,11 @@ export interface BovedaCompleta extends BovedaPuerto {
   exportarAsunto(asuntoId: AsuntoId, frase: string): Promise<{ archivo: string }>;
   /**
    * «Cambiar frase de paso» (6.7.4; M-6, B-23), en la cola de guardados del asunto. La frase nueva débil → ENTRADA_INVALIDA antes
-   * de derivar nada (INV-V10); la actual errónea → CONTRASENA_O_ARCHIVO. Sal, IV e `it` nuevos; `creado` del texto cifrado; un solo
-   * `put` condicional (CUOTA_EXCEDIDA o un cambio concurrente dejan el registro como estaba). Después, el asunto abierto en esta
-   * pestaña pasa a la clave nueva y las otras pestañas descartan la vieja y se bloquean.
+   * de derivar nada (INV-V10); la actual errónea → CONTRASENA_O_ARCHIVO. Sal, IV e `it` nuevos; `creado` del texto cifrado; `put`
+   * condicional al registro exacto que se descifró (CUOTA_EXCEDIDA o otra frase dejan el registro como estaba). Si otra pestaña
+   * guardó con la clave vieja mientras se derivaba (B-28), se vuelve a leer y a cifrar su tabla, sin derivar, hasta 3 intentos;
+   * después, ERROR_INTERNO (M-205, «Intente de nuevo») sin escribir. Al terminar, el asunto abierto en esta pestaña pasa a la
+   * clave nueva y las otras pestañas descartan la vieja y se bloquean.
    */
   cambiarFrase(asuntoId: AsuntoId, actual: string, nueva: string): Promise<void>;
   /** «Borrar» (M-109). Las otras pestañas con ese asunto abierto se bloquean. */
@@ -192,6 +194,38 @@ async function guardarNuevo(codigo: string, frase: string, asuntoId: AsuntoId, d
   return { asuntoId, persisted: await pedirPersistencia() };
 }
 
+/** «Cambiar frase» (B-28): intentos del `put` condicional cuando otra pestaña guarda con la clave vieja durante el cambio. */
+const INTENTOS_CAMBIAR_FRASE = 3;
+
+/** «Cambiar frase» (B-28): el registro sigue cifrado con la clave que abrió la frase actual (misma sal y mismo `it`). */
+function cifradoCon(r: AsuntoRecord, a: Abierto): boolean {
+  try {
+    const e = analizarEncabezado(r.encabezado);
+    return e.uso === 'almacen' && e.asuntoId === r.asuntoId && e.salB64 === aBase64(a.sal) && e.it === a.it;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * «Cambiar frase» (B-28): descifra con la clave ya derivada de la frase actual el registro que otra pestaña guardó mientras tanto,
+ * sin derivar otra vez. Las mismas comprobaciones que al abrir (abrirRegistro y descifrarRegistro); el texto plano queda en ceros.
+ */
+async function descifrarConClave(r: AsuntoRecord, a: Abierto): Promise<VaultPayload> {
+  const e = analizarEncabezado(r.encabezado);
+  if (e.uso !== 'almacen' || e.asuntoId !== r.asuntoId || !(r.iv instanceof ArrayBuffer) || !(r.ct instanceof ArrayBuffer)
+    || aBase64(new Uint8Array(r.iv)) !== e.ivB64) throw new SiglowError('ARCHIVO_ALTERADO');
+  const plano = await descifrar(a.clave, r.encabezado, new Uint8Array(r.ct));
+  let payload: VaultPayload;
+  try {
+    payload = validarPayload(plano, r.asuntoId);
+  } finally {
+    plano.fill(0);
+  }
+  if (payload.asunto.codigo !== r.codigo || payload.asunto.creado !== r.creado || payload.asunto.creado !== a.creado) throw new SiglowError('ARCHIVO_ALTERADO');
+  return payload;
+}
+
 export const bovedaIdb: BovedaCompleta = {
   disponible: () => globalThis.isSecureContext === true && !!globalThis.crypto?.subtle && idbDisponible(),
 
@@ -283,26 +317,42 @@ export const bovedaIdb: BovedaCompleta = {
   cambiarFrase(asuntoId, actual, nueva) {
     return encolar(asuntoId, async () => {
       exigirContexto();
-      const r = await leerRegistro(asuntoId);
+      let r = await leerRegistro(asuntoId);
       if (!r) throw new SiglowError('ENTRADA_INVALIDA');
       // INV-V10 antes de derivar nada (claveParaFraseNueva lo vuelve a comprobar).
       if (typeof nueva !== 'string' || validatePassphrase(nueva, r.codigo).length > 0) throw new SiglowError('ENTRADA_INVALIDA');
-      const { abierto: viejo, payload } = await descifrarRegistro(r, actual);   // la frase actual abre el registro
+      const leido = await descifrarRegistro(r, actual);                          // la frase actual abre el registro
+      const viejo = leido.abierto;
+      let payload = leido.payload;
       const { clave, sal, it } = await claveParaFraseNueva(nueva, r.codigo);    // sal nueva e `it` recalibrado
-      // B-23: `creado` del texto cifrado, nunca del campo en claro.
-      const asunto: DatosAsunto = { asuntoId, codigo: payload.asunto.codigo, creado: payload.asunto.creado, actualizado: ahora() };
-      const nuevo = await sellarRegistro(clave, asunto, { sal, it },
-        serializarPayload(payloadDe({ caseList: payload.caseList, table: payload.table }, asunto, payload.appVersion)));
-      try {
-        // Solo si el registro sigue cifrado con la clave que se acaba de comprobar: un cambio concurrente no se pisa.
-        await ponerRegistro(nuevo, claveEsperada(viejo));
-      } catch (e) {
-        if (e instanceof SiglowError && e.code === 'SESION_DESCONOCIDA') perderAsunto(asuntoId);
-        throw e;
+      for (let intento = 1; ; intento++) {
+        // B-23: `creado` del texto cifrado, nunca del campo en claro.
+        const asunto: DatosAsunto = { asuntoId, codigo: payload.asunto.codigo, creado: payload.asunto.creado, actualizado: ahora() };
+        const nuevo = await sellarRegistro(clave, asunto, { sal, it },
+          serializarPayload(payloadDe({ caseList: payload.caseList, table: payload.table }, asunto, payload.appVersion)));
+        try {
+          // En la misma transacción, solo si el registro es exactamente el que se descifró (misma clave y mismo encabezado):
+          // ni otra frase ni un guardado concurrente con la clave vieja se pisan (M-6, B-28).
+          await ponerRegistro(nuevo, { ...claveEsperada(viejo), encabezado: r.encabezado });
+        } catch (e) {
+          if (!(e instanceof SiglowError && e.code === 'SESION_DESCONOCIDA')) throw e;
+          const otro = await leerRegistro(asuntoId);
+          if (otro === null || !cifradoCon(otro, viejo)) {
+            // Borrado o con otra frase (M-5, M-6): no se recrea ni se vuelve atrás; la sesión se pierde.
+            perderAsunto(asuntoId);
+            throw e;
+          }
+          // B-28: otra pestaña guardó con la clave vieja mientras se derivaba. Su tabla pasa a la clave nueva (sin derivar).
+          if (intento >= INTENTOS_CAMBIAR_FRASE) throw new SiglowError('ERROR_INTERNO');
+          payload = await descifrarConClave(otro, viejo);
+          r = otro;
+          continue;
+        }
+        // Esta pestaña sigue con el asunto abierto, ya con la clave nueva; las otras descartan la vieja y se bloquean.
+        if (abiertos.has(asuntoId)) abierto(asuntoId, { clave, sal, it, codigo: asunto.codigo, creado: asunto.creado });
+        difundirPerdido(asuntoId);
+        return;
       }
-      // Esta pestaña sigue con el asunto abierto, ya con la clave nueva; las otras descartan la vieja y se bloquean.
-      if (abiertos.has(asuntoId)) abierto(asuntoId, { clave, sal, it, codigo: asunto.codigo, creado: asunto.creado });
-      difundirPerdido(asuntoId);
     });
   },
 

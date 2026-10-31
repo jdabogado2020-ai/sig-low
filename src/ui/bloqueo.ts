@@ -2,7 +2,7 @@
 // Reloj de pared (Date.now): un equipo suspendido y reanudado bloquea de inmediato, sin esperar a un temporizador.
 import { useEffect, useState } from 'preact/hooks';
 import { actualizar, fijarAvisoInicio, obtener, suscribir } from './estado.ts';
-import { vaciarEstadoM } from './sesion.ts';
+import { hayFraseEscrita, vaciarEstadoM } from './sesion.ts';
 import { puertos } from './servicios.ts';
 
 export const LIMITE_INACTIVIDAD_MS = 15 * 60_000;
@@ -46,7 +46,11 @@ function abrirAviso(): void {
   if (r !== restantes) { restantes = r; avisar(); }
 }
 
-/** Vacía el estado `[M]` y vuelve a Inicio con M-102 (y M-103 si la tabla no estaba guardada). */
+/**
+ * Vacía el estado `[M]` y vuelve a Inicio con M-102 (y M-103 si la tabla no estaba guardada). También sin asunto abierto (el
+ * canal, la inactividad con una frase escrita, «Bloquear ahora»): `vaciarEstadoM` vuelve a montar los formularios de Inicio con
+ * las frases vacías y `cerrar()` aborta un «Abrir» o un «Crear asunto» en curso (M-7, B-21).
+ */
 export function bloquear(difundirAOtras: boolean): void {
   const previo = obtener().asunto;
   cerrarAviso();
@@ -67,7 +71,8 @@ export function cerrarAsunto(): void {
 }
 
 function evaluar(): void {
-  if (obtener().asunto === null) { cerrarAviso(); return; }
+  // Sin asunto abierto solo cuenta una frase escrita en Inicio (M-7): sin ella no hay nada en claro que bloquear.
+  if (obtener().asunto === null && !hayFraseEscrita()) { cerrarAviso(); return; }
   const inactivo = Date.now() - ultimaActividad;
   if (inactivo >= LIMITE_INACTIVIDAD_MS) bloquear(true);
   else if (inactivo >= AVISO_INACTIVIDAD_MS) abrirAviso();
@@ -112,8 +117,9 @@ export function instalarBloqueo(): () => void {
     canal.onmessage = (e: MessageEvent) => {
       const m = e.data as Partial<Mensaje> | null;
       if (m?.tipo === 'bloquear') {
-        if (obtener().asunto !== null) bloquear(false);
-        else puertos.boveda.cerrar();   // sin asunto abierto también aborta un «Abrir» en curso en esta pestaña (B-21)
+        // Con o sin asunto abierto: sin él, aborta además un «Abrir» o un «Crear asunto» en curso (B-21), vacía las frases de
+        // Inicio y muestra M-102, para que se sepa por qué no se abrió (M-7).
+        bloquear(false);
       } else if (m?.tipo === 'actividad' && typeof m.t === 'number') {
         ultimaActividad = Math.max(ultimaActividad, m.t);
         evaluar();
@@ -126,13 +132,14 @@ export function instalarBloqueo(): () => void {
   const alVolver = (): void => { evaluar(); };
   addEventListener('focus', alVolver);
   addEventListener('pageshow', (e: PageTransitionEvent) => {
-    // Restaurada desde la caché de páginas: el estado ya está vacío; se pide la frase de nuevo (M-102).
+    // Restaurada desde la caché de páginas: el estado ya está vacío; se pide la frase de nuevo (M-102). vaciarEstadoM vuelve a
+    // montar los formularios de Inicio: la frase escrita antes de salir no vuelve con la página (M-7, V-19).
     if (e.persisted) { vaciarEstadoM(); puertos.boveda.cerrar(); actualizar({ asunto: null, phase: 'vacio', screen: 'inicio', dialog: null }); fijarAvisoInicio('bloqueado'); }
     else evaluar();
   });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') evaluar(); });
   document.addEventListener('resume', alVolver);
-  // `pagehide` bloquea: el estado en claro no sobrevive a salir de la página (V-19).
+  // `pagehide` bloquea: el estado en claro, y las frases de Inicio, no sobreviven a salir de la página (V-19, M-7).
   addEventListener('pagehide', () => {
     vaciarEstadoM();
     puertos.boveda.cerrar();

@@ -228,8 +228,12 @@ export async function agregarRegistro(r: AsuntoRecord): Promise<void> {
   await transaccion('readwrite', (s) => s.add(limpio), 'ERROR_INTERNO', true);
 }
 
-/** Parámetros de la clave con que se cifró un registro (sal en base64 e `it` de su encabezado). */
-export interface ClaveDelRegistro { salB64: string; it: number }
+/**
+ * Parámetros de la clave con que se cifró un registro (sal en base64 e `it` de su encabezado). Con `encabezado`, además, el
+ * registro exacto que se leyó: su IV cambia en cada guardado, así que «cambiar frase» no pisa un guardado concurrente hecho con
+ * la misma clave (B-28).
+ */
+export interface ClaveDelRegistro { salB64: string; it: number; encabezado?: string }
 
 /** Los parámetros del encabezado de un registro guardado, o null si no es un registro del almacén bien formado. */
 function claveDe(x: unknown): ClaveDelRegistro | null {
@@ -247,8 +251,9 @@ function claveDe(x: unknown): ClaveDelRegistro | null {
  * Guardar sobre el registro existente (M-5, M-6): en una sola transacción, `put` solo si el registro sigue ahí y está cifrado con
  * la clave que se esperaba (`previo`: misma sal y mismo `it`). Si otra pestaña lo borró, si ya no está la base («Borrar todo»,
  * datos del sitio borrados) o si su frase cambió (otra sal) → SESION_DESCONOCIDA, sin escribir ni crear nada: un registro borrado
- * no vuelve y un guardado con la clave vieja no deshace un cambio de frase. El código no puede chocar con el de otro asunto
- * (índice único).
+ * no vuelve y un guardado con la clave vieja no deshace un cambio de frase. Con `previo.encabezado`, también si el registro ya no
+ * es el que se leyó (B-28): quien llama vuelve a leer para distinguirlo de una sesión perdida. El código no puede chocar con el
+ * de otro asunto (índice único).
  */
 export async function ponerRegistro(r: AsuntoRecord, previo: ClaveDelRegistro): Promise<void> {
   const limpio = registroLimpio(r);
@@ -256,7 +261,8 @@ export async function ponerRegistro(r: AsuntoRecord, previo: ClaveDelRegistro): 
     const actual = ctl.vigilar(s.get(limpio.asuntoId));
     actual.onsuccess = () => {
       const k = claveDe(actual.result);
-      if (k === null || k.salB64 !== previo.salB64 || k.it !== previo.it) ctl.abortar('SESION_DESCONOCIDA');
+      const otro = previo.encabezado !== undefined && (actual.result as { encabezado?: unknown } | undefined)?.encabezado !== previo.encabezado;
+      if (k === null || k.salB64 !== previo.salB64 || k.it !== previo.it || otro) ctl.abortar('SESION_DESCONOCIDA');
       else ctl.vigilar(s.put(limpio));
     };
   }, 'ERROR_INTERNO', false);

@@ -67,6 +67,21 @@ globalThis.__ayuda = {
     Object.defineProperty(crypto.subtle, 'encrypt', { configurable: true, writable: true,
       value: async (...a) => { delete crypto.subtle.encrypt; entro(); await puerta; return orig.apply(crypto.subtle, a); } });
     globalThis.__puerta = { dentro, soltar }; },
+  // PC-6-r2 (B-28). Retiene la próxima derivación (deriveKey; la primera de «cambiar frase», ya leído el registro) hasta soltar().
+  retenerDerivacion: () => { const orig = crypto.subtle.deriveKey; let soltar; let entro;
+    const puerta = new Promise((ok) => { soltar = ok; }); const dentro = new Promise((ok) => { entro = ok; });
+    Object.defineProperty(crypto.subtle, 'deriveKey', { configurable: true, writable: true,
+      value: async (...a) => { delete crypto.subtle.deriveKey; entro(); await puerta; return orig.apply(crypto.subtle, a); } });
+    globalThis.__puerta = { dentro, soltar }; },
+  // Retiene cada cifrado: entro(n) se resuelve cuando entró el n-ésimo, soltar(n) lo deja seguir y fin() restaura encrypt.
+  retenerCifrados: () => { const orig = crypto.subtle.encrypt; const t = { entradas: 0, avisos: [], puertas: [] };
+    t.entro = (n) => new Promise((ok) => { const ver = () => { if (t.entradas >= n) ok(); else t.avisos.push(ver); }; ver(); });
+    t.soltar = (n) => { t.puertas[n - 1](); };
+    t.fin = () => { delete crypto.subtle.encrypt; for (const p of t.puertas) p(); };
+    Object.defineProperty(crypto.subtle, 'encrypt', { configurable: true, writable: true,
+      value: async (...a) => { let abrir; const puerta = new Promise((ok) => { abrir = ok; }); t.puertas.push(abrir); t.entradas++;
+        for (const v of t.avisos.splice(0)) v(); await puerta; return orig.apply(crypto.subtle, a); } });
+    globalThis.__turnos = t; },
   // Cuenta las derivaciones (deriveKey) mientras corre f.
   derivaciones: async (f) => { const orig = crypto.subtle.deriveKey; let n = 0;
     Object.defineProperty(crypto.subtle, 'deriveKey', { configurable: true, writable: true, value: (...a) => { n++; return orig.apply(crypto.subtle, a); } });
@@ -115,11 +130,13 @@ type Ayuda = {
   bases(): Promise<string[]>;
   idNuevo(): AsuntoId;
   retener(): void;
+  retenerDerivacion(): void;
+  retenerCifrados(): void;
   derivaciones(f: () => Promise<unknown>): Promise<[string, number]>;
   siglow(bytes: number[], frase: string): Promise<{ encabezado: string; asunto: Record<string, string>; entradas: number; lista: string[] }>;
   instalarBloqueo(): void;
 };
-type Puerta = { __puerta: { dentro: Promise<void>; soltar(): void } };
+type Puerta = { __puerta: { dentro: Promise<void>; soltar(): void }; __turnos: { entro(n: number): Promise<void>; soltar(n: number): void; fin(): void } };
 type Calibracion = { t: number[]; it: number[]; seguro: boolean; aislado: boolean };
 type Vector = { shaPlano: string; shaCt: string; largoCt: number; shaNfd: string; planoEnCeros: boolean };
 const mediana = (xs: number[]): number => { const s = [...xs].sort((a, b) => a - b); return s[Math.floor(s.length / 2)]!; };
@@ -654,6 +671,76 @@ test.describe('bóveda en el navegador (arnés)', () => {
     await tercera.close();
   });
 
+  test('T-BO-01 @humo arnés B-28: «cambiar frase» no pisa el guardado que otra pestaña confirma durante la derivación; tras 3 intentos, ERROR_INTERNO sin escribir', async ({ page, context }) => {
+    test.setTimeout(240_000);
+    const NUEVA = 'otra frase ficticia de prueba ñame';
+    const NUEVA2 = 'tercera frase ficticia de ensayo';
+    await preparar(page);
+    const id = await crearCon(page, 'PRUEBA-080', 2);
+    const otra = await context.newPage();
+    await preparar(otra);
+    const abrirEn = (p: Page, frase: string): Promise<unknown> => p.evaluate(({ x, frase }) => (globalThis as unknown as GA).__bovedaIdb.abrir(x, frase), { x: id, frase });
+    await abrirEn(otra, FRASE);
+    const encabezado = (): Promise<string> => page.evaluate(async (x) =>
+      String((await (globalThis as unknown as GA).__ayuda.crudos()).find((r) => r['asuntoId'] === x)!['encabezado']), id);
+    const sal = (e: string): string => /;sal=([^;]+);/.exec(e)![1]!;
+    /** Cierra en esta pestaña y abre con cada frase: el código de las que no abren y las entradas de la tabla con la que abre. */
+    const abreCon = (frases: string[]): Promise<Array<string | number>> => page.evaluate(async ({ x, frases }) => {
+      const g = globalThis as unknown as GA;
+      g.__bovedaIdb.cerrar();
+      const out: Array<string | number> = [];
+      for (const f of frases) {
+        try { out.push(Object.keys((await g.__bovedaIdb.abrir(x, f)).table.entries).length); } catch (e) { out.push((e as { code?: string }).code ?? 'SIN_CODIGO'); }
+      }
+      return out;
+    }, { x: id, frases });
+
+    // S3: esta pestaña (X) cambia la frase y queda retenida en la derivación, con el registro de 2 entradas ya leído. Mientras,
+    // la otra (Y), con el asunto abierto con la frase actual, guarda 5 entradas y se le confirma.
+    await page.evaluate(() => { (globalThis as unknown as GA).__ayuda.retenerDerivacion(); });
+    const cambio = page.evaluate(({ x, actual, nueva }) => {
+      const g = globalThis as unknown as GA;
+      return g.__ayuda.codigo(() => g.__bovedaIdb.cambiarFrase(x, actual, nueva));
+    }, { x: id, actual: FRASE, nueva: NUEVA });
+    await dentro(page);
+    expect(await guardarCodigo(otra, id, 5)).toBe('SIN_ERROR');
+    await soltar(page);
+    expect(await cambio).toBe('SIN_ERROR');
+    // El cambio volvió a leer y a cifrar el registro de Y: abre con la frase nueva y conserva las 5 entradas (antes: 2).
+    expect(await abreCon([FRASE, NUEVA])).toEqual(['CONTRASENA_O_ARCHIVO', 5]);
+    // Y queda con la clave vieja: su guardado siguiente no deshace el cambio (M-6) y el canal la bloquea.
+    expect(await guardarCodigo(otra, id, 6)).toBe('SESION_DESCONOCIDA');
+
+    // Y vuelve a abrir con la frase nueva y guarda en cada intento de X: tres veces el registro cambia entre la lectura y el `put`.
+    // X falla con ERROR_INTERNO sin escribir nada, sin derivar más que las 3 veces de siempre (actual, calibración y nueva) y sin
+    // bloquear a Y, cuyo último guardado sigue siendo el registro.
+    await abrirEn(page, NUEVA);
+    await abrirEn(otra, NUEVA);
+    const antes = await encabezado();
+    await page.evaluate(() => { (globalThis as unknown as GA).__ayuda.retenerCifrados(); });
+    const tope = page.evaluate(({ x, actual, nueva }) => {
+      const g = globalThis as unknown as GA;
+      return g.__ayuda.derivaciones(() => g.__bovedaIdb.cambiarFrase(x, actual, nueva));
+    }, { x: id, actual: NUEVA, nueva: NUEVA2 });
+    for (let n = 1; n <= 3; n++) {
+      await page.evaluate((k) => (globalThis as unknown as GA).__turnos.entro(k), n);
+      expect(await guardarCodigo(otra, id, 10 + n)).toBe('SIN_ERROR');
+      await page.evaluate((k) => { (globalThis as unknown as GA).__turnos.soltar(k); }, n);
+    }
+    expect(await tope).toEqual(['ERROR_INTERNO', 3]);
+    await page.evaluate(() => { (globalThis as unknown as GA).__turnos.fin(); });
+    expect(sal(await encabezado())).toBe(sal(antes));
+    expect(await guardarCodigo(otra, id, 14)).toBe('SIN_ERROR');
+    expect(await abreCon([NUEVA2, NUEVA])).toEqual(['CONTRASENA_O_ARCHIVO', 14]);
+    // Sin otro guardado en medio, el mismo cambio sale al primer intento.
+    expect(await page.evaluate(({ x, actual, nueva }) => {
+      const g = globalThis as unknown as GA;
+      return g.__ayuda.codigo(() => g.__bovedaIdb.cambiarFrase(x, actual, nueva));
+    }, { x: id, actual: NUEVA, nueva: NUEVA2 })).toBe('SIN_ERROR');
+    expect(await abreCon([NUEVA, NUEVA2])).toEqual(['CONTRASENA_O_ARCHIVO', 14]);
+    await otra.close();
+  });
+
   test('T-BO-01 @humo arnés B-24: exportarAsunto exporta sin abrir el asunto: frase errónea sin descarga, clave fuera de memoria y .siglow que abre con la frase', async ({ page }) => {
     test.setTimeout(120_000);
     await preparar(page);
@@ -721,6 +808,35 @@ test.describe('bóveda en la app', () => {
   }
 
   const M102 = 'Sig-Low se bloqueó y borró de la memoria el documento y la revisión en curso.';
+  const M20 = 'Cifrando y abriendo el asunto en su equipo…';
+  const campoAbrir = (page: Page) => page.getByLabel('Frase de paso del asunto', { exact: true });
+  /** Campos de texto o de frase con algo escrito en la pantalla (tras un bloqueo, ninguno). */
+  const camposConTexto = (page: Page): Promise<number> => page.evaluate(() =>
+    [...document.querySelectorAll('input')].filter((i) => (i.type === 'text' || i.type === 'password') && i.value !== '').length);
+  /** Envía `{ tipo: 'bloquear' }` por el canal de bloqueo desde otra pestaña (8.2.10), como su botón «Bloquear» o su inactividad. */
+  const bloquearDesde = (otra: Page): Promise<void> => otra.evaluate(() => {
+    const c = new BroadcastChannel('siglow-bloqueo');
+    c.postMessage({ tipo: 'bloquear' });
+    c.close();
+  });
+  /** Retiene en la app la próxima derivación (deriveKey) hasta soltarla: un «Abrir» queda en curso, con el registro ya leído. */
+  const retenerDerivacion = (page: Page): Promise<void> => page.evaluate(() => {
+    const s = crypto.subtle;
+    const orig = s.deriveKey.bind(s);
+    let soltar = (): void => undefined;
+    let entro = (): void => undefined;
+    const puerta = new Promise<void>((ok) => { soltar = ok; });
+    const dentro = new Promise<void>((ok) => { entro = ok; });
+    Object.defineProperty(s, 'deriveKey', {
+      configurable: true, writable: true,
+      value: async (...a: Parameters<SubtleCrypto['deriveKey']>) => { Reflect.deleteProperty(s, 'deriveKey'); entro(); await puerta; return orig(...a); },
+    });
+    (globalThis as unknown as { __derivacion: { dentro: Promise<void>; soltar: () => void } }).__derivacion = { dentro, soltar };
+  });
+  const derivacion = (page: Page, que: 'dentro' | 'soltar'): Promise<void> => page.evaluate((q) => {
+    const d = (globalThis as unknown as { __derivacion: { dentro: Promise<void>; soltar: () => void } }).__derivacion;
+    return q === 'dentro' ? d.dentro : d.soltar();
+  }, que);
 
   test('T-BO-01 @humo INV-V01 INV-V07 app: guardar → Bloquear → recargar → desbloquear con la lista idéntica; frase errónea → M-201; registro crudo sin originales', async ({ page }) => {
     await crearGuardado(page, 'PRUEBA-001');
@@ -846,9 +962,12 @@ test.describe('bóveda en la app', () => {
       [...document.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Abrir para anonimizar')!.click();
       dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }));
     });
-    // PC-6-r1: el aborto es un bloqueo, no un error de frase; Inicio ya no muestra M-202 ni M-201 (el botón vuelve a quedar disponible).
-    await expect(page.getByRole('button', { name: 'Abrir para anonimizar' })).toBeDisabled();   // deriva la clave...
-    await expect(page.getByRole('button', { name: 'Abrir para anonimizar' })).toBeEnabled({ timeout: 30_000 });   // ...y se aborta
+    // PC-6-r1: el aborto es un bloqueo, no un error de frase; Inicio no muestra M-202 ni M-201. PC-6-r2 (M-7): pagehide vuelve a
+    // montar el formulario, así que la frase ya no está y el botón sigue deshabilitado al terminar la derivación abortada.
+    await expect(page.getByRole('button', { name: 'Abrir para anonimizar' })).toBeDisabled();
+    await expect(page.getByText(M20)).toHaveCount(0, { timeout: 30_000 });   // la derivación terminó y se abortó
+    await expect(page.getByLabel('Frase de paso del asunto', { exact: true })).toHaveValue('');
+    await expect(page.getByRole('button', { name: 'Abrir para anonimizar' })).toBeDisabled();
     await expect(page.getByText('No se pudo completar la operación.', { exact: false })).toHaveCount(0);
     await expect(page.getByText('Frase de paso incorrecta o archivo dañado.')).toHaveCount(0);
     await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
@@ -857,6 +976,114 @@ test.describe('bóveda en la app', () => {
     // Con la frase, sin salir de la página, sí abre.
     await abrirGuardado(page, 'PRUEBA-006', FRASE_APP);
     await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
+  });
+
+  // ===== PC-6-r2 · M-7: un bloqueo vacía las frases de Inicio (6.6.5, V-19, V-35) =====
+  test('T-BO-01 @humo app M-7 INV-G09: «bloquear» desde otra pestaña durante «Abrir» vacía la frase y muestra M-102; otro clic sin escribirla no abre el asunto', async ({ page, context }) => {
+    await crearGuardado(page, 'PRUEBA-007');
+    await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await page.reload();   // sin el aviso M-102 del bloqueo propio: el que se vea después es el del canal
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await expect(page.getByText(M102)).toHaveCount(0);
+    const otra = await context.newPage();
+    await otra.goto('/');
+    await expect(otra.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    const sel = page.getByLabel('Asunto guardado', { exact: true });
+    await sel.selectOption((await sel.locator('option', { hasText: 'PRUEBA-007' }).getAttribute('value'))!);
+    await campoAbrir(page).fill(FRASE_APP);
+    // S9: «Abrir» en plena derivación (retenida; el registro ya se leyó) y, en ese momento, el bloqueo de la otra pestaña.
+    await retenerDerivacion(page);
+    const abrir = page.getByRole('button', { name: 'Abrir para anonimizar' });
+    await abrir.click();
+    await derivacion(page, 'dentro');
+    await expect(page.getByText(M20).first()).toBeVisible();
+    await bloquearDesde(otra);
+    // Antes de que termine la derivación, la frase ya no está en el campo y se ve por qué (M-102).
+    await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText(M102);
+    await expect(campoAbrir(page)).toHaveValue('');
+    await derivacion(page, 'soltar');
+    await expect(page.getByText(M20)).toHaveCount(0, { timeout: 30_000 });
+    // El «Abrir» se abortó (B-21) sin M-201 ni M-202, y sin frase no hay segundo clic que abra el asunto.
+    await expect(campoAbrir(page)).toHaveValue('');
+    await expect(abrir).toBeDisabled();
+    await campoAbrir(page).press('Enter');
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await expect(page.getByText('Ana Ficticia Rojas')).toHaveCount(0);
+    await expect(page.getByRole('textbox', { name: 'Texto de la lista' })).toHaveCount(0);
+    await expect(page.getByText('Frase de paso incorrecta o archivo dañado.')).toHaveCount(0);
+    await expect(page.getByText('No se pudo completar la operación.', { exact: false })).toHaveCount(0);
+    // Con la frase escrita otra vez, abre.
+    await abrirGuardado(page, 'PRUEBA-007', FRASE_APP);
+    await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
+    await otra.close();
+  });
+
+  test('T-BO-01 @humo app M-7 INV-G09: «bloquear» desde otra pestaña vacía las dos frases de «Crear asunto», y pageshow con persisted la de «Abrir»', async ({ page, context }) => {
+    await crearGuardado(page, 'PRUEBA-008');
+    await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await page.reload();
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await expect(page.getByText(M102)).toHaveCount(0);
+    const otra = await context.newPage();
+    await otra.goto('/');
+    await expect(otra.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    // S11: las dos frases de «Crear asunto» escritas, sin enviar; el bloqueo llega por el canal.
+    await page.getByLabel('Código del asunto').fill('PRUEBA-009');
+    await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
+    await page.getByLabel(ETIQUETA_FRASE, { exact: true }).fill(FRASE_APP);
+    await page.getByLabel('Repita la frase de paso', { exact: true }).fill(FRASE_APP);
+    await page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
+    await campoAbrir(page).fill(FRASE_APP);
+    await bloquearDesde(otra);
+    await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText(M102);
+    // El formulario se volvió a montar: sin modo elegido (los campos de frase ni existen), sin casilla y sin la frase de «Abrir».
+    await expect(page.getByRole('radio', { name: /^Guardar tabla cifrada/ })).not.toBeChecked();
+    await expect(page.getByLabel(ETIQUETA_FRASE, { exact: true })).toHaveCount(0);
+    await expect(campoAbrir(page)).toHaveValue('');
+    await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
+    await expect(page.getByLabel(ETIQUETA_FRASE, { exact: true })).toHaveValue('');
+    await expect(page.getByLabel('Repita la frase de paso', { exact: true })).toHaveValue('');
+    await expect(page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ })).not.toBeChecked();
+    expect(await camposConTexto(page)).toBe(0);
+    await otra.close();
+    // S10: la frase escrita en «Abrir» y en «Crear asunto»; la página sale y vuelve de la caché de páginas.
+    await page.getByLabel(ETIQUETA_FRASE, { exact: true }).fill(FRASE_APP);
+    await campoAbrir(page).fill(FRASE_APP);
+    await page.evaluate(() => {
+      dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }));
+      dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+    });
+    await expect(page.getByText(M102)).toBeVisible();
+    await expect(campoAbrir(page)).toHaveValue('');
+    await expect(page.getByLabel(ETIQUETA_FRASE, { exact: true })).toHaveCount(0);
+    expect(await camposConTexto(page)).toBe(0);
+  });
+
+  test('T-BO-01 @humo app M-7 INV-G09: sin asunto abierto, una frase escrita en Inicio hace correr el bloqueo por inactividad (aviso a los 14 min, bloqueo a los 15)', async ({ page }) => {
+    await page.clock.install();
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    // Sin frase escrita no hay nada que bloquear: ni aviso ni M-102.
+    await page.clock.fastForward('16:00');
+    await expect(page.getByRole('alertdialog')).toHaveCount(0);
+    await expect(page.getByText(M102)).toHaveCount(0);
+    // Con la frase escrita y olvidada en «Crear asunto».
+    await page.getByLabel('Código del asunto').fill('PRUEBA-010');
+    await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
+    await page.getByLabel(ETIQUETA_FRASE, { exact: true }).fill(FRASE_APP);
+    await page.clock.fastForward('14:05');
+    await expect(page.getByRole('button', { name: 'Seguir trabajando' })).toBeVisible();
+    await page.clock.fastForward('01:00');
+    await expect(page.getByRole('alertdialog')).toHaveCount(0);
+    await expect(page.getByText(M102)).toBeVisible();
+    await expect(page.getByRole('radio', { name: /^Guardar tabla cifrada/ })).not.toBeChecked();
+    await expect(page.getByLabel(ETIQUETA_FRASE, { exact: true })).toHaveCount(0);
+    expect(await camposConTexto(page)).toBe(0);
+    // Ya sin frase, el reloj vuelve a no contar.
+    await page.clock.fastForward('16:00');
+    await expect(page.getByRole('alertdialog')).toHaveCount(0);
   });
 
   test('T-BO-01 @humo app: sin IndexedDB «Guardar» queda deshabilitado con M-208 y «No guardar» sigue disponible', async ({ page }) => {

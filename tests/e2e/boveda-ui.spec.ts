@@ -177,7 +177,7 @@ test.describe('Bóveda (PC-6)', () => {
     await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible();     // la tabla y la lista siguen ahí
   });
 
-  test('T-BO-01 B-21 el bloqueo de otra pestaña aborta un «Abrir» en curso aunque no haya asunto abierto, y Inicio no muestra M-202', async ({ page }) => {
+  test('T-BO-01 B-21 M-7 el bloqueo de otra pestaña aborta un «Abrir» en curso aunque no haya asunto abierto: Inicio vacía la frase, muestra M-102 y no M-202', async ({ page }) => {
     await prepararBoveda(page);
     await page.getByRole('button', { name: 'Volver', exact: true }).click();
     await expect(h1(page, 'Inicio')).toBeVisible();
@@ -190,10 +190,15 @@ test.describe('Bóveda (PC-6)', () => {
     const abrir = page.getByRole('button', { name: 'Abrir para anonimizar' });
     await abrir.click();
     await otra.evaluate(() => { const c = new BroadcastChannel('siglow-bloqueo'); c.postMessage({ tipo: 'bloquear' }); c.close(); });
-    // Mientras deriva la clave el botón está deshabilitado; al abortarse vuelve a quedar disponible y la pantalla sigue en Inicio.
+    // Mientras deriva la clave el botón está deshabilitado. PC-6-r2 (M-7): el bloqueo vuelve a montar el formulario, así que al
+    // abortarse la frase ya no está, el botón sigue deshabilitado (no hay segundo clic que abra el asunto) y se ve M-102.
     await expect(abrir).toBeDisabled();
-    await expect(abrir).toBeEnabled({ timeout: 30_000 });
+    await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText('Sig-Low se bloqueó', { timeout: 30_000 });
+    await expect(page.getByText('Cifrando y abriendo el asunto en su equipo…')).toHaveCount(0, { timeout: 30_000 });
+    await expect(page.getByLabel('Frase de paso del asunto', { exact: true })).toHaveValue('');
+    await expect(abrir).toBeDisabled();
     await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(page.getByText('Ana Ficticia Rojas')).toHaveCount(0);
     await expect(page.getByText('No se pudo completar la operación.')).toHaveCount(0);
     await expect(page.getByText('Frase de paso incorrecta o archivo dañado.')).toHaveCount(0);
     await otra.close();

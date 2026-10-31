@@ -1,5 +1,5 @@
 // Pantalla 1 · Inicio y asunto (8.2.2): promesa, aviso inicial, crear o abrir un asunto y tarjeta del modelo.
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useState } from 'preact/hooks';
 import { randomIds } from '../io/txt-read.ts';
 import type { AsuntoId } from '../core/types.ts';
 import { CampoFrase, CampoTexto, Casilla, Grupo, Seleccion } from './campos.tsx';
@@ -8,10 +8,28 @@ import { evaluarFrase } from './frase.ts';
 import { alterno, mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
 import { tomarPreseleccion } from './boveda/preseleccion.ts';
 import { persistenciaDelModelo } from './modelo-puerto.ts';
-import { agregarAvisoAsunto, fijarListaDelCaso, fijarTabla, tablaVacia } from './sesion.ts';
+import { agregarAvisoAsunto, fijarListaDelCaso, fijarTabla, marcarFraseEscrita, registrarLimpieza, tablaVacia } from './sesion.ts';
 import { codigoDeError, puertos, type AsuntoListado } from './servicios.ts';
 
 const REGEX_CODIGO = /^(?=.*[A-Za-z0-9])[A-Za-z0-9 ._/-]{1,40}$/u;
+
+/**
+ * M-7: cada vaciado del estado `[M]` (el botón «Bloquear», la inactividad, el canal entre pestañas, `pagehide` y `pageshow`,
+ * «Cerrar asunto», «Borrar todo») cambia este número, que es la `key` de los formularios: se vuelven a montar con las frases,
+ * «Mostrar» y la casilla vacíos. Se registra antes de pintar, para que ningún bloqueo llegue sin la limpieza puesta.
+ */
+function useGeneracionDeFormularios(): number {
+  const [n, setN] = useState(0);
+  useLayoutEffect(() => registrarLimpieza(() => { setN((x) => x + 1); }), []);
+  return n;
+}
+
+/** M-7: un formulario con la frase escrita hace correr el bloqueo por inactividad aunque no haya asunto abierto. */
+function useFraseEscrita(escrita: boolean): void {
+  const [formulario] = useState(() => ({}));
+  useLayoutEffect(() => { marcarFraseEscrita(formulario, escrita); }, [formulario, escrita]);
+  useLayoutEffect(() => () => { marcarFraseEscrita(formulario, false); }, [formulario]);
+}
 
 function useAvisoInicio() {
   const [, forzar] = useState(0);
@@ -119,6 +137,7 @@ function CrearAsunto({ existentes, ocupado, setOcupado }: { existentes: readonly
   const [mostrar, setMostrar] = useState(false);
   const [sinRecuperacion, setSinRecuperacion] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  useFraseEscrita(frase !== '' || repetir !== '');
 
   const limpio = codigo.trim();
   const codigoValido = REGEX_CODIGO.test(limpio);
@@ -147,8 +166,6 @@ function CrearAsunto({ existentes, ocupado, setOcupado }: { existentes: readonly
       } else {
         asuntoId = randomIds().next('asu') as AsuntoId;
       }
-      setFrase('');
-      setRepetir('');
       fijarListaDelCaso([]);
       fijarTabla(tablaVacia(asuntoId));
       fijarAvisoInicio(null);
@@ -159,8 +176,14 @@ function CrearAsunto({ existentes, ocupado, setOcupado }: { existentes: readonly
       });
       ir('lista');
     } catch (e) {
-      setError(mensajeDeCodigo(codigoDeError(e), 'tabla'));
+      // SESION_DESCONOCIDA al crear solo sale de cerrar() durante la derivación o la escritura (B-21): es un bloqueo, que ya
+      // mostró M-102 (o la página se fue con pagehide); no es un error del formulario.
+      const codigo = codigoDeError(e);
+      if (codigo !== 'SESION_DESCONOCIDA') setError(mensajeDeCodigo(codigo, 'tabla'));
     } finally {
+      // 6.6.5 y M-7: las frases no quedan en los campos tras el intento, salga bien o mal.
+      setFrase('');
+      setRepetir('');
       setOcupado(false);
     }
   };
@@ -230,6 +253,7 @@ function AbrirAsunto({ asuntos, ocupado, setOcupado }: { asuntos: readonly Asunt
   const [frase, setFrase] = useState('');
   const [mostrar, setMostrar] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  useFraseEscrita(frase !== '');
   const puede = !ocupado && elegido !== '' && frase !== '' && asuntos.some((a) => a.asuntoId === elegido);
 
   const abrir = async (destino: 'lista' | 'reinsercion'): Promise<void> => {
@@ -238,7 +262,6 @@ function AbrirAsunto({ asuntos, ocupado, setOcupado }: { asuntos: readonly Asunt
     setError(undefined);
     try {
       const r = await puertos.boveda.abrir(elegido as AsuntoId, frase.normalize('NFC'));
-      setFrase('');
       fijarListaDelCaso(r.caseList);
       fijarTabla(r.table);
       fijarAvisoInicio(null);
@@ -248,11 +271,14 @@ function AbrirAsunto({ asuntos, ocupado, setOcupado }: { asuntos: readonly Asunt
       });
       ir(destino);
     } catch (e) {
-      // SESION_DESCONOCIDA al abrir es el aborto por un bloqueo, pagehide o «Cerrar asunto» mientras se derivaba la clave (B-21):
-      // es un bloqueo, no una frase equivocada; la pantalla ya quedó limpia (M-102) y no se muestra M-202.
+      // SESION_DESCONOCIDA al abrir es el aborto por un bloqueo (el botón, la inactividad, otra pestaña) o pagehide mientras se
+      // derivaba la clave (B-21): no es una frase equivocada y no se muestra M-202. El bloqueo ya volvió a montar el formulario,
+      // con la frase vacía, y mostró M-102 (M-7).
       const codigo = codigoDeError(e);
       if (codigo !== 'SESION_DESCONOCIDA') setError(mensajeDeCodigo(codigo, 'tabla'));
     } finally {
+      // 6.6.5 y M-7: el campo se vacía al terminar la derivación, también si falla; otro clic no reabre el asunto sin la frase.
+      setFrase('');
       setOcupado(false);
     }
   };
@@ -302,6 +328,7 @@ export function Inicio() {
   const aviso = useAvisoInicio();
   const [asuntos, setAsuntos] = useState<readonly AsuntoListado[]>([]);
   const [ocupado, setOcupado] = useState(false);
+  const generacion = useGeneracionDeFormularios();
   useEffect(() => {
     let vivo = true;
     void puertos.boveda.listar().then((l) => { if (vivo) setAsuntos(l); }).catch(() => { if (vivo) setAsuntos([]); });
@@ -319,8 +346,8 @@ export function Inicio() {
       ) : null}
       <AvisoInicial />
       <div class="dos-columnas">
-        <CrearAsunto existentes={asuntos} ocupado={ocupado} setOcupado={setOcupado} />
-        <AbrirAsunto asuntos={asuntos} ocupado={ocupado} setOcupado={setOcupado} />
+        <CrearAsunto key={`crear-${generacion}`} existentes={asuntos} ocupado={ocupado} setOcupado={setOcupado} />
+        <AbrirAsunto key={`abrir-${generacion}`} asuntos={asuntos} ocupado={ocupado} setOcupado={setOcupado} />
       </div>
       <TarjetaModelo />
       <div class="acciones">
