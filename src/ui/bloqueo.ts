@@ -126,7 +126,7 @@ export function instalarBloqueo(): () => void {
   addEventListener('focus', alVolver);
   addEventListener('pageshow', (e: PageTransitionEvent) => {
     // Restaurada desde la caché de páginas: el estado ya está vacío; se pide la frase de nuevo (M-102).
-    if (e.persisted) { vaciarEstadoM(); actualizar({ asunto: null, phase: 'vacio', screen: 'inicio', dialog: null }); fijarAvisoInicio('bloqueado'); }
+    if (e.persisted) { vaciarEstadoM(); puertos.boveda.cerrar(); actualizar({ asunto: null, phase: 'vacio', screen: 'inicio', dialog: null }); fijarAvisoInicio('bloqueado'); }
     else evaluar();
   });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') evaluar(); });
