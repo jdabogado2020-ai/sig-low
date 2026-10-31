@@ -156,13 +156,13 @@ describe('T-MO-07 generación de variantes', () => {
       'nombre_suelto:María', 'nombre_suelto:José', 'nombre_suelto:María José', 'iniciales:M. J. P. R.', 'iniciales:M. P. R.',
     ].sort());
   });
-  it('dos unidades: sin iniciales de menos de 3 letras', () => {
-    expect(gen(persona('Pedro Ejemplo', 'TESTIGO', src))).toEqual(['apellido_suelto:Ejemplo', 'exacta:Pedro Ejemplo', 'nombre_suelto:Pedro'].sort());
+  it('dos unidades: sin iniciales de menos de 3 letras; solo la variante con una inicial más (AJ-2)', () => {
+    expect(gen(persona('Pedro Ejemplo', 'TESTIGO', src))).toEqual(['apellido_suelto:Ejemplo', 'exacta:Pedro Ejemplo', 'iniciales:P. E. _.', 'nombre_suelto:Pedro'].sort());
   });
   it('apellido con guion y dos unidades', () => {
     expect(gen(persona('Ana Rojas-Ejemplo', 'DEMANDANTE', src))).toEqual([
       'apellido_suelto:Ejemplo', 'apellido_suelto:Rojas', 'apellido_suelto:Rojas-Ejemplo', 'apellidos:Ana Rojas',
-      'exacta:Ana Rojas-Ejemplo', 'nombre_suelto:Ana',
+      'exacta:Ana Rojas-Ejemplo', 'iniciales:A. R. _.', 'nombre_suelto:Ana',
     ].sort());
   });
   it('una sola palabra: solo la exacta', () => {
@@ -578,5 +578,66 @@ describe('T-MO-07 ejemplos de la sección 7 no cubiertos arriba', () => {
     const l = refreshVariants([persona('Ana Ficticia Rojas', 'DEMANDANTE', ids())]);
     const r = searchCaseList(part('El señor Rojas y la Dra. Ficticia.'), l);
     expect(r.every((m) => m.confidence !== 'alta')).toBe(true);
+  });
+});
+
+// --- AJ-2 (D-10): lista con el nombre incompleto -----------------------------------------------------
+
+describe('T-MO-07 AJ-2 iniciales de un nombre de dos unidades: las dos de la lista y una más', () => {
+  const v = [generated('A. E. _.', 'iniciales', 'baja')];
+  const casan: Array<[string, string]> = [
+    ['no fue discutido por A. E. O. en su momento', 'A. E. O.'], ['Sobre este punto A.E.O. aportará', 'A.E.O.'], ['A E O firmó', 'A E O'],
+    ['(A. E. O.)', 'A. E. O.'], ['la Dra. A. E. O. dijo', 'A. E. O.'],
+  ];
+  for (const [texto, esperado] of casan) it(`casa «${texto}»`, () => expect(probe('persona', 'Alejandro Ejemplo', v, texto)).toEqual([esperado]));
+  for (const texto of ['la EPS respondió', 'AEO firmó', 'A. E. firmó', 'A. E. y B. dijeron', 'A. E. O. M. firmó', 'M. A. E. O. firmó', 'a. e. o. firmó', 'A. E. a la vista']) {
+    it(`no casa «${texto}»`, () => expect(probe('persona', 'Alejandro Ejemplo', v, texto)).toEqual([]));
+  }
+  it('la entidad completa de la lista sigue con sus variantes de siempre y la nueva se resuelve en una detección de baja confianza', () => {
+    const src = ids();
+    const e = refreshVariants([persona('Alejandro Ejemplo', 'DEMANDANTE', src)]);
+    const dets = searchCaseList(part('A. E. O. aportará las pruebas'), e);
+    expect(dets).toHaveLength(1);
+    expect(dets[0]).toMatchObject({ start: 0, end: 8, variantClass: 'iniciales', confidence: 'baja', source: 'lista' });
+  });
+  it('un nombre de tres unidades conserva sus iniciales de siempre y no lleva la variante con comodín', () => {
+    const v3 = classes(generateVariants(persona('Ana Ficticia Rojas', 'DEMANDANTE', ids()), []));
+    expect(v3.filter((x) => x.startsWith('iniciales'))).toEqual(['iniciales:A. F. R.']);
+  });
+  it('desactivar la variante con comodín sobrevive a refreshVariants (la llave conserva el comodín)', () => {
+    const src = ids();
+    const e0 = refreshVariants([persona('Alejandro Ejemplo', 'DEMANDANTE', src)]);
+    const off = e0.map((e) => ({ ...e, variants: e.variants.map((x) => (x.text === 'A. E. _.' ? { ...x, enabled: false } : x)) }) as CaseEntity);
+    const e1 = refreshVariants(off);
+    expect(e1[0]?.variants.find((x) => x.text === 'A. E. _.')?.enabled).toBe(false);
+    expect(searchCaseList(part('A. E. O. aportará'), e1)).toEqual([]);
+  });
+  it('tiempo: 20.000 repeticiones de «A. E. » por debajo de 200 ms', () => {
+    const e = refreshVariants([persona('Alejandro Ejemplo', 'DEMANDANTE', ids())]);
+    const texto = 'A. E. '.repeat(20_000) + 'O.';
+    const mejor = Math.min(...[0, 1, 2].map(() => { const t0 = performance.now(); searchCaseList(part(texto), e); return performance.now() - t0; }));
+    expect(mejor).toBeLessThan(200);
+  });
+});
+
+describe('T-MO-07 AJ-2 sigla de una entidad de salud con su token', () => {
+  const gen = (e: CaseEntity): string[] => classes(generateVariants(e, [e]));
+  it('«EPS Salud Ficticia S.A.» genera «ESF»; el token al final va al final', () => {
+    expect(gen(organizacion('EPS Salud Ficticia S.A.', 'EPS', ids()))).toContain('sigla:ESF');
+    expect(gen(organizacion('Salud Integral Prueba EPS S.A.', 'EPS', ids()))).toEqual(expect.arrayContaining(['sigla:SIP', 'sigla:SIPE']));
+  });
+  it('una sigla de menos de 3 letras con el token no se genera: «EPS Ejemplo S.A.» queda como antes', () => {
+    expect(gen(organizacion('EPS Ejemplo S.A.', 'EPS', ids()))).toEqual(
+      ['exacta:EPS Ejemplo S.A.', 'razon_social_sin_sufijo:Ejemplo EPS', 'razon_social_sin_sufijo:Ejemplo'].sort());
+  });
+  it('sin token de salud no cambia: «Ferretería Ejemplo de Insumos S.A.S.» solo trae «FEI»', () => {
+    expect(gen(organizacion('Ferretería Ejemplo de Insumos S.A.S.', 'EMPRESA', ids()))).toEqual(['exacta:Ferretería Ejemplo de Insumos S.A.S.', 'sigla:FEI'].sort());
+  });
+  it('«ESF» se encuentra como palabra entera en mayúsculas y no dentro de otra o en minúsculas', () => {
+    const e = refreshVariants([organizacion('EPS Salud Ficticia S.A.', 'EPS', ids())]);
+    const hay = (t: string): string[] => searchCaseList(part(t), e).map((d) => t.slice(d.start, d.end));
+    expect(hay('Radicado de reparto 05001 · ESF')).toEqual(['ESF']);
+    expect(hay('la esf no')).toEqual([]);
+    expect(hay('ESFERA')).toEqual([]);
   });
 });

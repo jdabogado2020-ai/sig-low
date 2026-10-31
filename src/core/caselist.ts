@@ -59,6 +59,14 @@ function escapeRe(s: string): string {
 function lettersOf(s: string): string {
   return fold(s).replace(/[^\p{L}]/gu, '');
 }
+/**
+ * AJ-2 (extensión de 7.9.3 pendiente de aprobación): iniciales de un nombre de la lista incompleto. Un nombre de dos unidades («Pedro
+ * Ejemplo») no genera iniciales (7.9.3: «solo si suman 3 letras o más»), pero el escrito suele usar las de su nombre completo («P. E. R.»,
+ * F44). La variante «P. E. _.» casa las dos iniciales de la lista más UNA inicial cualquiera, con separador obligatorio (nunca «PER»: sería
+ * cualquier sigla de tres letras que empiece igual) y sin una cuarta inicial (R-LST-02). Confianza baja.
+ */
+const COMODIN_INICIAL = /_\.?$/u;
+const esComodinIniciales = (texto: string): boolean => COMODIN_INICIAL.test(texto.trim());
 function firstLetter(s: string): string | undefined {
   return fold(s).match(/\p{L}/u)?.[0];
 }
@@ -192,6 +200,7 @@ function personRaw(name: string): RawVariant[] {
       const l2 = [g0, ...surnames].map(initial).filter((l): l is string => l !== undefined);
       if (l2.length >= 3) ini(l2);
     }
+    if (l1.length === 2) V.push({ text: formatInitials(l1) + ' _.', class: 'iniciales', confidence: 'baja', key: 'i:' + l1.join('') + '_' });
   }
   return dedupe(V);
 }
@@ -269,6 +278,13 @@ function orgRaw(name: string): RawVariant[] {
     .filter((l): l is string => l !== undefined)
     .join('');
   if (sig.length >= 3) V.push({ text: sig.toUpperCase(), class: 'sigla', confidence: 'baja', key: 'i:' + sig });
+  // AJ-2 (extensión de 7.9.4 pendiente de aprobación): la sigla del nombre de una entidad de salud incluye el token («EPS Salud Ficticia» →
+  // «ESF»), porque así se escribe. Solo si suma 3 letras o más y no repite la del núcleo.
+  if (p.health !== null && sig.length > 0) {
+    const t = p.health === 'eps' ? 'e' : 'i';
+    const conToken = p.healthPos === 'inicio' ? t + sig : sig + t;
+    if (conToken.length >= 3 && conToken !== sig) V.push({ text: conToken.toUpperCase(), class: 'sigla', confidence: 'baja', key: 'i:' + conToken });
+  }
   return dedupe(V);
 }
 
@@ -280,7 +296,7 @@ function dedupe(V: readonly RawVariant[]): RawVariant[] {
       const body = v.key.slice(2);
       const letters = body.replace(/[^\p{L}]/gu, '').length;
       if (v.key.startsWith('i:')) {
-        if (letters < 3) continue;
+        if (letters + (body.endsWith('_') ? 1 : 0) < 3) continue;
       } else {
         if (letters < 2) continue;
         if (!/[ -]/u.test(body) && (FUNCION_SET.has(body) || body.length < 3)) continue;
@@ -297,7 +313,7 @@ function rawFor(e: Pick<CaseEntity, 'kind' | 'name'>): RawVariant[] {
 }
 
 function variantKey(e: Pick<CaseEntity, 'kind'>, v: CaseVariant): string {
-  if (v.class === 'iniciales' || v.class === 'sigla') return 'i:' + lettersOf(v.text);
+  if (v.class === 'iniciales' || v.class === 'sigla') return 'i:' + lettersOf(v.text) + (esComodinIniciales(v.text) ? '_' : '');
   if (e.kind === 'organizacion' && v.origin === 'generada' && v.class === 'exacta') return 't:' + tokensKey(parseOrg(v.text).baseText);
   return 't:' + tokensKey(v.text);
 }
@@ -516,7 +532,11 @@ function makeMatcher(e: CaseEntity, v: CaseVariant): Matcher | null {
   if (v.class === 'iniciales' || v.class === 'sigla') {
     const letters = [...lettersOf(v.text)];
     if (letters.length < 2) return null;
-    const re = new RegExp(LST.INI_ANTES + letters.map(escapeRe).join(LST.INI_ENTRE) + LST.INI_FIN, 'gu');
+    const comodin = v.class === 'iniciales' && esComodinIniciales(v.text);
+    // Con comodín: separador obligatorio entre las letras («A. E. O.», «A E O»), nunca «AEO».
+    const re = comodin
+      ? new RegExp(LST.INI_ANTES + letters.map(escapeRe).join(String.raw`(?:\. ?| )`) + String.raw`(?:\. ?| )\p{L}` + LST.INI_FIN, 'gu')
+      : new RegExp(LST.INI_ANTES + letters.map(escapeRe).join(LST.INI_ENTRE) + LST.INI_FIN, 'gu');
     return { re, initials: true, needsCase: true, fullOrg: false, family: null, refText: v.text, org };
   }
   const generatedOrg = org && v.origin === 'generada';
