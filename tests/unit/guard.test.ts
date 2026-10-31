@@ -295,6 +295,139 @@ describe('T-CS-01 B-50 el registro del service worker: solo /sw.js exacto, conve
   });
 });
 
+// ===== B-80 (P0-6a de AJ-3): los envoltorios usan las primitivas que tenía el realm al instalar la guardia, no las vivas.
+// Frente a código que ya corre en la página no hay barrera (V-03); esto cierra solo que la guardia dependa de lo que ese
+// código pueda sustituir después. Cada caso sustituye lo que usaban los envoltorios SOLO mientras llama a la guardia (la
+// ventana es síncrona y mínima, para no romper a Vitest) y lo restaura siempre. =====
+type Restaurar = () => void;
+
+/** Sustituye una propiedad (dato o descriptor) y devuelve la forma de volver atrás. */
+function sustituir(objeto: object, nombre: string, nuevo: PropertyDescriptor): Restaurar {
+  const antes = Object.getOwnPropertyDescriptor(objeto, nombre)!;
+  Object.defineProperty(objeto, nombre, { ...nuevo, configurable: true });
+  return () => { Object.defineProperty(objeto, nombre, antes); };
+}
+const dato = (value: unknown): PropertyDescriptor => ({ value, writable: true });
+const lector = (valor: unknown): PropertyDescriptor => ({ get: () => valor });
+
+describe('T-CS-01 B-80 la guardia usa las primitivas de cuando se instaló, no las vivas', () => {
+  const HTML = 'http://www.w3.org/1999/xhtml';
+  type Ventana = { createElement(n: unknown): unknown; createElementNS(ns: unknown, n: unknown): unknown };
+  const documentoDe = (s: Simulado): Ventana => new (s.g['Document'] as new () => Ventana)();
+  const contenedorDe = (s: Simulado): { register(...a: unknown[]): Promise<unknown> } =>
+    new (s.g['ServiceWorkerContainer'] as new () => { register(...a: unknown[]): Promise<unknown> })();
+  const rechazo = (p: Promise<unknown>): Promise<string> => p.then(() => 'resolvió', (e: unknown) => `rechazo ${(e as Error).name} ${(e as Error).message}`);
+
+  it('Reflect.apply sustituido después de instalar: fetch, register y createElement entregan lo mismo que comprobaron', async () => {
+    const s = simulado();
+    instalarGuardia(s.g);
+    const doc = documentoDe(s);
+    const registro = contenedorDe(s);
+    const real = Reflect.apply;
+    let usos = 0;
+    // Un sustituto hostil: cambia lo que recibe el original (la petición, la ruta o el nombre del elemento).
+    const contrabando = (a: unknown[]): unknown[] =>
+      a[0] instanceof Request ? [new PeticionDePagina(`${ORIGEN}/assets/x.js?d=Ficticia`)]
+        : a[0] === '/sw.js' ? ['/assets/Ficticia-Rojas.js', ...a.slice(1)]
+          : a[0] === 'div' ? ['iframe'] : a;
+    const restaurar = sustituir(Reflect, 'apply', dato((f: (...a: unknown[]) => unknown, esto: unknown, a: unknown[]) => { usos++; return real(f, esto, contrabando(a)); }));
+    let admitido: Promise<unknown>, negado: Promise<unknown>, registrado: Promise<unknown>, negadoSW: Promise<unknown>, creado: unknown, bloqueado: string;
+    try {
+      admitido = llamarFetch(s.g, '/assets/x.js');
+      negado = llamarFetch(s.g, '/fuga');
+      registrado = registro.register('/sw.js');
+      negadoSW = registro.register('/assets/Ficticia-Rojas.js');
+      creado = doc.createElement('div');
+      bloqueado = lanza(() => doc.createElement('iframe'));
+    } finally { restaurar(); }
+    expect(usos, 'la guardia no llamó al Reflect.apply sustituido').toBe(0);
+    expect(await admitido).toBeInstanceOf(Response);
+    expect(s.original).toHaveBeenCalledTimes(1);
+    expect((s.original.mock.calls[0]![0] as Request).url).toBe(`${ORIGEN}/assets/x.js`);
+    expect(await rechazo(negado)).toBe('rechazo TypeError URL_NO_PERMITIDA');
+    expect(await registrado).toBe('registro');
+    expect(await rechazo(negadoSW)).toBe('rechazo TypeError URL_NO_PERMITIDA');
+    expect(creado).toEqual({ nombre: 'div' });
+    expect(bloqueado).toBe('lanza SiglowError ERROR_INTERNO');
+    expect(s.creados).toEqual([['register', '/sw.js'], 'div']);
+  });
+
+  it('String sustituido después de instalar: register, createElement, createElementNS, define y createDocument siguen rechazando', async () => {
+    const s = simulado();
+    instalarGuardia(s.g);
+    const doc = documentoDe(s);
+    const registro = contenedorDe(s);
+    const definidor = new (s.g['CustomElementRegistry'] as new () => { define(...a: unknown[]): unknown })();
+    const implementacion = new (s.g['DOMImplementation'] as new () => { createDocument(ns: unknown, n: unknown): unknown })();
+    let usos = 0;
+    let mentira = '';
+    const restaurar = sustituir(globalThis, 'String', dato(() => { usos++; return mentira; }));
+    let negadoSW: Promise<unknown>, lanzan: string[];
+    try {
+      mentira = '/sw.js';
+      negadoSW = registro.register('/assets/Ficticia-Rojas.js');
+      mentira = 'div';
+      lanzan = [
+        lanza(() => doc.createElement('iframe')),
+        lanza(() => doc.createElementNS(HTML, 'iframe')),
+        lanza(() => definidor.define('x-marco', class {}, { extends: 'iframe' })),
+        lanza(() => implementacion.createDocument(HTML, 'iframe')),
+      ];
+    } finally { restaurar(); }
+    expect(usos, 'la guardia no llamó al String sustituido').toBe(0);
+    expect(await rechazo(negadoSW)).toBe('rechazo TypeError URL_NO_PERMITIDA');
+    expect(lanzan).toEqual(Array<string>(4).fill('lanza SiglowError ERROR_INTERNO'));
+    expect(s.creados).toEqual([]);
+  });
+
+  it('métodos de String y Array, lectores de URL y Request, Promise.reject, URL y Request del global sustituidos: fetch y createElement siguen filtrando', async () => {
+    const s = simulado();
+    instalarGuardia(s.g);
+    const doc = documentoDe(s);
+    const sp = String.prototype as unknown as Record<string, unknown>;
+    const restaurar: Restaurar[] = [
+      sustituir(sp, 'toLowerCase', dato(() => 'div')),
+      sustituir(sp, 'indexOf', dato(() => -1)),
+      sustituir(sp, 'lastIndexOf', dato(() => -1)),
+      sustituir(sp, 'startsWith', dato(() => true)),
+      sustituir(sp, 'slice', dato(() => 'div')),
+      sustituir(Array.prototype, 'indexOf', dato(() => -1)),
+      sustituir(URL.prototype, 'pathname', lector('/assets/x.js')),
+      sustituir(URL.prototype, 'origin', lector(ORIGEN)),
+      sustituir(Request.prototype, 'url', lector(`${ORIGEN}/assets/x.js`)),
+      sustituir(Request.prototype, 'method', lector('GET')),
+      sustituir(Request.prototype, 'body', lector(null)),
+      sustituir(Promise, 'reject', dato(() => Promise.resolve('resolvió'))),
+      sustituir(s.g, 'URL', dato(class { get pathname(): string { return '/assets/x.js'; } get origin(): string { return ORIGEN; } })),
+      sustituir(s.g, 'Request', dato(class {})),
+    ];
+    let admitido: Promise<unknown>, fuera: Promise<unknown>, otroOrigen: Promise<unknown>, post: Promise<unknown>, conQuery: Promise<unknown>, bloqueado: string;
+    try {
+      admitido = llamarFetch(s.g, '/assets/x.js');
+      fuera = llamarFetch(s.g, '/fuga');
+      otroOrigen = llamarFetch(s.g, 'https://ejemplo.test/assets/x.js');
+      post = llamarFetch(s.g, '/assets/x.js', { method: 'POST', body: 'x' });
+      conQuery = llamarFetch(s.g, '/assets/x.js?d=Ficticia');
+      bloqueado = lanza(() => doc.createElement('iframe'));
+    } finally { for (const r of restaurar.reverse()) r(); }
+    expect(await admitido).toBeInstanceOf(Response);
+    for (const p of [fuera, otroOrigen, post, conQuery]) expect(await rechazo(p)).toBe('rechazo TypeError URL_NO_PERMITIDA');
+    expect(s.original).toHaveBeenCalledTimes(1);
+    expect((s.original.mock.calls[0]![0] as Request).url).toBe(`${ORIGEN}/assets/x.js`);
+    expect(bloqueado).toBe('lanza SiglowError ERROR_INTERNO');
+    expect(s.creados).toEqual([]);
+  });
+
+  it('en el código de los envoltorios, Reflect.apply, String y los métodos de cadena solo se nombran al capturarlos (no se llaman vivos)', () => {
+    const fuente = readFileSync(resolve('src/guard.ts'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+    const cuenta = (r: RegExp): number => (fuente.match(r) ?? []).length;
+    expect(cuenta(/\bReflect\.apply\b/g), 'Reflect.apply, una sola vez: la captura').toBe(1);
+    expect(cuenta(/\bString\s*\(/g), 'String(…) vivo').toBe(0);
+    expect(cuenta(/\.(?:test|exec|includes|startsWith|toLowerCase|lastIndexOf|slice)\s*\(/g), 'métodos vivos de cadena, arreglo o regex').toBe(0);
+    expect(cuenta(/\bPromise\.reject\s*\(/g), 'Promise.reject(…) vivo').toBe(0);
+  });
+});
+
 describe('T-CS-04 WebRTC y voz (V-02, B-18): undefined y fijos', () => {
   it('los tres constructores de WebRTC, speechSynthesis, SpeechSynthesisUtterance y el reconocimiento de voz', () => {
     const s = simulado();
