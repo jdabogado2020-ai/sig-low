@@ -1595,7 +1595,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C28-E40",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -2554,7 +2554,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C28-E40",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -2914,7 +2914,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C28-E66",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -3004,7 +3004,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C28-E40",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -3108,6 +3108,11 @@
   "revision": {
     "estado": "adjudicado",
     "discrepancias": 0,
-    "cambios": []
+    "cambios": [
+      "RG-r1: C28-A046 MUNICIPIO «Zipaquirá» dentro del despacho C28-A045: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C28-A090 MUNICIPIO «Zipaquirá» dentro del despacho C28-A089: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C28-A106 MUNICIPIO «Sogamoso» dentro del despacho C28-A105: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C28-A110 MUNICIPIO «Chía» dentro del despacho C28-A109: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad."
+    ]
   }
 }

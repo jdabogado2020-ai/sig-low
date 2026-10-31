@@ -1556,7 +1556,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C30-E39",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -2697,7 +2697,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C30-E39",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -2817,6 +2817,9 @@
   "revision": {
     "estado": "adjudicado",
     "discrepancias": 0,
-    "cambios": []
+    "cambios": [
+      "RG-r1: C30-A046 MUNICIPIO «Soacha» dentro del despacho C30-A045: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C30-A098 MUNICIPIO «Soacha» dentro del despacho C30-A097: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad."
+    ]
   }
 }

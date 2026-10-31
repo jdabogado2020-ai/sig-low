@@ -1116,7 +1116,6 @@ describe('corpus · T-GO-01 comprobaciones automáticas del gold', () => {
       if (a.es_negativo_esperado && a.bandera_esperada) expect(a.bandera_esperada).toBe('CITA_JURISPRUDENCIAL');
       if (a.caracteristicas.includes('F32')) { expect(a.bandera_esperada, a.id).toBe('CITA_JURISPRUDENCIAL'); expect(a.es_negativo_esperado).toBe(true); }
       if (['CARGO', 'DIAGNOSTICO', 'HECHO_LLAMATIVO', 'MENOR'].includes(a.tipo)) expect(a.debe_generalizarse, `${a.id} ${a.tipo}`).toBe(true);
-      if (a.tipo === 'MUNICIPIO') expect(a.generalizacion).toBe('MUNICIPIO_A_DEPARTAMENTO');
       if (a.caracteristicas.includes('F54') && ORG.includes(a.tipo)) { expect(a.generalizacion).toBe('DESPACHO_A_GENERICO'); expect(a.debe_generalizarse).toBe(true); }
       if (a.caracteristicas.includes('F47')) expect(a.debe_generalizarse).toBe(true);
     }
@@ -1126,6 +1125,12 @@ describe('corpus · T-GO-01 comprobaciones automáticas del gold', () => {
         const o = porId.get(a.contenidaEn) as GoldAnn;
         expect(o, `${a.id} contenidaEn`).toBeDefined();
         expect(o.parte).toEqual(a.parte); expect(o.start).toBeLessThanOrEqual(a.start); expect(o.end).toBeGreaterThanOrEqual(a.end);
+      }
+      // 6.2.1 (fila MUNICIPIO) y R-DESP-01: el municipio dentro del nombre de un despacho o autoridad espera la sugerencia del
+      // despacho, que lo generaliza en su opción o1; fuera de un despacho, MUNICIPIO_A_DEPARTAMENTO (RG-r1).
+      for (const a of g.anotaciones) if (a.tipo === 'MUNICIPIO') {
+        const enDespacho = a.contenidaEn !== undefined && porId.get(a.contenidaEn)?.generalizacion === 'DESPACHO_A_GENERICO';
+        expect(a.generalizacion, a.id).toBe(enDespacho ? 'DESPACHO_A_GENERICO' : 'MUNICIPIO_A_DEPARTAMENTO');
       }
     }
   });

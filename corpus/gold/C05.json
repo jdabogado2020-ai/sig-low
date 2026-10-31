@@ -722,8 +722,8 @@
     },
     {
       "id": "C05-E93",
-      "tipo": "FECHA",
-      "canonico": "FECHA:~7 anos de edad",
+      "tipo": "MENOR",
+      "canonico": "MENOR:edad:7 anos de edad",
       "mismoTitular": [],
       "enLista": false
     },
@@ -859,7 +859,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C05-E02",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -3938,7 +3938,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C05-E02",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -4028,7 +4028,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C05-E81",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -4118,7 +4118,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C05-E85",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -4296,7 +4296,7 @@
       "start": 9095,
       "end": 9109,
       "texto": "7 años de edad",
-      "tipo": "FECHA",
+      "tipo": "MENOR",
       "entidad": "C05-E93",
       "debe_generalizarse": true,
       "generalizacion": "EDAD_A_RANGO",
@@ -4305,7 +4305,8 @@
       "enLista": false,
       "rotulado": false,
       "caracteristicas": [
-        "F47"
+        "F47",
+        "F50"
       ]
     },
     {
@@ -4640,6 +4641,12 @@
   "revision": {
     "estado": "adjudicado",
     "discrepancias": 0,
-    "cambios": []
+    "cambios": [
+      "RG-r1: C05-A002 MUNICIPIO «ITAGÜÍ» dentro del despacho C05-A001: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C05-A141 MUNICIPIO «Itagüí» dentro del despacho C05-A140: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C05-A145 MUNICIPIO «Sogamoso» dentro del despacho C05-A144: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C05-A149 MUNICIPIO «Palmira» dentro del despacho C05-A148: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C05-A157 «7 años de edad» (edad 7 < 18): tipo FECHA → MENOR, característica F50 agregada, entidad C05-E93 FECHA → MENOR; se conservan debe_generalizarse y EDAD_A_RANGO. Motivo: la edad no es un DataType ni lleva [FECHA_n]; da la sugerencia EDAD_A_RANGO y, por ser de un menor, la bandera MENOR sobre la misma expresión. Plan 7.5.6 R-EDAD-01 («No es un DataType»; edad < 18 → bandera MENOR); 7.7.6 fila MENOR (R-EDAD-01 con edad < 18, tramo: la expresión); 7.8.2 G-06 («Sin marcador»); 10.1.3 F50."
+    ]
   }
 }

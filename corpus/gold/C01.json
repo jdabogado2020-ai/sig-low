@@ -897,8 +897,8 @@
     },
     {
       "id": "C01-E112",
-      "tipo": "FECHA",
-      "canonico": "FECHA:~13 anos de edad",
+      "tipo": "MENOR",
+      "canonico": "MENOR:edad:13 anos de edad",
       "mismoTitular": [],
       "enLista": false
     },
@@ -953,8 +953,8 @@
     },
     {
       "id": "C01-E119",
-      "tipo": "FECHA",
-      "canonico": "FECHA:~14 anos de edad",
+      "tipo": "MENOR",
+      "canonico": "MENOR:edad:14 anos de edad",
       "mismoTitular": [],
       "enLista": false
     },
@@ -1194,7 +1194,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C01-E04",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -5862,7 +5862,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C01-E97",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -5951,7 +5951,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C01-E04",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -6041,7 +6041,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C01-E104",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -6219,7 +6219,7 @@
       "start": 13407,
       "end": 13422,
       "texto": "13 años de edad",
-      "tipo": "FECHA",
+      "tipo": "MENOR",
       "entidad": "C01-E112",
       "debe_generalizarse": true,
       "generalizacion": "EDAD_A_RANGO",
@@ -6228,7 +6228,8 @@
       "enLista": false,
       "rotulado": false,
       "caracteristicas": [
-        "F47"
+        "F47",
+        "F50"
       ]
     },
     {
@@ -6377,7 +6378,7 @@
       "start": 13577,
       "end": 13592,
       "texto": "14 años de edad",
-      "tipo": "FECHA",
+      "tipo": "MENOR",
       "entidad": "C01-E119",
       "debe_generalizarse": true,
       "generalizacion": "EDAD_A_RANGO",
@@ -6386,7 +6387,8 @@
       "enLista": false,
       "rotulado": false,
       "caracteristicas": [
-        "F47"
+        "F47",
+        "F50"
       ]
     },
     {
@@ -6832,6 +6834,13 @@
   "revision": {
     "estado": "adjudicado",
     "discrepancias": 0,
-    "cambios": []
+    "cambios": [
+      "RG-r1: C01-A006 MUNICIPIO «FACATATIVÁ» dentro del despacho C01-A005: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C01-A217 MUNICIPIO «Bogotá» dentro del despacho C01-A216: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C01-A221 MUNICIPIO «Soacha» dentro del despacho C01-A220: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C01-A225 MUNICIPIO «Ibagué» dentro del despacho C01-A224: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C01-A233 «13 años de edad» (edad 13 < 18): tipo FECHA → MENOR, característica F50 agregada, entidad C01-E112 FECHA → MENOR; se conservan debe_generalizarse y EDAD_A_RANGO. Motivo: la edad no es un DataType ni lleva [FECHA_n]; da la sugerencia EDAD_A_RANGO y, por ser de un menor, la bandera MENOR sobre la misma expresión. Plan 7.5.6 R-EDAD-01 («No es un DataType»; edad < 18 → bandera MENOR); 7.7.6 fila MENOR (R-EDAD-01 con edad < 18, tramo: la expresión); 7.8.2 G-06 («Sin marcador»); 10.1.3 F50.",
+      "RG-r1: C01-A240 «14 años de edad» (edad 14 < 18): tipo FECHA → MENOR, característica F50 agregada, entidad C01-E119 FECHA → MENOR; se conservan debe_generalizarse y EDAD_A_RANGO. Motivo: la edad no es un DataType ni lleva [FECHA_n]; da la sugerencia EDAD_A_RANGO y, por ser de un menor, la bandera MENOR sobre la misma expresión. Plan 7.5.6 R-EDAD-01 («No es un DataType»; edad < 18 → bandera MENOR); 7.7.6 fila MENOR (R-EDAD-01 con edad < 18, tramo: la expresión); 7.8.2 G-06 («Sin marcador»); 10.1.3 F50."
+    ]
   }
 }

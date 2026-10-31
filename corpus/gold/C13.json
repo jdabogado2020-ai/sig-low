@@ -2734,7 +2734,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C13-E58",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -2824,7 +2824,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C13-E62",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -2945,7 +2945,9 @@
     "discrepancias": 0,
     "cambios": [
       "R3: C13-A052 BARRIO «Altos de la Prueba» (nombre de conjunto, rotulado sí) agregada por R2",
-      "R3: C13-A082 BARRIO «Mirador del Ejemplo» (nombre de conjunto, rotulado sí) agregada por R2"
+      "R3: C13-A082 BARRIO «Mirador del Ejemplo» (nombre de conjunto, rotulado sí) agregada por R2",
+      "RG-r1: C13-A102 MUNICIPIO «Sogamoso» dentro del despacho C13-A101: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C13-A106 MUNICIPIO «Bogotá» dentro del despacho C13-A105: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad."
     ]
   }
 }

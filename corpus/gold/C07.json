@@ -377,8 +377,8 @@
     },
     {
       "id": "C07-E43",
-      "tipo": "FECHA",
-      "canonico": "FECHA:~6 anos de edad",
+      "tipo": "MENOR",
+      "canonico": "MENOR:edad:6 anos de edad",
       "mismoTitular": [],
       "enLista": false
     },
@@ -1065,7 +1065,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C07-E03",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -2349,7 +2349,7 @@
       "start": 2734,
       "end": 2748,
       "texto": "6 años de edad",
-      "tipo": "FECHA",
+      "tipo": "MENOR",
       "entidad": "C07-E43",
       "debe_generalizarse": true,
       "generalizacion": "EDAD_A_RANGO",
@@ -2358,7 +2358,8 @@
       "enLista": false,
       "rotulado": false,
       "caracteristicas": [
-        "F47"
+        "F47",
+        "F50"
       ]
     },
     {
@@ -3893,7 +3894,7 @@
       "start": 6825,
       "end": 6839,
       "texto": "6 años de edad",
-      "tipo": "FECHA",
+      "tipo": "MENOR",
       "entidad": "C07-E43",
       "debe_generalizarse": true,
       "generalizacion": "EDAD_A_RANGO",
@@ -3902,7 +3903,8 @@
       "enLista": false,
       "rotulado": false,
       "caracteristicas": [
-        "F47"
+        "F47",
+        "F50"
       ]
     },
     {
@@ -5440,7 +5442,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C07-E03",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -5530,7 +5532,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C07-E103",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -5620,7 +5622,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C07-E107",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -5799,7 +5801,7 @@
       "start": 11668,
       "end": 11682,
       "texto": "6 años de edad",
-      "tipo": "FECHA",
+      "tipo": "MENOR",
       "entidad": "C07-E43",
       "debe_generalizarse": true,
       "generalizacion": "EDAD_A_RANGO",
@@ -5808,7 +5810,8 @@
       "enLista": false,
       "rotulado": false,
       "caracteristicas": [
-        "F47"
+        "F47",
+        "F50"
       ]
     },
     {
@@ -6185,6 +6188,14 @@
   "revision": {
     "estado": "adjudicado",
     "discrepancias": 0,
-    "cambios": []
+    "cambios": [
+      "RG-r1: C07-A003 MUNICIPIO «DOSQUEBRADAS» dentro del despacho C07-A002: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C07-A202 MUNICIPIO «Dosquebradas» dentro del despacho C07-A201: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C07-A206 MUNICIPIO «Itagüí» dentro del despacho C07-A205: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C07-A210 MUNICIPIO «Soacha» dentro del despacho C07-A209: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "RG-r1: C07-A061 «6 años de edad» (edad 6 < 18): tipo FECHA → MENOR, característica F50 agregada, entidad C07-E43 FECHA → MENOR; se conservan debe_generalizarse y EDAD_A_RANGO. Motivo: la edad no es un DataType ni lleva [FECHA_n]; da la sugerencia EDAD_A_RANGO y, por ser de un menor, la bandera MENOR sobre la misma expresión. Plan 7.5.6 R-EDAD-01 («No es un DataType»; edad < 18 → bandera MENOR); 7.7.6 fila MENOR (R-EDAD-01 con edad < 18, tramo: la expresión); 7.8.2 G-06 («Sin marcador»); 10.1.3 F50.",
+      "RG-r1: C07-A131 «6 años de edad» (edad 6 < 18): tipo FECHA → MENOR, característica F50 agregada, entidad C07-E43 FECHA → MENOR; se conservan debe_generalizarse y EDAD_A_RANGO. Motivo: la edad no es un DataType ni lleva [FECHA_n]; da la sugerencia EDAD_A_RANGO y, por ser de un menor, la bandera MENOR sobre la misma expresión. Plan 7.5.6 R-EDAD-01 («No es un DataType»; edad < 18 → bandera MENOR); 7.7.6 fila MENOR (R-EDAD-01 con edad < 18, tramo: la expresión); 7.8.2 G-06 («Sin marcador»); 10.1.3 F50.",
+      "RG-r1: C07-A218 «6 años de edad» (edad 6 < 18): tipo FECHA → MENOR, característica F50 agregada, entidad C07-E43 FECHA → MENOR; se conservan debe_generalizarse y EDAD_A_RANGO. Motivo: la edad no es un DataType ni lleva [FECHA_n]; da la sugerencia EDAD_A_RANGO y, por ser de un menor, la bandera MENOR sobre la misma expresión. Plan 7.5.6 R-EDAD-01 («No es un DataType»; edad < 18 → bandera MENOR); 7.7.6 fila MENOR (R-EDAD-01 con edad < 18, tramo: la expresión); 7.8.2 G-06 («Sin marcador»); 10.1.3 F50."
+    ]
   }
 }

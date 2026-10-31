@@ -1746,7 +1746,7 @@
       "tipo": "MUNICIPIO",
       "entidad": "C11-E12",
       "debe_generalizarse": true,
-      "generalizacion": "MUNICIPIO_A_DEPARTAMENTO",
+      "generalizacion": "DESPACHO_A_GENERICO",
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
       "enLista": false,
@@ -1783,7 +1783,8 @@
     "estado": "adjudicado",
     "discrepancias": 0,
     "cambios": [
-      "R3: C11-A027 BARRIO «Torres del Ejemplo» (nombre de conjunto, rotulado sí) agregada por R2"
+      "R3: C11-A027 BARRIO «Torres del Ejemplo» (nombre de conjunto, rotulado sí) agregada por R2",
+      "RG-r1: C11-A064 MUNICIPIO «Soacha» dentro del despacho C11-A063: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad."
     ]
   }
 }
