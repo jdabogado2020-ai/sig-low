@@ -9,7 +9,8 @@ import type {
 import type { ModelUiState, ModelVariant } from './estado.ts';
 import { aplicarVersionNueva, type ResultadoActualizacion } from './useActualizacion.ts';
 
-export interface AsuntoListado { asuntoId: AsuntoId; codigo: string; actualizado: IsoDateTime }
+/** Un asunto guardado: solo código y fechas, nunca contenido (V-35). `creado` es el del texto cifrado si el asunto está abierto; si no, el del registro. */
+export interface AsuntoListado { asuntoId: AsuntoId; codigo: string; creado: IsoDateTime; actualizado: IsoDateTime }
 export interface AsuntoAbierto { asuntoId: AsuntoId; codigo: string; caseList: CaseEntity[]; table: MappingTable }
 export interface InstantaneaAsunto { caseList: readonly CaseEntity[]; table: MappingTable }
 
@@ -32,6 +33,10 @@ export interface BovedaPuerto {
   cerrar(): void;
   /** Pantalla Bóveda (PC-6). Pasos 1 a 12 de 6.7.6. Sin opción y con conflicto → ASUNTO_EXISTENTE (M-113): «Reemplazar» o «Importar con otro código». */
   importar(archivo: ArrayBuffer | Uint8Array, frase: string, opcion?: { reemplazar: true } | { codigoNuevo: string }): Promise<{ asuntoId: AsuntoId; codigo: string; persisted: boolean | null }>;
+  /** «Exportar cifrado» desde la Bóveda sin abrir el asunto (B-24): la clave no queda en memoria; la frase errónea → CONTRASENA_O_ARCHIVO. */
+  exportarAsunto(asuntoId: AsuntoId, frase: string): Promise<{ archivo: string }>;
+  /** «Cambiar frase de paso» (6.7.4; M-6, B-23): el adaptador la hace en la cola del asunto y avisa a las otras pestañas. */
+  cambiarFrase(asuntoId: AsuntoId, actual: string, nueva: string): Promise<void>;
   /** «Borrar» un asunto (M-109). */
   borrarAsunto(asuntoId: AsuntoId): Promise<void>;
   /** «Borrar todo» (M-111); 'bloqueado' → M-112. Quien llama vacía el estado en claro. */
@@ -85,6 +90,8 @@ const sinBoveda: BovedaPuerto = {
   pasarAGuardar: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
   cerrar: () => undefined,
   importar: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
+  exportarAsunto: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
+  cambiarFrase: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
   borrarAsunto: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
   borrarTodo: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
   persistencia: () => Promise.resolve(null),

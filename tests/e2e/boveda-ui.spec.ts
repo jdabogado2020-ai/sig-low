@@ -1,12 +1,18 @@
 // Pantalla Bóveda (PC-6; 8.2.9, 6.7, V-18, V-35): en la app real (dist/). T-BO-01 (parte de interfaz: lista, persistencia, exportar, importar,
 // borrar, borrar todo, bloquear), INV-V01 (la pantalla muestra solo código y fechas, nunca la tabla), T-PV-24 y T-IU-05 (estados).
 // Datos ficticios evidentes (10.1.5). Las frases son de prueba y no secretas.
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import { copiarEnListo, crearYAnalizar, FRASE, h1, REALES_REI } from './ayudas-reinsercion';
 
 test.describe.configure({ timeout: 120_000 });
 test.use({ permissions: ['clipboard-read', 'clipboard-write'], acceptDownloads: true });
+
+/** Carpetas temporales con los `.siglow` descargados (copiados fuera de la ruta larga de Playwright); se borran al terminar. */
+const carpetasTemporales: string[] = [];
+test.afterAll(() => { for (const c of carpetasTemporales.splice(0)) rmSync(c, { recursive: true, force: true }); });
 
 const FRASE_NUEVA = 'otra frase ficticia distinta ñandú 2';
 const lista = (page: Page) => page.locator('[data-prueba="asunto-guardado"]');
@@ -82,7 +88,12 @@ test.describe('Bóveda (PC-6)', () => {
     await d.getByLabel('Frase de paso del asunto', { exact: true }).fill(FRASE);
     const [descarga] = await Promise.all([page.waitForEvent('download'), d.getByRole('button', { name: 'Exportar tabla cifrada' }).click()]);
     expect(descarga.suggestedFilename()).toMatch(/^sig-low-tabla-\d{8}-\d{4}\.siglow$/);
-    const ruta = (await descarga.path()) as string;
+    // MAX_PATH (Windows): la ruta de la descarga de Playwright puede pasar de 260 caracteres y Chromium no podría leerla en setInputFiles;
+    // se copia al temporal del sistema, con ruta corta, y se borra al terminar el archivo de pruebas.
+    const carpetaCorta = mkdtempSync(join(tmpdir(), 'siglow-bov-'));
+    carpetasTemporales.push(carpetaCorta);
+    const ruta = join(carpetaCorta, 'tabla.siglow');
+    await descarga.saveAs(ruta);
     const texto = readFileSync(ruta, 'utf8');
     expect(JSON.parse(texto)).toMatchObject({ formato: 'sig-low/tabla', v: 1 });
     for (const real of REALES_REI) expect(texto).not.toContain(real);
@@ -164,6 +175,28 @@ test.describe('Bóveda (PC-6)', () => {
     await page.getByRole('button', { name: 'Abrir para anonimizar' }).click();
     await expect(h1(page, 'Lista del caso')).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible();     // la tabla y la lista siguen ahí
+  });
+
+  test('T-BO-01 B-21 el bloqueo de otra pestaña aborta un «Abrir» en curso aunque no haya asunto abierto, y Inicio no muestra M-202', async ({ page }) => {
+    await prepararBoveda(page);
+    await page.getByRole('button', { name: 'Volver', exact: true }).click();
+    await expect(h1(page, 'Inicio')).toBeVisible();
+    // La otra pestaña ya está cargada (no se pierde tiempo después del clic): solo envía el mensaje del canal de bloqueo (8.2.10).
+    const otra = await page.context().newPage();
+    await otra.goto('/');
+    await expect(h1(otra, 'Inicio')).toBeVisible();
+    await page.getByLabel('Asunto guardado', { exact: true }).selectOption({ index: 1 });
+    await page.getByLabel('Frase de paso del asunto', { exact: true }).fill(FRASE);
+    const abrir = page.getByRole('button', { name: 'Abrir para anonimizar' });
+    await abrir.click();
+    await otra.evaluate(() => { const c = new BroadcastChannel('siglow-bloqueo'); c.postMessage({ tipo: 'bloquear' }); c.close(); });
+    // Mientras deriva la clave el botón está deshabilitado; al abortarse vuelve a quedar disponible y la pantalla sigue en Inicio.
+    await expect(abrir).toBeDisabled();
+    await expect(abrir).toBeEnabled({ timeout: 30_000 });
+    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(page.getByText('No se pudo completar la operación.')).toHaveCount(0);
+    await expect(page.getByText('Frase de paso incorrecta o archivo dañado.')).toHaveCount(0);
+    await otra.close();
   });
 
   test('T-BO-01 V-18 «Borrar todo» pide escribir BORRAR, elimina la base y vacía la lista (M-111)', async ({ page }) => {

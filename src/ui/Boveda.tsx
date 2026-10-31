@@ -8,13 +8,12 @@ import type { ErrorCode } from '../core/types.ts';
 import { bloquear } from './bloqueo.ts';
 import { CampoFrase, CampoTexto, Casilla } from './campos.tsx';
 import { Dialogo } from './dialogo.tsx';
-import { actualizar, ir, obtener, useShell } from './estado.ts';
+import { actualizar, ir, useShell } from './estado.ts';
 import { evaluarFrase } from './frase.ts';
 import { alterno, idDeCodigo, mensajeDeCodigo, ROTULOS, t, X, type MessageId, type MsgParam } from './mensajes.ts';
 import { fijarPreseleccion } from './boveda/preseleccion.ts';
-import { cambiarFraseDeAsunto, listarAsuntos, type FilaBoveda } from './boveda/registros.ts';
 import { B } from './boveda/textos.ts';
-import { codigoDeError, puertos } from './servicios.ts';
+import { codigoDeError, puertos, type AsuntoListado as FilaBoveda } from './servicios.ts';
 import { vaciarEstadoM } from './sesion.ts';
 
 interface Aviso { id: MessageId; params?: Readonly<Record<string, MsgParam>>; alterno?: number; rol: 'status' | 'alert' }
@@ -51,13 +50,9 @@ function CuerpoExportar({ fila, alTerminar, alAviso }: { fila: FilaBoveda; alTer
     setOcupado(true);
     setError(undefined);
     try {
-      const abierto = await puertos.boveda.abrir(fila.asuntoId, frase.normalize('NFC'));
-      try {
-        const r = await puertos.boveda.exportar({ caseList: abierto.caseList, table: abierto.table }, abierto.codigo, frase.normalize('NFC'));
-        alAviso({ id: 'M-114', params: { archivo: r.archivo }, rol: 'status' });
-      } finally {
-        if (obtener().asunto === null) puertos.boveda.cerrar();
-      }
+      // El adaptador descifra, vuelve a cifrar para el .siglow y descarga; la clave no queda en memoria (B-24).
+      const r = await puertos.boveda.exportarAsunto(fila.asuntoId, frase.normalize('NFC'));
+      alAviso({ id: 'M-114', params: { archivo: r.archivo }, rol: 'status' });
       setFrase('');
       alTerminar();
     } catch (e) {
@@ -99,8 +94,8 @@ function CuerpoCambiarFrase({ fila, alTerminar, alAviso }: { fila: FilaBoveda; a
     setOcupado(true);
     setError(undefined);
     try {
-      await cambiarFraseDeAsunto(fila.asuntoId, actual.normalize('NFC'), nueva.normalize('NFC'));
-      puertos.boveda.cerrar();
+      // El adaptador lo hace en la cola del asunto: pasa a la clave nueva si está abierto aquí y avisa a las otras pestañas (M-6).
+      await puertos.boveda.cambiarFrase(fila.asuntoId, actual.normalize('NFC'), nueva.normalize('NFC'));
       setActual('');
       setNueva('');
       setRepetir('');
@@ -334,7 +329,7 @@ export function Boveda() {
   const disponible = puertos.boveda.disponible();
 
   const cargar = async (): Promise<void> => {
-    try { setFilas(await listarAsuntos()); } catch { setFilas([]); }
+    try { setFilas(await puertos.boveda.listar()); } catch { setFilas([]); }
     try { setPersistida(await puertos.boveda.persistencia()); } catch { setPersistida(null); }
   };
   useEffect(() => {
@@ -342,7 +337,7 @@ export function Boveda() {
     void (async () => {
       let l: readonly FilaBoveda[] = [];
       let p: boolean | null = null;
-      try { l = await listarAsuntos(); } catch { l = []; }
+      try { l = await puertos.boveda.listar(); } catch { l = []; }
       try { p = await puertos.boveda.persistencia(); } catch { p = null; }
       if (vivo) { setFilas(l); setPersistida(p); }
     })();

@@ -248,7 +248,10 @@ function AbrirAsunto({ asuntos, ocupado, setOcupado }: { asuntos: readonly Asunt
       });
       ir(destino);
     } catch (e) {
-      setError(mensajeDeCodigo(codigoDeError(e), 'tabla'));
+      // SESION_DESCONOCIDA al abrir es el aborto por un bloqueo, pagehide o «Cerrar asunto» mientras se derivaba la clave (B-21):
+      // es un bloqueo, no una frase equivocada; la pantalla ya quedó limpia (M-102) y no se muestra M-202.
+      const codigo = codigoDeError(e);
+      if (codigo !== 'SESION_DESCONOCIDA') setError(mensajeDeCodigo(codigo, 'tabla'));
     } finally {
       setOcupado(false);
     }

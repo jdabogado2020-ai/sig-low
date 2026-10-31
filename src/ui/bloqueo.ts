@@ -113,6 +113,7 @@ export function instalarBloqueo(): () => void {
       const m = e.data as Partial<Mensaje> | null;
       if (m?.tipo === 'bloquear') {
         if (obtener().asunto !== null) bloquear(false);
+        else puertos.boveda.cerrar();   // sin asunto abierto también aborta un «Abrir» en curso en esta pestaña (B-21)
       } else if (m?.tipo === 'actividad' && typeof m.t === 'number') {
         ultimaActividad = Math.max(ultimaActividad, m.t);
         evaluar();
