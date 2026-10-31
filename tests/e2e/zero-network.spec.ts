@@ -1,13 +1,15 @@
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
-import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 
 import { test, expect } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { build, defaultClientConditions } from 'vite';
 
 import { construirDocx, decl, p, pt, r, raiz, tipoRel } from '../fixtures/docx/docx-builder';
+import { delModelo, distConModelos, levantarServidor, modeloSintetico, rutasDelManifiesto } from './harness/dist-modelo';
 
 const sha256 = (t: string): string => createHash('sha256').update(t).digest('hex');
 
@@ -513,6 +515,88 @@ test.describe('@cero-red fase exportar', () => {
       expect(p.cuerpo).not.toContain('Ficticia');
       expect(p.cuerpo).not.toContain('1.000.000.017');
       expect(decodeURIComponent(p.url)).not.toContain('PRUEBA-EXPORTAR');
+    }
+  });
+});
+
+// Fase A3 (PF-2, 10.5.1): «Descargar modelo de apoyo» y esperar «listo»; las peticiones del modelo son SOLO las rutas del manifiesto
+// (auxiliares y trozos; el equivalente de las 26 del principal y las 13 del respaldo, con el modelo sintético de esta prueba), todas
+// GET sin query ni cuerpo; después, fase A (todo a la lista blanca: precache, manifiesto y /sw.js) y B1 sin conexión. Corre en `verify`
+// sobre el build real con un modelo ficticio de bytes pequeños (el real, de 626 MB, lo cubre model.spec.ts con SIGLOW_E2E_APP_MODELO=1).
+test.describe('@cero-red fase A3 · descarga del modelo', () => {
+  test.describe.configure({ timeout: 120_000 });
+
+  test('@cero-red fase A3: el modelo se descarga solo desde las rutas del manifiesto, la fase A queda en la lista blanca y sin conexión sigue «listo»', async ({ browser }) => {
+    const tmp = mkdtempSync(join(tmpdir(), 'siglow-a3-'));
+    const grande = modeloSintetico('gliner-x-large', { trozos: 5, tamTrozo: 30_000, semilla: 3 });
+    const base = modeloSintetico('gliner-x-base', { trozos: 2, tamTrozo: 20_000, semilla: 5 });
+    distConModelos(resolve('dist'), join(tmp, 'dist'), [grande, base]);
+    const srv = await levantarServidor(join(tmp, 'dist'), join(tmp, 'peticiones.jsonl'));
+    const ctx = await browser.newContext();
+    try {
+      const page = await ctx.newPage();
+      const ajenas: string[] = [];
+      const consola: string[] = [];
+      page.on('request', (r) => {
+        const u = new URL(r.url());
+        if (u.origin !== srv.origen && u.protocol !== 'blob:' && u.protocol !== 'data:') ajenas.push(u.origin);
+      });
+      page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type()); });
+      page.on('pageerror', () => { consola.push('pageerror'); });
+      await page.addInitScript(() => {
+        (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
+        addEventListener('securitypolicyviolation', (e) => {
+          (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective);
+        });
+        Object.defineProperty(Navigator.prototype, 'deviceMemory', { get: () => 16, configurable: true });
+      });
+
+      // A1–A2: el SW se activa y la app pasa de «sin service worker» a lista.
+      await page.goto(`${srv.origen}/`);
+      await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
+      const boton = page.getByRole('button', { name: /^Descargar modelo de apoyo/ });
+      await expect(boton).toBeEnabled({ timeout: 20_000 });
+      const corte = srv.peticiones().length;
+
+      // A3: descargar y esperar «listo».
+      await boton.click();
+      await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Modelo de apoyo listo en este equipo.', { timeout: 60_000 });
+      const delModeloA3 = delModelo(srv.peticiones().slice(corte));
+      expect(delModeloA3.every((p) => p.m === 'GET' && !p.u.includes('?'))).toBe(true);
+      expect(delModeloA3.map((p) => p.u).sort()).toEqual(rutasDelManifiesto(grande.manifest));
+
+      // A4–A5: pedidos desde fuera del SW (APIRequestContext) a la lista blanca; el corte marca dónde empiezan.
+      const corteA = srv.peticiones().length;
+      const rutasA = ['/', '/index.html', '/sw.js', '/tt-policy.js', `/models/${grande.id}/manifest.json`, `/models/${grande.id}/onnx/model_quantized.onnx.part000`];
+      for (const r of rutasA) expect((await ctx.request.get(`${srv.origen}${r}`)).status(), r).toBe(200);
+
+      // Fase A completa: cada petición del registro es un GET, sin query, a la lista blanca (precache + /precache.json + manifiestos + /sw.js
+      // + las rutas del manifiesto del principal que acaba de pedir la descarga).
+      const lista = (JSON.parse(readFileSync(join(tmp, 'dist', 'precache.json'), 'utf8')) as { archivos: { ruta: string }[] }).archivos.map((a) => a.ruta);
+      const permitidas = new Set([...lista, '/index.html', '/precache.json', '/sw.js', ...rutasDelManifiesto(grande.manifest)]);
+      const todas = srv.peticiones();
+      expect(todas.filter((p) => p.m !== 'GET' || p.u.includes('?'))).toEqual([]);
+      expect(todas.filter((p) => !permitidas.has(p.u)).map((p) => p.u)).toEqual([]);
+      // (el navegador puede añadir su búsqueda de versión: GET /sw.js, que es metadato y está en la lista blanca)
+      const trasElCorte = todas.slice(corteA).map((p) => p.u);
+      expect([...trasElCorte].sort()).toEqual(expect.arrayContaining([...rutasA].sort()));
+      expect(trasElCorte.length - rutasA.length).toBeLessThanOrEqual(1);
+
+      // B1: sin conexión y recargando, el modelo sigue «listo» (se lee de siglow-modelo-<sha>) y la página sigue aislada.
+      const antes = srv.peticiones().length;
+      await ctx.setOffline(true);
+      await page.reload();
+      await page.waitForFunction(() => navigator.serviceWorker?.controller != null);
+      await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Modelo de apoyo listo en este equipo.', { timeout: 20_000 });
+      expect(await page.evaluate(() => crossOriginIsolated)).toBe(true);
+      expect(srv.peticiones().slice(antes).filter((p) => !(p.m === 'GET' && p.u === '/sw.js'))).toEqual([]); // salvo GET /sw.js exacto (3.2)
+      expect(ajenas).toEqual([]);
+      expect(await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones)).toEqual([]);
+      expect(consola).toEqual([]);
+    } finally {
+      await ctx.close();
+      await srv.parar();
+      rmSync(tmp, { recursive: true, force: true });
     }
   });
 });
