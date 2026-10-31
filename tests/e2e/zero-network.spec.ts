@@ -22,7 +22,7 @@ import {
   campoRespuesta, copiarEnListo, crearYAnalizar, FRASE, h1, leerPortapapeles, pegarYBuscar, textoDelResultado,
 } from './ayudas-reinsercion';
 
-const sha256 = (t: string): string => createHash('sha256').update(t).digest('hex');
+const sha256 = (t: string | Uint8Array): string => createHash('sha256').update(t).digest('hex');
 
 /** Rutas del precache (la lista blanca de la app) y los datos del build. */
 const precache = (dir = 'dist'): string[] => (JSON.parse(readFileSync(join(dir, 'precache.json'), 'utf8')) as { archivos: { ruta: string }[] }).archivos.map((a) => a.ruta);
@@ -821,4 +821,74 @@ test('T-RD-03 INV-N04 @cero-red fase reinserción: copiar y descargar con datos 
   expect(await textoDelResultado(page)).toBe('Cédula 1.000.000.001.');
 
   await a.verificar(s, { secretos: ['Ficticia', '1.000.000.001', 'PRUEBA-RED-REI', FRASE, 'tutela'] });
+});
+
+// ===== Fase «pdf» en la app (PE-4; 10.5.1, paso B7, T-RD-03; PD-5b) =====
+// La fase «pdf» de arriba prueba el lector con un arnés de Vite; esta es la app real, sin conexión desde el corte: cargar un PDF
+// ficticio (texto bajo un recuadro negro, JavaScript incrustado) → Procesando → Revisión. El worker de pdf.js sale del propio origen
+// como archivo del build (nunca blob:), no hay violaciones de CSP, consola ni red, y ni el texto ni el nombre del archivo viajan (INV-D05).
+test('T-RD-03 INV-D05 @cero-red fase pdf en la app (B7): cargar un PDF → Procesando → Revisión sin conexión, sin red y sin el nombre del archivo', async ({ arnes }) => {
+  test.setTimeout(120_000);
+  const a = await arnes();
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
+  await page.goto('/');
+  await a.cortar(s, page);
+  await crearAsunto(page, 'PRUEBA-PDF');
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await page.getByRole('tab', { name: 'Cargar archivo' }).click();
+  await page.locator('input[type="file"]').setInputFiles({
+    name: 'Sentencia de Prueba.pdf', mimeType: 'application/pdf', buffer: readFileSync(join('tests', 'fixtures', 'pdf-js-recuadro.pdf')),
+  });
+  await expect(page.locator('[data-prueba="archivo-cargado"]')).toContainText('Archivo cargado: PDF, ', { timeout: 20_000 });
+  await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator('main')).toContainText('Pedro Ficticio Ejemplo'); // V-39: el texto bajo el recuadro negro llega a la revisión
+  await expect(page.locator('body')).not.toContainText('Sentencia de Prueba');
+  expect(await page.title()).toBe('Sig-Low');
+  expect(s.vigilante.workers.some((u) => /^\/assets\/pdf\.worker-[\w-]+\.js$/.test(new URL(u).pathname))).toBe(true);
+  expect(s.vigilante.peticiones.filter((q) => /^(data|blob):/.test(q.url))).toEqual([]);
+  await a.verificar(s, { secretos: ['Pedro Ficticio Ejemplo', 'Sentencia de Prueba', 'PRUEBA-PDF'] });
+});
+
+// ===== T-RD-07 en local (PD-5b; V-11, DoD-19) =====
+// El hash del HTML servido es el del build: por la red, desde el service worker sin conexión y por `verificar-despliegue.mjs` (T-PV-15), que
+// contra tests/e2e/server.mjs sale con 0; una copia del build con un archivo alterado sale con 1. En el dominio oficial lo repite P0-5.
+test('T-RD-07 @cero-red local: el HTML servido (en la red y sin conexión) es el del build y verificar-despliegue.mjs sale con 0; un archivo alterado, con 1', async ({ arnes }) => {
+  test.setTimeout(120_000);
+  const html = readFileSync(join('dist', 'index.html'));
+  const lista = JSON.parse(readFileSync(join('dist', 'precache.json'), 'utf8')) as { archivos: { ruta: string; sha256: string }[] };
+  expect(lista.archivos.find((x) => x.ruta === '/')?.sha256, 'el precache declara el hash de dist/index.html').toBe(sha256(html));
+
+  const a = await arnes({ reporteCsp: false });
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
+  const nav = await page.goto('/');
+  expect(sha256(await nav!.body()), 'HTML de la primera carga').toBe(sha256(html));
+  await a.esperarControlador(page);
+  for (const ruta of ['/', '/index.html']) expect(sha256(await (await s.ctx.request.get(ruta, { maxRetries: 3 })).body()), ruta).toBe(sha256(html));
+
+  // T-PV-15 contra el servidor local, con conexión (antes del corte: el script es un cliente más del servidor).
+  const corre = (origen: string, ...args: string[]) => spawnSync(process.execPath, ['scripts/verificar-despliegue.mjs', origen, ...args], { encoding: 'utf8' });
+  const limpio = corre(a.origen, '--dist', 'dist');
+  expect({ estado: limpio.status, salida: limpio.stdout + limpio.stderr }).toEqual({ estado: 0, salida: expect.stringContaining('verificar-despliegue: OK') });
+  const alterado = mkdtempSync(join(tmpdir(), 'siglow-despliegue-'));
+  try {
+    cpSync('dist', alterado, { recursive: true });
+    writeFileSync(join(alterado, 'index.html'), html.toString('utf8').replace('</body>', '<!-- alterado --></body>'));
+    const b = await arnes({ dir: alterado, reporteCsp: false });
+    const roto = corre(b.origen, '--dist', 'dist');
+    expect(roto.status, roto.stdout).toBe(1);
+    expect(roto.stdout).toContain('/: SHA-256');
+    expect(b.senuelo.peticiones()).toEqual([]);
+  } finally {
+    rmSync(alterado, { recursive: true, force: true });
+  }
+
+  // Sin conexión, el HTML sale del service worker y sigue siendo el del build.
+  await a.cortar(s, page);
+  const recarga = await page.reload();
+  expect(recarga!.fromServiceWorker()).toBe(true);
+  expect(sha256(await recarga!.body()), 'HTML servido por el service worker sin conexión').toBe(sha256(html));
+  await a.verificar(s);
 });

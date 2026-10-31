@@ -139,7 +139,25 @@ node scripts/verificar-despliegue.mjs "$URL" SHA256SUMS
 
 El script (Node, sin dependencias) descarga `/` y cada entrada del precache publicado (`precache.json`) y compara su SHA-256 con la lista de la etiqueta. Sale con 0 si todo coincide. Lo corre el dueño en cada publicación y TI puede repetirlo con la lista de las notas de la versión antes de aprobar una versión (`docs/ti.md`).
 
-> Estado: `scripts/verificar-despliegue.mjs` se entrega con la prueba de cero red (PD-5a) y con el cierre (P0-5); este documento lo describe según el plan (sección 3.6, T-PV-15). Al fusionarse, comparar las opciones y el formato de la lista con la cabecera del propio script [VERIFICAR].
+Qué comprueba, en cada archivo que descarga (`/`, `/index.html`, `/sw.js`, `/precache.json` y todo el precache publicado):
+
+- **SHA-256 y tamaño** contra la lista, y contra lo que declara el propio `precache.json` publicado. El precache publicado debe ser exactamente el de la lista: un archivo de más o de menos es una diferencia (uno ausente dejaría de verificarse).
+- **Cabeceras de 3.6**: las de `public/_headers` (la fuente de verdad, no una copia en el script) y el tipo MIME por extensión; además, que no haya `Set-Cookie` ni las cabeceras que `_headers` quita con `!` (`Access-Control-Allow-Origin`).
+- **Sin inyecciones**: el HTML no contiene `/cdn-cgi/`. Una redirección no se sigue: es una diferencia.
+
+Opciones y formato:
+
+```bash
+node scripts/verificar-despliegue.mjs <url> [<lista>] [--dist <dir>] [--headers <_headers>] [--todo] [--tiempo <s>]
+```
+
+- `<url>`: `https://sig-low.vergarameloabogado.site`. Solo `https` (y `http` para `localhost`, `127.0.0.1` y `[::1]`, que es como se prueba contra `tests/e2e/server.mjs`); sin usuario, contraseña, query ni fragmento.
+- `<lista>`: `SHA256SUMS` en el formato de `sha256sum` (`<hex>  ./ruta`). Sin lista, la referencia es el build local (`--dist`, por defecto `dist/`: su `precache.json`, su `sw.js` y la huella de `precache.json`), lo que usa la prueba automatizada.
+- `--todo`: con lista, descarga además todos los demás archivos de la lista (los trozos del modelo, cientos de MB) y los compara. Sin `--todo` los trozos se verifican por los SHA-256 del manifiesto del modelo (DoD-39), no uno a uno.
+- `--headers`: otro archivo `_headers` de referencia. `--tiempo`: segundos máximos por archivo (60 por defecto).
+- Códigos de salida: **0** todo coincide; **1** alguna diferencia (cada una se imprime con su ruta): versión no aprobada; **2** argumentos o referencia incorrectos (no se toca la red).
+
+Prueba: T-PV-15 (`tests/unit/verificar-despliegue.test.ts`, contra `tests/e2e/server.mjs` y servidores de mentira) y T-RD-07 en local (`tests/e2e/zero-network.spec.ts`). El script solo hace `GET` a la dirección dada y no envía ningún dato.
 
 Además, `scripts/check-dist.mjs` (paso de `npm run verify`) ya comprueba sobre el build local que no hay APIs ni patrones prohibidos, que ningún archivo supera 25 MiB y que los SHA-256 de ORT son los aprobados (DoD-17); esa comprobación se repite sobre `dist/` de la etiqueta antes de cargarlo.
 

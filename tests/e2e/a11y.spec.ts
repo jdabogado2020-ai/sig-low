@@ -1,8 +1,6 @@
-import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
-import { existsSync, readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
 import { test, expect, type Page } from '@playwright/test';
 import { configurarSimulador, instalarSimulador, soltarRetenidos } from './ayudas-entrada';
+import { testMedicion } from './lib/medicion';
 
 // Casos de T-AX de PC-2 (8.6.6, 10.0): teclado, nombres accesibles y regiones vivas en Entrada y Procesando.
 // PC-3 agrega T-AX-03 (no solo color) y PC-7 completa T-AX-01 a T-AX-04 sobre el flujo integrado y T-AX-05 a T-AX-08.
@@ -138,33 +136,6 @@ test.describe('T-AX-04 regiones vivas sin texto del documento', () => {
 });
 
 // ===== PC-3 · Revisión I: T-AX-01 a T-AX-04 con un DetectionSet fijo del build de medición (nunca de dist/) =====
-const PUERTO_MEDICION = Number(process.env.PORT ?? 4173) + 120;
-const URL_MEDICION = `http://127.0.0.1:${PUERTO_MEDICION}`;
-let servidorMedicion: ChildProcess | undefined;
-
-function masNuevo(dir: string): number {
-  let m = 0;
-  for (const n of readdirSync(dir)) {
-    const p = join(dir, n);
-    const s = statSync(p);
-    m = Math.max(m, s.isDirectory() ? masNuevo(p) : s.mtimeMs);
-  }
-  return m;
-}
-async function levantarMedicion(): Promise<void> {
-  const indice = join('dist-medicion', 'index.html');
-  if (!existsSync(indice) || statSync(indice).mtimeMs < masNuevo('src')) {
-    const r = spawnSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build', '--mode', 'medicion'], { stdio: 'ignore' });
-    if (r.status !== 0) throw new Error('No se pudo construir el build de medición');
-  }
-  servidorMedicion = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', 'dist-medicion', '--port', String(PUERTO_MEDICION)], { stdio: 'ignore' });
-  for (let i = 0; i < 50; i++) {
-    try { if ((await fetch(URL_MEDICION + '/')).ok) return; } catch { /* aún no escucha */ }
-    await new Promise((r) => setTimeout(r, 100));
-  }
-  throw new Error('El servidor de medición no respondió');
-}
-
 const TEXTO_REVISION = [
   'Señora Ana Ficticia Rojas, identificada con cédula de ciudadanía número 1.000.000.001, correo ana.ficticia@ejemplo.test, teléfono 3000000000.',
   'El demandado Pedro Ejemplo Prueba, con cédula 1.000.000.002, vive en la Calle 100 # 00-00 de Bogotá.',
@@ -200,13 +171,10 @@ const enfocadoRev = (page: Page) => page.evaluate(() => {
   return { etiqueta: el.getAttribute('aria-label') ?? el.textContent ?? '', det: el.dataset['det'] !== undefined, contorno: cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) >= 2 };
 });
 
-test.describe('Revisión I · accesibilidad (PC-3)', () => {
-  test.describe.configure({ timeout: 90_000 });
-  test.use({ baseURL: URL_MEDICION });
-  test.beforeAll(async () => { await levantarMedicion(); });
-  test.afterAll(() => { servidorMedicion?.kill(); });
+testMedicion.describe('Revisión I · accesibilidad (PC-3)', () => {
+  testMedicion.describe.configure({ timeout: 90_000 });
 
-  test('T-AX-01 la Revisión se maneja solo con teclado: Tab, A, R, E, U, flechas y N, con el foco siempre visible', async ({ page }) => {
+  testMedicion('T-AX-01 la Revisión se maneja solo con teclado: Tab, A, R, E, U, flechas y N, con el foco siempre visible', async ({ page }) => {
     await abrirRevision(page);
     await expect(h1(page, 'Revisión')).toBeFocused();
     // Tab recorre la barra y llega al panel de texto y a su único resaltado con índice de tabulación 0.
@@ -272,7 +240,7 @@ test.describe('Revisión I · accesibilidad (PC-3)', () => {
     expect(await page.evaluate(() => (globalThis as unknown as { __csp: string[] }).__csp)).toEqual([]);
   });
 
-  test('T-AX-02 nombres, roles y lengua: lang es-CO, regiones y botones con nombre accesible; la vista de salida no trae originales', async ({ page }) => {
+  testMedicion('T-AX-02 nombres, roles y lengua: lang es-CO, regiones y botones con nombre accesible; la vista de salida no trae originales', async ({ page }) => {
     await abrirRevision(page);
     await expect(page.locator('html')).toHaveAttribute('lang', 'es-CO');
     await expect(page.getByRole('region', { name: 'Documento con detecciones' })).toBeVisible();
@@ -314,7 +282,7 @@ test.describe('Revisión I · accesibilidad (PC-3)', () => {
     await expect(salida.locator('[title]')).toHaveCount(0);
   });
 
-  test('T-AX-03 no solo color: cada resaltado lleva ícono y abreviatura del tipo y un borde cuyo estilo depende de la confianza', async ({ page }) => {
+  testMedicion('T-AX-03 no solo color: cada resaltado lleva ícono y abreviatura del tipo y un borde cuyo estilo depende de la confianza', async ({ page }) => {
     await abrirRevision(page);
     const filas = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-det]')].map((el) => {
       const ins = el.querySelector('.ins');
@@ -372,7 +340,7 @@ test.describe('Revisión I · accesibilidad (PC-3)', () => {
     expect(f).toEqual({ borde: 'solid', abr: 'CC' });
   });
 
-  test('T-AX-04 anuncios: la región de estado de la Revisión anuncia conteos sin texto del documento; ninguna región viva trae originales', async ({ page }) => {
+  testMedicion('T-AX-04 anuncios: la región de estado de la Revisión anuncia conteos sin texto del documento; ninguna región viva trae originales', async ({ page }) => {
     await abrirRevision(page);
     const region = page.locator('[data-prueba="anuncio-revision"]');
     await expect(region).toHaveAttribute('role', 'status');

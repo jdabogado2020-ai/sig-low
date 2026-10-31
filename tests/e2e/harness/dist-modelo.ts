@@ -1,13 +1,12 @@
 // Ayudas de las E2E de la entrega del modelo (PF-2): un dist/ derivado con un modelo SINTÉTICO (bytes ficticios, trozos pequeños)
-// y un tests/e2e/server.mjs propio con registro de peticiones. Así las pruebas de entrega corren en `verify` sin los 626 MB.
+// (el servidor con registro de peticiones es el de lib/servidores.ts, en un puerto libre). Así las pruebas de entrega corren en
+// `verify` sin los 626 MB.
 // El dist derivado sale de dist/ como saldría un despliegue: los manifiestos del modelo se reemplazan, se recalcula
 // precache.json y la lista incrustada en sw.js (el SW lee los manifiestos del precache, así que la lista debe coincidir).
 // Solo datos ficticios: los bytes del «modelo» son una secuencia determinista, no un ONNX.
-import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { createServer } from 'node:net';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import { serializarLista, sha256Hex, type ArchivoPrecache } from '../../../vite-plugins/precache';
 import type { ModelManifest } from '../../../src/core/types';
@@ -88,46 +87,8 @@ export function distConModelos(origen: string, destino: string, modelos: ModeloS
   writeFileSync(join(destino, 'sw.js'), sw.replace(JSON.stringify(vieja), () => JSON.stringify(nueva)));
 }
 
-export interface Peticion { t: number; m: string; u: string }
-export interface Servidor { origen: string; peticiones: () => Peticion[]; parar: () => Promise<void> }
-
-/** Puerto libre elegido por el sistema (se libera justo antes de que server.mjs lo tome). */
-function puertoLibre(): Promise<number> {
-  return new Promise((ok, mal) => {
-    const s = createServer();
-    s.once('error', mal);
-    s.listen(0, '127.0.0.1', () => {
-      const dir = s.address();
-      s.close(() => { if (dir && typeof dir === 'object') ok(dir.port); else mal(new Error('sin puerto')); });
-    });
-  });
-}
-
-/** tests/e2e/server.mjs (la configuración real: aplica dist/_headers) sobre `dir`, con el registro de peticiones en `registro`. */
-export async function levantarServidor(dir: string, registro: string): Promise<Servidor> {
-  const puerto = await puertoLibre();
-  writeFileSync(registro, '');
-  const hijo = spawn(process.execPath, [resolve('tests/e2e/server.mjs'), '--dir', dir, '--port', String(puerto)], {
-    env: { ...process.env, SIGLOW_REGISTRO_PETICIONES: registro },
-    stdio: ['ignore', 'pipe', 'ignore'],
-  });
-  await new Promise<void>((ok, mal) => {
-    hijo.stdout.on('data', (b: Buffer) => { if (b.toString().includes('listo')) ok(); });
-    hijo.once('exit', (c) => { mal(new Error(`server.mjs terminó (código ${String(c)})`)); });
-  });
-  return {
-    origen: `http://127.0.0.1:${puerto}`,
-    peticiones: () => readFileSync(registro, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l) as Peticion),
-    parar: () => new Promise<void>((ok) => {
-      if (hijo.exitCode !== null) { ok(); return; }
-      hijo.once('exit', () => { ok(); });
-      hijo.kill();
-    }),
-  };
-}
-
 /** Peticiones al modelo (todo lo que empieza por /models/) del registro. */
-export const delModelo = (ps: Peticion[]): Peticion[] => ps.filter((p) => p.u.startsWith('/models/'));
+export const delModelo = <T extends { u: string }>(ps: T[]): T[] => ps.filter((p) => p.u.startsWith('/models/'));
 
 /** Rutas que la descarga debe pedir según el manifiesto: auxiliares y trozos (los manifiestos salen del precache, no de la descarga). */
 export const rutasDelManifiesto = (m: ModelManifest): string[] =>

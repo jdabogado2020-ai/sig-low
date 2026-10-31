@@ -1,10 +1,10 @@
-import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test, expect, type BrowserContext, type Page } from '@playwright/test';
 import {
   configurarSimulador, DOCUMENTO_DE_TRES_PARTES, instalarSimulador, leerSimulador, soltarRetenidos,
 } from './ayudas-entrada';
+import { testMedicion } from './lib/medicion';
 
 // Casos de PC-1 (10.0): T-IU-05 a T-IU-09 (estados, avisos, sin aprobación masiva, créditos) y T-IU-11 a T-IU-14
 // (soltar fuera, impresión y guardado, bloqueo tras suspender el equipo y bloqueo entre pestañas).
@@ -716,34 +716,7 @@ test.describe('T-IU-05 Procesando: progreso por etapa, cancelar y errores', () =
 
 // ===== PC-3 · Revisión I (8.2.6, 8.4, 8.6) =====
 // Estas pruebas usan un `DetectionSet` fijo que sale del build de medición (`vite build --mode medicion`, ranura del gancho), nunca de
-// `dist/`: la prueba lo construye si está desactualizado y lo sirve con el mismo servidor de cabeceras en otro puerto. Datos ficticios.
-
-const PUERTO_MEDICION = Number(process.env.PORT ?? 4173) + 100;
-const URL_MEDICION = `http://127.0.0.1:${PUERTO_MEDICION}`;
-let servidorMedicion: ChildProcess | undefined;
-
-function masNuevo(dir: string): number {
-  let m = 0;
-  for (const n of readdirSync(dir)) {
-    const p = join(dir, n);
-    const s = statSync(p);
-    m = Math.max(m, s.isDirectory() ? masNuevo(p) : s.mtimeMs);
-  }
-  return m;
-}
-async function levantarMedicion(): Promise<void> {
-  const indice = join('dist-medicion', 'index.html');
-  if (!existsSync(indice) || statSync(indice).mtimeMs < masNuevo('src')) {
-    const r = spawnSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build', '--mode', 'medicion'], { stdio: 'ignore' });
-    if (r.status !== 0) throw new Error('No se pudo construir el build de medición');
-  }
-  servidorMedicion = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', 'dist-medicion', '--port', String(PUERTO_MEDICION)], { stdio: 'ignore' });
-  for (let i = 0; i < 50; i++) {
-    try { if ((await fetch(URL_MEDICION + '/')).ok) return; } catch { /* aún no escucha */ }
-    await new Promise((r) => setTimeout(r, 100));
-  }
-  throw new Error('El servidor de medición no respondió');
-}
+// `dist/`: lib/medicion.ts lo construye si está desactualizado y lo sirve con el mismo servidor de cabeceras en un puerto libre. Datos ficticios.
 
 const TEXTO_REVISION = [
   'Señora Ana Ficticia Rojas, identificada con cédula de ciudadanía número 1.000.000.001, correo ana.ficticia@ejemplo.test, teléfono 3000000000.',
@@ -797,13 +770,10 @@ async function seleccionarEnPanel(page: Page, inicio: [string, number], fin: [st
   }, [inicio, fin] as const);
 }
 
-test.describe('Revisión I (PC-3)', () => {
-  test.describe.configure({ timeout: 90_000 });
-  test.use({ baseURL: URL_MEDICION });
-  test.beforeAll(async () => { await levantarMedicion(); });
-  test.afterAll(() => { servidorMedicion?.kill(); });
+testMedicion.describe('Revisión I (PC-3)', () => {
+  testMedicion.describe.configure({ timeout: 90_000 });
 
-  test('T-IU-05 la Revisión muestra el texto con resaltados por tipo y M-70; sin detecciones muestra M-69 (INV-G03)', async ({ page }) => {
+  testMedicion('T-IU-05 la Revisión muestra el texto con resaltados por tipo y M-70; sin detecciones muestra M-69 (INV-G03)', async ({ page }) => {
     const n = await abrirRevision(page);
     expect(n).toBe(9);
     const panel = panelTexto(page);
@@ -819,7 +789,7 @@ test.describe('Revisión I (PC-3)', () => {
     await expect(panel.locator('[data-det]')).toHaveCount(0);
   });
 
-  test('T-IU-05 INV-R08: aceptar, rechazar, editar y restablecer con el teclado suben revision en 1 por acción y cambian el estado', async ({ page }) => {
+  testMedicion('T-IU-05 INV-R08: aceptar, rechazar, editar y restablecer con el teclado suben revision en 1 por acción y cambian el estado', async ({ page }) => {
     await abrirRevision(page);
     const panel = panelTexto(page);
     const marcas = panel.locator('[data-det]');
@@ -859,7 +829,7 @@ test.describe('Revisión I (PC-3)', () => {
     await expect(marcas.nth(7)).toHaveAccessibleName(/^Persona, rechazada, /);
   });
 
-  test('T-IU-05 INV-R06 INV-R08: «Aceptar todas las menciones» solo acepta las pendientes de esa entidad y anuncia M-74', async ({ page }) => {
+  testMedicion('T-IU-05 INV-R06 INV-R08: «Aceptar todas las menciones» solo acepta las pendientes de esa entidad y anuncia M-74', async ({ page }) => {
     await abrirRevision(page);
     const antes = await gancho(page).estado();
     expect(antes.estados).toEqual({ pendiente: 9 });
@@ -875,7 +845,7 @@ test.describe('Revisión I (PC-3)', () => {
     expect(await gancho(page).revision()).toBe(2);
   });
 
-  test('T-IU-08 INV-R06: la Revisión no ofrece aceptar todo el documento; «aceptar todas las menciones de la entidad» sí, una por entidad', async ({ page }) => {
+  testMedicion('T-IU-08 INV-R06: la Revisión no ofrece aceptar todo el documento; «aceptar todas las menciones de la entidad» sí, una por entidad', async ({ page }) => {
     await abrirRevision(page);
     await expect(page.getByRole('button', { name: /aceptar todo|aceptar todas las (detecciones|menciones) del documento|aceptar el documento/i })).toHaveCount(0);
     const porEntidad = page.getByRole('button', { name: /^Aceptar todas las menciones \(\d+\) de / });
@@ -887,7 +857,7 @@ test.describe('Revisión I (PC-3)', () => {
     expect(e['pendiente'] ?? 0).toBeGreaterThan(0);
   });
 
-  test('T-IU-05 reemplazo manual: la selección abre «Agregar reemplazo» y crea una detección manual con precedence 1 (+1 revision)', async ({ page }) => {
+  testMedicion('T-IU-05 reemplazo manual: la selección abre «Agregar reemplazo» y crea una detección manual con precedence 1 (+1 revision)', async ({ page }) => {
     await abrirRevision(page);
     const r0 = await gancho(page).revision();
     await seleccionarEnPanel(page, ['solicitó el reemplazo', 12], ['solicitó el reemplazo', 21]);
@@ -903,7 +873,7 @@ test.describe('Revisión I (PC-3)', () => {
     await expect(panelTexto(page).locator('[data-det]', { hasText: 'reemplazo' })).toHaveAccessibleName(/^Lugar, aceptada como \[[A-ZÁÉÍÓÚ_]+_\d+\], confianza alta: reemplazo$/);
   });
 
-  test('T-IU-05 INV-R08: una selección que corta a medias otra detección da M-603 y no cambia revision', async ({ page }) => {
+  testMedicion('T-IU-05 INV-R08: una selección que corta a medias otra detección da M-603 y no cambia revision', async ({ page }) => {
     await abrirRevision(page);
     const r0 = await gancho(page).revision();
     await seleccionarEnPanel(page, ['Ana Ficticia Rojas', 4], [', identificada con', 8]);
@@ -916,7 +886,7 @@ test.describe('Revisión I (PC-3)', () => {
     await expect(dialogo).toBeHidden();
   });
 
-  test('T-IU-05 «Descartar documento» pide M-75, borra la revisión y vuelve a Entrada; Bloquear vacía la memoria (INV-G09)', async ({ page }) => {
+  testMedicion('T-IU-05 «Descartar documento» pide M-75, borra la revisión y vuelve a Entrada; Bloquear vacía la memoria (INV-G09)', async ({ page }) => {
     await abrirRevision(page);
     await page.getByRole('button', { name: 'Descartar documento' }).click();
     const d = page.getByRole('dialog', { name: 'Descartar documento' });
@@ -937,7 +907,7 @@ test.describe('Revisión I (PC-3)', () => {
     await expect(page.locator('body')).not.toContainText('Pedro Ejemplo');
   });
 
-  test('T-IU-04 copia desde el original: escribe solo text/plain tomado de Part.text, sin insignias ni marcadores; «Ver salida» no se copia (8.7)', async ({ page }) => {
+  testMedicion('T-IU-04 copia desde el original: escribe solo text/plain tomado de Part.text, sin insignias ni marcadores; «Ver salida» no se copia (8.7)', async ({ page }) => {
     await abrirRevision(page);
     await seleccionarEnPanel(page, ['Señora', 0], [', identificada con cédula de ciudadanía número ', 20]);
     const r = await page.evaluate(() => {
@@ -969,7 +939,7 @@ test.describe('Revisión I (PC-3)', () => {
     await expect(salida).not.toContainText('Ana Ficticia');
   });
 
-  test('T-IU-05 virtualización (8.8): con más de 1.000 detecciones solo se montan unos pocos bloques y filas, y la navegación monta lo no montado', async ({ page }) => {
+  testMedicion('T-IU-05 virtualización (8.8): con más de 1.000 detecciones solo se montan unos pocos bloques y filas, y la navegación monta lo no montado', async ({ page }) => {
     const lineas = Array.from({ length: 560 }, (_, i) => `Línea ${i}: Pedro Ejemplo Prueba, cédula 1.000.${String(i).padStart(3, '0')}.${String((i * 7) % 1000).padStart(3, '0')}.`);
     const n = await abrirRevision(page, lineas.join('\n'));
     expect(n).toBeGreaterThan(1000);
@@ -988,7 +958,7 @@ test.describe('Revisión I (PC-3)', () => {
     expect(await page.locator('.bloque-texto').count()).toBeLessThanOrEqual(5);
   });
 
-  test('T-IU-05 marcador específico de TI: pasa de [DOCUMENTO_n] a [TI_n], restituye el rótulo y se deshace (M-177, M-178)', async ({ page }) => {
+  testMedicion('T-IU-05 marcador específico de TI: pasa de [DOCUMENTO_n] a [TI_n], restituye el rótulo y se deshace (M-177, M-178)', async ({ page }) => {
     await abrirRevision(page, 'El menor Juan Ejemplo Prueba, con T.I. 1.000.000.003, y su madre, con C.E. 1.000.000.004.', '');
     const panel = panelTexto(page);
     await expect(panel.locator('.res.edicion')).toHaveCount(2);
@@ -1008,7 +978,7 @@ test.describe('Revisión I (PC-3)', () => {
     await expect(page.locator('[data-prueba="anuncio-revision"]')).toHaveText('Marcador general restablecido: [DOCUMENTO_1].');
   });
 
-  test('T-IU-05 detecciones que llegan del modelo: insignia NUEVA, el foco y la selección no se mueven y se anuncia M-166', async ({ page }) => {
+  testMedicion('T-IU-05 detecciones que llegan del modelo: insignia NUEVA, el foco y la selección no se mueven y se anuncia M-166', async ({ page }) => {
     const texto = 'La señora Marta Ficticia Gómez, con cédula 1.000.000.005, firma.';
     await abrirRevision(page, texto, '');
     await page.evaluate((t) => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.cargar(t, 'en_curso'), texto);
@@ -1122,13 +1092,10 @@ const contador = (page: Page) => page.locator('[data-prueba="contador-texto"]');
 const continuar = (page: Page) => page.locator('[data-prueba="continuar"]');
 const claseSug = (page: Page) => page.locator('li[data-sugerencia]').evaluateAll((els) => els.map((e) => (e as HTMLElement).dataset['clase']));
 
-test.describe('Revisión II (PC-4)', () => {
-  test.describe.configure({ timeout: 90_000 });
-  test.use({ baseURL: URL_MEDICION });
-  test.beforeAll(async () => { await levantarMedicion(); });
-  test.afterAll(() => { servidorMedicion?.kill(); });
+testMedicion.describe('Revisión II (PC-4)', () => {
+  testMedicion.describe.configure({ timeout: 90_000 });
 
-  test('T-IU-05 INV-R08: sugerencias en orden (recomendadas primero), con clase y prioridad; aplicar y descartar DESPACHO_A_GENERICO suben revision en 1', async ({ page }) => {
+  testMedicion('T-IU-05 INV-R08: sugerencias en orden (recomendadas primero), con clase y prioridad; aplicar y descartar DESPACHO_A_GENERICO suben revision en 1', async ({ page }) => {
     await abrirRevision(page, TEXTO_II, '');
     await expect(page.getByRole('tab', { name: /^Sugerencias de generalización/ })).toHaveAttribute('aria-selected', 'true');
     expect(await claseSug(page)).toEqual([
@@ -1170,7 +1137,7 @@ test.describe('Revisión II (PC-4)', () => {
     await expect(page.locator('[data-prueba="panel-texto"]')).not.toContainText('[DEPARTAMENTO_1]');
   });
 
-  test('T-IU-05 INV-R08: MUNICIPIO_A_DEPARTAMENTO homónimo pide el departamento (M-127) antes de Aplicar y se puede descartar', async ({ page }) => {
+  testMedicion('T-IU-05 INV-R08: MUNICIPIO_A_DEPARTAMENTO homónimo pide el departamento (M-127) antes de Aplicar y se puede descartar', async ({ page }) => {
     await abrirRevision(page, 'La señora Ana Ficticia Rojas vive en el municipio de Granada.', '');
     const tarjeta = page.locator('li[data-clase="MUNICIPIO_A_DEPARTAMENTO"]');
     await expect(tarjeta).toHaveCount(1);
@@ -1189,7 +1156,7 @@ test.describe('Revisión II (PC-4)', () => {
     expect(await gancho(page).revision()).toBe(r0 + 3);
   });
 
-  test('T-IU-05 INV-R08: banderas con «Mantener el texto» y «Reemplazar por…»; una bandera sin confirmar mantiene cerrado «Continuar» (M-68)', async ({ page }) => {
+  testMedicion('T-IU-05 INV-R08: banderas con «Mantener el texto» y «Reemplazar por…»; una bandera sin confirmar mantiene cerrado «Continuar» (M-68)', async ({ page }) => {
     await abrirRevision(page, 'La gerente general de Ferretería Ejemplo firmó. Diagnóstico CIE-10 G35.', '');
     await expect(contador(page)).toHaveText('0 detecciones pendientes · 2 banderas sin confirmar');
     await expect(continuar(page)).toHaveAttribute('aria-disabled', 'true');
@@ -1220,7 +1187,7 @@ test.describe('Revisión II (PC-4)', () => {
     await expect(h1(page, 'Listo')).toBeVisible();
   });
 
-  test('T-IU-05 INV-R08: bandera con texto libre en «Reemplazar por…»: entra a la salida y confirma la bandera', async ({ page }) => {
+  testMedicion('T-IU-05 INV-R08: bandera con texto libre en «Reemplazar por…»: entra a la salida y confirma la bandera', async ({ page }) => {
     await abrirRevision(page, 'La gerente general de Ferretería Ejemplo firmó.', '');
     await page.getByRole('tab', { name: /^Revisión manual/ }).click();
     const cargo = page.locator('li[data-bandera]').first();
@@ -1234,7 +1201,7 @@ test.describe('Revisión II (PC-4)', () => {
     await expect(page.locator('[data-prueba="panel-texto"]')).toContainText('una directiva de Prueba');
   });
 
-  test('T-IU-05 INV-R08: cita jurisprudencial («Es una cita: no reemplazar» rechaza el radicado; «Es un radicado del caso» lo acepta)', async ({ page }) => {
+  testMedicion('T-IU-05 INV-R08: cita jurisprudencial («Es una cita: no reemplazar» rechaza el radicado; «Es un radicado del caso» lo acepta)', async ({ page }) => {
     await abrirRevision(page, 'Como lo reiteró el Tribunal en el expediente 11001-03-15-999-2020-01234-00 se dispuso.', '');
     await page.getByRole('tab', { name: /^Revisión manual/ }).click();
     const cita = page.locator('li[data-bandera]').first();
@@ -1246,7 +1213,7 @@ test.describe('Revisión II (PC-4)', () => {
     await expect(cita.locator('[data-prueba="estado-bandera"]')).toHaveText('Confirmada');
   });
 
-  test('T-IU-05 pestañas con flechas, Inicio y Fin; el recorrido de pendientes incluye las banderas y abre su pestaña', async ({ page }) => {
+  testMedicion('T-IU-05 pestañas con flechas, Inicio y Fin; el recorrido de pendientes incluye las banderas y abre su pestaña', async ({ page }) => {
     await abrirRevision(page, TEXTO_II, '');
     const sug = page.getByRole('tab', { name: /^Sugerencias de generalización/ });
     const ban = page.getByRole('tab', { name: /^Revisión manual \(banderas\)/ });
@@ -1272,7 +1239,7 @@ test.describe('Revisión II (PC-4)', () => {
     await expect.poll(() => page.evaluate(() => (document.activeElement as HTMLElement | null)?.hasAttribute('data-det') ?? false)).toBe(true);
   });
 
-  test('T-IU-05 «Ir a la ubicación» de una bandera lejana monta su bloque y la deja a la vista', async ({ page }) => {
+  testMedicion('T-IU-05 «Ir a la ubicación» de una bandera lejana monta su bloque y la deja a la vista', async ({ page }) => {
     const relleno = Array.from({ length: 400 }, (_, i) => `Línea de relleno ${i + 1} sin datos.`).join('\n');
     await abrirRevision(page, `${relleno}\nLa gerente general de Ferretería Ejemplo firmó.`, '');
     await page.getByRole('tab', { name: /^Revisión manual/ }).click();
@@ -1282,7 +1249,7 @@ test.describe('Revisión II (PC-4)', () => {
     await expect(panelTexto(page).locator('[data-ban]')).toBeInViewport();
   });
 
-  test('T-IU-06 búsqueda propia: coincidencias sobre el texto en memoria, sin tildes ni mayúsculas, Enter y Mayús+Enter, «{i} de {n}»', async ({ page }) => {
+  testMedicion('T-IU-06 búsqueda propia: coincidencias sobre el texto en memoria, sin tildes ni mayúsculas, Enter y Mayús+Enter, «{i} de {n}»', async ({ page }) => {
     await abrirRevision(page, TEXTO_REVISION);
     const campo = page.getByRole('textbox', { name: 'Buscar en el documento' });
     for (const [k, v] of [['spellcheck', 'false'], ['autocomplete', 'off'], ['autocorrect', 'off'], ['autocapitalize', 'off'], ['translate', 'no'], ['data-gramm', 'false']]) {
@@ -1308,7 +1275,7 @@ test.describe('Revisión II (PC-4)', () => {
     await expect(panelTexto(page).locator('[data-det] mark.coincidencia')).toHaveCount(2);
   });
 
-  test('T-IU-06 «Agregar reemplazo para esta coincidencia» abre el diálogo con el tramo y crea una detección manual', async ({ page }) => {
+  testMedicion('T-IU-06 «Agregar reemplazo para esta coincidencia» abre el diálogo con el tramo y crea una detección manual', async ({ page }) => {
     await abrirRevision(page, 'La Fundación Ejemplo Prueba atendió el caso del Barrio Ficticio.', '');
     const campo = page.getByRole('textbox', { name: 'Buscar en el documento' });
     await campo.fill('barrio ficticio');
@@ -1322,7 +1289,7 @@ test.describe('Revisión II (PC-4)', () => {
     expect((await gancho(page).detalle()).some((d) => d.source === 'manual' && d.precedence === 1 && d.texto === 'Barrio Ficticio')).toBe(true);
   });
 
-  test('T-IU-06 filtros de categoría, estado, confianza y fuente: filtran la lista y el contador cuenta todo', async ({ page }) => {
+  testMedicion('T-IU-06 filtros de categoría, estado, confianza y fuente: filtran la lista y el contador cuenta todo', async ({ page }) => {
     await abrirRevision(page);
     await page.getByText('Filtros de la lista de detecciones').click();
     const filas = page.getByRole('treegrid', { name: 'Detecciones' }).getByRole('row');
@@ -1349,27 +1316,9 @@ test.describe('Revisión II (PC-4)', () => {
 });
 
 // ===== PC-5 · Listo (8.2.7): puerta de copia, residuos, recordatorio, copiar y exportar =====
-// Mismo build de medición que la Revisión I, en su propio puerto para no pelear por el servidor de PC-3. Para llegar a Listo sin el
+// Mismo build de medición que la Revisión I (lib/medicion.ts: servidor en un puerto libre). Para llegar a Listo sin el
 // botón «Continuar» (de PC-4) se usa el gancho `__siglowListoPrueba` (solo en el build de medición): decide las detecciones UNA POR
 // UNA con el reductor, fija el avance del modelo y fija un resultado de residuos. Datos ficticios (10.1.5).
-
-const PUERTO_LISTO = Number(process.env.PORT ?? 4173) + 200;
-const URL_LISTO = `http://127.0.0.1:${PUERTO_LISTO}`;
-let servidorListo: ChildProcess | undefined;
-
-async function levantarListo(): Promise<void> {
-  const indice = join('dist-medicion', 'index.html');
-  if (!existsSync(indice) || statSync(indice).mtimeMs < masNuevo('src')) {
-    const r = spawnSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build', '--mode', 'medicion'], { stdio: 'ignore' });
-    if (r.status !== 0) throw new Error('No se pudo construir el build de medición');
-  }
-  servidorListo = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', 'dist-medicion', '--port', String(PUERTO_LISTO)], { stdio: 'ignore' });
-  for (let i = 0; i < 50; i++) {
-    try { if ((await fetch(URL_LISTO + '/')).ok) return; } catch { /* aún no escucha */ }
-    await new Promise((r) => setTimeout(r, 100));
-  }
-  throw new Error('El servidor de Listo no respondió');
-}
 
 type GanchoListo = {
   irAListo(): void;
@@ -1460,13 +1409,11 @@ async function textoDeLaVista(page: Page): Promise<string> {
   return page.locator('[data-prueba="vista-salida"] .linea-salida').evaluateAll((ls) => ls.map((l) => l.textContent ?? '').join('\n'));
 }
 
-test.describe('Listo (PC-5)', () => {
-  test.describe.configure({ timeout: 120_000 });
-  test.use({ baseURL: URL_LISTO, permissions: ['clipboard-read', 'clipboard-write'] });
-  test.beforeAll(async () => { await levantarListo(); });
-  test.afterAll(() => { servidorListo?.kill(); });
+testMedicion.describe('Listo (PC-5)', () => {
+  testMedicion.describe.configure({ timeout: 120_000 });
+  testMedicion.use({ permissions: ['clipboard-read', 'clipboard-write'] });
 
-  test('T-IU-01 INV-G06 INV-R11: la puerta tiene un estado visible por cada GateReason y se abre solo con los ocho resueltos', async ({ page }) => {
+  testMedicion('T-IU-01 INV-G06 INV-R11: la puerta tiene un estado visible por cada GateReason y se abre solo con los ocho resueltos', async ({ page }) => {
     // Estado 1: nada decidido y el modelo en curso → PENDIENTES, MODELO_EN_CURSO, RESIDUOS_NO_EJECUTADA (no se busca con pendientes) y RECORDATORIO.
     await abrirListo(page, { modelo: 'en_curso', decidir: false });
     const g = ganchoListo(page);
@@ -1522,7 +1469,7 @@ test.describe('Listo (PC-5)', () => {
     await expect(b.copiar).toHaveAttribute('aria-disabled', 'true');
   });
 
-  test('T-IU-01 BANDERAS: con una bandera sin confirmar aparece su motivo y la puerta no se abre', async ({ page }) => {
+  testMedicion('T-IU-01 BANDERAS: con una bandera sin confirmar aparece su motivo y la puerta no se abre', async ({ page }) => {
     await abrirListo(page, { decidir: false, texto: 'La gerente general de la empresa, Ana Ficticia Rojas, firmó el contrato con Pedro Ejemplo Prueba. El menor Luis Ejemplo tiene 7 años.' });
     const g = ganchoListo(page);
     const e = await g.estado();
@@ -1534,7 +1481,7 @@ test.describe('Listo (PC-5)', () => {
     expect((await g.estado()).ok).toBe(true);
   });
 
-  test('T-IU-04 INV-X05 (a) con la puerta cerrada, copiar la vista no cambia el portapapeles y muestra M-73', async ({ page, context }) => {
+  testMedicion('T-IU-04 INV-X05 (a) con la puerta cerrada, copiar la vista no cambia el portapapeles y muestra M-73', async ({ page, context }) => {
     await abrirListo(page);
     await page.evaluate(() => navigator.clipboard.writeText('SENTINELA-DE-PRUEBA'));
     const b = botones(page);
@@ -1563,7 +1510,7 @@ test.describe('Listo (PC-5)', () => {
     expect((await leerPortapapeles(context)).texto).toBe('SENTINELA-DE-PRUEBA');
   });
 
-  test('T-IU-04 INV-G06 (b) flujo completo: pegar → revisión → residuos → recordatorio → copiar en verde, con M-84, M-85 y «Vaciar portapapeles» (M-86)', async ({ page, context }) => {
+  testMedicion('T-IU-04 INV-G06 (b) flujo completo: pegar → revisión → residuos → recordatorio → copiar en verde, con M-84, M-85 y «Vaciar portapapeles» (M-86)', async ({ page, context }) => {
     await abrirInicio(page);
     await crearAsunto(page, 'PRUEBA-FLUJO');
     await pegarLista(page, LISTA_LISTO);
@@ -1608,7 +1555,7 @@ test.describe('Listo (PC-5)', () => {
     await expect(page.locator('[data-aviso="M-86"]')).toContainText('conserva lo que copió antes');
   });
 
-  test('T-IU-04 (b) si writeText falla aparece el área de respaldo con el texto anonimizado seleccionado (M-87)', async ({ page }) => {
+  testMedicion('T-IU-04 (b) si writeText falla aparece el área de respaldo con el texto anonimizado seleccionado (M-87)', async ({ page }) => {
     await abrirListo(page);
     await esperarBusqueda(page);
     await marcarRecordatorio(page);
@@ -1623,7 +1570,7 @@ test.describe('Listo (PC-5)', () => {
       .toEqual([0, esperado.length, esperado.length, 'false', 'off', 'no']);
   });
 
-  test('T-IU-10 copia-dom-salida INV-X05: con la puerta abierta, seleccionar toda la vista y Control+C escribe solo text/plain y 0 originales', async ({ page, context }) => {
+  testMedicion('T-IU-10 copia-dom-salida INV-X05: con la puerta abierta, seleccionar toda la vista y Control+C escribe solo text/plain y 0 originales', async ({ page, context }) => {
     await abrirListo(page);
     await esperarBusqueda(page);
     await marcarRecordatorio(page);
@@ -1679,7 +1626,7 @@ test.describe('Listo (PC-5)', () => {
     expect(parcial).toMatch(/^\[[A-ZÁÉÍÓÚÑ_]+_\d+\]$/);
   });
 
-  test('T-LE-10 T-PV-13 INV-X05 INV-X06: los botones llaman a exportarTxt y exportarDocx, el nombre es neutro y no queda ninguna URL blob: viva', async ({ page }) => {
+  testMedicion('T-LE-10 T-PV-13 INV-X05 INV-X06: los botones llaman a exportarTxt y exportarDocx, el nombre es neutro y no queda ninguna URL blob: viva', async ({ page }) => {
     await page.addInitScript(() => {
       const vivas = new Set<string>();
       const crear = URL.createObjectURL.bind(URL);
@@ -1716,7 +1663,7 @@ test.describe('Listo (PC-5)', () => {
     expect(await page.evaluate(() => (globalThis as unknown as { __blobsVivos: () => number }).__blobsVivos())).toBe(0);
   });
 
-  test('INV-I01 INV-I03 el informe se descarga en .txt y .json solo con la puerta abierta, sin originales y con el código del asunto solo si se pide', async ({ page }) => {
+  testMedicion('INV-I01 INV-I03 el informe se descarga en .txt y .json solo con la puerta abierta, sin originales y con el código del asunto solo si se pide', async ({ page }) => {
     await abrirListo(page);
     await esperarBusqueda(page);
     const b = botones(page);
@@ -1749,7 +1696,7 @@ test.describe('Listo (PC-5)', () => {
     for (const o of ORIGINALES) expect(txt).not.toContain(o);
   });
 
-  test('INV-R07 un original que quedó dentro de un reemplazo editado: la búsqueda no pasa, vuelve a Revisión con M-78 y la banda de ubicaciones', async ({ page }) => {
+  testMedicion('INV-R07 un original que quedó dentro de un reemplazo editado: la búsqueda no pasa, vuelve a Revisión con M-78 y la banda de ubicaciones', async ({ page }) => {
     await abrirListo(page, { decidir: false });
     const g = ganchoListo(page);
     await g.decidir();

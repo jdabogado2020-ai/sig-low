@@ -6,7 +6,6 @@
 // T-BO-01 (PD-4; 6.7.4, 6.6.5, V-17 a V-19, V-23, V-35): en la app real (dist/) guardar → bloquear → reabrir → desbloquear,
 // pagehide/pageshow y bloqueo a los 15 min con reloj simulado; en el arnés, el adaptador de la bóveda (borrar, borrar todo con
 // otra pestaña, persist(), cuota real con CDP, exportar e importar con otra sal y conflicto, archivo manipulado). Llevan @humo.
-import { spawn, type ChildProcess } from 'node:child_process';
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -16,13 +15,13 @@ import { build } from 'vite';
 import type { AsuntoId } from '../../src/core/types';
 import type { BovedaCompleta } from '../../src/ui/boveda-idb';
 import { iteracionesPara } from '../../src/vault/crypto';
+import { levantarServidor, type Servidor } from './lib/servidores';
 
 const RAIZ = process.cwd();
 const FUENTE = join(RAIZ, 'test-results', 'boveda-harness-src');
 const CARPETA = join(RAIZ, 'test-results', 'boveda-harness');
 const RESULTADOS = join(RAIZ, 'test-results', 'boveda-calibracion.json');
-const PUERTO = Number(process.env['PORT'] ?? 4173) + 7;
-const ORIGEN = `http://127.0.0.1:${PUERTO}`;
+let ORIGEN = ''; // lo declara el servidor del arnés (puerto libre) en el beforeAll
 const SHA_PLANO = '5e3e992300afc98202a3a8b2fcea0ae3572d5ff7e80e12be67693072255f36aa';
 const SHA_CT = '6bcc6d2f9b887f5fdac1aa547ca85bad8d42acfbd0d8546fca39ddedc424a03b';
 
@@ -127,7 +126,7 @@ const mediana = (xs: number[]): number => { const s = [...xs].sort((a, b) => a -
 
 test.describe('bóveda en el navegador (arnés)', () => {
   test.describe.configure({ mode: 'serial' });
-  let servidor: ChildProcess | null = null;
+  let servidor: Servidor | null = null;
 
   test.beforeAll(async () => {
     test.setTimeout(120_000);
@@ -152,13 +151,11 @@ test.describe('bóveda en el navegador (arnés)', () => {
     });
     for (const f of ['_headers', 'tt-policy.js']) cpSync(join(RAIZ, 'public', f), join(CARPETA, f));
     writeFileSync(join(CARPETA, 'favicon.ico'), '');   // el navegador lo pide solo; sin él, un 404 en la consola
-    servidor = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', CARPETA, '--port', String(PUERTO)], { stdio: 'ignore' });
-    for (let i = 0; i < 50; i++) {
-      try { if ((await fetch(`${ORIGEN}/`)).status) break; } catch { await new Promise((r) => setTimeout(r, 100)); }
-    }
+    servidor = await levantarServidor({ dir: CARPETA });
+    ORIGEN = servidor.origen;
     writeFileSync(RESULTADOS, '{}\n');
   });
-  test.afterAll(() => { servidor?.kill(); });
+  test.afterAll(async () => { await servidor?.parar(); });
 
   for (const [nombre, canal] of [['Chrome', 'chrome'], ['Edge', 'msedge']] as const) {
     test(`T-CI-08 ${nombre}: t₆₀₀ₖ medido, it en [600 000, 5 000 000] y V-SIGLOW-1 con el motor del navegador`, async ({}, info) => {

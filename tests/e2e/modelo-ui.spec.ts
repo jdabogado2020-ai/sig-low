@@ -1,38 +1,10 @@
-import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
-import { existsSync, readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
-import { test, expect, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
+
+import { testMedicion } from './lib/medicion';
 
 // T-IU-15 (resultados progresivos y banda del modelo) y T-IU-16 (marcador específico de TI, CE, PPT y PEP), de PC-4 (10.0).
 // Usan el build de medición (`vite build --mode medicion`) y su gancho de la Revisión: el modelo real no se descarga en estas pruebas;
 // cada ventana del modelo se simula con la misma tubería de producción (`fusionar` + `incorporar_modelo`). Datos ficticios (10.1.5).
-
-const PUERTO_MEDICION = Number(process.env.PORT ?? 4173) + 110;
-const URL_MEDICION = `http://127.0.0.1:${PUERTO_MEDICION}`;
-let servidorMedicion: ChildProcess | undefined;
-
-function masNuevo(dir: string): number {
-  let m = 0;
-  for (const n of readdirSync(dir)) {
-    const p = join(dir, n);
-    const s = statSync(p);
-    m = Math.max(m, s.isDirectory() ? masNuevo(p) : s.mtimeMs);
-  }
-  return m;
-}
-async function levantarMedicion(): Promise<void> {
-  const indice = join('dist-medicion', 'index.html');
-  if (!existsSync(indice) || statSync(indice).mtimeMs < masNuevo('src')) {
-    const r = spawnSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build', '--mode', 'medicion'], { stdio: 'ignore' });
-    if (r.status !== 0) throw new Error('No se pudo construir el build de medición');
-  }
-  servidorMedicion = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', 'dist-medicion', '--port', String(PUERTO_MEDICION)], { stdio: 'ignore' });
-  for (let i = 0; i < 50; i++) {
-    try { if ((await fetch(URL_MEDICION + '/')).ok) return; } catch { /* aún no escucha */ }
-    await new Promise((r) => setTimeout(r, 100));
-  }
-  throw new Error('El servidor de medición no respondió');
-}
 
 type Gancho = {
   cargar(texto: string, modelo?: string): Promise<number>;
@@ -69,13 +41,10 @@ async function abrirRevision(page: Page, texto: string, modelo: 'en_curso' | 'pl
 
 const TEXTO_MODELO = 'La señora Marta Ficticia Gómez, con cédula 1.000.000.005, firma.';
 
-test.describe('Modelo en la Revisión (PC-4)', () => {
-  test.describe.configure({ timeout: 90_000 });
-  test.use({ baseURL: URL_MEDICION });
-  test.beforeAll(async () => { await levantarMedicion(); });
-  test.afterAll(() => { servidorMedicion?.kill(); });
+testMedicion.describe('Modelo en la Revisión (PC-4)', () => {
+  testMedicion.describe.configure({ timeout: 90_000 });
 
-  test('T-IU-15 INV-R12: las reglas y la lista aparecen antes que el modelo; la banda muestra el progreso; la marca NUEVA no mueve el foco ni lo decidido', async ({ page }) => {
+  testMedicion('T-IU-15 INV-R12: las reglas y la lista aparecen antes que el modelo; la banda muestra el progreso; la marca NUEVA no mueve el foco ni lo decidido', async ({ page }) => {
     const n = await abrirRevision(page, TEXTO_MODELO);
     expect(n).toBe(1); // solo la cédula: la persona la traerá el modelo
     await expect(panelTexto(page).locator('[data-det]')).toHaveCount(1);
@@ -139,7 +108,7 @@ test.describe('Modelo en la Revisión (PC-4)', () => {
     await expect(h1(page, 'Listo')).toBeVisible();
   });
 
-  test('T-IU-15 el modelo terminado se pliega a una línea (M-167)', async ({ page }) => {
+  testMedicion('T-IU-15 el modelo terminado se pliega a una línea (M-167)', async ({ page }) => {
     await abrirRevision(page, TEXTO_MODELO);
     expect(await gancho(page).ventana([], 1, 2)).toBe(0);
     expect(await gancho(page).ventana(['Marta Ficticia Gómez'], 2, 2)).toBe(1);
@@ -148,7 +117,7 @@ test.describe('Modelo en la Revisión (PC-4)', () => {
     await expect(banda(page).getByRole('button')).toHaveCount(0);
   });
 
-  test('T-IU-15 el presupuesto de tiempo avisa a la mitad (M-63), anota la pestaña oculta (M-62) y al agotarse pasa solo a plan B con M-64', async ({ page }) => {
+  testMedicion('T-IU-15 el presupuesto de tiempo avisa a la mitad (M-63), anota la pestaña oculta (M-62) y al agotarse pasa solo a plan B con M-64', async ({ page }) => {
     await page.clock.install({ time: new Date('2026-10-30T10:00:00-05:00') });
     await abrirRevision(page, TEXTO_MODELO);
     await expect(banda(page)).toHaveAttribute('data-estado', 'en_curso');
@@ -171,7 +140,7 @@ test.describe('Modelo en la Revisión (PC-4)', () => {
     expect(await gancho(page).revision()).toBe(r0 + 1);
   });
 
-  test('T-IU-15 tras la primera ventana el presupuesto pasa a max(60 s, 2 × t1 × ventanas) (6.11.3)', async ({ page }) => {
+  testMedicion('T-IU-15 tras la primera ventana el presupuesto pasa a max(60 s, 2 × t1 × ventanas) (6.11.3)', async ({ page }) => {
     await page.clock.install({ time: new Date('2026-10-30T10:00:00-05:00') });
     await abrirRevision(page, TEXTO_MODELO);
     await page.clock.runFor(10_000);
@@ -186,7 +155,7 @@ test.describe('Modelo en la Revisión (PC-4)', () => {
     await expect(banda(page)).toHaveAttribute('data-estado', 'plan_b');
   });
 
-  test('T-IU-16 INV-R09 INV-R10: «Usar marcador específico» de TI, CE, PPT y PEP cambia a [TI_n], restituye el rótulo y se deshace con «Volver al marcador general»', async ({ page }) => {
+  testMedicion('T-IU-16 INV-R09 INV-R10: «Usar marcador específico» de TI, CE, PPT y PEP cambia a [TI_n], restituye el rótulo y se deshace con «Volver al marcador general»', async ({ page }) => {
     await abrirRevision(page, 'La niña con T.I. 1.000.000.002 y el C.E. 123456; ppt: 0001234567 y PEP No. 123456789012345.', 'plan_b');
     const panel = panelTexto(page);
     const ficha = page.getByRole('region', { name: 'Ficha de la detección' });

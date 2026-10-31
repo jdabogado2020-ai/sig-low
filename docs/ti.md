@@ -137,7 +137,8 @@ node scripts/verificar-despliegue.mjs https://sig-low.vergarameloabogado.site SH
 - Tome la lista **de las notas de la versión publicadas con la etiqueta firmada**, no de la propia dirección que verifica.
 - Qué demuestra: que lo publicado es lo mismo que lo construido y firmado. Lo calcula una herramienta externa a la aplicación, por eso vale; los códigos de «Acerca de» los calcula el código en ejecución y solo informan.
 
-> Estado: el script se entrega con la prueba de cero red (PD-5a) y con el cierre (P0-5). Esta sección lo describe según el plan (T-PV-15). Al fusionarse, compare las opciones y el formato de la lista con la cabecera del propio script [VERIFICAR].
+- Además comprueba las cabeceras de la sección 3.6 del plan (las de `public/_headers`) y el tipo MIME de cada archivo, que no haya `Set-Cookie` ni `/cdn-cgi/` en el HTML, y que el precache publicado sea el de la lista (ni un archivo de más ni de menos). Una redirección cuenta como diferencia. Código de salida 2: argumentos o lista incorrectos (no se pidió nada a la red).
+- Sin la opción `--todo` no se descargan los trozos del modelo (cientos de MB); con ella sí, y se comparan con la lista. Opciones completas y formato de la lista: `docs/despliegue.md`, sección 5.4.
 
 ## 7. Equipo y sistema
 
@@ -166,4 +167,4 @@ node scripts/verificar-despliegue.mjs https://sig-low.vergarameloabogado.site SH
 
 ## 9. Pendientes de esta guía
 
-Todas las filas de la sección 4 con [VERIFICAR] (4, 5, 7, 8, 9, 11 a 22, 24 a 26), la ruta de la excepción del modo de seguridad mejorada (fila 18 y sección 5), la comprobación con el modo real de Edge, el nombre exacto del subdominio oficial, el comportamiento de la ventana privada frente al historial del portapapeles (T-PV-21) y las opciones de `scripts/verificar-despliegue.mjs` (6.1) siguen sin confirmar. Ninguna debe aplicarse en producción sin esa comprobación.
+Todas las filas de la sección 4 con [VERIFICAR] (4, 5, 7, 8, 9, 11 a 22, 24 a 26), la ruta de la excepción del modo de seguridad mejorada (fila 18 y sección 5), la comprobación con el modo real de Edge, el nombre exacto del subdominio oficial y el comportamiento de la ventana privada frente al historial del portapapeles (T-PV-21) siguen sin confirmar. Las opciones de `scripts/verificar-despliegue.mjs` (6.1) ya están confirmadas con el script (T-PV-15). Ninguna debe aplicarse en producción sin esa comprobación.

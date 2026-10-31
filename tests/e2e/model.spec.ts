@@ -3,7 +3,6 @@
 // tests/e2e/server.mjs, que aplica _headers. Los modelos se leen de SIGLOW_MODELOS (por defecto ../h0/modelos) y se copian al
 // directorio de pruebas (test-results/, fuera de git): nunca se agregan a un commit. Sin los modelos, las pruebas se saltan.
 // x-large (≈ 2,1 GB de memoria, candado del modelo) solo corre con SIGLOW_E2E_XLARGE=1.
-import { spawn, type ChildProcess } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { cpSync, createReadStream, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync, openSync, readSync, closeSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -13,7 +12,8 @@ import { chromium, expect, test, type Page } from '@playwright/test';
 import { build, defaultClientConditions } from 'vite';
 
 import type { ModelManifest } from '../../src/core/types';
-import { delModelo, distConModelos, levantarServidor, modeloSintetico, rutasDelManifiesto, type Servidor } from './harness/dist-modelo';
+import { delModelo, distConModelos, modeloSintetico, rutasDelManifiesto } from './harness/dist-modelo';
+import { levantarServidor, type Servidor } from './lib/servidores';
 
 const RAIZ = process.cwd();
 const MODELOS = resolve(RAIZ, process.env['SIGLOW_MODELOS'] ?? '../h0/modelos');
@@ -23,8 +23,7 @@ const hayBase = existsSync(join(BASE, 'onnx', 'model_quantized.onnx')) && exists
 const hayLarge = existsSync(join(LARGE, 'onnx', 'model_quantized.onnx'));
 const CARPETA = join(RAIZ, 'test-results', 'ner-harness');
 const CANDADO = resolve(RAIZ, process.env['SIGLOW_CANDADO_MODELO'] ?? '../h0/candado-modelo');
-const PUERTO = Number(process.env['PORT'] ?? 4173) + 5;
-const ORIGEN = `http://127.0.0.1:${PUERTO}`;
+let ORIGEN = ''; // lo declara el servidor del arnés (puerto libre) en el beforeAll de la fase que lo usa
 const REGISTRO = join(CARPETA, 'peticiones.jsonl');
 
 const sha256Archivo = (ruta: string): Promise<string> =>
@@ -62,7 +61,7 @@ function copiarModelo(origen: string, destino: string, truncarOnnx?: number): vo
   }
 }
 
-let servidor: ChildProcess | null = null;
+let servidor: Servidor | null = null;
 let manifiestoBase: ModelManifest;
 let manifiestoRoto: ModelManifest;
 
@@ -96,16 +95,12 @@ test.describe('PF-1b · worker ner real con ORT-web (arnés)', () => {
     copiarModelo(BASE, join(CARPETA, 'models', 'gliner-x-large'), 4 * 1024 * 1024);
     manifiestoBase = await manifiestoDe(join(CARPETA, 'models', 'gliner-x-base'), 'gliner-x-base', 'google/mt5-base');
     manifiestoRoto = await manifiestoDe(join(CARPETA, 'models', 'gliner-x-large'), 'gliner-x-large', 'google/mt5-large');
-    servidor = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', CARPETA, '--port', String(PUERTO)], {
-      env: { ...process.env, SIGLOW_REGISTRO_PETICIONES: REGISTRO }, stdio: 'ignore',
-    });
-    for (let i = 0; i < 50; i++) {
-      try { if ((await fetch(`${ORIGEN}/`)).status) break; } catch { await new Promise((r) => setTimeout(r, 200)); }
-    }
+    servidor = await levantarServidor({ dir: CARPETA, registro: REGISTRO });
+    ORIGEN = servidor.origen;
   });
 
-  test.afterAll(() => {
-    servidor?.kill();
+  test.afterAll(async () => {
+    await servidor?.parar();
   });
 
   type Msg = { reqId: string; kind: string; [k: string]: any };
@@ -161,7 +156,7 @@ test.describe('PF-1b · worker ner real con ORT-web (arnés)', () => {
     for (const s of w.spans) expect(Object.keys(s).sort()).toEqual(['end', 'label', 'score', 'start']);
 
     // cero red: todo al mismo origen, solo rutas del build y del modelo, sin query
-    const registro = readFileSync(REGISTRO, 'utf8').trim().split('\n').map((l) => JSON.parse(l) as { m: string; u: string }).filter((r) => r.u !== '/'); // «/» es el sondeo de disponibilidad del propio servidor
+    const registro = readFileSync(REGISTRO, 'utf8').trim().split('\n').map((l) => JSON.parse(l) as { m: string; u: string }).filter((r) => r.u !== '/'); // (ya no hay sondeo de disponibilidad: el servidor del arnés declara su puerto al estar listo; el filtro de «/» es inocuo)
     for (const r of registro) {
       expect(r.m).toBe('GET');
       expect(r.u, r.u).toMatch(/^\/(ner\.html|tt-policy\.js|assets\/[\w.-]+|ort\/ort-wasm-simd-threaded\.(mjs|wasm)|models\/gliner-x-base\/(tokenizer\.json|tokenizer_config\.json|gliner_config\.json|onnx\/model_quantized\.onnx))$/);
@@ -298,7 +293,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
 
   async function servir(dir: string): Promise<Servidor> {
     n += 1;
-    return levantarServidor(dir, join(tmp, `peticiones-${n}.jsonl`));
+    return levantarServidor({ dir, registro: join(tmp, `peticiones-${n}.jsonl`) });
   }
 
   /** Observadores de cada prueba: orígenes ajenos, violaciones de CSP (página y workers) y consola. */
@@ -596,7 +591,7 @@ test.describe('PF-2 · modelo real en la app', () => {
     cpSync(resolve('dist'), dist, { recursive: true });
     mkdirSync(join(dist, 'models', v.id), { recursive: true });
     cpSync(TROZOS, join(dist, 'models', v.id), { recursive: true });
-    const srv = await levantarServidor(dist, join(tmp, 'peticiones.jsonl'));
+    const srv = await levantarServidor({ dir: dist, registro: join(tmp, 'peticiones.jsonl') });
     try {
       const ajenas: string[] = [];
       const consola: string[] = [];
