@@ -4,6 +4,7 @@ import { readPdf } from './io/pdf-read.ts';
 import { App } from './ui/App.tsx';
 import { modeloPuerto } from './ui/modelo-puerto.ts';
 import { nerPuerto } from './ui/ner-puerto.ts';
+import { bovedaIdb } from './ui/boveda-idb.ts';
 import { instalarPuertos } from './ui/servicios.ts';
 import { registrarServiceWorker } from './ui/sw-registro.ts';
 
@@ -11,6 +12,8 @@ import { registrarServiceWorker } from './ui/sw-registro.ts';
 instalarPuertos({ pdf: readPdf });
 // PF-2: entrega del modelo (descarga a pedido, respaldo automático) y worker `ner` (acuerdo F-13 de la tarjeta).
 instalarPuertos({ modelo: modeloPuerto, ner: nerPuerto });
+// PD-4: la bóveda cifrada (IndexedDB + vault/crypto.ts). Sin contexto seguro o sin IndexedDB, disponible() es false (M-38, M-208).
+instalarPuertos({ boveda: bovedaIdb });
 registrarServiceWorker();
 if (__SIGLOW_MEDICION__) {
   // Ranura del gancho de medición (PG-3b). Solo existe en el build --mode medicion; check-dist lo prohíbe en dist/.

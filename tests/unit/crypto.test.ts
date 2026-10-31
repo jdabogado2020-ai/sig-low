@@ -504,3 +504,70 @@ describe('T-CI-07 propiedades', () => {
     }
   });
 });
+
+// Paso 11 de 6.7.6 (PD-4, vault/export.ts): un .siglow que descifra bien pero cuyo texto plano no es un VaultPayload válido
+// (o rompe INV-T01 a INV-T06) se rechaza con ARCHIVO_ALTERADO. Se cifra con la API real para que el paso 10 pase.
+describe('T-CI-03 archivo alterado: texto plano inválido (paso 11, PD-4)', () => {
+  const entrada = (n: number, extra: Record<string, unknown> = {}) => ({
+    marker: `[CC_${n}]`, family: 'CC', type: 'CC', canonicalKey: `CC:100000001${n}`, display: `1.000.000.01${n}`,
+    originals: [`1.000.000.01${n}`], firstSeen: { docId: 'doc_00112233445566778899aabbccddeeff', partKind: 'cuerpo', partOrder: 0, start: 0 },
+    documents: [], sameHolderAs: [], ...extra,
+  });
+  const base = (): Record<string, unknown> => ({
+    formato: 'sig-low/tabla-plana', v: 1,
+    asunto: { asuntoId: ID, codigo: 'PRUEBA-001', creado: '2026-10-22T20:00:00.000Z', actualizado: '2026-10-22T20:00:00.000Z' },
+    appVersion: '0.1.0',
+    table: { asuntoId: ID, counters: { CC: 2 }, entries: { '[CC_1]': entrada(1), '[CC_2]': entrada(2) }, documents: [] },
+    caseList: [{ id: 'cas_00112233445566778899aabbccddeeff', name: 'Ana Ficticia Rojas', variants: [], kind: 'persona', role: 'demandante' }],
+    relleno: '',
+  });
+  /** JSON con relleno hasta 4096·k bytes (el mismo cálculo que serializarPayload, sin pasar por su validación de tipos). */
+  const plano = (o: Record<string, unknown>): Uint8Array<ArrayBuffer> => {
+    const sin = { ...o, relleno: '' };
+    const n = enc(JSON.stringify(sin)).byteLength;
+    return enc(JSON.stringify({ ...sin, relleno: ' '.repeat((4096 - (n % 4096)) % 4096) }));
+  };
+
+  it('T-CI-03 un VaultPayload válido pasa el paso 11 y uno manipulado da ARCHIVO_ALTERADO', async () => {
+    const { validarPayload } = await import('../../src/vault/export');
+    expect(validarPayload(plano(base()), ID).table.entries['[CC_1]']?.marker).toBe('[CC_1]');
+    const casos: Array<[string, (o: Record<string, unknown>) => void]> = [
+      ['formato', (o) => { o['formato'] = 'sig-low/tabla'; }],
+      ['v', (o) => { o['v'] = 2; }],
+      ['asuntoId del asunto', (o) => { (o['asunto'] as Record<string, unknown>)['asuntoId'] = 'asu_ffffffffffffffffffffffffffffffff'; }],
+      ['asuntoId de la tabla', (o) => { (o['table'] as Record<string, unknown>)['asuntoId'] = 'asu_ffffffffffffffffffffffffffffffff'; }],
+      ['código con eñe', (o) => { (o['asunto'] as Record<string, unknown>)['codigo'] = 'ROJAS-AÑA'; }],
+      ['fecha no ISO', (o) => { (o['asunto'] as Record<string, unknown>)['creado'] = '22/10/2026'; }],
+      ['INV-T01 canonicalKey repetida', (o) => { ((o['table'] as { entries: Record<string, Record<string, unknown>> }).entries['[CC_2]']!)['canonicalKey'] = 'CC:1000000011'; }],
+      ['INV-T02 counters menor', (o) => { (o['table'] as Record<string, unknown>)['counters'] = { CC: 1 }; }],
+      ['INV-T03 clave sin tilde', (o) => { (o['table'] as Record<string, unknown>)['entries'] = { '[DIRECCION_1]': { ...entrada(1), marker: '[DIRECCION_1]', family: 'DIRECCION' } }; }],
+      ['INV-T03 clave ≠ marker', (o) => { ((o['table'] as { entries: Record<string, Record<string, unknown>> }).entries['[CC_2]']!)['marker'] = '[CC_1]'; }],
+      ['INV-T05 no simétrico', (o) => { ((o['table'] as { entries: Record<string, Record<string, unknown>> }).entries['[CC_1]']!)['sameHolderAs'] = ['[CC_2]']; }],
+      ['INV-T06 originals repetidos', (o) => { ((o['table'] as { entries: Record<string, Record<string, unknown>> }).entries['[CC_1]']!)['originals'] = ['1', '1']; }],
+      ['caseList no arreglo', (o) => { o['caseList'] = {}; }],
+    ];
+    for (const [nombre, cambiar] of casos) {
+      const o = base();
+      cambiar(o);
+      expect(await codigoDe(() => validarPayload(plano(o), ID)), nombre).toBe('ARCHIVO_ALTERADO');
+    }
+    const conX = plano(base());
+    conX[conX.byteLength - 3] = 0x78;   // una «x» dentro del relleno
+    expect(await codigoDe(() => validarPayload(conX, ID)), 'relleno no espacios').toBe('ARCHIVO_ALTERADO');
+    const simetrico = base();
+    const e = (simetrico['table'] as { entries: Record<string, Record<string, unknown>> }).entries;
+    e['[CC_1]']!['sameHolderAs'] = ['[CC_2]'];
+    e['[CC_2]']!['sameHolderAs'] = ['[CC_1]'];
+    expect(validarPayload(plano(simetrico), ID).table.entries['[CC_2]']?.sameHolderAs).toEqual(['[CC_1]']);
+    expect(await codigoDe(() => validarPayload(enc('{"formato":"sig-low/tabla-plana"}'), ID))).toBe('ARCHIVO_ALTERADO');   // no mide 4096·k
+  });
+
+  it('T-CI-03 un .siglow con texto plano manipulado descifra (paso 10) y se rechaza en el paso 11', async () => {
+    const { validarPayload } = await import('../../src/vault/export');
+    const o = base();
+    (o['table'] as Record<string, unknown>)['counters'] = { CC: 1 };
+    const json = await C.exportarSiglow(FRASE, ID, 600000, plano(o));
+    const abierto = await C.abrirSiglow(enc(json), FRASE);
+    expect(await codigoDe(() => validarPayload(abierto.plano, abierto.asuntoId))).toBe('ARCHIVO_ALTERADO');
+  });
+});
