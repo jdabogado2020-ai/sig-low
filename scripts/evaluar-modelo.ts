@@ -16,6 +16,11 @@
 //   evaluar    T-AB-01, sin modelo: exhaustividad de PER, ORG y LOC por vista frente al gold, dentro y fuera de la lista, filas por
 //              vista de 10.4.1 con el umbral de PF-3, matriz de confusión y reserva aparte. Escribe `evaluacion` en el mismo archivo.
 //              Con --modelo=x-base calcula además T-AB-04: la comparación con el principal (`comparacion`), sin criterio de cierre.
+//   experimento PF-3-r1 (D-06, decisión 6), sin modelo y solo con el desarrollo (D-01): ORG_FUERA y PERSONA_FUERA por vista, con la
+//              precisión global y la diferencia en la vista natural, para la línea base, (a) etiquetas traducidas, (b) restauración de
+//              mayúsculas y (a)+(b). Lee las cachés de VARIANTES_PF3R1 y escribe metricas/pf3r1-experimento.json. Las cachés de (a), (b)
+//              y (a)+(b) las hace `pasada` con --etiquetas=traducidas y/o --preproceso=restaurar y una --salida propia (nunca la caché
+//              única); --reutilizar=<archivos> copia las partes cuyo texto de entrada al modelo ya pasó con las mismas etiquetas.
 //
 // Las funciones de la evaluación son puras y están exportadas (las usa tests/medicion/evaluacion-modelo.test.ts). La parte que maneja
 // el navegador (Playwright y Vite) se importa solo al ejecutar la orden. El corpus es ficticio (10.1.5): de él solo se guardan
@@ -31,11 +36,11 @@ import {
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { cargarCorpus as cargarTextos, deteccionesDe, huellaMotor } from './calibrar-modelo.ts';
+import { cargarCorpus as cargarTextos, deteccionesDe, evaluarUmbral, huellaMotor } from './calibrar-modelo.ts';
 import type { CacheModelo as CachePF3, DocumentoCache, ParteCache, ParteTexto, VentanaCache } from './calibrar-modelo.ts';
 import type { DataType, ModelManifest } from '../src/core/types.ts';
-import { calcularFila, claveParte, esPositiva, evaluarDocumento, grupoDeTipo, omisionesPermitidas } from './metrics.ts';
-import type { EntradaDocumento, GoldAnnotation, GrupoDef, MetricsRow, RunVista } from './metrics.ts';
+import { calcularFila, claveParte, esPositiva, evaluarDocumento, grupoDeTipo, gruposDeCierre, omisionesPermitidas } from './metrics.ts';
+import type { EntradaDocumento, GoldAnnotation, GoldDocument, GrupoDef, MetricsRow, RunVista } from './metrics.ts';
 
 export type Vista = RunVista;
 export const VISTAS: readonly Vista[] = ['natural', 'mayusculas', 'minusculas'];
@@ -60,6 +65,13 @@ export const PISO_CACHE = 0.1;
 export interface CacheVista extends CachePF3 {
   /** Documentos cuya caché viene de PF-3 sin repetir la pasada (texto, ONNX y código del motor iguales). */
   procedencia?: Record<string, 'PF-3'>;
+  /**
+   * PF-3-r1: preproceso del texto antes del modelo (`restaurar`: restauración de mayúsculas, experimento (b)) con su versión. Sin el
+   * campo, el modelo recibió la vista tal cual.
+   */
+  preproceso?: { id: Preproceso; version: string };
+  /** PF-3-r1: partes copiadas de otra pasada cuyo texto de entrada al modelo era idéntico (mismas etiquetas, ONNX y código). */
+  partesReutilizadas?: number;
 }
 
 export interface ResultadoVerificacion {
@@ -111,6 +123,154 @@ export function vistaDeTexto(texto: string, vista: Vista): string {
   }
   if (salida.length !== texto.length) throw new Error('VISTA_CAMBIA_LONGITUD');
   return salida;
+}
+
+// ===================================================================================================================
+// PF-3-r1 · Restauración de mayúsculas antes del modelo (experimento (b) de D-06, decisión 6)
+// ===================================================================================================================
+//
+// Solo en los segmentos que vienen enteros en MAYÚSCULAS o enteros en minúsculas:
+//   - MAYÚSCULAS: por línea, cortada además tras «.», «!», «?», «;» o «:» seguidos de un blanco (un encabezado, una firma, un nombre
+//     en su propia línea, aunque el párrafo de alrededor esté en texto natural);
+//   - minúsculas: por frase entera (cortada tras «.», «!» o «?» seguidos de un blanco, o por una línea en blanco), sin cortar en un
+//     salto de línea simple: una línea en minúsculas en medio de un párrafo natural partido por el PDF es prosa normal y no se toca.
+// En el segmento, cada palabra (R-MOD-01) pasa a Title Case; las de función y los tratamientos (FW de R-MOD-03) quedan en minúscula,
+// salvo la primera de la frase; una letra sola seguida de «.» (inicial o sigla: «S.A.», «C.C.») y una palabra con dígitos (un código:
+// «C04», «ABC123») van en mayúsculas. Así el resultado no depende de la caja de origen: un texto entero en MAYÚSCULAS y el mismo en
+// minúsculas quedan iguales. Conserva las posiciones 1:1 (INV-W04): solo cambia caracteres cuya conversión no cambia la longitud
+// UTF-16 (la «ß», la «İ» y las ligaduras se quedan como están) y lanza si la longitud cambiara. Cambiar estas reglas exige subir la versión.
+export const VERSION_RESTAURAR = 'restaurar-mayusculas@1';
+
+/** FW de R-MOD-03 (7.10.7): palabras de función y tratamientos, plegadas (minúsculas, sin tildes). */
+export const PALABRAS_FUNCION: ReadonlySet<string> = new Set(
+  'de|del|la|las|los|el|lo|y|e|o|u|a|al|en|por|para|con|sin|su|sus|que|se|un|una|unos|unas|senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr|mrs|mr|ms'.split('|'),
+);
+
+/** Palabra de R-MOD-01 (7.10.2), sin la alternativa del signo suelto. */
+const RE_PALABRA = /[\p{L}\p{M}\p{N}_][\p{L}\p{M}\p{N}_\u{AD}\u{200B}-\u{200D}]*(?:[-_][\p{L}\p{M}\p{N}_][\p{L}\p{M}\p{N}_\u{AD}\u{200B}-\u{200D}]*)*/gu;
+const RE_SALTO = /[\n\r\u{B}\u{C}\u{85}\u{2028}\u{2029}]/u;
+const aMay = (c: string): string => { const t = c.toUpperCase(); return t.length === c.length ? t : c; };
+const aMin = (c: string): string => { const t = c.toLowerCase(); return t.length === c.length ? t : c; };
+/** Mayúscula o minúscula «convertible»: la que tiene la otra forma con la misma longitud (la «ß» y la «İ» no cuentan). */
+const esMay = (c: string): boolean => aMin(c) !== c;
+const esMin = (c: string): boolean => aMay(c) !== c;
+const plegar = (p: string): string => p.normalize('NFD').replace(/[\p{M}\u{AD}\u{200B}-\u{200D}]/gu, '').toLowerCase();
+
+/** Caja de un segmento: `may` si tiene mayúsculas y ninguna minúscula, `min` al revés, `mixta` o `sin` (sin letras con caja). */
+export function cajaDe(t: string): 'may' | 'min' | 'mixta' | 'sin' {
+  let may = false;
+  let min = false;
+  for (const c of t) {
+    if (esMay(c)) may = true; else if (esMin(c)) min = true;
+    if (may && min) return 'mixta';
+  }
+  return may ? 'may' : min ? 'min' : 'sin';
+}
+
+/** Segmentos para las MAYÚSCULAS: líneas, cortadas además tras [.!?;:] seguidos de un blanco. Posiciones [inicio, fin). */
+export function segmentosLinea(t: string): Array<[number, number]> {
+  const out: Array<[number, number]> = [];
+  let s = 0;
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i] as string;
+    if (RE_SALTO.test(c)) { if (i > s) out.push([s, i]); s = i + 1; continue; }
+    if ('.!?;:'.includes(c) && (i + 1 === t.length || /\s/u.test(t[i + 1] as string))) { out.push([s, i + 1]); s = i + 1; }
+  }
+  if (s < t.length) out.push([s, t.length]);
+  return out;
+}
+
+/** Segmentos para las minúsculas: frases enteras, cortadas tras [.!?] seguidos de un blanco o por una línea en blanco. */
+export function segmentosFrase(t: string): Array<[number, number]> {
+  const out: Array<[number, number]> = [];
+  const re = /[.!?](?=\s|$)|\r?\n[ \t\r]*\n/gu;
+  let s = 0;
+  for (let m = re.exec(t); m !== null; m = re.exec(t)) {
+    const e = m.index + m[0].length;
+    if (e > s) out.push([s, e]);
+    s = e;
+  }
+  if (s < t.length) out.push([s, t.length]);
+  return out;
+}
+
+/** Caja de una palabra dentro de un segmento restaurable. */
+function casarPalabra(p: string, primera: boolean, seguidaDePunto: boolean): string {
+  const base = plegar(p);
+  if (/\p{N}/u.test(p) || ([...base].length === 1 && seguidaDePunto)) return [...p].map(aMay).join('');
+  if (!primera && PALABRAS_FUNCION.has(base)) return [...p].map(aMin).join('');
+  let inicio = true;
+  let out = '';
+  for (const c of p) {
+    if (c === '-' || c === '_') { out += c; inicio = true; continue; }
+    if (/\p{L}/u.test(c)) { out += inicio ? aMay(c) : aMin(c); inicio = false; continue; }
+    out += c;
+  }
+  return out;
+}
+
+/**
+ * Restauración de mayúsculas (experimento (b) de PF-3-r1). Devuelve un texto de la misma longitud UTF-16 en el que cada posición es el
+ * mismo carácter o su otra caja: los tramos del modelo sobre el texto restaurado valen tal cual en el canónico (INV-W04).
+ */
+export function restaurarMayusculas(texto: string, alcance: 'segmentos' | 'parrafos' = 'segmentos'): string {
+  const cambios: Array<[number, number, string]> = [];
+  const frases = segmentosFrase(texto);
+  // Primera palabra de cada frase: la única de función que se escribe con mayúscula inicial.
+  const iniciales = new Set<number>();
+  for (const [s, e] of frases) {
+    RE_PALABRA.lastIndex = 0;
+    const m = RE_PALABRA.exec(texto.slice(s, e));
+    if (m !== null) iniciales.add(s + m.index);
+  }
+  const restaurar = (s: number, e: number): void => {
+    const seg = texto.slice(s, e);
+    RE_PALABRA.lastIndex = 0;
+    for (let m = RE_PALABRA.exec(seg); m !== null; m = RE_PALABRA.exec(seg)) {
+      const ini = s + m.index;
+      const fin = ini + m[0].length;
+      const nuevo = casarPalabra(m[0], iniciales.has(ini), texto[fin] === '.');
+      if (nuevo !== m[0]) cambios.push([ini, fin, nuevo]);
+    }
+  };
+  if (alcance === 'parrafos') {
+    // (b′): solo los párrafos enteros en MAYÚSCULAS o en minúsculas; una línea o una frase dentro de un párrafo natural no se toca.
+    for (const [s, e] of segmentosParrafo(texto)) { const k = cajaDe(texto.slice(s, e)); if (k === 'may' || k === 'min') restaurar(s, e); }
+  } else {
+    for (const [s, e] of segmentosLinea(texto)) if (cajaDe(texto.slice(s, e)) === 'may') restaurar(s, e);
+    for (const [s, e] of frases) if (cajaDe(texto.slice(s, e)) === 'min') restaurar(s, e);
+  }
+  if (cambios.length === 0) return texto;
+  cambios.sort((x, y) => x[0] - y[0]);
+  let salida = '';
+  let k = 0;
+  for (const [ini, fin, nuevo] of cambios) { salida += texto.slice(k, ini) + nuevo; k = fin; }
+  salida += texto.slice(k);
+  if (salida.length !== texto.length) throw new Error('RESTAURAR_CAMBIA_LONGITUD');
+  return salida;
+}
+
+/** Párrafos: tramos separados por una línea en blanco (posiciones [inicio, fin)). */
+export function segmentosParrafo(t: string): Array<[number, number]> {
+  const out: Array<[number, number]> = [];
+  const re = /\r?\n[ \t\r]*\n/gu;
+  let s = 0;
+  for (let m = re.exec(t); m !== null; m = re.exec(t)) {
+    if (m.index > s) out.push([s, m.index]);
+    s = m.index + m[0].length;
+  }
+  if (s < t.length) out.push([s, t.length]);
+  return out;
+}
+
+/** `restaurar`: (b) por líneas y frases; `restaurar-parrafos`: (b′), solo párrafos enteros en MAYÚSCULAS o en minúsculas. */
+export type Preproceso = 'ninguno' | 'restaurar' | 'restaurar-parrafos';
+export type EtiquetasPasada = 'estandar' | 'traducidas';
+/** Texto que recibe el modelo: la vista de medición y, con la restauración, la restauración de mayúsculas encima. */
+export function entradaModelo(texto: string, vista: Vista, preproceso: Preproceso): string {
+  const v = vistaDeTexto(texto, vista);
+  if (preproceso === 'ninguno') return v;
+  return restaurarMayusculas(v, preproceso === 'restaurar-parrafos' ? 'parrafos' : 'segmentos');
 }
 
 /** Huella de texto de una caché: sha256 de las huellas de las partes, en el orden de documentos dado (el mismo cálculo de PF-3). */
@@ -251,6 +411,46 @@ function parseVistas(texto: string): Vista[] {
   return v as Vista[];
 }
 
+/** PF-3-r1: `--etiquetas=estandar|traducidas` (las del prompt; el arnés las devuelve con el nombre canónico PER, ORG y LOC). */
+function parseEtiquetas(a: Map<string, string>): EtiquetasPasada {
+  const e = arg(a, 'etiquetas', 'estandar');
+  if (e !== 'estandar' && e !== 'traducidas') throw new Error(`etiquetas no válidas: ${e}`);
+  return e;
+}
+/** PF-3-r1: `--preproceso=ninguno|restaurar|restaurar-parrafos` (restauración de mayúsculas antes del modelo: (b) y (b′)). */
+function parsePreproceso(a: Map<string, string>): Preproceso {
+  const p = arg(a, 'preproceso', 'ninguno');
+  if (p !== 'ninguno' && p !== 'restaurar' && p !== 'restaurar-parrafos') throw new Error(`preproceso no válido: ${p}`);
+  return p;
+}
+const preprocesoDe = (c: CacheVista): Preproceso => c.preproceso?.id ?? 'ninguno';
+/** La caché se hizo con el preproceso pedido y, si es la restauración, con la versión vigente de sus reglas. */
+const mismoPreproceso = (c: CacheVista, p: Preproceso): boolean => preprocesoDe(c) === p && (p === 'ninguno' || c.preproceso?.version === VERSION_RESTAURAR);
+
+/**
+ * PF-3-r1 · índice de salidas por texto de entrada al modelo: `<etiquetas>|<sha256 de la entrada>` → ventanas. Una parte cuyo texto
+ * de entrada (la vista con su preproceso) ya pasó con las mismas etiquetas, el mismo ONNX y el mismo código del motor da las mismas
+ * ventanas (el motor es determinista: T-AB-06 reproduce con diferencia 0), así que se copia sin volver a pasarla.
+ */
+export function indiceDeEntradas(
+  caches: ReadonlyArray<CacheVista>, textos: Record<string, ParteTexto[]>, onnx: string, codigo: string,
+): Map<string, VentanaCache[]> {
+  const indice = new Map<string, VentanaCache[]>();
+  for (const c of caches) {
+    if (c.huella.onnx !== onnx || c.huella.codigo !== codigo) continue;
+    if (preprocesoDe(c) !== 'ninguno' && c.preproceso?.version !== VERSION_RESTAURAR) continue;
+    const etiquetas = c.etiquetas ?? 'estandar';
+    for (const [id, d] of Object.entries(c.documentos)) {
+      for (const p of textos[id] ?? []) {
+        const pc = d.partes[p.clave];
+        if (pc === undefined || pc.sha256 !== sha256Texto(p.texto)) continue;
+        indice.set(`${etiquetas}|${sha256Texto(entradaModelo(p.texto, c.vista, preprocesoDe(c)))}`, pc.ventanas);
+      }
+    }
+  }
+  return indice;
+}
+
 // ===================================================================================================================
 // Candado del modelo (una sola pasada del modelo grande a la vez en el equipo)
 // ===================================================================================================================
@@ -360,9 +560,9 @@ async function abrirSesion(arnes: Arnes, hilos: number, modelo: Modelo): Promise
   return { page, carga, navegador: `chromium ${navegador.version()}`, cerrar: async () => { await navegador.close(); } };
 }
 
-const pasarPartes = (p: Pagina, ps: Array<{ clave: string; texto: string }>, solape: number): Promise<RespuestaArnes> =>
+const pasarPartes = (p: Pagina, ps: Array<{ clave: string; texto: string }>, solape: number, etiquetas: EtiquetasPasada = 'estandar'): Promise<RespuestaArnes> =>
   p.evaluate(([a, b, c, d]) => (globalThis as never as { __cal: { partes(...x: unknown[]): Promise<never> } }).__cal.partes(a, b, c, d),
-    [ps, PISO_CACHE, 'estandar', solape] as const) as Promise<RespuestaArnes>;
+    [ps, PISO_CACHE, etiquetas, solape] as const) as Promise<RespuestaArnes>;
 
 function cargaCpu(): number | null {
   const r = spawnSync('powershell', ['-NoProfile', '-Command', '(Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average'], { encoding: 'utf8' });
@@ -370,15 +570,36 @@ function cargaCpu(): number | null {
   return Number.isFinite(v) ? v : null;
 }
 
-/** Pasa un documento (todas sus partes, con el texto en la vista pedida) y devuelve su caché. Las partes en blanco no se pasan. */
-async function pasarDocumento(s: Sesion, partes: readonly ParteTexto[], vista: Vista, solape: number): Promise<{ doc: DocumentoCache; ventanas: number; ms: number; tramos: number }> {
-  const ps = partes.filter((p) => p.texto.trim() !== '').map((p) => ({ clave: p.clave, texto: vistaDeTexto(p.texto, vista) }));
+/** Opciones de PF-3-r1 de una pasada: etiquetas del prompt, preproceso y el índice de entradas ya pasadas (se copian sin el modelo). */
+interface OpcionesPasada { etiquetas: EtiquetasPasada; preproceso: Preproceso; indice?: Map<string, VentanaCache[]> }
+
+/**
+ * Pasa un documento (todas sus partes, con el texto en la vista pedida y el preproceso) y devuelve su caché. Las partes en blanco no
+ * se pasan. Con `indice`, una parte cuyo texto de entrada ya pasó se copia, y las que pasan se agregan al índice.
+ */
+async function pasarDocumento(
+  s: Sesion | null, partes: readonly ParteTexto[], vista: Vista, solape: number,
+  o: OpcionesPasada = { etiquetas: 'estandar', preproceso: 'ninguno' },
+): Promise<{ doc: DocumentoCache; ventanas: number; ms: number; tramos: number; reutilizadas: number }> {
   const porParte: Record<string, ParteCache> = {};
   for (const p of partes) porParte[p.clave] = { sha256: sha256Texto(p.texto), ventanas: [] };
+  const claveIndice = new Map<string, string>();
+  const ps: Array<{ clave: string; texto: string }> = [];
+  let reutilizadas = 0;
+  for (const p of partes) {
+    if (p.texto.trim() === '') continue;
+    const entrada = entradaModelo(p.texto, vista, o.preproceso);
+    const k = `${o.etiquetas}|${sha256Texto(entrada)}`;
+    const previa = o.indice?.get(k);
+    if (previa !== undefined) { (porParte[p.clave] as ParteCache).ventanas = structuredClone(previa); reutilizadas++; continue; }
+    claveIndice.set(p.clave, k);
+    ps.push({ clave: p.clave, texto: entrada });
+  }
   let ventanas: VentanaOut[] = [];
   let total = 0;
   if (ps.length > 0) {
-    const r = await pasarPartes(s.page, ps, solape);
+    if (s === null) throw new Error('sin sesión del modelo');
+    const r = await pasarPartes(s.page, ps, solape, o.etiquetas);
     if (!r.ok) throw new Error(`fallo de la pasada: ${String(r.error)}`);
     ventanas = r.ventanas ?? [];
     total = Number(r.totalMs);
@@ -386,7 +607,8 @@ async function pasarDocumento(s: Sesion, partes: readonly ParteTexto[], vista: V
   for (const v of ventanas) {
     (porParte[v.parte] as ParteCache).ventanas.push({ windowIndex: v.i, windowTotal: v.n, ms: v.ms, spans: v.spans.map(([start, end, label, score]) => ({ start, end, label, score })) });
   }
-  return { doc: { partes: porParte }, ventanas: ventanas.length, ms: total, tramos: ventanas.reduce((n, v) => n + v.spans.length, 0) };
+  for (const [clave, k] of claveIndice) o.indice?.set(k, (porParte[clave] as ParteCache).ventanas);
+  return { doc: { partes: porParte }, ventanas: ventanas.length, ms: total, tramos: ventanas.reduce((n, v) => n + v.spans.length, 0), reutilizadas };
 }
 
 // ===================================================================================================================
@@ -408,6 +630,10 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
   const modelo = parseModelo(a);
   const vistas = parseVistas(arg(a, 'vistas', 'mayusculas,minusculas,natural'));
   const salida = resolve(raiz, arg(a, 'salida', archivoVistasDe(modelo)));
+  const etiquetas = parseEtiquetas(a);
+  const preproceso = parsePreproceso(a);
+  // Las variantes de PF-3-r1 van a su propio archivo de experimento: nunca sobre la caché que mide `npm run medir`.
+  if ((etiquetas !== 'estandar' || preproceso !== 'ninguno') && salida === resolve(raiz, archivoVistasDe(modelo))) throw new Error('una variante de experimento necesita --salida propia');
   const { ids, textos, carpeta } = cargarContexto(raiz, a);
   const huellaCodigo = huellaMotor(raiz);
   const liberarCandado = await tomarCandado(raiz, arg(a, 'quien', `evaluar-modelo pasada ${modelo}`));
@@ -416,10 +642,20 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
   try {
     const archivo = leerArchivoVistas(salida, modelo);
     const conCpu0 = cargaCpu();
+    // Índice de entradas ya pasadas (PF-3-r1): las demás vistas de este archivo y los archivos de --reutilizar.
+    const fuentes = (a.get('reutilizar') ?? '').split(',').filter((r) => r !== '').map((r) => leerArchivoVistas(resolve(raiz, r), modelo));
+    const indice = indiceDeEntradas(
+      [archivo, ...fuentes].flatMap((f) => Object.values(f.vistas)).filter((c): c is CacheVista => c !== undefined),
+      textos, arnes.manifiesto.sha256, huellaCodigo,
+    );
     for (const vista of vistas) {
       const previa = archivo.vistas[vista];
       if (previa !== undefined && (previa.huella.onnx !== arnes.manifiesto.sha256 || previa.huella.codigo !== huellaCodigo)) {
         log(`la caché de ${vista} del archivo es de otro ONNX o de otro código del motor: la descarto`);
+        delete archivo.vistas[vista];
+      }
+      if (previa !== undefined && archivo.vistas[vista] !== undefined && ((previa.etiquetas ?? 'estandar') !== etiquetas || !mismoPreproceso(previa, preproceso))) {
+        log(`la caché de ${vista} del archivo es de otras etiquetas o de otro preproceso: la descarto`);
         delete archivo.vistas[vista];
       }
       const documentos: Record<string, DocumentoCache> = { ...(archivo.vistas[vista]?.documentos ?? {}) };
@@ -430,7 +666,7 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
         return d !== undefined && ps.every((p) => d.partes[p.clave]?.sha256 === sha256Texto(p.texto)) && Object.keys(d.partes).length === ps.length;
       };
       for (const id of Object.keys(documentos)) if (!ids.includes(id) || !vigente(id)) { delete documentos[id]; delete procedencia[id]; }
-      if (vista === 'natural' && existsSync(resolve(raiz, archivoNaturalPf3De(modelo))) && !a.has('sin-pf3')) {
+      if (vista === 'natural' && etiquetas === 'estandar' && preproceso === 'ninguno' && existsSync(resolve(raiz, archivoNaturalPf3De(modelo))) && !a.has('sin-pf3')) {
         const base = JSON.parse(readFileSync(resolve(raiz, archivoNaturalPf3De(modelo)), 'utf8')) as CachePF3;
         const { documentos: reus, reutilizados } = reutilizarNatural(base, textos, ids.filter((id) => documentos[id] === undefined), arnes.manifiesto.sha256, huellaCodigo, modelo);
         for (const id of reutilizados) { documentos[id] = reus[id] as DocumentoCache; procedencia[id] = 'PF-3'; }
@@ -438,31 +674,37 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
       }
       const pendientes = ids.filter((id) => documentos[id] === undefined);
       log(`vista ${vista}: ${ids.length - pendientes.length} documentos ya en la caché, ${pendientes.length} por pasar`);
+      let reutilizadas = archivo.vistas[vista]?.partesReutilizadas ?? 0;
       const guardar = (completa: boolean): void => {
         const conocidos = ids.filter((id) => documentos[id] !== undefined);
         const cuerpo: CacheVista = {
-          formato: 'sig-low/cache-modelo', v: 1, modelo, vista, piso: PISO_CACHE, etiquetas: 'estandar',
+          formato: 'sig-low/cache-modelo', v: 1, modelo, vista, piso: PISO_CACHE, etiquetas,
           opciones: { windowTokens: 512, overlapWords: solape, maxSpanWords: 12 },
           huella: { texto: huellaTextoDeCache(documentos, conocidos), vista: sha256Texto(vista), onnx: arnes.manifiesto.sha256, codigo: huellaCodigo },
           ...(sesion?.carga.carga === undefined ? (archivo.vistas[vista]?.carga === undefined ? {} : { carga: archivo.vistas[vista]?.carga }) : { carga: sesion.carga.carga }),
           corrida: {
             hilos, navegador: sesion?.navegador ?? archivo.vistas[vista]?.corrida?.navegador ?? 'chromium', nucleosLogicos: 16, fecha: ahora(),
-            equipo: 'Ryzen 7 5700U, 16 hilos, 15 GB (h0/equipo.txt)', conjunto: completa ? 'todo' : 'parcial',
+            equipo: 'Ryzen 7 5700U, 16 hilos, 15 GB (h0/equipo.txt)', conjunto: completa ? arg(a, 'conjunto', 'todo') : 'parcial',
           },
           documentos: Object.fromEntries(conocidos.map((id) => [id, documentos[id] as DocumentoCache])),
           ...(Object.keys(procedencia).length > 0 ? { procedencia } : {}),
+          ...(preproceso === 'ninguno' ? {} : { preproceso: { id: preproceso, version: VERSION_RESTAURAR } }),
+          ...(reutilizadas > 0 ? { partesReutilizadas: reutilizadas } : {}),
         };
         archivo.vistas[vista] = cuerpo;
         escribirJson(salida, archivo);
       };
       if (pendientes.length === 0) { guardar(true); continue; }
-      sesion ??= await abrirSesion(arnes, hilos, modelo);
       let hechos = 0;
       for (const id of pendientes) {
-        const r = await pasarDocumento(sesion, textos[id] as ParteTexto[], vista, solape);
+        const ps = textos[id] as ParteTexto[];
+        const falta = ps.some((p) => p.texto.trim() !== '' && !indice.has(`${etiquetas}|${sha256Texto(entradaModelo(p.texto, vista, preproceso))}`));
+        if (falta) sesion ??= await abrirSesion(arnes, hilos, modelo);
+        const r = await pasarDocumento(sesion, ps, vista, solape, { etiquetas, preproceso, indice });
         documentos[id] = r.doc;
+        reutilizadas += r.reutilizadas;
         hechos++;
-        log(`${vista} ${id}: ${r.ventanas} ventanas, ${Math.round(r.ms / 100) / 10} s, ${r.tramos} tramos >= 0,1 (${hechos}/${pendientes.length})`);
+        log(`${vista} ${id}: ${r.ventanas} ventanas, ${Math.round(r.ms / 100) / 10} s, ${r.tramos} tramos >= 0,1${r.reutilizadas > 0 ? `, ${r.reutilizadas} partes con la misma entrada copiadas` : ''} (${hechos}/${pendientes.length})`);
         guardar(false);
       }
       guardar(true);
@@ -865,13 +1107,13 @@ function commitDe(carpeta: string): string {
  * lector de PG-3b: si `npm run medir` no la aceptaría, aquí tampoco.
  */
 export async function evaluarVistaDesdeCache(
-  vista: Vista, cache: CacheVista, carpetaCorpus: string, umbrales: { nerMinScore: number; nerHighThreshold: number },
-): Promise<{ evaluacion: EvaluacionVista; conjuntos: string[] }> {
+  vista: Vista, cache: CacheVista, carpetaCorpus: string, umbrales: { nerMinScore: number; nerHighThreshold: number }, conjunto: Conjunto = 'todo',
+): Promise<{ evaluacion: EvaluacionVista; conjuntos: string[]; producto: EntradaDocumento[]; golds: Record<string, GoldDocument> }> {
   // Los módulos del motor y del corpus se importan solo aquí: las funciones puras de arriba no los necesitan.
   const { cargarCorpus } = await import('../tests/medicion/lib/corpus.ts');
   const { validarCache } = await import('../tests/medicion/lib/cache.ts');
   const { crearMotor, entradaDeEstado, procesarDocumento } = await import('../tests/medicion/lib/motor.ts');
-  const corpus = cargarCorpus('todo', carpetaCorpus);
+  const corpus = cargarCorpus(conjunto, carpetaCorpus);
   validarCache(cache, corpus, vista);
   const motor = crearMotor();
   const opciones = { referenceDate: '2026-10-30', rulesVersion: '1.0.0', nerHighThreshold: umbrales.nerHighThreshold, nerMinScore: umbrales.nerMinScore };
@@ -883,7 +1125,10 @@ export async function evaluarVistaDesdeCache(
     producto.push(entradaDeEstado(p));
     soloModelo.push({ gold: dc.gold, detecciones: deteccionesDe(dcache, dc.docId, umbrales.nerMinScore), banderas: [], sugerencias: [], paginas: dc.paginas });
   }
-  return { evaluacion: evaluarVista(vista, producto, soloModelo), conjuntos: corpus.map((d) => d.gold.conjunto) };
+  return {
+    evaluacion: evaluarVista(vista, producto, soloModelo), conjuntos: corpus.map((d) => d.gold.conjunto), producto,
+    golds: Object.fromEntries(corpus.map((d) => [d.docId, d.gold])),
+  };
 }
 
 /** Calcula y guarda T-AB-01. Importa el motor (imports sin extensión), así que solo corre bajo Vitest: la orden `evaluar` lo lanza ahí. */
@@ -924,11 +1169,229 @@ export async function ejecutarEvaluacion(raiz: string, a: Map<string, string>): 
   log(`${modelo === 'x-base' ? 'T-AB-01 y T-AB-04' : 'T-AB-01'} escrito en ${salida}: ${evaluacion.cierra ? 'las seis filas por vista cumplen' : 'alguna fila por vista no cumple (ver evaluacion.vistas.*.cierre)'}`);
 }
 
+// ===================================================================================================================
+// PF-3-r1 · experimento de mayúsculas (D-06, decisión 6), solo con el desarrollo (D-01: la reserva no se mira)
+// ===================================================================================================================
+
+/** Variantes del experimento y su archivo de caché por vista. La línea base es la caché única de PF-4a y P0-4 (se lee, no se escribe). */
+export const VARIANTES_PF3R1: ReadonlyArray<{ id: 'base' | 'a' | 'b' | 'bp' | 'ab' | 'abp'; nombre: string; archivo: string; etiquetas: EtiquetasPasada; preproceso: Preproceso }> = [
+  { id: 'base', nombre: 'línea base (etiquetas en inglés, sin preproceso)', archivo: ARCHIVO_VISTAS, etiquetas: 'estandar', preproceso: 'ninguno' },
+  { id: 'a', nombre: '(a) etiquetas traducidas', archivo: 'metricas/pf3r1-traducidas.json', etiquetas: 'traducidas', preproceso: 'ninguno' },
+  { id: 'b', nombre: '(b) restauración de mayúsculas', archivo: 'metricas/pf3r1-restaurar.json', etiquetas: 'estandar', preproceso: 'restaurar' },
+  { id: 'bp', nombre: '(b′) restauración solo de párrafos enteros', archivo: 'metricas/pf3r1-restaurar-parrafos.json', etiquetas: 'estandar', preproceso: 'restaurar-parrafos' },
+  { id: 'ab', nombre: '(a)+(b) traducidas con restauración', archivo: 'metricas/pf3r1-traducidas-restaurar.json', etiquetas: 'traducidas', preproceso: 'restaurar' },
+  { id: 'abp', nombre: '(a)+(b′) traducidas con restauración de párrafos', archivo: 'metricas/pf3r1-traducidas-restaurar-parrafos.json', etiquetas: 'traducidas', preproceso: 'restaurar-parrafos' },
+];
+export const ARCHIVO_EXPERIMENTO_PF3R1 = 'metricas/pf3r1-experimento.json';
+/** Criterio de la tarjeta PF-3-r1: las seis filas por vista (personas 0,85 y 0,75; organizaciones 0,80 y 0,70) y precisión global >= 0,70. */
+export const PRECISION_GLOBAL_MINIMA = 0.7;
+
+export interface FilaExperimento {
+  fila: 'PERSONA_FUERA' | 'ORG_FUERA';
+  n: number;
+  mencion: number;
+  entidad: number;
+  cumple: boolean;
+}
+export interface CeldaExperimento {
+  variante: string;
+  vista: Vista;
+  documentos: number;
+  /** Modelo solo (sin reglas ni lista), con el piso de PF-3: las cifras de la tarjeta (0,626 y 0,606). */
+  soloModelo: { filas: FilaExperimento[]; precisionGlobal: number; tramos: number; verdaderos: number };
+  /** Producto (reglas + lista + modelo) con el umbral y la banda de PF-3: las filas de cierre de 10.4.1. */
+  producto: { filas: FilaExperimento[]; precisionGlobal: number; detecciones: number };
+}
+export interface ResumenVariante {
+  variante: string;
+  nombre: string;
+  /** Las seis filas por vista cumplen (producto y modelo solo), con precisión global >= 0,70 en las tres vistas. */
+  cumpleFilas: boolean;
+  cumplePrecision: boolean;
+  /** Vista natural frente a la línea base: diferencia de exhaustividad por mención (fila) y de precisión global; negativa = empeora. */
+  natural: { filas: Array<{ fila: string; medida: 'soloModelo' | 'producto'; diferencia: number }>; dPrecisionModelo: number; dPrecisionProducto: number; empeora: boolean };
+  gana: boolean;
+}
+export interface Experimento {
+  formato: 'sig-low/experimento-pf3r1';
+  v: 1;
+  fecha: string;
+  conjunto: 'desarrollo';
+  advertencia: string;
+  umbrales: { nerMinScore: number; nerHighThreshold: number; fuente: string };
+  celdas: CeldaExperimento[];
+  resumen: ResumenVariante[];
+  decision: { ganadora: string | null; motivo: string };
+  /** Informativa, no decide: las mismas variantes con el sufijo societario completado (`completarSufijo`), el límite que el producto no cierra. */
+  simulacionSufijo?: { informativa: true; descripcion: string; tramosExtendidos: Record<string, number>; celdas: CeldaExperimento[]; resumen: ResumenVariante[] };
+}
+
+const filaExp = (c: FilaCierre): FilaExperimento => ({ fila: c.fila, n: c.mencion.n, mencion: c.mencion.valor, entidad: c.entidad.valor, cumple: c.cumple });
+
+/** Celda del experimento a partir de la evaluación de una vista (las filas de cierre) y de las precisiones globales ya calculadas. */
+export function celdaExperimento(
+  variante: string, vista: Vista, documentos: number, e: EvaluacionVista,
+  modelo: { precisionGlobal: number; tramos: number; verdaderos: number }, producto: { precisionGlobal: number; detecciones: number },
+): CeldaExperimento {
+  return {
+    variante, vista, documentos,
+    soloModelo: { filas: e.cierreSoloModelo.map(filaExp), ...modelo },
+    producto: { filas: e.cierre.map(filaExp), ...producto },
+  };
+}
+
+/**
+ * Resumen y decisión (pura). Una variante gana si, en las tres vistas, las seis filas cumplen con el modelo solo y con el producto, la
+ * precisión global no baja de 0,70 y la vista natural no empeora frente a la línea base en ninguna de las dos filas ni en ninguna medida.
+ * Entre varias que ganan, la de mayor mínimo de ORG_FUERA en MAYÚSCULAS y minúsculas (producto).
+ */
+export function resumirExperimento(celdas: readonly CeldaExperimento[], fecha: string, umbrales: Experimento['umbrales']): Experimento {
+  const celda = (v: string, vista: Vista): CeldaExperimento | undefined => celdas.find((c) => c.variante === v && c.vista === vista);
+  const e = 1e-9;
+  const resumen: ResumenVariante[] = [];
+  for (const def of VARIANTES_PF3R1) {
+    const cs = VISTAS.map((v) => celda(def.id, v));
+    if (cs.some((c) => c === undefined)) continue;
+    const todas = cs as CeldaExperimento[];
+    const cumpleFilas = todas.every((c) => c.soloModelo.filas.length === 2 && c.producto.filas.length === 2 && [...c.soloModelo.filas, ...c.producto.filas].every((f) => f.cumple));
+    const cumplePrecision = todas.every((c) => c.soloModelo.precisionGlobal + e >= PRECISION_GLOBAL_MINIMA && c.producto.precisionGlobal + e >= PRECISION_GLOBAL_MINIMA);
+    const base = celda('base', 'natural');
+    const nat = celda(def.id, 'natural') as CeldaExperimento;
+    const filas: ResumenVariante['natural']['filas'] = [];
+    for (const medida of ['soloModelo', 'producto'] as const) {
+      for (const f of nat[medida].filas) {
+        const b = base?.[medida].filas.find((x) => x.fila === f.fila);
+        if (b !== undefined) filas.push({ fila: f.fila, medida, diferencia: f.mencion - b.mencion });
+      }
+    }
+    const dPrecisionModelo = base === undefined ? 0 : nat.soloModelo.precisionGlobal - base.soloModelo.precisionGlobal;
+    const dPrecisionProducto = base === undefined ? 0 : nat.producto.precisionGlobal - base.producto.precisionGlobal;
+    const empeora = def.id !== 'base' && filas.some((f) => f.diferencia < -e);
+    resumen.push({ variante: def.id, nombre: def.nombre, cumpleFilas, cumplePrecision, natural: { filas, dPrecisionModelo, dPrecisionProducto, empeora }, gana: def.id !== 'base' && cumpleFilas && cumplePrecision && !empeora });
+  }
+  const minOrg = (v: string): number => Math.min(...(['mayusculas', 'minusculas'] as const).map((x) => celda(v, x)?.producto.filas.find((f) => f.fila === 'ORG_FUERA')?.mencion ?? 0));
+  const ganadoras = resumen.filter((r) => r.gana).sort((p, q) => minOrg(q.variante) - minOrg(p.variante));
+  const ganadora = ganadoras[0]?.variante ?? null;
+  const motivo = ganadora !== null
+    ? `${ganadora} lleva las seis filas por vista a >= 0,85 (personas) y >= 0,80 (organizaciones), con precisión global >= 0,70 y sin empeorar la vista natural`
+    : 'ninguna variante lleva las seis filas por vista a >= 0,85 (personas) y >= 0,80 (organizaciones) con precisión global >= 0,70 y sin empeorar la vista natural: no se implementa nada';
+  return {
+    formato: 'sig-low/experimento-pf3r1', v: 1, fecha, conjunto: 'desarrollo',
+    advertencia: 'Solo los documentos de desarrollo (D-01: la reserva no se mira). Cada cifra lleva su n (menciones del corpus ficticio, sintético).',
+    umbrales, celdas: [...celdas], resumen, decision: { ganadora, motivo },
+  };
+}
+
+/**
+ * Simulación informativa (no es un cambio del producto): un tramo ORG del modelo que termina justo antes del punto que completa un sufijo
+ * societario de R-LST-05 («Banco Ejemplo S.A» + «.») se extiende sobre ese punto. El modelo no puede incluirlo solo cuando R-MOD-01 lo
+ * separa como palabra aparte, y el producto (D-03 A) no lo ve porque recorta sobre el texto del tramo. `reSufijoFinal` es R-LST-05
+ * anclado al final, sobre la vista plegada. Devuelve una copia de la caché y cuántos tramos se extendieron.
+ */
+export function completarSufijo(
+  cache: CacheVista, textos: Record<string, ParteTexto[]>, reSufijoFinal: RegExp,
+): { cache: CacheVista; extendidos: number } {
+  const copia = structuredClone(cache);
+  let extendidos = 0;
+  for (const [id, d] of Object.entries(copia.documentos)) {
+    for (const [clave, pc] of Object.entries(d.partes)) {
+      const texto = (textos[id] ?? []).find((p) => p.clave === clave)?.texto;
+      if (texto === undefined) continue;
+      for (const v of pc.ventanas) {
+        for (const s of v.spans) {
+          if (s.label !== 'ORG' || texto[s.end] !== '.') continue;
+          if (reSufijoFinal.test(plegar(`${texto.slice(s.start, s.end)}.`))) { s.end += 1; extendidos++; }
+        }
+      }
+    }
+  }
+  return { cache: copia, extendidos };
+}
+
+/** Tabla de texto del experimento (solo contadores y proporciones). */
+export function tablaExperimento(x: Experimento): string {
+  const lineas = ['variante  vista        medida      PERSONA_FUERA m / e         ORG_FUERA m / e             precisión global'];
+  for (const c of x.celdas) {
+    for (const medida of ['soloModelo', 'producto'] as const) {
+      const f = (n: string): string => {
+        const r = c[medida].filas.find((y) => y.fila === n);
+        return r === undefined ? '-'.padEnd(26) : `${r.mencion.toFixed(3)} / ${r.entidad.toFixed(3)} (n ${r.n}) ${r.cumple ? 'sí' : 'NO'}`.padEnd(26);
+      };
+      lineas.push(`${c.variante.padEnd(8)}  ${c.vista.padEnd(11)}  ${(medida === 'soloModelo' ? 'modelo' : 'producto').padEnd(10)}  ${f('PERSONA_FUERA')}  ${f('ORG_FUERA')}  ${c[medida].precisionGlobal.toFixed(3)}`);
+    }
+  }
+  for (const r of x.resumen) {
+    const d = r.natural.filas.map((f) => `${f.fila}/${f.medida === 'soloModelo' ? 'modelo' : 'producto'} ${f.diferencia >= 0 ? '+' : ''}${f.diferencia.toFixed(3)}`).join(', ');
+    lineas.push(`${r.variante}: filas ${r.cumpleFilas ? 'cumplen' : 'NO cumplen'}; precisión ${r.cumplePrecision ? '>= 0,70' : '< 0,70'}; natural frente a la base: ${d}; precisión ${r.natural.dPrecisionModelo.toFixed(3)} (modelo) ${r.natural.dPrecisionProducto.toFixed(3)} (producto)${r.natural.empeora ? ' EMPEORA' : ''}${r.gana ? ' -> GANA' : ''}`);
+  }
+  lineas.push(`decisión: ${x.decision.motivo}`);
+  return lineas.join('\n');
+}
+
+/** Calcula el experimento con las cachés de las cuatro variantes, solo sobre el desarrollo, y lo guarda. Corre bajo Vitest (motor). */
+export async function ejecutarExperimento(raiz: string, a: Map<string, string>): Promise<void> {
+  const raizCorpus = resolve(raiz, arg(a, 'corpus', '.'));
+  const calibracion = JSON.parse(readFileSync(resolve(raiz, 'metricas/calibracion-umbral.json'), 'utf8')) as { nerMinScore: number; nerHighThreshold: number };
+  const umbrales = { nerMinScore: calibracion.nerMinScore, nerHighThreshold: calibracion.nerHighThreshold, fuente: 'metricas/calibracion-umbral.json (PF-3)' };
+  const todos = gruposDeCierre('natural').find((g) => g.grupo === 'TODOS') as GrupoDef;
+  const { textos } = cargarTextos(raizCorpus);
+  const { LST } = await import('../src/core/caselist.ts');
+  const reSufijoFinal = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:` + LST.SUFIJO + String.raw`)$`, 'u');
+  const celdas: CeldaExperimento[] = [];
+  const simuladas: CeldaExperimento[] = [];
+  const extendidos: Record<string, number> = {};
+  const pedidas = (a.get('variantes') ?? VARIANTES_PF3R1.map((d) => d.id).join(',')).split(',');
+  const celdaDe = async (id: string, vista: Vista, cache: CacheVista): Promise<CeldaExperimento> => {
+    // `desarrollo` aunque la carpeta traiga el corpus entero: la reserva nunca entra en el experimento (D-01).
+    const r = await evaluarVistaDesdeCache(vista, cache, join(raizCorpus, 'corpus'), umbrales, 'desarrollo');
+    const ids = Object.keys(r.golds);
+    const u = evaluarUmbral(cache, r.golds, umbrales.nerMinScore, ids);
+    const prod = calcularFila(todos, r.producto.map((x) => evaluarDocumento(x)));
+    return celdaExperimento(id, vista, ids.length, r.evaluacion, { precisionGlobal: u.precisionGlobal, tramos: u.detecciones, verdaderos: u.verdaderas },
+      { precisionGlobal: prod.precision, detecciones: prod.detecciones });
+  };
+  for (const def of VARIANTES_PF3R1.filter((d) => pedidas.includes(d.id))) {
+    const ruta = resolve(raiz, def.archivo);
+    if (!existsSync(ruta)) { log(`${def.id}: falta ${def.archivo}, se omite`); continue; }
+    const archivo = leerArchivoVistas(ruta, 'x-large');
+    for (const vista of VISTAS) {
+      const cache = archivo.vistas[vista];
+      if (cache === undefined) { log(`${def.id} ${vista}: sin caché, se omite`); continue; }
+      if (cache.corrida?.conjunto === 'parcial') { log(`${def.id} ${vista}: la pasada no terminó, se omite`); continue; }
+      if ((cache.etiquetas ?? 'estandar') !== def.etiquetas || !mismoPreproceso(cache, def.preproceso)) throw new Error(`VARIANTE_DISTINTA ${def.id} ${vista}`);
+      celdas.push(await celdaDe(def.id, vista, cache));
+      if (!a.has('sin-simulacion')) {
+        const s = completarSufijo(cache, textos, reSufijoFinal);
+        extendidos[`${def.id}:${vista}`] = s.extendidos;
+        simuladas.push(await celdaDe(def.id, vista, s.cache));
+      }
+    }
+  }
+  const x = resumirExperimento(celdas, ahora(), umbrales);
+  if (simuladas.length > 0) {
+    const s = resumirExperimento(simuladas, x.fecha, umbrales);
+    x.simulacionSufijo = {
+      informativa: true,
+      descripcion: 'Informativa, no decide: las mismas cachés con cada tramo ORG del modelo extendido sobre el punto que completa un sufijo '
+        + 'societario de R-LST-05 («S.A» + «.»), el límite que la fusión no cierra hoy. La vista natural se compara con la base simulada.',
+      tramosExtendidos: extendidos, celdas: s.celdas, resumen: s.resumen,
+    };
+  }
+  escribirJson(resolve(raiz, arg(a, 'salida', ARCHIVO_EXPERIMENTO_PF3R1)), x);
+  process.stdout.write(`${tablaExperimento(x)}\n`);
+  if (x.simulacionSufijo !== undefined) {
+    process.stdout.write(`== simulación informativa: sufijo societario completado (tramos extendidos ${JSON.stringify(x.simulacionSufijo.tramosExtendidos)}) ==\n`);
+    const g = resumirExperimento(simuladas, x.fecha, umbrales).decision.ganadora;
+    const motivo = `informativa (no decide): con el sufijo completado, ${g === null ? 'ninguna variante cumpliría' : `${g} cumpliría las seis filas sin empeorar la vista natural`}`;
+    process.stdout.write(`${tablaExperimento({ ...x, celdas: x.simulacionSufijo.celdas, resumen: x.simulacionSufijo.resumen, decision: { ganadora: g, motivo } })}\n`);
+  }
+}
+
 /** La orden `evaluar`: el motor de producción se importa sin extensiones, algo que Node no resuelve; se corre bajo Vitest como `npm run medir`. */
-function ordenEvaluar(raiz: string, a: Map<string, string>): number {
-  const env = { ...process.env, SIGLOW_EVALUAR: '1', SIGLOW_EVALUAR_ARGS: JSON.stringify([...a.entries()]) };
+function ordenEvaluar(raiz: string, a: Map<string, string>, modo: '1' | 'experimento' = '1'): number {
+  const env = { ...process.env, SIGLOW_EVALUAR: modo, SIGLOW_EVALUAR_ARGS: JSON.stringify([...a.entries()]) };
   const r = spawnSync(process.execPath, [join(raiz, 'node_modules', 'vitest', 'vitest.mjs'), 'run', '--config', 'tests/medicion/vitest.config.ts',
-    'tests/medicion/evaluacion-modelo.test.ts', '-t', 'T-AB-01 evaluar'], { cwd: raiz, env, stdio: 'inherit' });
+    'tests/medicion/evaluacion-modelo.test.ts', '-t', modo === '1' ? 'T-AB-01 evaluar' : 'T-AB-01 experimento'], { cwd: raiz, env, stdio: 'inherit' });
   return r.status ?? 1;
 }
 
@@ -943,9 +1406,10 @@ export async function main(argv: readonly string[]): Promise<number> {
   switch (orden) {
     case 'pasada': await ordenPasada(raiz, a); return 0;
     case 'evaluar': return ordenEvaluar(raiz, a);
+    case 'experimento': return ordenEvaluar(raiz, a, 'experimento');
     case 'verificar': await ordenVerificar(raiz, a); return typeof process.exitCode === 'number' ? process.exitCode : 0;
     default:
-      process.stderr.write('Uso: node scripts/evaluar-modelo.ts <pasada|verificar|evaluar> [--opcion=valor]\n');
+      process.stderr.write('Uso: node scripts/evaluar-modelo.ts <pasada|verificar|evaluar|experimento> [--opcion=valor]\n');
       return 2;
   }
 }

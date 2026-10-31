@@ -21,6 +21,7 @@ import {
   archivoVistasDe, armarEvaluacion, ARCHIVO_VISTAS, ARCHIVO_VISTAS_X_BASE, compararRespaldo, compararVentanas, DOCUMENTOS_T_AB_06, evaluarVista,
   filasDe, filasDeCierre, FILAS_T_AB_04, GRUPOS_T_AB_01, huellaTextoDeCache, matrizConfusion, posibleSobreajuste, reutilizarNatural, tablaRespaldo,
   TOLERANCIA_PUNTAJE, verificarCache, vistaDeTexto,
+  cajaDe, completarSufijo, entradaModelo, indiceDeEntradas, restaurarMayusculas, resumirExperimento, segmentosFrase, segmentosLinea, segmentosParrafo, tablaExperimento, VERSION_RESTAURAR,
 } from '../../scripts/evaluar-modelo.ts';
 import type { ArchivoVistas, CacheVista, ComparacionRespaldo, EvaluacionModelo, FilasPorConjunto } from '../../scripts/evaluar-modelo.ts';
 import type { EntradaDocumento, GoldAnnotation, GoldDocument, MetricsRow } from '../../scripts/metrics.ts';
@@ -411,6 +412,163 @@ describe('T-AB-01 · la vista de medición (MAYÚSCULAS y minúsculas) conserva 
   });
 });
 
+// PF-3-r1 · experimento de mayúsculas (D-06, decisión 6): restauración de mayúsculas (b), índice de entradas y decisión
+// =================================================================================================================================
+describe('T-AB-01 · PF-3-r1 restauración de mayúsculas antes del modelo (experimento (b), funciones puras)', () => {
+  const ENCABEZADO = 'ACCIONANTE: ANA FICTICIA ROJAS, C.C. 0000000001\nACCIONADA: COMERCIALIZADORA EJEMPLO S.A.S. Y LA EPS PRUEBA';
+
+  it('T-AB-01 INV-W04 MAYÚSCULAS: Title Case con las palabras de función en minúscula, siglas con punto e iniciales en mayúscula, misma longitud', () => {
+    const r = restaurarMayusculas(ENCABEZADO);
+    expect(r).toBe('Accionante: Ana Ficticia Rojas, C.C. 0000000001\nAccionada: Comercializadora Ejemplo S.A.S. Y la Eps Prueba');
+    expect(r.length).toBe(ENCABEZADO.length);
+  });
+
+  it('T-AB-01 INV-W04 minúsculas: la frase entera pasa a Title Case; la primera palabra de la frase va con mayúscula aunque sea de función', () => {
+    const t = 'el señor pedro ejemplo de la cruz demandó a ferretería ejemplo ltda. ante el juzgado primero civil.';
+    const r = restaurarMayusculas(t);
+    expect(r).toBe('El señor Pedro Ejemplo de la Cruz Demandó a Ferretería Ejemplo Ltda. Ante el Juzgado Primero Civil.');
+    expect(r.length).toBe(t.length);
+  });
+
+  it('T-AB-01 INV-W04 el mismo texto en MAYÚSCULAS y en minúsculas queda igual (no depende de la caja de origen), con códigos en mayúsculas', () => {
+    const t = 'Señora Ana Ficticia Muñoz, placa ABC123, documento C04.\nCalle Ejemplo de Prueba';
+    const may = restaurarMayusculas(vistaDeTexto(t, 'mayusculas'));
+    expect(restaurarMayusculas(vistaDeTexto(t, 'minusculas'))).toBe(may);
+    expect(may).toBe('Señora Ana Ficticia Muñoz, Placa ABC123, Documento C04.\nCalle Ejemplo de Prueba');
+  });
+
+  it('T-AB-01 INV-W04 el texto natural queda igual salvo las líneas enteras en MAYÚSCULAS; una línea en minúsculas dentro de un párrafo no se toca', () => {
+    const t = 'Texto natural con una línea\npartida en minúsculas por el PDF\ny ANA FICTICIA ROJAS en mayúsculas.\nANA FICTICIA ROJAS\nC.C. 0000000001';
+    const r = restaurarMayusculas(t);
+    expect(r).toBe('Texto natural con una línea\npartida en minúsculas por el PDF\ny ANA FICTICIA ROJAS en mayúsculas.\nAna Ficticia Rojas\nC.C. 0000000001');
+    expect(restaurarMayusculas('Ana Ficticia Rojas presentó la tutela contra Comercial Ejemplo S.A.')).toBe('Ana Ficticia Rojas presentó la tutela contra Comercial Ejemplo S.A.');
+  });
+
+  it('T-AB-01 INV-W04 los caracteres que cambian de longitud al cambiar de caja (ß, İ, ligaduras) se quedan; guiones, apóstrofos y marcas combinantes conservan su sitio', () => {
+    const t = 'STRAßE EJEMPLO İSTANBUL ROJAS-EJEMPLO D’EJEMPLO ﬁCTICIA MUN\u{303}OZ';
+    const r = restaurarMayusculas(t);
+    expect(r).toBe('Straße Ejemplo İstanbul Rojas-Ejemplo D’Ejemplo ﬁcticia Mun\u{303}oz');
+    expect(r.length).toBe(t.length);
+    for (let i = 0; i < t.length; i++) {
+      const a = t[i] as string;
+      const b = r[i] as string;
+      expect(b === a || b === a.toUpperCase() || b === a.toLowerCase(), `posición ${i}`).toBe(true);
+    }
+  });
+
+  it('T-AB-01 INV-W04 los tramos sobre el texto restaurado valen en el canónico: mismas posiciones de palabras (R-MOD-01) y mismo texto plegado', () => {
+    const t = vistaDeTexto('Señor Juez: la accionante Ana Ficticia Rojas, de Villa Ejemplo,  con  dos espacios\n\ny un salto doble.', 'mayusculas');
+    const r = restaurarMayusculas(t);
+    const palabras = (x: string): Array<[number, number]> => [...x.matchAll(/[\p{L}\p{M}\p{N}_]+|[^\s]/gu)].map((m) => [m.index, m.index + m[0].length]);
+    expect(palabras(r)).toEqual(palabras(t));
+    expect(r.toLowerCase()).toBe(t.toLowerCase());
+    expect(cajaDe(r)).toBe('mixta');
+  });
+
+  it('T-AB-01 INV-W04 (b′) solo restaura párrafos enteros en MAYÚSCULAS o en minúsculas, y en un texto uniforme da lo mismo que (b)', () => {
+    const t = 'HECHOS\n\nEl señor ANA FICTICIA ROJAS presentó.\nANA ROJAS\n\nojo que blanca ejemplo vino';
+    const r = restaurarMayusculas(t, 'parrafos');
+    expect(r).toBe('Hechos\n\nEl señor ANA FICTICIA ROJAS presentó.\nANA ROJAS\n\nOjo que Blanca Ejemplo Vino');
+    expect(r.length).toBe(t.length);
+    expect(segmentosParrafo(t)).toEqual([[0, 6], [8, 55], [57, 84]]);
+    for (const vista of ['mayusculas', 'minusculas'] as const) {
+      expect(entradaModelo(ENCABEZADO, vista, 'restaurar-parrafos'), vista).toBe(entradaModelo(ENCABEZADO, vista, 'restaurar'));
+    }
+  });
+
+  it('T-AB-01 la caja de un segmento ignora los caracteres sin caja convertible, y la entrada al modelo es la vista con el preproceso encima', () => {
+    expect(cajaDe('ROJAS 2026')).toBe('may');
+    expect(cajaDe('STRAßE')).toBe('may');
+    expect(cajaDe('rojas, 2026')).toBe('min');
+    expect(cajaDe('2026 - 01')).toBe('sin');
+    expect(cajaDe('Rojas')).toBe('mixta');
+    expect(entradaModelo('Ana Ficticia', 'minusculas', 'ninguno')).toBe('ana ficticia');
+    expect(entradaModelo('Ana Ficticia', 'minusculas', 'restaurar')).toBe('Ana Ficticia');
+    expect(entradaModelo('Ana FICTICIA', 'natural', 'restaurar')).toBe('Ana FICTICIA');
+    expect(segmentosLinea('A: B\nC. D')).toEqual([[0, 2], [2, 4], [5, 7], [7, 9]]);
+    expect(segmentosFrase('a b\nc. d\n\ne')).toEqual([[0, 6], [6, 10], [10, 11]]);
+  });
+});
+
+describe('T-AB-01 · PF-3-r1 índice de entradas ya pasadas y decisión del experimento (funciones puras)', () => {
+  const textos: Record<string, ParteTexto[]> = { T01: [{ clave: 'cuerpo:1', texto: 'ANA FICTICIA', kind: 'cuerpo', index: 1 }] };
+  const sha = (t: string): string => createHash('sha256').update(t).digest('hex');
+  const ventanas = [{ windowIndex: 0, windowTotal: 1, spans: [{ start: 0, end: 12, label: 'PER' as const, score: 0.9 }] }];
+  const cacheDe = (vista: 'natural' | 'mayusculas' | 'minusculas', extra: Partial<CacheVista> = {}): CacheVista => ({
+    ...CACHE, vista, huella: { texto: 'a', vista: 'b', onnx: 'o', codigo: 'c' },
+    documentos: { T01: { partes: { 'cuerpo:1': { sha256: sha('ANA FICTICIA'), ventanas } } } }, ...extra,
+  });
+
+  it('T-AB-01 el índice guarda cada parte por etiquetas y texto de entrada al modelo; con la restauración, MAYÚSCULAS y minúsculas dan la misma clave', () => {
+    const i = indiceDeEntradas([cacheDe('mayusculas', { preproceso: { id: 'restaurar', version: VERSION_RESTAURAR } })], textos, 'o', 'c');
+    expect([...i.keys()]).toEqual([`estandar|${sha('Ana Ficticia')}`]);
+    expect(entradaModelo('ANA FICTICIA', 'minusculas', 'restaurar')).toBe('Ana Ficticia');
+    const j = indiceDeEntradas([cacheDe('natural', { etiquetas: 'traducidas' })], textos, 'o', 'c');
+    expect([...j.keys()]).toEqual([`traducidas|${sha('ANA FICTICIA')}`]);
+  });
+
+  it('T-AB-01 el índice no toma una caché de otro ONNX, de otro código del motor, de otra versión de la restauración ni una parte con otro texto', () => {
+    expect(indiceDeEntradas([cacheDe('natural')], textos, 'otro', 'c').size).toBe(0);
+    expect(indiceDeEntradas([cacheDe('natural')], textos, 'o', 'otro').size).toBe(0);
+    expect(indiceDeEntradas([cacheDe('natural', { preproceso: { id: 'restaurar', version: 'restaurar-mayusculas@0' } })], textos, 'o', 'c').size).toBe(0);
+    expect(indiceDeEntradas([cacheDe('natural')], { T01: [{ clave: 'cuerpo:1', texto: 'OTRO', kind: 'cuerpo', index: 1 }] }, 'o', 'c').size).toBe(0);
+  });
+
+  const filaE = (fila: 'PERSONA_FUERA' | 'ORG_FUERA', mencion: number, cumple: boolean) => ({ fila, n: 10, mencion, entidad: mencion, cumple });
+  const celdaE = (variante: string, vista: 'natural' | 'mayusculas' | 'minusculas', per: number, org: number, precision = 0.9) => ({
+    variante, vista, documentos: 1,
+    soloModelo: { filas: [filaE('PERSONA_FUERA', per, per >= 0.85), filaE('ORG_FUERA', org, org >= 0.8)], precisionGlobal: precision, tramos: 10, verdaderos: 9 },
+    producto: { filas: [filaE('PERSONA_FUERA', per, per >= 0.85), filaE('ORG_FUERA', org, org >= 0.8)], precisionGlobal: precision, detecciones: 10 },
+  });
+  const U = { nerMinScore: 0.3, nerHighThreshold: 0.37, fuente: 'prueba' };
+
+  it('T-AB-01 una variante gana solo si las seis filas cumplen, la precisión global no baja de 0,70 y la vista natural no empeora frente a la base', () => {
+    const base = [celdaE('base', 'natural', 0.97, 0.92), celdaE('base', 'mayusculas', 0.9, 0.63), celdaE('base', 'minusculas', 0.9, 0.6)];
+    const gana = [celdaE('b', 'natural', 0.97, 0.92), celdaE('b', 'mayusculas', 0.9, 0.81), celdaE('b', 'minusculas', 0.9, 0.82)];
+    const x = resumirExperimento([...base, ...gana], 'f', U);
+    expect(x.decision.ganadora).toBe('b');
+    expect(x.resumen.find((r) => r.variante === 'base')?.gana).toBe(false);
+    // La vista natural baja 0,01 en ORG: empeora y no gana, aunque las filas cumplan.
+    const empeora = [celdaE('b', 'natural', 0.97, 0.91), celdaE('b', 'mayusculas', 0.9, 0.81), celdaE('b', 'minusculas', 0.9, 0.82)];
+    const y = resumirExperimento([...base, ...empeora], 'f', U);
+    expect(y.resumen.find((r) => r.variante === 'b')?.natural.empeora).toBe(true);
+    expect(y.decision.ganadora).toBeNull();
+    // Precisión global 0,69: no gana.
+    const imprecisa = [celdaE('b', 'natural', 0.97, 0.92), celdaE('b', 'mayusculas', 0.9, 0.81, 0.69), celdaE('b', 'minusculas', 0.9, 0.82)];
+    expect(resumirExperimento([...base, ...imprecisa], 'f', U).decision.ganadora).toBeNull();
+    // ORG en minúsculas 0,79: no gana.
+    const corta = [celdaE('b', 'natural', 0.97, 0.92), celdaE('b', 'mayusculas', 0.9, 0.81), celdaE('b', 'minusculas', 0.9, 0.79)];
+    expect(resumirExperimento([...base, ...corta], 'f', U).decision.ganadora).toBeNull();
+  });
+
+  it('T-AB-01 la simulación informativa extiende un tramo ORG sobre el punto que completa un sufijo societario, y nada más', () => {
+    const texto = 'Banco Ejemplo S.A. y Comercial Prueba Ltda. con Ana Ficticia. Y Fundación Ejemplo.';
+    const tramos = [
+      { start: 0, end: 17, label: 'ORG' as const, score: 0.7 }, // «Banco Ejemplo S.A» → «Banco Ejemplo S.A.»
+      { start: 21, end: 42, label: 'ORG' as const, score: 0.6 }, // «Comercial Prueba Ltda» → «… Ltda.»
+      { start: 48, end: 60, label: 'PER' as const, score: 0.9 }, // persona: no se toca
+      { start: 64, end: 81, label: 'ORG' as const, score: 0.8 }, // «Fundación Ejemplo»: el punto no es de un sufijo
+    ];
+    const c: CacheVista = {
+      ...CACHE, documentos: { T01: { partes: { 'cuerpo:1': { sha256: 'x', ventanas: [{ windowIndex: 0, windowTotal: 1, spans: tramos }] } } } },
+    };
+    const re = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:s\. ?a\.?|ltda\.?)$`, 'u');
+    const { cache, extendidos } = completarSufijo(c, { T01: [{ clave: 'cuerpo:1', texto, kind: 'cuerpo', index: 1 }] }, re);
+    expect(extendidos).toBe(2);
+    const fin = cache.documentos['T01']?.partes['cuerpo:1']?.ventanas[0]?.spans.map((s) => texto.slice(s.start, s.end));
+    expect(fin).toEqual(['Banco Ejemplo S.A.', 'Comercial Prueba Ltda.', 'Ana Ficticia', 'Fundación Ejemplo']);
+    expect(c.documentos['T01']?.partes['cuerpo:1']?.ventanas[0]?.spans[0]?.end).toBe(17); // la caché original no cambia
+  });
+
+  it('T-AB-01 la tabla del experimento trae cada variante y vista con su n, sin texto del documento', () => {
+    const x = resumirExperimento([celdaE('base', 'natural', 0.97, 0.92), celdaE('base', 'mayusculas', 0.9, 0.63), celdaE('base', 'minusculas', 0.9, 0.6)], 'f', U);
+    const t = tablaExperimento(x);
+    expect(t).toContain('base      mayusculas');
+    expect(t).toContain('(n 10)');
+    expect(t).toContain('no se implementa nada');
+  });
+});
+
 // ---------------------------------------------------------------------------------------------------------------- filas por vista
 // Gold de juguete de dos documentos, con cada cifra calculada a mano. T01 (desarrollo): 3 menciones de persona fuera de la lista (E1 con 1,
 // E2 con 2), 1 de persona de la lista (E3), 2 de organización fuera (EPS y empresa), 1 de ubicación. T02 (reserva): 1 negativo esperado.
@@ -697,6 +855,15 @@ describe.skipIf(process.env['SIGLOW_EVALUAR'] !== '1')('T-AB-01 evaluar · cálc
     const { ejecutarEvaluacion } = await import('../../scripts/evaluar-modelo.ts');
     const args = new Map<string, string>(JSON.parse(process.env['SIGLOW_EVALUAR_ARGS'] ?? '[]') as Array<[string, string]>);
     await ejecutarEvaluacion(RAIZ, args);
+  }, 900_000);
+});
+
+// Lo lanza `node scripts/evaluar-modelo.ts experimento` (SIGLOW_EVALUAR=experimento): PF-3-r1, solo con el desarrollo.
+describe.skipIf(process.env['SIGLOW_EVALUAR'] !== 'experimento')('T-AB-01 experimento PF-3-r1 · mayúsculas y minúsculas', () => {
+  it('T-AB-01 experimento calcula las filas por vista de las cuatro variantes en el desarrollo y las guarda en metricas/pf3r1-experimento.json', async () => {
+    const { ejecutarExperimento } = await import('../../scripts/evaluar-modelo.ts');
+    const args = new Map<string, string>(JSON.parse(process.env['SIGLOW_EVALUAR_ARGS'] ?? '[]') as Array<[string, string]>);
+    await ejecutarExperimento(RAIZ, args);
   }, 900_000);
 });
 
