@@ -31,5 +31,5 @@ export function compilacionCorta(indexHtml: string | null): string | null {
   return indexHtml === null ? null : indexHtml.slice(0, 12);
 }
 
-/** Dirección oficial (SUPUESTO sobre el nombre exacto, 3.6); P0-5 la confirma al desplegar. */
+/** Dirección oficial, confirmada por el dueño: https://sig-low.vergarameloabogado.site (3.6). Aquí va sin el esquema. */
 export const DIRECCION_OFICIAL = 'sig-low.vergarameloabogado.site';

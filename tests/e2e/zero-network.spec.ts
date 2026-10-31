@@ -674,7 +674,7 @@ test.describe('@cero-red fase exportar', () => {
     }
   });
 
-  test('T-RD-03 @cero-red fase exportar: Listo → copiar y descargar .txt, .docx e informe sin peticiones ajenas, sin violaciones de CSP ni texto en la red', async ({ arnes }) => {
+  test('T-RD-03 @cero-red INV-W03 fase exportar: Listo → copiar y descargar .txt, .docx e informe sin peticiones ajenas, sin violaciones de CSP ni texto en la red', async ({ arnes }) => {
     const a = await arnes({ dir: 'dist-medicion' });
     const s = await a.sesion();
     const page = await s.nuevaPagina();
