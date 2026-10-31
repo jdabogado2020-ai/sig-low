@@ -18,6 +18,9 @@ import { volcarAlmacenamiento, textoDelVolcado } from './lib/almacenamiento';
 import { diferenciasDeCabeceras } from './lib/cabeceras-esperadas';
 import { guardarOriginales, type ConNativo } from './lib/originales';
 import { levantarServidor } from './lib/servidores';
+import {
+  campoRespuesta, copiarEnListo, crearYAnalizar, FRASE, h1, leerPortapapeles, pegarYBuscar, textoDelResultado,
+} from './ayudas-reinsercion';
 
 const sha256 = (t: string): string => createHash('sha256').update(t).digest('hex');
 
@@ -666,7 +669,9 @@ test.describe('@cero-red fase A3 · descarga del modelo', () => {
       // A3: descargar y esperar «listo».
       await boton.click();
       await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Modelo de apoyo listo en este equipo.', { timeout: 60_000 });
-      const delModeloA3 = delModelo(a.app.peticiones().slice(corte));
+      // PC-6 (3.3, «resultado visible»): el resultado de navigator.storage.persist() aparece en la tarjeta con el mensaje M-107 del catálogo.
+      await expect(page.locator('[data-prueba="persistencia-modelo"]')).toHaveText(/^(Persistente: El navegador marcó|No persistente: El navegador puede borrar)/);
+      const delModeloA3 =delModelo(a.app.peticiones().slice(corte));
       expect(delModeloA3.every((q) => q.m === 'GET' && !q.u.includes('?'))).toBe(true);
       expect(delModeloA3.map((q) => q.u).sort()).toEqual(rutasDelManifiesto(grande.manifest));
 
@@ -754,4 +759,66 @@ test('T-RD-04 @cero-red fases C1 y C2: el perfil relanzado sin conexión desbloq
   expect(Object.keys(v.indexedDB)).toEqual(['siglow-boveda']);
   for (const secreto of ['Ficticia', 'Rojas', '1.000.000.017', 'ana.ficticia', 'Calle 00']) expect(textoDelVolcado(v), secreto).not.toContain(secreto);
   await a.verificar(s2, { secretos: ['Ficticia', '1.000.000.017', 'PRUEBA-RED-01'] });
+});
+
+// ===== Fase «reinserción» (PC-6; 10.5.1, pasos B8–B9, T-RD-03) =====
+// Sin conexión desde el corte: guardar el asunto cifrado, llevar la tabla a Reinserción, pegar una respuesta con un marcador exacto, uno
+// alterado y uno desconocido, decidir uno a uno, copiar y descargar con el aviso de datos reales, bloquear, desbloquear con la frase y
+// reinsertar de nuevo. 0 peticiones ajenas, 0 violaciones de CSP, 0 consola y ni el texto reinsertado ni la frase en la red ni en el almacenamiento.
+test('T-RD-03 INV-N04 @cero-red fase reinserción: copiar y descargar con datos reales, bloquear y desbloquear sin red; nada del texto reinsertado sale ni se guarda', async ({ arnes }) => {
+  test.setTimeout(180_000);
+  const AUXILIAR = 'https://auxiliar.ejemplo.test';   // página auxiliar atendida por `route` (no sale a la red): solo para leer el portapapeles
+  const a = await arnes({ dir: 'dist' });
+  const s = await a.sesion({ origenesPermitidos: [AUXILIAR] });
+  const page = await s.nuevaPagina();
+  await page.goto('/');
+  await a.cortar(s, page);
+
+  await crearYAnalizar(page, { codigo: 'PRUEBA-RED-REI', guardar: true });
+  await copiarEnListo(page);
+  await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
+  await expect(h1(page, 'Reinserción')).toBeVisible();
+  await pegarYBuscar(page, '[DEMANDANTE_1] presentó la tutela. Demandante 1 firmó. [TESTIGO_3] declaró.');
+  const alterado = page.locator('[data-prueba="alerta-alterado"]');
+  const desconocido = page.locator('[data-prueba="alerta-desconocido"]');
+  await expect(page.locator('[data-prueba="resultado"]')).toHaveCount(0);
+  await alterado.getByRole('button', { name: 'Reemplazar por el dato real' }).click();
+  await desconocido.getByRole('button', { name: 'Dejar como está' }).click();
+  await expect(page.locator('[data-prueba="resultado"]')).toBeVisible();
+  const esperado = 'Ana Ficticia Rojas presentó la tutela. Ana Ficticia Rojas firmó. [TESTIGO_3] declaró.';
+  expect(await textoDelResultado(page)).toBe(esperado);
+
+  // Aviso de datos reales (M-99) al copiar y al descargar.
+  await page.getByRole('button', { name: 'Copiar texto con datos reales' }).click();
+  const confirmar = page.getByRole('alertdialog', { name: 'Texto con datos reales' });
+  await expect(confirmar).toContainText('Va a copiar o descargar texto con datos reales.');
+  await confirmar.getByRole('button', { name: 'Continuar con datos reales' }).click();
+  await expect(page.locator('[data-aviso="M-124"]')).toBeVisible();
+  expect((await leerPortapapeles(s.ctx)).texto).toBe(esperado);
+  await page.bringToFront();
+  await page.getByRole('button', { name: 'Descargar .txt' }).click();
+  const [descarga] = await Promise.all([
+    page.waitForEvent('download'),
+    confirmar.getByRole('button', { name: 'Continuar con datos reales' }).click(),
+  ]);
+  expect(descarga.suggestedFilename()).toMatch(/^sig-low-reinsertado-\d{8}-\d{4}\.txt$/);
+
+  // INV-N04 (T-RD-06): el texto reinsertado no queda en el almacenamiento del origen.
+  const volcado = textoDelVolcado(await volcarAlmacenamiento(page));
+  for (const real of ['Ana Ficticia', '1.000.000.001', 'tutela']) expect(volcado).not.toContain(real);
+
+  // B9 · bloquear y desbloquear (INV-G09): el estado en claro se vacía y la frase vuelve a abrir la tabla.
+  await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+  await expect(h1(page, 'Inicio')).toBeVisible();
+  await expect(page.locator('[data-prueba="resultado-real"]')).toHaveCount(0);
+  expect(await page.locator('body').innerText()).not.toContain('Ana Ficticia');
+  await page.getByLabel('Asunto guardado', { exact: true }).selectOption({ index: 1 });
+  await page.getByLabel('Frase de paso del asunto', { exact: true }).fill(FRASE);
+  await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
+  await expect(h1(page, 'Reinserción')).toBeVisible({ timeout: 30_000 });
+  await campoRespuesta(page).fill('Cédula [CC_1].');
+  await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+  expect(await textoDelResultado(page)).toBe('Cédula 1.000.000.001.');
+
+  await a.verificar(s, { secretos: ['Ficticia', '1.000.000.001', 'PRUEBA-RED-REI', FRASE, 'tutela'] });
 });
