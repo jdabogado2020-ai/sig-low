@@ -709,6 +709,45 @@ test.describe('T-CS-06 y T-CS-07 Trusted Types y CSP de respaldo', () => {
     await ctx.close();
   });
 
+  test('T-CS-06 @cero-red B-40 el registro del SW y los scripts con query o fragmento los frena la política de Trusted Types: 0 peticiones con «d=» al servidor; el registro real de /sw.js sigue funcionando', async ({ browser }) => {
+    const { ctx, page } = await abrir(browser, app.origen, 'allow');
+    const detect = rutaDe(/^\/assets\/detect\.worker-[\w-]+\.js$/);
+    const antes = app.peticiones().length;
+    const r = await page.evaluate(async ({ detect }) => {
+      const intenta = async (fn: () => unknown): Promise<string> => {
+        try { await fn(); return 'no lanza'; } catch (e) { return `lanza ${(e as Error).name}`; }
+      };
+      const sw = navigator.serviceWorker;
+      const salida = {
+        // El dato viajaría en la query (B-40): la política lo rechaza antes de pedir nada.
+        registroConQuery: await intenta(() => sw.register('/sw.js?d=r6-modulo', { type: 'module', scope: '/' })),
+        registroConFragmento: await intenta(() => sw.register('/sw.js#d', { type: 'module', scope: '/' })),
+        registroOtraRutaConQuery: await intenta(() => sw.register('/assets/x.js?d=x', { type: 'module', scope: '/assets/' })),
+        workerConQuery: await intenta(() => new Worker(`${detect}?d=x`, { type: 'module' })),
+        workerConFragmento: await intenta(() => new Worker(`${detect}#d`, { type: 'module' })),
+        // Controles: el registro real (el de la app, sin query) sigue funcionando y deja el SW activo.
+        registroReal: await intenta(() => sw.register('/sw.js', { type: 'module', scope: '/', updateViaCache: 'none' })),
+        sw: (await sw.getRegistration())?.active?.state ?? null,
+        workerSinQuery: await new Promise<string>((ok) => {
+          const w = new Worker(detect, { type: 'module' });
+          w.onerror = () => { ok('error'); };
+          setTimeout(() => { ok('vive'); w.terminate(); }, 1500);
+        }),
+      };
+      return salida;
+    }, { detect });
+    expect(r).toEqual({
+      registroConQuery: 'lanza TypeError', registroConFragmento: 'lanza TypeError', registroOtraRutaConQuery: 'lanza TypeError',
+      workerConQuery: 'lanza TypeError', workerConFragmento: 'lanza TypeError',
+      registroReal: 'no lanza', sw: 'activated', workerSinQuery: 'vive',
+    });
+    // Ni la query ni el fragmento llegaron al registro del alojamiento (con el código anterior, `GET /sw.js?d=r6-modulo` llegaba).
+    await page.waitForTimeout(500);
+    const nuevas = app.peticiones().slice(antes).map((p) => p.u);
+    expect(nuevas.filter((u) => u.includes('d=') || u.includes('?'))).toEqual([]);
+    await ctx.close();
+  });
+
   test('T-CS-07 @cero-red CSP de respaldo: el <meta> es la cabecera menos frame-ancestors, sin report-uri ni report-to, y cabeceras de 3.6 en /, /sw.js, un worker y el .wasm; cada rasgo de la Permissions-Policy reconocido sin aviso', async ({ browser, request }) => {
     const detect = rutaDe(/^\/assets\/detect\.worker-[\w-]+\.js$/);
     const raiz = await request.get(`${app.origen}/`);

@@ -19,7 +19,8 @@ try {
   tt?.createPolicy('default', {
     createScriptURL(s: string): string {
       const u = new URL(s, self.location.href);
-      if (u.protocol === self.location.protocol && u.origin === self.location.origin && /^\/(assets|ort)\//.test(u.pathname)) return u.href;
+      if (u.protocol === self.location.protocol && u.origin === self.location.origin && /^\/(assets|ort)\//.test(u.pathname)
+        && u.search === '' && u.hash === '') return u.href;   // B-40: sin query ni fragmento
       throw new TypeError('URL_NO_PERMITIDA');
     },
   });

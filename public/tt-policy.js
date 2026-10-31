@@ -5,7 +5,8 @@
   self.trustedTypes.createPolicy('default', {
     createScriptURL: function (s) {
       var u = new URL(s, location.href);
-      if (u.protocol === location.protocol && u.origin === location.origin && /^\/(assets|ort)\/|^\/sw\.js$/.test(u.pathname)) {
+      // Sin query ni fragmento (B-40): un dato en `?d=` llegaría al alojamiento, que lo registra, sin que la CSP lo vea (compara rutas).
+      if (u.protocol === location.protocol && u.origin === location.origin && /^\/(assets|ort)\/|^\/sw\.js$/.test(u.pathname) && u.search === '' && u.hash === '') {
         return u.href;
       }
       throw new TypeError('URL_NO_PERMITIDA');
