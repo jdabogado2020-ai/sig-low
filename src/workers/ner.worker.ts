@@ -12,15 +12,18 @@ import { SiglowError, type ModelManifest } from '../core/types';
 
 // Política `default` de Trusted Types (3.6): ORT crea sus workers de hilos con una URL de cadena. Solo se admite
 // el mismo protocolo y origen y las rutas /assets/ y /ort/ (la misma expresión que public/tt-policy.js, sin /sw.js; B-9).
+// B-50: el tercer argumento es el sumidero; para el registro de un service worker («ServiceWorkerContainer register») no se
+// admite ninguna ruta, porque ningún worker registra el SW (la página sí, solo `/sw.js`, con la política de tt-policy.js).
 try {
   const tt = (self as unknown as {
-    trustedTypes?: { createPolicy(nombre: string, reglas: { createScriptURL(s: string): string }): unknown };
+    trustedTypes?: { createPolicy(nombre: string, reglas: { createScriptURL(s: string, tipo?: string, sumidero?: string): string }): unknown };
   }).trustedTypes;
   tt?.createPolicy('default', {
-    createScriptURL(s: string): string {
+    createScriptURL(s: string, _tipo?: string, sumidero?: string): string {
       const u = new URL(s, self.location.href);
-      if (u.protocol === self.location.protocol && u.origin === self.location.origin && /^\/(assets|ort)\//.test(u.pathname)
-        && u.search === '' && u.hash === '') return u.href;   // B-40: sin query ni fragmento
+      const registro = typeof sumidero === 'string' && /^ServiceWorkerContainer\b/.test(sumidero);
+      if (!registro && u.protocol === self.location.protocol && u.origin === self.location.origin && /^\/(assets|ort)\//.test(u.pathname)
+        && u.search === '' && u.hash === '' && u.username === '' && u.password === '') return u.href;   // B-40: sin query ni fragmento
       throw new TypeError('URL_NO_PERMITIDA');
     },
   });

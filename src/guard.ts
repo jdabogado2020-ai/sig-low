@@ -21,6 +21,10 @@
 //   `XSLTProcessor` (B-25: una transformación crea el iframe sin pasar por createElement) y `documentPictureInPicture` (abre
 //   una ventana del mismo origen con su propio realm) quedan en `undefined`. No es completo frente a código inyectado
 //   (riesgo residual de V-02 y V-03).
+// - `navigator.serviceWorker.register` (B-50): solo `/sw.js` exacto. La petición del script de un SW no pasa por el SW, y una
+//   ruta como `/assets/<dato>.js` pasaría la CSP (compara prefijos) y llevaría el dato al registro del alojamiento. Es el
+//   respaldo de la política de Trusted Types (`tt-policy.js`), que hace lo mismo por el sumidero; check-dist exige que el
+//   build tenga un solo registro, con `/sw.js`.
 // - Protected Audience y Topics: `navigator.joinAdInterestGroup`, `navigator.runAdAuction` y `document.browsingTopics`
 //   quedan en `undefined` (la app no los usa; la Permissions-Policy solo apaga los rasgos que el navegador reconoce).
 // Los nombres van en estos arreglos literales, y solo aquí: check-dist los admite únicamente en el chunk de entrada y en
@@ -43,6 +47,8 @@ const CON_REALM = ['HTMLIFrameElement', 'HTMLFrameElement', 'HTMLObjectElement']
 const REALM = ['contentWindow', 'contentDocument'];
 /** Rutas que admite `fetch` (5.2.1): la app, su build, ORT-web y el modelo. */
 const RUTAS = /^\/(?:index\.html)?$|^\/(?:assets|ort|models)\//;
+/** La única ruta que se registra como service worker (B-50). */
+const RUTA_SW = '/sw.js';
 
 /** Define la propiedad para siempre (no se puede volver a escribir ni a redefinir). Si el navegador no lo permite, sigue. */
 function definir(o: object, nombre: string, d: PropertyDescriptor): void {
@@ -112,6 +118,24 @@ function acotarFetch(g: Global): void {
   });
 }
 
+/** B-50: `ServiceWorkerContainer.prototype.register` acepta solo `/sw.js` exacto. El argumento se convierte una vez y es ese el
+ * que se registra; lo demás se rechaza como un fallo de red (promesa rechazada con `TypeError`), sin llamar al original. */
+function acotarRegistroSW(g: Global): void {
+  const contenedor = prototipo(g, 'ServiceWorkerContainer');
+  const original = contenedor?.['register'];
+  if (contenedor === null || typeof original !== 'function') return;
+  fijar(contenedor, 'register', function (this: unknown, ...args: unknown[]): Promise<unknown> {
+    try {
+      const ruta = String(args[0]);
+      if (ruta !== RUTA_SW) return Promise.reject(new TypeError('URL_NO_PERMITIDA'));
+      args[0] = ruta;
+    } catch {
+      return Promise.reject(new TypeError('URL_NO_PERMITIDA'));
+    }
+    return Reflect.apply(original as Funcion, this, args) as Promise<unknown>;
+  });
+}
+
 /** `createElement(nombre, …)`, `createElementNS(ns, nombre, …)` y `createDocument(ns, nombre, …)`: el nombre se convierte una
  * vez y es ese el que se crea. `nuloVacio`: el argumento es `[LegacyNullToEmptyString]` (en createDocument, `null` es «sin
  * elemento raíz», no el elemento «null»). */
@@ -161,6 +185,7 @@ function cerrarRealms(g: Global): void {
 /** Toda la guardia sobre un global (la ventana o un worker propio). Idempotente. */
 export function instalarGuardia(g: Global = globalThis as unknown as Global): void {
   acotarFetch(g);
+  acotarRegistroSW(g);
   for (const nombre of WEBRTC) fijarEnCadena(g, nombre, undefined);
   for (const nombre of VOZ) fijarEnCadena(g, nombre, undefined);
   for (const nombre of REALM_GLOBAL) fijarEnCadena(g, nombre, undefined);

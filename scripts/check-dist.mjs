@@ -162,6 +162,15 @@ const PROHIBIDOS_HTML_CSS = [['data-html-css', /\bsrc\s*=\s*["']data:|url\(\s*["
 // y Trusted Types lo rechaza en ejecución: se admite solo en el fragmento de Preact y con tope de apariciones.
 const TOPES_PREACT = { innerHTML: 3, dangerouslySetInnerHTML: 2 };
 
+// Registro del service worker (B-50; B-40 ofrecía lo mismo): la petición del script de un SW no pasa por el SW y la CSP admite
+// rutas por prefijo (/assets/…), así que un `register('/assets/<dato>.js')` llevaría el dato al registro del alojamiento. La
+// política de Trusted Types y la guardia solo dejan pasar `/sw.js`; aquí se exige que el build tenga UN solo
+// `navigator.serviceWorker.register`, con la cadena literal `/sw.js` como primer argumento (la guardia no cuenta: no nombra
+// `serviceWorker` antes de `register`). Cualquier otra forma (corchetes, `.call`, un alias del objeto) es un hallazgo.
+const REGISTRO_SW = /\bserviceWorker\s*(?:\?\s*\.|\.)\s*register\b(\s*\(\s*([^),]*))?/g;
+const REGISTRO_SW_CORCHETES = /\bserviceWorker\s*(?:\?\s*\.)?\s*\[\s*["'`]register["'`]\s*\]/g;
+const registrosSW = [];
+
 // ===== CSP y cabeceras (3.6; T-CS-07). El integrador aprueba cada línea: un cambio en public/_headers o en el <meta> exige
 // cambiar también estas constantes. =====
 const CSP_CANONICA = "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; font-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; require-trusted-types-for 'script'; trusted-types default";
@@ -290,11 +299,23 @@ for (const p of archivos) {
     }
     if (n) fallar(`${r}: ${nombre} ×${n}`);
   }
+  for (const m of t.matchAll(REGISTRO_SW)) registrosSW.push({ r, llamada: m[1] !== undefined, arg: (m[2] ?? '').trim() });
+  const porCorchetes = (t.match(REGISTRO_SW_CORCHETES) ?? []).length;
+  if (porCorchetes) fallar(`${r}: sw-registro: serviceWorker["register"] ×${porCorchetes} (el registro debe ser navigator.serviceWorker.register('/sw.js'))`);
   const esPreact = /__html/.test(t) && /\.__k\b/.test(t);
   for (const [nombre, tope] of Object.entries(TOPES_PREACT)) {
     const n = (t.match(new RegExp(`\\b${nombre}\\b`, 'g')) ?? []).length;
     if (n && (!esPreact || n > tope)) fallar(`${r}: ${nombre} ×${n} fuera del fragmento de Preact o sobre el tope ${tope}`);
   }
+}
+
+// ===== Registro del service worker (B-50) =====
+if (registrosSW.length !== 1) {
+  fallar(`sw-registro: debe haber exactamente un navigator.serviceWorker.register y hay ${registrosSW.length}${registrosSW.length ? ` (${registrosSW.map((x) => x.r).join(', ')})` : ''}`);
+}
+for (const x of registrosSW) {
+  if (!x.llamada) fallar(`${x.r}: sw-registro: serviceWorker.register fuera de una llamada directa`);
+  else if (!/^(["'`])\/sw\.js\1$/.test(x.arg)) fallar(`${x.r}: sw-registro: el primer argumento de register debe ser la cadena literal /sw.js`);
 }
 
 // ===== ORT: los dos archivos, idénticos al paquete y a los fijados =====

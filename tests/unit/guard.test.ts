@@ -66,6 +66,8 @@ function simulado(opciones: { worker?: boolean } = {}): Simulado {
     g[clase] = C;
   }
   g['CustomElementRegistry'] = class { define(...a: unknown[]): unknown[] { creados.push(a); return a; } };
+  // B-50: `ServiceWorkerContainer.prototype.register`; lo que recibe se anota en `creados` (como los demás sumideros).
+  g['ServiceWorkerContainer'] = class { register(...a: unknown[]): Promise<unknown> { creados.push(['register', ...a]); return Promise.resolve('registro'); } };
   return { g, original, creados };
 }
 
@@ -234,6 +236,62 @@ describe('T-CS-01 Protected Audience y Topics (PD-2-r2): undefined y fijos en na
     instalarGuardia(s.g);
     for (const nombre of ['joinAdInterestGroup', 'runAdAuction', 'browsingTopics']) expect(nombre in (s.g['navigator'] as object), nombre).toBe(false);
     expect('document' in s.g).toBe(false);
+  });
+});
+
+describe('T-CS-01 B-50 el registro del service worker: solo /sw.js exacto, convertido una vez, y fijo', () => {
+  const registrar = (s: Simulado, ...args: unknown[]): Promise<unknown> =>
+    (new (s.g['ServiceWorkerContainer'] as new () => { register(...a: unknown[]): Promise<unknown> })()).register(...args);
+  const veredicto = async (s: Simulado, ...args: unknown[]): Promise<string> => {
+    const antes = s.creados.length;
+    try { await registrar(s, ...args); } catch (e) { expect(s.creados.length).toBe(antes); return `rechazo ${(e as Error).name} ${(e as Error).message}`; }
+    return `registró ${JSON.stringify((s.creados.at(-1) as unknown[]).slice(1))}`;
+  };
+
+  it("admite register('/sw.js', opciones) tal como lo llama la app, con las opciones intactas", async () => {
+    const s = simulado();
+    instalarGuardia(s.g);
+    const opciones = { type: 'module', scope: '/', updateViaCache: 'none' };
+    expect(await veredicto(s, '/sw.js', opciones)).toBe(`registró ${JSON.stringify(['/sw.js', opciones])}`);
+    expect(await registrar(s, '/sw.js')).toBe('registro');
+  });
+
+  it("rechaza con TypeError URL_NO_PERMITIDA, sin llamar al original, todo lo que no sea '/sw.js' exacto (el dato en la ruta, la query, el origen)", async () => {
+    const s = simulado();
+    instalarGuardia(s.g);
+    const casos: unknown[][] = [
+      ['/assets/Ficticia-Rojas.js', { scope: '/assets/' }], ['/assets/x.js%3Fd=Ficticia'], ['/ort/Ficticia.mjs'], ['/assets/1.000.000.017/a.js'],
+      ['/sw.js?d=x'], ['/sw.js#d'], ['/sw.js/'], ['/SW.js'], ['sw.js'], ['./sw.js'], ['//ejemplo.test/sw.js'], [`${ORIGEN}/sw.js`], ['https://ejemplo.test/sw.js'],
+      [], [undefined], [null], [new URL(`${ORIGEN}/sw.js`)],
+    ];
+    for (const args of casos) expect(await veredicto(s, ...args), JSON.stringify(args)).toBe('rechazo TypeError URL_NO_PERMITIDA');
+    expect(s.creados).toEqual([]);
+  });
+
+  it('el argumento se lee una sola vez: lo que se comprueba es lo que se registra', async () => {
+    const s = simulado();
+    instalarGuardia(s.g);
+    let n = 0;
+    const cambiante = { toString: (): string => (n++ === 0 ? '/sw.js' : '/assets/Ficticia-Rojas.js') };
+    expect(await veredicto(s, cambiante, { scope: '/' })).toBe(`registró ${JSON.stringify(['/sw.js', { scope: '/' }])}`);
+    expect(n).toBe(1);
+    // Un toString que lanza no deja pasar nada.
+    const lanzador = { toString: (): string => { throw new Error('x'); } };
+    expect(await veredicto(s, lanzador)).toBe('rechazo TypeError URL_NO_PERMITIDA');
+  });
+
+  it('queda fijo (no se puede reescribir ni redefinir), una segunda instalación no lo cambia y en un worker no inventa lo que no existe', async () => {
+    const s = simulado();
+    instalarGuardia(s.g);
+    const Contenedor = s.g['ServiceWorkerContainer'] as { prototype: Record<string, unknown> };
+    const acotado = Contenedor.prototype['register'];
+    expect(() => { Contenedor.prototype['register'] = (): null => null; }).toThrow(TypeError);
+    expect(() => Object.defineProperty(Contenedor.prototype, 'register', { value: (): null => null })).toThrow(TypeError);
+    instalarGuardia(s.g);
+    expect(Contenedor.prototype['register']).toBe(acotado);
+    const w = simulado({ worker: true });
+    instalarGuardia(w.g);
+    expect('ServiceWorkerContainer' in w.g).toBe(false);
   });
 });
 

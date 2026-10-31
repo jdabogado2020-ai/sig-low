@@ -27,6 +27,9 @@ const LITERALES_GUARDIA = [
   '[`joinAdInterestGroup`,`runAdAuction`,`browsingTopics`]',
 ];
 const CHUNK_ENTRADA = LITERALES_GUARDIA.map((l, i) => `var g${i}=${l};`).join('');
+// B-50: el único registro del service worker del build (src/ui/sw-registro.ts, como lo emite el minificador), en su propio chunk.
+const REGISTRO_SW = 'assets/registro-Cx0Prueba.js';
+const REGISTRO_LIMPIO = 'navigator.serviceWorker.register(`/sw.js`,{type:`module`,scope:`/`,updateViaCache:`none`}).then(r=>r instanceof ServiceWorkerRegistration,()=>!1);';
 const ORT = ['ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.wasm'];
 const VERSION_ORT = (JSON.parse(readFileSync(join(REPO, 'node_modules/onnxruntime-web/package.json'), 'utf8')) as { version: string }).version;
 
@@ -79,6 +82,7 @@ function correr(c: Caso = {}): Promise<{ salida: number; texto: string }> {
   escribir(join(dist, '_headers'), c.cabeceras ? c.cabeceras(cabeceras) : cabeceras);
   escribir(join(dist, 'tt-policy.js'), readFileSync(join(REPO, 'public/tt-policy.js'), 'utf8'));
   escribir(join(dist, ENTRADA), CHUNK_ENTRADA);
+  escribir(join(dist, REGISTRO_SW), REGISTRO_LIMPIO);
   escribir(join(dist, 'sw.js'), "self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request))});");
   escribir(join(dist, 'precache.json'), '{"formato":1,"archivos":[]}\n');
   for (const [ruta, contenido] of Object.entries(c.archivos ?? {})) {
@@ -173,6 +177,27 @@ describe.concurrent('T-CD-02 un canario por regla de contenido: check-dist sale 
   for (const [regla, contenido] of CANARIOS) {
     it(`canario ${regla}: ${contenido}`, async () => { await falla(chunkUi(contenido), `assets/ui-Cx0Prueba.js: ${regla} ×`); });
   }
+
+  it('B-50 sw-registro: el build tiene un solo navigator.serviceWorker.register, con la cadena literal /sw.js como primer argumento', async () => {
+    const reg = (llamada: string): Caso => ({ archivos: { [REGISTRO_SW]: llamada } });
+    // Controles: la forma del minificador, otras comillas, espacios y encadenamiento opcional pasan; otros `.register(` no cuentan.
+    for (const ok of [REGISTRO_LIMPIO, 'navigator.serviceWorker.register("/sw.js");', "navigator . serviceWorker . register ( '/sw.js' , {} );",
+      'navigator.serviceWorker?.register(`/sw.js`);', REGISTRO_LIMPIO + 'new FinalizationRegistry(f).register(o,1);r.register(a,b);']) {
+      expect((await correr(reg(ok))).salida, ok).toBe(0);
+    }
+    // Ninguno, o más de uno.
+    await falla({ archivos: { [REGISTRO_SW]: null } }, 'sw-registro: debe haber exactamente un navigator.serviceWorker.register y hay 0');
+    await falla(reg(REGISTRO_LIMPIO + REGISTRO_LIMPIO), 'sw-registro: debe haber exactamente un navigator.serviceWorker.register y hay 2');
+    await falla({ archivos: { 'assets/ui-Cx0Prueba.js': REGISTRO_LIMPIO } }, 'sw-registro: debe haber exactamente un navigator.serviceWorker.register y hay 2');
+    // El dato en la ruta, la query, otro origen o un valor que no es literal.
+    for (const arg of ['`/assets/x.js`', '"/ort/x.mjs"', '`/sw.js?d=1`', '`/sw.js#d`', '`//ejemplo.test/sw.js`', '`sw.js`', 'u', '`/sw`+`.js`', '`/sw.js`+d', '']) {
+      await falla(reg(`navigator.serviceWorker.register(${arg},{scope:\`/\`});`), 'sw-registro: el primer argumento de register debe ser la cadena literal /sw.js');
+    }
+    // Otras formas de llegar a la misma API.
+    await falla(reg('navigator.serviceWorker["register"](u);'), 'sw-registro: serviceWorker["register"] ×1');
+    await falla(reg('navigator.serviceWorker.register.call(navigator.serviceWorker,u);'), 'sw-registro: serviceWorker.register fuera de una llamada directa');
+    await falla(reg('var f=navigator.serviceWorker.register;f(u);'), 'sw-registro: serviceWorker.register fuera de una llamada directa');
+  });
 
   it('canario innerHTML fuera de Preact: falla aunque el código propio no lo use (lint F-05) y también dangerouslySetInnerHTML', async () => {
     await falla(chunkUi('e.innerHTML=s;'), 'assets/ui-Cx0Prueba.js: innerHTML ×1 fuera del fragmento de Preact');

@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 import { guardarOriginales, type Nativo } from './lib/originales';
+import { levantarServidor } from './lib/servidores';
 
 // Prueba de CSP (10.5.4; PD-2 y PD-2-r1): T-CS-01 a T-CS-07. La app se sirve con tests/e2e/server.mjs (aplica dist/_headers) y
 // su registro de peticiones; el señuelo es un servidor TCP crudo en otro puerto (otro origen) que anota TODA conexión (HTTP,
@@ -820,6 +821,71 @@ test.describe('T-CS-06 y T-CS-07 Trusted Types y CSP de respaldo', () => {
       await ctx.close();
     } finally {
       await sinCabecera.parar();
+    }
+  });
+});
+
+// B-50 (P0-6a de AJ-1; AJ-3): el registro del SW se limita a `/sw.js` exacto. La petición del script de un SW no pasa por el SW y
+// la CSP compara prefijos (`worker-src *:*/assets/ *:*/ort/`), así que `register('/assets/<dato>.js')` llevaba el dato al registro del
+// alojamiento. Hay dos barreras y cada una se prueba sola: la política de Trusted Types, que ve el sumidero («ServiceWorkerContainer
+// register», el tercer argumento de `createScriptURL`), con el `register` original guardado antes de la guardia; y la guardia, que
+// envuelve `register` (la API pública de la página). Datos ficticios; el servidor es el del arnés (tests/e2e/lib/servidores.ts).
+test.describe('T-CS-06 B-50 el registro del service worker solo admite /sw.js', () => {
+  test('T-CS-06 @cero-red B-50 register(\'/assets/<dato>.js\') y variantes lanzan antes de pedir nada, con la guardia y con solo la política; el registro real de /sw.js funciona', async ({ browser }) => {
+    const srv = await levantarServidor({ dir: DIST });
+    try {
+      const ctx = await browser.newContext({ baseURL: srv.origen, serviceWorkers: 'allow' });
+      // El `register` original, atado a su contenedor, antes de que corra la guardia (como lo vería código que corriera antes).
+      await ctx.addInitScript(() => {
+        (globalThis as unknown as Record<string, unknown>)['__registroNativo'] =
+          ServiceWorkerContainer.prototype.register.bind(navigator.serviceWorker) as (u: string, o?: RegistrationOptions) => Promise<unknown>;
+      });
+      const page = await ctx.newPage();
+      await page.goto('/');
+      await expect(page.locator('[data-prueba="promesa"]')).toBeVisible();
+      await esperarControl(page);
+      const antes = srv.peticiones().length;
+      const r = await page.evaluate(async () => {
+        type Registrar = (u: string, o?: RegistrationOptions) => Promise<unknown>;
+        const nativo = (globalThis as unknown as Record<string, Registrar>)['__registroNativo']!;
+        const publico: Registrar = (u, o) => navigator.serviceWorker.register(u, o);
+        // Cada intento da el nombre del error (síncrono o por la promesa) o «no lanza».
+        const intenta = async (fn: () => unknown): Promise<string> => {
+          try { await fn(); return 'no lanza'; } catch (e) { return `lanza ${(e as Error).name} ${(e as Error).message}`; }
+        };
+        const casos: Array<[string, RegistrationOptions]> = [
+          ['/assets/Ficticia-Rojas.js', { scope: '/assets/' }],
+          ['/assets/x.js%3Fd=Ficticia', { scope: '/assets/' }],
+          ['/ort/Ficticia.mjs', { scope: '/ort/' }],
+          ['/assets/1.000.000.017/a.js', { scope: '/assets/' }],
+        ];
+        const salida: Record<string, string> = {};
+        for (const [ruta, opciones] of casos) {
+          salida[`guardia ${ruta}`] = await intenta(() => publico(ruta, { type: 'module', ...opciones }));
+          salida[`política ${ruta}`] = await intenta(() => nativo(ruta, { type: 'module', ...opciones }));
+        }
+        return salida;
+      });
+      const esperado: Record<string, string> = {};
+      for (const ruta of ['/assets/Ficticia-Rojas.js', '/assets/x.js%3Fd=Ficticia', '/ort/Ficticia.mjs', '/assets/1.000.000.017/a.js']) {
+        esperado[`guardia ${ruta}`] = 'lanza TypeError URL_NO_PERMITIDA';
+        esperado[`política ${ruta}`] = 'lanza TypeError URL_NO_PERMITIDA';
+      }
+      expect(r).toEqual(esperado);
+      // Ninguna petición con el dato llegó al servidor: ni la ruta del script ni el alcance.
+      await page.waitForTimeout(500);
+      const nuevas = srv.peticiones().slice(antes).map((p) => p.u);
+      expect(nuevas.filter((u) => /Ficticia|1\.000\.000\.017|%3F|\?/.test(u))).toEqual([]);
+      expect(nuevas.filter((u) => /^\/(?:assets|ort)\/(?:[^/]*Ficticia|x\.js|1\.|a\.js)/.test(u))).toEqual([]);
+      // Control: el registro real de la app (el único que admite) sigue funcionando y deja el SW activo.
+      const real = await page.evaluate(async () => {
+        try { await navigator.serviceWorker.register('/sw.js', { type: 'module', scope: '/', updateViaCache: 'none' }); } catch (e) { return `lanza ${(e as Error).name}`; }
+        return (await navigator.serviceWorker.getRegistration())?.active?.state ?? null;
+      });
+      expect(real).toBe('activated');
+      await ctx.close();
+    } finally {
+      await srv.parar();
     }
   });
 });
