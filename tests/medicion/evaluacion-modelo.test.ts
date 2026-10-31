@@ -1,4 +1,4 @@
-// T-AB-02 y T-AB-03 (parte PF-3 de tests/medicion/evaluacion-modelo.test.ts); T-AB-01 y T-AB-06 los agrega PF-4a (al final del archivo); T-AB-04 y P0-4 agregan los suyos.
+// T-AB-02 y T-AB-03 (parte PF-3 de tests/medicion/evaluacion-modelo.test.ts); T-AB-01 y T-AB-06 los agrega PF-4a; T-AB-04 los agrega PF-4b (al final del archivo); P0-4 agrega los suyos.
 // No ejecutan el modelo: leen la caché de salidas (metricas/modelo-x-large-natural.json) y los resultados de scripts/calibrar-modelo.ts,
 // y vuelven a calcular de ellos el umbral, el piso de proposición y las latencias. Se corren con `npm run medir`
 // (vitest excluye tests/medicion/** de `verify`). Corpus ficticio (10.1.5).
@@ -11,10 +11,11 @@ import {
 } from '../../scripts/calibrar-modelo.ts';
 import type { CacheModelo, DocumentoCache, FilaAlto, FilaUmbral, ParteTexto } from '../../scripts/calibrar-modelo.ts';
 import {
-  armarEvaluacion, ARCHIVO_VISTAS, compararVentanas, DOCUMENTOS_T_AB_06, evaluarVista, filasDe, filasDeCierre, GRUPOS_T_AB_01, huellaTextoDeCache,
-  matrizConfusion, posibleSobreajuste, reutilizarNatural, TOLERANCIA_PUNTAJE, verificarCache, vistaDeTexto,
+  archivoVistasDe, armarEvaluacion, ARCHIVO_VISTAS, ARCHIVO_VISTAS_X_BASE, compararRespaldo, compararVentanas, DOCUMENTOS_T_AB_06, evaluarVista,
+  filasDe, filasDeCierre, FILAS_T_AB_04, GRUPOS_T_AB_01, huellaTextoDeCache, matrizConfusion, posibleSobreajuste, reutilizarNatural, tablaRespaldo,
+  TOLERANCIA_PUNTAJE, verificarCache, vistaDeTexto,
 } from '../../scripts/evaluar-modelo.ts';
-import type { ArchivoVistas, CacheVista, EvaluacionModelo, FilasPorConjunto } from '../../scripts/evaluar-modelo.ts';
+import type { ArchivoVistas, CacheVista, ComparacionRespaldo, EvaluacionModelo, FilasPorConjunto } from '../../scripts/evaluar-modelo.ts';
 import type { EntradaDocumento, GoldAnnotation, GoldDocument, MetricsRow } from '../../scripts/metrics.ts';
 import type { DataType } from '../../src/core/types.ts';
 
@@ -685,5 +686,246 @@ describe.skipIf(!HAY_VISTAS)('T-AB-06 · la caché guardada reproduce una pasada
 
   it('T-AB-06 si el código del motor cambia después de la pasada, la caché se declara inválida: la huella guardada es la del motor vigente', () => {
     for (const c of Object.values(archivo.vistas)) expect(c?.huella.codigo).toBe(huellaMotor(RAIZ));
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------- T-AB-04
+// PF-4b: el respaldo (x-base) frente al principal (x-large). Informativa: el respaldo es un camino en ejecución, no un criterio de cierre.
+describe('T-AB-04 · respaldo frente al principal: exhaustividad de PER, ORG y LOC por vista y su diferencia (gold de juguete)', () => {
+  // Principal: ve todo lo del gold de juguete salvo P3. Respaldo: pierde la persona P2 y la organización O1 en todas las vistas, y la ubicación L1 en MAYÚSCULAS.
+  const dets = (...ids: string[]) => (ENTRADA_T01.detecciones.filter((d) => ids.includes(d.id)));
+  const t01 = (r: readonly string[]): EntradaDocumento => ({ ...ENTRADA_T01, detecciones: dets(...r) });
+  const PRINCIPAL = [ENTRADA_T01, ENTRADA_T02];
+  const evalDe = (modelo: 'x-large' | 'x-base', porVista: Record<'natural' | 'mayusculas' | 'minusculas', readonly EntradaDocumento[]>): EvaluacionModelo =>
+    armarEvaluacion({
+      natural: evaluarVista('natural', porVista.natural, porVista.natural),
+      mayusculas: evaluarVista('mayusculas', porVista.mayusculas, porVista.mayusculas),
+      minusculas: evaluarVista('minusculas', porVista.minusculas, porVista.minusculas),
+    }, { documentos: 2, desarrollo: 1, reserva: 1, origen: 'prueba' }, { nerMinScore: 0.3, nerHighThreshold: 0.37, fuente: 'prueba' }, '2026-10-31 00:00:00', modelo);
+  const principal = evalDe('x-large', { natural: PRINCIPAL, mayusculas: PRINCIPAL, minusculas: PRINCIPAL });
+  const respaldoPerdidas = [t01(['d1', 'd3', 'd5', 'd6']), ENTRADA_T02];
+  const respaldo = evalDe('x-base', { natural: respaldoPerdidas, mayusculas: [t01(['d1', 'd3', 'd6']), ENTRADA_T02], minusculas: respaldoPerdidas });
+  const cmp = compararRespaldo(principal, respaldo, '2026-10-31 00:00:00');
+  const celda = (vista: string, f: string, medida: 'modelo' | 'producto'): ComparacionRespaldo['filas'][number] =>
+    cmp.filas.find((x) => x.vista === vista && x.fila === f && x.medida === medida) as ComparacionRespaldo['filas'][number];
+
+  it('T-AB-04 las filas son PER, ORG y LOC (todas las menciones) y PER y ORG fuera de la lista, en las tres vistas y con el modelo solo y con el producto', () => {
+    expect(FILAS_T_AB_04.map((f) => `${f.etiqueta}:${f.fila}:${f.ambito}`)).toEqual([
+      'PER:PERSONA_TODAS:todas', 'ORG:ORG_TODAS:todas', 'LOC:LOC_TODAS:todas', 'PER:PERSONA_FUERA:fuera', 'ORG:ORG_FUERA:fuera',
+    ]);
+    expect(cmp.filas).toHaveLength(3 * 5 * 2);
+    expect(cmp).toMatchObject({ formato: 'sig-low/comparacion-respaldo', v: 1, principal: 'x-large', respaldo: 'x-base', informativa: true });
+    expect(cmp.advertencia).toContain('no un criterio de cierre');
+  });
+
+  it('T-AB-04 PER: el principal cubre 4 de 5 menciones (0,80), el respaldo 3 de 5 (0,60) y la diferencia es respaldo - principal = -0,20', () => {
+    const c = celda('natural', 'PERSONA_TODAS', 'modelo');
+    expect([c.n, c.etiqueta, c.ambito]).toEqual([5, 'PER', 'todas']);
+    expect(c.principal).toBeCloseTo(0.8, 9);
+    expect(c.respaldo).toBeCloseTo(0.6, 9);
+    expect(c.diferencia).toBeCloseTo(-0.2, 9);
+    const f = celda('natural', 'PERSONA_FUERA', 'modelo'); // fuera de la lista: 4 menciones, 3 frente a 2
+    expect([f.n, f.ambito]).toEqual([4, 'fuera']);
+    expect(f.principal).toBeCloseTo(0.75, 9);
+    expect(f.respaldo).toBeCloseTo(0.5, 9);
+    expect(f.diferencia).toBeCloseTo(-0.25, 9);
+  });
+
+  it('T-AB-04 ORG: 1 de 2 (0,50) frente a 0 de 2 (0,00), diferencia -0,50; LOC: sin diferencia en natural y en minúsculas, -1,00 en MAYÚSCULAS', () => {
+    const o = celda('minusculas', 'ORG_TODAS', 'modelo');
+    expect([o.n, o.principal, o.respaldo]).toEqual([2, 0.5, 0]);
+    expect(o.diferencia).toBeCloseTo(-0.5, 9);
+    expect(celda('natural', 'LOC_TODAS', 'modelo')).toMatchObject({ n: 1, principal: 1, respaldo: 1, diferencia: 0 });
+    expect(celda('minusculas', 'LOC_TODAS', 'modelo').diferencia).toBe(0);
+    expect(celda('mayusculas', 'LOC_TODAS', 'modelo')).toMatchObject({ principal: 1, respaldo: 0, diferencia: -1 });
+  });
+
+  it('T-AB-04 cada fila trae el mismo n para los dos modelos y el mismo n en las tres vistas (la vista no cambia el gold)', () => {
+    for (const f of FILAS_T_AB_04) {
+      const ns = ['natural', 'mayusculas', 'minusculas'].map((v) => celda(v, f.fila, 'producto').n);
+      expect(new Set(ns).size, f.fila).toBe(1);
+    }
+    for (const c of cmp.filas) expect(c.diferencia).toBeCloseTo(c.respaldo - c.principal, 12);
+  });
+
+  it('T-AB-04 la caída frente a la vista natural se calcula por modelo, solo con el modelo, y el respaldo la sufre en MAYÚSCULAS donde el principal no', () => {
+    expect(cmp.caidaPorVista).toHaveLength(6); // 2 modelos x PER, ORG y LOC
+    const loc = (m: string) => cmp.caidaPorVista.find((k) => k.modelo === m && k.etiqueta === 'LOC');
+    expect(loc('x-large')).toMatchObject({ natural: 1, mayusculas: 1, minusculas: 1, dMayusculas: 0, dMinusculas: 0 });
+    expect(loc('x-base')).toMatchObject({ natural: 1, mayusculas: 0, minusculas: 1, dMayusculas: -1, dMinusculas: 0 });
+  });
+
+  it('T-AB-04 si los dos modelos no miden las mismas menciones se rechaza (N_DISTINTO) y una vista que falta en uno de los dos se omite', () => {
+    const otroCorpus = evalDe('x-base', { natural: [ENTRADA_T01], mayusculas: [ENTRADA_T01], minusculas: [ENTRADA_T01] });
+    expect(() => compararRespaldo(principal, otroCorpus, 'f')).toThrow('N_DISTINTO');
+    const soloNatural: EvaluacionModelo = { ...respaldo, vistas: { natural: respaldo.vistas.natural } };
+    const parcial = compararRespaldo(principal, soloNatural, 'f');
+    expect(parcial.filas).toHaveLength(5 * 2);
+    expect(parcial.filas.every((f) => f.vista === 'natural')).toBe(true);
+    expect(parcial.caidaPorVista.filter((k) => k.modelo === 'x-base')).toEqual([]); // sin las tres vistas no hay caída que calcular
+  });
+
+  it('T-AB-04 la tabla impresa trae las tres etiquetas en las tres vistas con su n y la diferencia con signo, y ningún texto ni id del documento', () => {
+    const t = tablaRespaldo(cmp);
+    for (const v of ['natural', 'mayusculas', 'minusculas']) {
+      expect(t).toContain(`T-AB-04 · ${v} · solo el modelo`);
+      expect(t).toContain(`T-AB-04 · ${v} · producto`);
+    }
+    expect(t).toMatch(/PER\s+PERSONA_TODAS\s+5\s+0\.800\s+0\.600\s+-0\.200/u);
+    expect(t).toMatch(/LOC\s+LOC_TODAS\s+1\s+1\.000\s+0\.000\s+-1\.000/u);
+    expect(t).toContain('+0.000');
+    expect(t).not.toMatch(/T0\d|xxxx/u);
+  });
+
+  it('T-AB-04 el archivo del respaldo es metricas/modelo-x-base-vistas.json y el del principal sigue siendo el de PF-4a', () => {
+    expect(archivoVistasDe('x-base')).toBe('metricas/modelo-x-base-vistas.json');
+    expect(ARCHIVO_VISTAS_X_BASE).toBe('metricas/modelo-x-base-vistas.json');
+    expect(archivoVistasDe('x-large')).toBe(ARCHIVO_VISTAS);
+  });
+
+  it('T-AB-04 la vista natural del respaldo solo reutiliza una caché de x-base en la vista natural (no la de x-large ni otra vista)', () => {
+    const texto = (t: string): ParteTexto => ({ clave: 'cuerpo:1', texto: t, kind: 'cuerpo', index: 1 });
+    const sha = (t: string): string => createHash('sha256').update(t).digest('hex');
+    const base: CacheModelo = {
+      ...(CACHE as CacheModelo), modelo: 'x-base', etiquetas: 'estandar', piso: 0.1, huella: { texto: 't', vista: 'v', onnx: 'ox', codigo: 'cd' },
+      documentos: { D1: { partes: { 'cuerpo:1': { sha256: sha('uno'), ventanas: [] } } } },
+    };
+    const textos = { D1: [texto('uno')] };
+    expect(reutilizarNatural(base, textos, ['D1'], 'ox', 'cd', 'x-base').reutilizados).toEqual(['D1']);
+    expect(reutilizarNatural(base, textos, ['D1'], 'ox', 'cd', 'x-large').reutilizados).toEqual([]);
+    expect(reutilizarNatural({ ...base, vista: 'mayusculas' }, textos, ['D1'], 'ox', 'cd', 'x-base').reutilizados).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------- T-AB-04 archivo real
+// `metricas/modelo-x-base-vistas.json` lo deja `node scripts/evaluar-modelo.ts pasada | verificar | evaluar --modelo=x-base` (PF-4b).
+const HAY_X_BASE = existsSync(ruta(ARCHIVO_VISTAS_X_BASE)) && HAY_VISTAS;
+const NATURAL_X_BASE_PF3 = 'metricas/etiquetas-x-base-estandar.json';
+
+describe.skipIf(!HAY_X_BASE)('T-AB-04 · la caché de salidas de x-base en las tres vistas (metricas/modelo-x-base-vistas.json)', () => {
+  const base = HAY_X_BASE ? leer<ArchivoVistas>(ARCHIVO_VISTAS_X_BASE) : ({ vistas: {} } as ArchivoVistas);
+  const grande = HAY_X_BASE ? leer<ArchivoVistas>(ARCHIVO_VISTAS) : ({ vistas: {} } as ArchivoVistas);
+  const VISTAS_ESPERADAS = ['mayusculas', 'minusculas', 'natural'] as const;
+
+  it('T-AB-04 trae las tres vistas, de x-base, con la configuración del principal, otro ONNX que x-large y el código del motor vigente (si no, la caché es inválida: R-26)', () => {
+    expect(base).toMatchObject({ formato: 'sig-low/cache-modelo-vistas', v: 1, modelo: 'x-base' });
+    expect(Object.keys(base.vistas).sort()).toEqual([...VISTAS_ESPERADAS]);
+    const codigo = huellaMotor(RAIZ);
+    for (const v of VISTAS_ESPERADAS) {
+      const c = base.vistas[v];
+      expect(c, v).toMatchObject({ formato: 'sig-low/cache-modelo', v: 1, modelo: 'x-base', vista: v, etiquetas: 'estandar', piso: 0.1, opciones: { windowTokens: 512, overlapWords: 37, maxSpanWords: 12 } });
+      for (const h of Object.values(c?.huella ?? {})) expect(h).toMatch(/^[0-9a-f]{64}$/);
+      expect(c?.huella.codigo, `${v}: huella del código del motor`).toBe(codigo);
+      expect(c?.huella.onnx, `${v}: ONNX`).toBe(base.vistas.natural?.huella.onnx);
+      expect(c?.huella.onnx, `${v}: el ONNX de x-base no es el de x-large`).not.toBe(grande.vistas.natural?.huella.onnx);
+      expect(c?.huella.vista).toBe(createHash('sha256').update(v).digest('hex'));
+    }
+  });
+
+  it('T-AB-04 INV-W04 los mismos 29 documentos y, parte por parte, la misma huella del texto canónico en las tres vistas y que la caché de x-large', () => {
+    const ids = Object.keys(grande.vistas.natural?.documentos ?? {}).sort();
+    expect(ids.length).toBe(29);
+    for (const v of VISTAS_ESPERADAS) {
+      const c = base.vistas[v];
+      expect(Object.keys(c?.documentos ?? {}).sort(), v).toEqual(ids);
+      expect(c?.huella.texto, v).toBe(huellaTextoDeCache(c?.documentos ?? {}, ids));
+      expect(c?.huella.texto, `${v}: el mismo texto que x-large`).toBe(grande.vistas[v]?.huella.texto);
+      for (const id of ids) {
+        const gr = grande.vistas.natural?.documentos[id]?.partes ?? {};
+        const grVista = grande.vistas[v]?.documentos[id]?.partes ?? {};
+        const dc = c?.documentos[id]?.partes ?? {};
+        expect(Object.keys(dc), `${v} ${id}`).toEqual(Object.keys(gr));
+        for (const [k, p] of Object.entries(dc)) {
+          expect(p.sha256, `${v} ${id} ${k}`).toBe(gr[k]?.sha256);
+          expect(p.ventanas.length, `${v} ${id} ${k}`).toBe(grVista[k]?.ventanas.length); // las ventanas dependen del tokenizador, que es el mismo, y del texto de la vista
+          expect(p.ventanas.map((x) => x.windowIndex)).toEqual(p.ventanas.map((_, i) => i));
+          for (const w of p.ventanas) for (const s of w.spans) { expect(s.score).toBeGreaterThanOrEqual(0.1); expect(s.end).toBeGreaterThan(s.start); }
+        }
+      }
+    }
+  });
+
+  it('T-AB-04 la vista natural reutiliza de PF-3 solo documentos de x-base con el mismo texto, ONNX y código; los demás vienen de una pasada nueva', () => {
+    const nat = base.vistas.natural;
+    const pf3 = leer<CacheModelo>(NATURAL_X_BASE_PF3);
+    const reutilizados = Object.keys(nat?.procedencia ?? {});
+    expect(pf3.modelo).toBe('x-base');
+    expect(reutilizados.length).toBeGreaterThan(0);
+    expect(reutilizados.length).toBeLessThan(29); // el corpus final cambió el texto de algunos documentos y trajo los 10 de reserva
+    expect(nat?.huella.onnx).toBe(pf3.huella.onnx);
+    expect(nat?.huella.codigo).toBe(pf3.huella.codigo);
+    for (const id of reutilizados) expect(nat?.documentos[id], id).toEqual(pf3.documentos[id]);
+  });
+
+  const ev = HAY_X_BASE ? (base.evaluacion as EvaluacionModelo | undefined) : undefined;
+  const cmp = HAY_X_BASE ? (base.comparacion as ComparacionRespaldo | undefined) : undefined;
+  const evGrande = HAY_X_BASE ? (grande.evaluacion as EvaluacionModelo | undefined) : undefined;
+
+  it.skipIf(ev === undefined)('T-AB-04 la evaluación guardada es de x-base con el mismo corpus y el mismo umbral de PF-3 que la de x-large, y trae la advertencia de muestra pequeña', () => {
+    expect(ev).toMatchObject({ formato: 'sig-low/evaluacion-modelo', v: 1, modelo: 'x-base', corpus: { documentos: 29, desarrollo: 19, reserva: 10 } });
+    expect(ev?.umbrales).toEqual(evGrande?.umbrales);
+    expect(ev?.corpus).toEqual(evGrande?.corpus);
+    expect(Object.keys(ev?.vistas ?? {}).sort()).toEqual([...VISTAS_ESPERADAS]);
+    expect(ev?.advertencia).toContain('25 fragmentos, 96 entidades');
+  });
+
+  it.skipIf(cmp === undefined)('T-AB-04 la tabla guardada tiene PER, ORG y LOC por vista de x-base, su n y su diferencia frente a x-large, y es informativa (no cierra nada)', () => {
+    expect(cmp).toMatchObject({ formato: 'sig-low/comparacion-respaldo', v: 1, principal: 'x-large', respaldo: 'x-base', informativa: true });
+    expect(cmp?.filas).toHaveLength(30);
+    for (const v of ['natural', 'mayusculas', 'minusculas']) {
+      for (const e of ['PER', 'ORG', 'LOC']) {
+        for (const medida of ['modelo', 'producto']) {
+          const fs = cmp?.filas.filter((f) => f.vista === v && f.etiqueta === e && f.medida === medida && f.ambito === 'todas') ?? [];
+          expect(fs, `${v} ${e} ${medida}`).toHaveLength(1);
+          expect(fs[0]?.n).toBeGreaterThan(0);
+        }
+      }
+    }
+    for (const f of cmp?.filas ?? []) {
+      expect(f.principal).toBeGreaterThanOrEqual(0); expect(f.principal).toBeLessThanOrEqual(1);
+      expect(f.respaldo).toBeGreaterThanOrEqual(0); expect(f.respaldo).toBeLessThanOrEqual(1);
+      expect(f.diferencia).toBeCloseTo(f.respaldo - f.principal, 9);
+    }
+  });
+
+  it.skipIf(cmp === undefined || ev === undefined || evGrande === undefined)('T-AB-04 la tabla guardada se recalcula de las dos evaluaciones guardadas (x-large de PF-4a y x-base), con el mismo n en los dos modelos', () => {
+    const otra = compararRespaldo(evGrande as EvaluacionModelo, ev as EvaluacionModelo, (cmp as ComparacionRespaldo).fecha);
+    expect(cmp).toEqual(otra);
+    for (const f of cmp?.filas ?? []) {
+      const fg = evGrande?.vistas[f.vista]?.[f.medida === 'modelo' ? 'soloModelo' : 'producto'].todo.find((x) => x.grupo === f.fila);
+      expect(f.n, `${f.vista} ${f.fila} ${f.medida}`).toBe(fg?.n);
+      expect(f.principal).toBe(fg?.exhaustividadMencion);
+    }
+  });
+
+  it.skipIf(!CORPUS_FINAL_EN_REPO || ev === undefined)('T-AB-04 con el corpus final en el repositorio, las filas de x-base se recalculan desde la caché y el gold y coinciden con las guardadas', async () => {
+    const { evaluarVistaDesdeCache } = await import('../../scripts/evaluar-modelo.ts');
+    for (const v of VISTAS_ESPERADAS) {
+      const r = await evaluarVistaDesdeCache(v, base.vistas[v] as never, ruta('corpus'), ev?.umbrales as never);
+      expect(r.evaluacion.producto.todo, v).toEqual(ev?.vistas[v]?.producto.todo);
+      expect(r.evaluacion.soloModelo.todo, v).toEqual(ev?.vistas[v]?.soloModelo.todo);
+    }
+  }, 600_000);
+
+  it.skipIf(!CORPUS_FINAL_EN_REPO)('T-AB-04 el lector de `npm run medir` (PG-3b) acepta las tres vistas de x-base contra el corpus final', async () => {
+    const { leerCache } = await import('./lib/cache.ts');
+    const { cargarCorpus: corpusMedicion } = await import('./lib/corpus.ts');
+    const corpus = corpusMedicion('todo');
+    for (const v of VISTAS_ESPERADAS) expect(leerCache('x-base', v, corpus, ruta('metricas'))?.vista, v).toBe(v);
+  });
+
+  it('T-AB-06 la caché de x-base reproduce una pasada nueva de C22, C10 y C13 a ±1e-4 (verificación guardada)', () => {
+    const ver = base.verificacion;
+    expect(ver).toBeDefined();
+    expect(ver?.tolerancia).toBe(1e-4);
+    expect(ver?.huellaMotorCoincide).toBe(true);
+    expect(ver?.huellaOnnxCoincide).toBe(true);
+    expect(ver?.ok).toBe(true);
+    for (const r of ver?.resultados ?? []) {
+      expect(r.documentos).toEqual(['C22', 'C10', 'C13']);
+      expect(r.ventanas, r.vista).toBeGreaterThanOrEqual(12);
+      expect(r.discrepancias, r.vista).toEqual([]);
+      expect(r.maxDiferenciaPuntaje, r.vista).toBeLessThanOrEqual(1e-4);
+    }
   });
 });

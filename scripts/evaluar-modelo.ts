@@ -1,15 +1,21 @@
-// Evaluación del modelo principal por vista (PF-4a; plan 9.3, 9.5, 10.3.3, 10.4.1 y 10.8.5). Node 26 con eliminación de tipos:
+// Evaluación del modelo por vista (PF-4a el principal x-large; PF-4b el respaldo x-base; plan 9.3, 9.5, 10.3.3, 10.4.1 y 10.8.5).
+// Node 26 con eliminación de tipos:
 //   node scripts/evaluar-modelo.ts <orden> [--opcion=valor ...]
 //
-//   pasada     Pasada de x-large en las vistas pedidas (por defecto mayusculas, minusculas y natural) sobre los documentos medibles
-//              del corpus y caché de salidas por ventana (puntaje >= 0,1) en metricas/modelo-x-large-vistas.json. Candado del modelo.
+// Opción común: --modelo=x-large (por defecto, archivo metricas/modelo-x-large-vistas.json) o --modelo=x-base (respaldo, PF-4b,
+// archivo metricas/modelo-x-base-vistas.json).
+//
+//   pasada     Pasada del modelo en las vistas pedidas (por defecto mayusculas, minusculas y natural) sobre los documentos medibles
+//              del corpus y caché de salidas por ventana (puntaje >= 0,1) en metricas/modelo-<modelo>-vistas.json. Candado del modelo.
 //              Reanuda: un documento cuya huella de texto ya está en el archivo no se vuelve a pasar. La vista natural reutiliza,
-//              documento a documento, la caché de PF-3 (metricas/modelo-x-large-natural.json) si el texto, el ONNX y el código del
-//              motor son los mismos; los demás se pasan de nuevo.
+//              documento a documento, la caché de PF-3 (x-large: metricas/modelo-x-large-natural.json; x-base: la pasada de etiquetas
+//              estándar metricas/etiquetas-x-base-estandar.json) si el texto, el ONNX y el código del motor son los mismos; los demás
+//              se pasan de nuevo.
 //   verificar  T-AB-06: una pasada nueva de C22, C10 y C13 (12 ventanas) debe reproducir tramos y puntajes de la caché a +-1e-4 y la
 //              huella del motor no debe haber cambiado. Escribe `verificacion` en el mismo archivo. Candado del modelo.
 //   evaluar    T-AB-01, sin modelo: exhaustividad de PER, ORG y LOC por vista frente al gold, dentro y fuera de la lista, filas por
 //              vista de 10.4.1 con el umbral de PF-3, matriz de confusión y reserva aparte. Escribe `evaluacion` en el mismo archivo.
+//              Con --modelo=x-base calcula además T-AB-04: la comparación con el principal (`comparacion`), sin criterio de cierre.
 //
 // Las funciones de la evaluación son puras y están exportadas (las usa tests/medicion/evaluacion-modelo.test.ts). La parte que maneja
 // el navegador (Playwright y Vite) se importa solo al ejecutar la orden. El corpus es ficticio (10.1.5): de él solo se guardan
@@ -33,8 +39,14 @@ import type { EntradaDocumento, GoldAnnotation, GrupoDef, MetricsRow, RunVista }
 
 export type Vista = RunVista;
 export const VISTAS: readonly Vista[] = ['natural', 'mayusculas', 'minusculas'];
+export type Modelo = 'x-large' | 'x-base';
 export const ARCHIVO_VISTAS = 'metricas/modelo-x-large-vistas.json';
+export const ARCHIVO_VISTAS_X_BASE = 'metricas/modelo-x-base-vistas.json';
 export const ARCHIVO_NATURAL_PF3 = 'metricas/modelo-x-large-natural.json';
+/** Caché natural de x-base de PF-3 (etiquetas estándar, piso 0,1): de ella la vista natural del respaldo toma los documentos que no cambiaron. */
+export const ARCHIVO_NATURAL_X_BASE_PF3 = 'metricas/etiquetas-x-base-estandar.json';
+export const archivoVistasDe = (modelo: Modelo): string => (modelo === 'x-base' ? ARCHIVO_VISTAS_X_BASE : ARCHIVO_VISTAS);
+export const archivoNaturalPf3De = (modelo: Modelo): string => (modelo === 'x-base' ? ARCHIVO_NATURAL_X_BASE_PF3 : ARCHIVO_NATURAL_PF3);
 /** Documentos de T-AB-06 (9.5 y 10.8.5): 3 + 4 + 5 = 12 ventanas. */
 export const DOCUMENTOS_T_AB_06: readonly string[] = ['C22', 'C10', 'C13'];
 export const TOLERANCIA_PUNTAJE = 1e-4;
@@ -69,10 +81,12 @@ export interface Verificacion {
 export interface ArchivoVistas {
   formato: 'sig-low/cache-modelo-vistas';
   v: 1;
-  modelo: 'x-large';
+  modelo: Modelo;
   vistas: Partial<Record<Vista, CacheVista>>;
   verificacion?: Verificacion;
   evaluacion?: unknown;
+  /** T-AB-04 (solo el archivo de x-base): comparación con el principal. */
+  comparacion?: unknown;
 }
 
 // ===================================================================================================================
@@ -172,11 +186,13 @@ export function verificarCache(
 
 /** Une una caché de PF-3 en la de una vista natural: copia los documentos cuyo texto no cambió (parte por parte, por sha256). */
 export function reutilizarNatural(
-  base: CachePF3, textos: Record<string, ParteTexto[]>, ids: readonly string[], onnx: string, codigo: string,
+  base: CachePF3, textos: Record<string, ParteTexto[]>, ids: readonly string[], onnx: string, codigo: string, modelo?: Modelo,
 ): { documentos: Record<string, DocumentoCache>; reutilizados: string[] } {
   const documentos: Record<string, DocumentoCache> = {};
   const reutilizados: string[] = [];
   if (base.huella.onnx !== onnx || base.huella.codigo !== codigo || base.piso > PISO_CACHE + 1e-9 || base.etiquetas !== 'estandar') return { documentos, reutilizados };
+  if (modelo !== undefined && base.modelo !== modelo) return { documentos, reutilizados };
+  if (base.vista !== undefined && base.vista !== 'natural') return { documentos, reutilizados };
   for (const id of ids) {
     const bd = base.documentos[id];
     const ps = textos[id] ?? [];
@@ -217,9 +233,15 @@ function escribirJson(ruta: string, datos: unknown): void {
   writeFileSync(tmp, `${JSON.stringify(datos)}\n`);
   renameSync(tmp, ruta);
 }
-export function leerArchivoVistas(ruta: string): ArchivoVistas {
-  if (!existsSync(ruta)) return { formato: 'sig-low/cache-modelo-vistas', v: 1, modelo: 'x-large', vistas: {} };
+export function leerArchivoVistas(ruta: string, modelo: Modelo = 'x-large'): ArchivoVistas {
+  if (!existsSync(ruta)) return { formato: 'sig-low/cache-modelo-vistas', v: 1, modelo, vistas: {} };
   return JSON.parse(readFileSync(ruta, 'utf8')) as ArchivoVistas;
+}
+
+function parseModelo(a: Map<string, string>): Modelo {
+  const m = arg(a, 'modelo', 'x-large');
+  if (m !== 'x-large' && m !== 'x-base') throw new Error(`modelo no válido: ${m}`);
+  return m;
 }
 
 function parseVistas(texto: string): Vista[] {
@@ -232,7 +254,7 @@ function parseVistas(texto: string): Vista[] {
 // Candado del modelo (una sola pasada del modelo grande a la vez en el equipo)
 // ===================================================================================================================
 
-async function tomarCandado(raiz: string): Promise<() => void> {
+async function tomarCandado(raiz: string, quien: string): Promise<() => void> {
   const dir = resolve(raiz, process.env['SIGLOW_CANDADO_MODELO'] ?? '../h0/candado-modelo');
   let avisado = false;
   for (;;) {
@@ -241,7 +263,7 @@ async function tomarCandado(raiz: string): Promise<() => void> {
       await new Promise((r) => setTimeout(r, 10_000));
     }
   }
-  try { writeFileSync(join(dir, 'quien.txt'), `PF-4a (A9), pid ${process.pid}, desde ${ahora()}\n`); } catch { /* el candado es el directorio */ }
+  try { writeFileSync(join(dir, 'quien.txt'), `${quien}, pid ${process.pid}, desde ${ahora()}\n`); } catch { /* el candado es el directorio */ }
   let liberado = false;
   const liberar = (): void => { if (!liberado) { liberado = true; try { rmSync(dir, { recursive: true, force: true }); } catch { /* ya no existe */ } } };
   process.on('exit', liberar);
@@ -263,12 +285,12 @@ async function sha256Archivo(ruta: string): Promise<string> {
   });
 }
 
-async function manifiestoDe(carpeta: string, umbral: number, solape: number): Promise<ModelManifest> {
+async function manifiestoDe(carpeta: string, modelo: Modelo, umbral: number, solape: number): Promise<ModelManifest> {
   const info = async (ruta: string): Promise<{ ruta: string; tamano: number; sha256: string }> =>
     ({ ruta, tamano: statSync(join(carpeta, ruta)).size, sha256: await sha256Archivo(join(carpeta, ruta)) });
   const onnx = await info('onnx/model_quantized.onnx');
   return {
-    formato: 'sig-low/modelo', v: 1, id: 'gliner-x-large', origen: 'prueba', familia: 'gliner', base: 'google/mt5-large', cuantizacion: 'q8',
+    formato: 'sig-low/modelo', v: 1, id: `gliner-${modelo}`, origen: 'prueba', familia: 'gliner', base: modelo === 'x-base' ? 'google/mt5-base' : 'google/mt5-large', cuantizacion: 'q8',
     etiquetas: ['person', 'organization', 'location'], umbral, ventanaTokens: 512, solapePalabras: solape, maxTramoPalabras: 12,
     tokenizador: { prefijo: 0, sufijo: 1, cls: false },
     archivo: 'onnx/model_quantized.onnx', tamano: onnx.tamano, sha256: onnx.sha256, trozos: [],
@@ -279,10 +301,10 @@ async function manifiestoDe(carpeta: string, umbral: number, solape: number): Pr
 
 interface Arnes { origen: string; manifiesto: ModelManifest; cerrarServidor(): void }
 
-async function prepararArnes(raiz: string, solape: number): Promise<Arnes> {
+async function prepararArnes(raiz: string, modelo: Modelo, solape: number): Promise<Arnes> {
   const { build, defaultClientConditions } = await import('vite');
   const modelos = resolve(raiz, process.env['SIGLOW_MODELOS'] ?? '../h0/modelos');
-  const origenModelo = join(modelos, 'gliner-x-large');
+  const origenModelo = join(modelos, `gliner-${modelo}`);
   if (!existsSync(join(origenModelo, 'onnx', 'model_quantized.onnx'))) throw new Error(`faltan los modelos en ${modelos}`);
   // Fuera del repositorio: `test-results/` lo vacía cada E2E de Playwright (verify) y el ONNX pesa 600 MB.
   const carpeta = join(tmpdir(), 'siglow-A9-evaluar-arnes');
@@ -298,7 +320,7 @@ async function prepararArnes(raiz: string, solape: number): Promise<Arnes> {
     },
     worker: { format: 'es', rolldownOptions: { output: { minify: { compress: { dropConsole: true, dropDebugger: true } } } } },
   });
-  const destino = join(carpeta, 'models', 'gliner-x-large');
+  const destino = join(carpeta, 'models', `gliner-${modelo}`);
   mkdirSync(join(destino, 'onnx'), { recursive: true });
   for (const a of ['tokenizer.json', 'tokenizer_config.json', 'gliner_config.json']) cpSync(join(origenModelo, a), join(destino, a));
   const onnxDestino = join(destino, 'onnx', 'model_quantized.onnx');
@@ -306,7 +328,7 @@ async function prepararArnes(raiz: string, solape: number): Promise<Arnes> {
     log('copio el modelo a la carpeta temporal (fuera de git)');
     cpSync(join(origenModelo, 'onnx', 'model_quantized.onnx'), onnxDestino);
   }
-  const manifiesto = await manifiestoDe(destino, 0.3, solape);
+  const manifiesto = await manifiestoDe(destino, modelo, 0.3, solape);
   const puerto = Number(process.env['PORT'] ?? 5100);
   const servidor: ChildProcess = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', carpeta, '--port', String(puerto)], { stdio: 'ignore', cwd: raiz });
   const origen = `http://127.0.0.1:${puerto}`;
@@ -323,13 +345,13 @@ interface RespuestaArnes {
 }
 interface Sesion { page: Pagina; cerrar(): Promise<void>; navegador: string; carga: RespuestaArnes }
 
-async function abrirSesion(arnes: Arnes, hilos: number): Promise<Sesion> {
+async function abrirSesion(arnes: Arnes, hilos: number, modelo: Modelo): Promise<Sesion> {
   const { chromium } = await import('@playwright/test');
   const navegador = await chromium.launch({ headless: true });
   const page = await navegador.newPage();
   page.on('pageerror', () => undefined);
   await page.goto(`${arnes.origen}/calibrar.html`);
-  log(`cargo x-large con ${hilos} hilos`);
+  log(`cargo ${modelo} con ${hilos} hilos`);
   const carga = await page.evaluate(([m, h]) => (globalThis as never as { __cal: { iniciar(a: unknown, b: number): Promise<never> } }).__cal.iniciar(m, h),
     [arnes.manifiesto, hilos] as const) as RespuestaArnes;
   if (!carga.ok) { await navegador.close(); throw new Error(`carga fallida: ${String(carga.error)}`); }
@@ -382,15 +404,16 @@ function cargarContexto(raiz: string, a: Map<string, string>): ContextoCorpus {
 async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> {
   const hilos = Number(arg(a, 'hilos', '8'));
   const solape = Number(arg(a, 'solape', '37'));
+  const modelo = parseModelo(a);
   const vistas = parseVistas(arg(a, 'vistas', 'mayusculas,minusculas,natural'));
-  const salida = resolve(raiz, arg(a, 'salida', ARCHIVO_VISTAS));
+  const salida = resolve(raiz, arg(a, 'salida', archivoVistasDe(modelo)));
   const { ids, textos, carpeta } = cargarContexto(raiz, a);
   const huellaCodigo = huellaMotor(raiz);
-  const liberarCandado = await tomarCandado(raiz);
-  const arnes = await prepararArnes(raiz, solape);
+  const liberarCandado = await tomarCandado(raiz, arg(a, 'quien', `evaluar-modelo pasada ${modelo}`));
+  const arnes = await prepararArnes(raiz, modelo, solape);
   let sesion: Sesion | null = null;
   try {
-    const archivo = leerArchivoVistas(salida);
+    const archivo = leerArchivoVistas(salida, modelo);
     const conCpu0 = cargaCpu();
     for (const vista of vistas) {
       const previa = archivo.vistas[vista];
@@ -406,9 +429,9 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
         return d !== undefined && ps.every((p) => d.partes[p.clave]?.sha256 === sha256Texto(p.texto)) && Object.keys(d.partes).length === ps.length;
       };
       for (const id of Object.keys(documentos)) if (!ids.includes(id) || !vigente(id)) { delete documentos[id]; delete procedencia[id]; }
-      if (vista === 'natural' && existsSync(resolve(raiz, ARCHIVO_NATURAL_PF3)) && !a.has('sin-pf3')) {
-        const base = JSON.parse(readFileSync(resolve(raiz, ARCHIVO_NATURAL_PF3), 'utf8')) as CachePF3;
-        const { documentos: reus, reutilizados } = reutilizarNatural(base, textos, ids.filter((id) => documentos[id] === undefined), arnes.manifiesto.sha256, huellaCodigo);
+      if (vista === 'natural' && existsSync(resolve(raiz, archivoNaturalPf3De(modelo))) && !a.has('sin-pf3')) {
+        const base = JSON.parse(readFileSync(resolve(raiz, archivoNaturalPf3De(modelo)), 'utf8')) as CachePF3;
+        const { documentos: reus, reutilizados } = reutilizarNatural(base, textos, ids.filter((id) => documentos[id] === undefined), arnes.manifiesto.sha256, huellaCodigo, modelo);
         for (const id of reutilizados) { documentos[id] = reus[id] as DocumentoCache; procedencia[id] = 'PF-3'; }
         if (reutilizados.length > 0) log(`natural: ${reutilizados.length} documentos reutilizados de PF-3 (${reutilizados.join(' ')})`);
       }
@@ -417,7 +440,7 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
       const guardar = (completa: boolean): void => {
         const conocidos = ids.filter((id) => documentos[id] !== undefined);
         const cuerpo: CacheVista = {
-          formato: 'sig-low/cache-modelo', v: 1, modelo: 'x-large', vista, piso: PISO_CACHE, etiquetas: 'estandar',
+          formato: 'sig-low/cache-modelo', v: 1, modelo, vista, piso: PISO_CACHE, etiquetas: 'estandar',
           opciones: { windowTokens: 512, overlapWords: solape, maxSpanWords: 12 },
           huella: { texto: huellaTextoDeCache(documentos, conocidos), vista: sha256Texto(vista), onnx: arnes.manifiesto.sha256, codigo: huellaCodigo },
           ...(sesion?.carga.carga === undefined ? (archivo.vistas[vista]?.carga === undefined ? {} : { carga: archivo.vistas[vista]?.carga }) : { carga: sesion.carga.carga }),
@@ -432,7 +455,7 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
         escribirJson(salida, archivo);
       };
       if (pendientes.length === 0) { guardar(true); continue; }
-      sesion ??= await abrirSesion(arnes, hilos);
+      sesion ??= await abrirSesion(arnes, hilos, modelo);
       let hechos = 0;
       for (const id of pendientes) {
         const r = await pasarDocumento(sesion, textos[id] as ParteTexto[], vista, solape);
@@ -460,18 +483,19 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
 async function ordenVerificar(raiz: string, a: Map<string, string>): Promise<void> {
   const hilos = Number(arg(a, 'hilos', '8'));
   const solape = Number(arg(a, 'solape', '37'));
+  const modelo = parseModelo(a);
   const vistas = parseVistas(arg(a, 'vistas', 'natural,mayusculas'));
-  const salida = resolve(raiz, arg(a, 'salida', ARCHIVO_VISTAS));
+  const salida = resolve(raiz, arg(a, 'salida', archivoVistasDe(modelo)));
   const docsArg = a.get('docs');
   const docs = docsArg === undefined || docsArg === '' ? [...DOCUMENTOS_T_AB_06] : docsArg.split(',');
   const { textos } = cargarContexto(raiz, a);
-  const archivo = leerArchivoVistas(salida);
+  const archivo = leerArchivoVistas(salida, modelo);
   const huellaCodigo = huellaMotor(raiz);
-  const liberarCandado = await tomarCandado(raiz);
-  const arnes = await prepararArnes(raiz, solape);
+  const liberarCandado = await tomarCandado(raiz, arg(a, 'quien', `evaluar-modelo verificar ${modelo}`));
+  const arnes = await prepararArnes(raiz, modelo, solape);
   let sesion: Sesion | null = null;
   try {
-    sesion = await abrirSesion(arnes, hilos);
+    sesion = await abrirSesion(arnes, hilos, modelo);
     const resultados: ResultadoVerificacion[] = [];
     for (const vista of vistas) {
       const cache = archivo.vistas[vista];
@@ -647,6 +671,8 @@ export interface EvaluacionVista {
 export interface EvaluacionModelo {
   formato: 'sig-low/evaluacion-modelo';
   v: 1;
+  /** Modelo evaluado (PF-4b lo agrega; el archivo de x-large de PF-4a no lo trae y es x-large). */
+  modelo?: Modelo;
   fecha: string;
   corpus: { documentos: number; desarrollo: number; reserva: number; origen: string };
   umbrales: { nerMinScore: number; nerHighThreshold: number; fuente: string };
@@ -669,6 +695,7 @@ export function evaluarVista(vista: Vista, producto: readonly EntradaDocumento[]
 
 export function armarEvaluacion(
   vistas: Partial<Record<Vista, EvaluacionVista>>, corpus: EvaluacionModelo['corpus'], umbrales: EvaluacionModelo['umbrales'], fecha: string,
+  modelo?: Modelo,
 ): EvaluacionModelo {
   const valor = (v: Vista, fila: string): number | null => vistas[v]?.producto.todo.find((f) => f.grupo === fila)?.exhaustividadMencion ?? null;
   const dif = (a: number | null, b: number | null): number | null => (a === null || b === null ? null : a - b);
@@ -679,7 +706,9 @@ export function armarEvaluacion(
     return { fila: g.grupo, natural: n, mayusculas: m, minusculas: l, dMayusculas: dif(m, n), dMinusculas: dif(l, n) };
   });
   const cierra = VISTAS.every((v) => (vistas[v]?.cierre.length ?? 0) === 2 && vistas[v]?.cierre.every((c) => c.cumple) === true);
-  return { formato: 'sig-low/evaluacion-modelo', v: 1, fecha, corpus, umbrales, advertencia: ADVERTENCIA_MUESTRA, vistas, contraste, cierra };
+  return {
+    formato: 'sig-low/evaluacion-modelo', v: 1, ...(modelo === undefined ? {} : { modelo }), fecha, corpus, umbrales, advertencia: ADVERTENCIA_MUESTRA, vistas, contraste, cierra,
+  };
 }
 
 const tres = (x: number): string => x.toFixed(3);
@@ -694,6 +723,129 @@ export function tablaVista(vista: Vista, e: EvaluacionVista): string {
   }
   lineas.push('-- solo el modelo (sin reglas ni lista) --');
   for (const f of e.soloModelo.todo) lineas.push(fila(f, ''));
+  return lineas.join('\n');
+}
+
+// ===================================================================================================================
+// T-AB-04: el respaldo (x-base) frente al principal (x-large), por vista (funciones puras)
+// ===================================================================================================================
+
+export type EtiquetaT04 = 'PER' | 'ORG' | 'LOC';
+/** Filas de T-AB-04: PER, ORG y LOC (todas las menciones) y, además, PER y ORG fuera de la lista (las filas de 10.4.1). */
+export const FILAS_T_AB_04: ReadonlyArray<{ etiqueta: EtiquetaT04; fila: string; ambito: 'todas' | 'fuera' }> = [
+  { etiqueta: 'PER', fila: 'PERSONA_TODAS', ambito: 'todas' },
+  { etiqueta: 'ORG', fila: 'ORG_TODAS', ambito: 'todas' },
+  { etiqueta: 'LOC', fila: 'LOC_TODAS', ambito: 'todas' },
+  { etiqueta: 'PER', fila: 'PERSONA_FUERA', ambito: 'fuera' },
+  { etiqueta: 'ORG', fila: 'ORG_FUERA', ambito: 'fuera' },
+];
+
+/** `modelo`: el modelo solo (sin reglas ni lista); `producto`: reglas + lista + modelo con el umbral de PF-3. */
+export type MedidaT04 = 'modelo' | 'producto';
+export interface FilaRespaldo {
+  vista: Vista;
+  etiqueta: EtiquetaT04;
+  fila: string;
+  ambito: 'todas' | 'fuera';
+  medida: MedidaT04;
+  /** Menciones del gold en la fila (el mismo n para los dos modelos). */
+  n: number;
+  principal: number;
+  respaldo: number;
+  /** respaldo - principal, en exhaustividad de mención. */
+  diferencia: number;
+}
+export interface CaidaPorVista {
+  modelo: Modelo;
+  etiqueta: EtiquetaT04;
+  n: number;
+  natural: number;
+  mayusculas: number;
+  minusculas: number;
+  dMayusculas: number;
+  dMinusculas: number;
+}
+export interface ComparacionRespaldo {
+  formato: 'sig-low/comparacion-respaldo';
+  v: 1;
+  fecha: string;
+  principal: 'x-large';
+  respaldo: 'x-base';
+  /** T-AB-04 es informativa: el respaldo es un camino en ejecución y no un criterio de cierre (10.4.2). */
+  informativa: true;
+  advertencia: string;
+  filas: FilaRespaldo[];
+  /** Exhaustividad del modelo solo (todas las menciones) en cada vista y su caída frente a la natural, por modelo. */
+  caidaPorVista: CaidaPorVista[];
+}
+
+export const ADVERTENCIA_RESPALDO =
+  'Informativa (T-AB-04): el respaldo es un camino en ejecución, no un criterio de cierre. Cada cifra lleva su n (menciones del corpus ficticio, '
+  + 'sintético): con n pequeño una diferencia de uno o dos puntos no distingue a un modelo del otro.';
+
+/**
+ * Compara dos evaluaciones del mismo corpus (el principal y el respaldo): exhaustividad por mención de PER, ORG y LOC en cada vista, con el
+ * modelo solo y con el producto, y la diferencia respaldo - principal. Lanza `N_DISTINTO` si las dos no miden las mismas menciones.
+ */
+export function compararRespaldo(principal: EvaluacionModelo, respaldo: EvaluacionModelo, fecha: string): ComparacionRespaldo {
+  const filas: FilaRespaldo[] = [];
+  const caidaPorVista: CaidaPorVista[] = [];
+  const buscar = (e: EvaluacionVista, medida: MedidaT04, fila: string): MetricsRow | undefined =>
+    (medida === 'modelo' ? e.soloModelo : e.producto).todo.find((f) => f.grupo === fila);
+  for (const vista of VISTAS) {
+    const p = principal.vistas[vista];
+    const r = respaldo.vistas[vista];
+    if (p === undefined || r === undefined) continue;
+    for (const def of FILAS_T_AB_04) {
+      for (const medida of ['modelo', 'producto'] as const) {
+        const fp = buscar(p, medida, def.fila);
+        const fr = buscar(r, medida, def.fila);
+        if (fp === undefined || fr === undefined) continue;
+        if (fp.n !== fr.n) throw new Error('N_DISTINTO');
+        filas.push({
+          vista, etiqueta: def.etiqueta, fila: def.fila, ambito: def.ambito, medida, n: fp.n,
+          principal: fp.exhaustividadMencion, respaldo: fr.exhaustividadMencion, diferencia: fr.exhaustividadMencion - fp.exhaustividadMencion,
+        });
+      }
+    }
+  }
+  const valor = (e: EvaluacionModelo, v: Vista, fila: string): MetricsRow | undefined => {
+    const x = e.vistas[v];
+    return x === undefined ? undefined : buscar(x, 'modelo', fila);
+  };
+  for (const [modelo, ev] of [['x-large', principal], ['x-base', respaldo]] as const) {
+    for (const def of FILAS_T_AB_04.filter((d) => d.ambito === 'todas')) {
+      const n = valor(ev, 'natural', def.fila);
+      const m = valor(ev, 'mayusculas', def.fila);
+      const l = valor(ev, 'minusculas', def.fila);
+      if (n === undefined || m === undefined || l === undefined) continue;
+      caidaPorVista.push({
+        modelo, etiqueta: def.etiqueta, n: n.n, natural: n.exhaustividadMencion, mayusculas: m.exhaustividadMencion, minusculas: l.exhaustividadMencion,
+        dMayusculas: m.exhaustividadMencion - n.exhaustividadMencion, dMinusculas: l.exhaustividadMencion - n.exhaustividadMencion,
+      });
+    }
+  }
+  return { formato: 'sig-low/comparacion-respaldo', v: 1, fecha, principal: 'x-large', respaldo: 'x-base', informativa: true, advertencia: ADVERTENCIA_RESPALDO, filas, caidaPorVista };
+}
+
+const conSigno = (x: number): string => `${x >= 0 ? '+' : '-'}${Math.abs(x).toFixed(3)}`;
+/** Tabla de texto de T-AB-04 (solo contadores y proporciones; ningún valor del gold). */
+export function tablaRespaldo(c: ComparacionRespaldo): string {
+  const lineas: string[] = [];
+  for (const medida of ['modelo', 'producto'] as const) {
+    for (const vista of VISTAS) {
+      const fs = c.filas.filter((f) => f.vista === vista && f.medida === medida);
+      if (fs.length === 0) continue;
+      lineas.push(`== T-AB-04 · ${vista} · ${medida === 'modelo' ? 'solo el modelo' : 'producto (reglas + lista + modelo)'} · exhaustividad por mención ==`);
+      lineas.push('etiqueta  fila             n    x-large  x-base   respaldo - principal');
+      for (const f of fs) lineas.push(`${f.etiqueta.padEnd(8)}  ${f.fila.padEnd(14)} ${String(f.n).padStart(4)}   ${f.principal.toFixed(3)}    ${f.respaldo.toFixed(3)}    ${conSigno(f.diferencia)}`);
+    }
+  }
+  lineas.push('== caída frente a la vista natural (solo el modelo, todas las menciones) ==');
+  lineas.push('modelo   etiqueta   n    natural  MAYÚSC.  minúsc.  d MAYÚSC.  d minúsc.');
+  for (const k of c.caidaPorVista) {
+    lineas.push(`${k.modelo.padEnd(8)} ${k.etiqueta.padEnd(8)} ${String(k.n).padStart(4)}   ${k.natural.toFixed(3)}    ${k.mayusculas.toFixed(3)}    ${k.minusculas.toFixed(3)}    ${conSigno(k.dMayusculas)}     ${conSigno(k.dMinusculas)}`);
+  }
   return lineas.join('\n');
 }
 
@@ -735,11 +887,12 @@ export async function evaluarVistaDesdeCache(
 
 /** Calcula y guarda T-AB-01. Importa el motor (imports sin extensión), así que solo corre bajo Vitest: la orden `evaluar` lo lanza ahí. */
 export async function ejecutarEvaluacion(raiz: string, a: Map<string, string>): Promise<void> {
-  const salida = resolve(raiz, arg(a, 'salida', ARCHIVO_VISTAS));
+  const modelo = parseModelo(a);
+  const salida = resolve(raiz, arg(a, 'salida', archivoVistasDe(modelo)));
   const raizCorpus = resolve(raiz, arg(a, 'corpus', '.'));
   const calibracion = JSON.parse(readFileSync(resolve(raiz, 'metricas/calibracion-umbral.json'), 'utf8')) as { nerMinScore: number; nerHighThreshold: number };
   const umbrales = { nerMinScore: calibracion.nerMinScore, nerHighThreshold: calibracion.nerHighThreshold, fuente: 'metricas/calibracion-umbral.json (PF-3)' };
-  const archivo = leerArchivoVistas(salida);
+  const archivo = leerArchivoVistas(salida, modelo);
   const vistas: Partial<Record<Vista, EvaluacionVista>> = {};
   let conjuntos: string[] = [];
   for (const vista of VISTAS) {
@@ -754,10 +907,20 @@ export async function ejecutarEvaluacion(raiz: string, a: Map<string, string>): 
   const evaluacion = armarEvaluacion(vistas, {
     documentos: conjuntos.length, desarrollo: conjuntos.filter((c) => c === 'desarrollo').length, reserva: conjuntos.filter((c) => c === 'reserva').length,
     origen: `corpus/gold del commit ${commitDe(raizCorpus)} (rama t/PG-2-r1-lineas-propias, decisión D-01)`,
-  }, umbrales, ahora());
+  }, umbrales, ahora(), modelo);
   archivo.evaluacion = evaluacion;
+  if (modelo === 'x-base') {
+    // T-AB-04: el principal es el archivo de PF-4a, ya evaluado con el mismo corpus, el mismo umbral y el mismo motor de producción.
+    const rutaPrincipal = resolve(raiz, arg(a, 'principal', ARCHIVO_VISTAS));
+    const principal = leerArchivoVistas(rutaPrincipal, 'x-large').evaluacion as EvaluacionModelo | undefined;
+    if (principal === undefined) throw new Error('falta la evaluación del principal (node scripts/evaluar-modelo.ts evaluar)');
+    if (principal.umbrales.nerMinScore !== umbrales.nerMinScore || principal.umbrales.nerHighThreshold !== umbrales.nerHighThreshold) throw new Error('UMBRALES_DISTINTOS');
+    const comparacion = compararRespaldo(principal, evaluacion, ahora());
+    archivo.comparacion = comparacion;
+    process.stdout.write(`${tablaRespaldo(comparacion)}\n`);
+  }
   escribirJson(salida, archivo);
-  log(`T-AB-01 escrito en ${salida}: ${evaluacion.cierra ? 'las seis filas por vista cumplen' : 'alguna fila por vista no cumple (ver evaluacion.vistas.*.cierre)'}`);
+  log(`${modelo === 'x-base' ? 'T-AB-01 y T-AB-04' : 'T-AB-01'} escrito en ${salida}: ${evaluacion.cierra ? 'las seis filas por vista cumplen' : 'alguna fila por vista no cumple (ver evaluacion.vistas.*.cierre)'}`);
 }
 
 /** La orden `evaluar`: el motor de producción se importa sin extensiones, algo que Node no resuelve; se corre bajo Vitest como `npm run medir`. */
