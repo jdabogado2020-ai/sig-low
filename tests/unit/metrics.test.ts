@@ -485,3 +485,36 @@ describe('T-ME-01 · informe, tabla y código de salida', () => {
     expect(nombreInforme({ ...CORRIDA, config: 'x-large', hilos: 8, conjunto: 'reserva' }, CORRIDA.fecha)).toBe('20261030-1405-x-large-natural-8h-reserva.json');
   });
 });
+
+// ---------------------------------------------------------------------------------------------------------------- AJ-2
+describe('T-ME-01 · AJ-2: la edad de un menor (MENOR con EDAD_A_RANGO) en las banderas y sugerencias esperadas', () => {
+  // Como en el gold real (RG-r1): la edad de un menor es `MENOR` con `generalizacion: EDAD_A_RANGO`./
+  const ENT_AJ2 = (anotaciones: GoldAnnotation[], banderas: BanderaMedida[], sugerencias: SugerenciaMedida[]): ReturnType<typeof evaluarDocumento> =>
+    evaluarDocumento({ gold: { docId: 'T01', conjunto: 'desarrollo', entidades: [ent('E01', 'MENOR'), ent('E02', 'MENOR')], anotaciones }, detecciones: [], banderas, sugerencias, paginas: 1 });
+  const EDAD = ann('M1', 'MENOR', 200, 215, 'E01', { debe_generalizarse: true, generalizacion: 'EDAD_A_RANGO' });
+  const EDAD_B = ann('M2', 'MENOR', 300, 314, 'E02', { debe_generalizarse: true, generalizacion: 'EDAD_A_RANGO' });
+  const SUG: SugerenciaMedida = { kind: 'EDAD_A_RANGO', parte: PARTE, start: 200, end: 215 };
+
+  it('la edad de un menor (MENOR + EDAD_A_RANGO) cuenta presente con la sugerencia EDAD_A_RANGO aunque S-7.8 no deje la bandera', () => {
+    const ev = ENT_AJ2([EDAD, EDAD_B], [], [SUG]);
+    expect(ev.generalizacion).toEqual([{ tipo: 'MENOR', esperadas: 2, presentes: 1 }]);
+    expect(ev.idsAfectados.generalizacion).toEqual({ MENOR: ['T01-M2'] });
+  });
+
+  it('la bandera MENOR sobre la edad también cuenta; sin sugerencia ni bandera no cuenta', () => {
+    const bandera: BanderaMedida = { tipo: 'MENOR', parte: PARTE, start: 200, end: 215 };
+    expect(ENT_AJ2([EDAD], [bandera], []).generalizacion).toEqual([{ tipo: 'MENOR', esperadas: 1, presentes: 1 }]);
+    expect(ENT_AJ2([EDAD], [], []).generalizacion).toEqual([{ tipo: 'MENOR', esperadas: 1, presentes: 0 }]);
+  });
+
+  it('una sugerencia de otro tipo, o de otra parte, o que no solapa, no vale por la edad de un menor', () => {
+    expect(ENT_AJ2([EDAD], [], [{ ...SUG, kind: 'FECHA_A_MES_ANIO' }]).generalizacion).toEqual([{ tipo: 'MENOR', esperadas: 1, presentes: 0 }]);
+    expect(ENT_AJ2([EDAD], [], [{ ...SUG, parte: claveParte({ kind: 'cuerpo', index: 2 }) }]).generalizacion).toEqual([{ tipo: 'MENOR', esperadas: 1, presentes: 0 }]);
+    expect(ENT_AJ2([EDAD], [], [{ ...SUG, start: 215, end: 230 }]).generalizacion).toEqual([{ tipo: 'MENOR', esperadas: 1, presentes: 0 }]);
+  });
+
+  it('un MENOR que no es la edad (MENOR_A_GENERICO) sigue pidiendo la bandera: la sugerencia EDAD_A_RANGO no lo cubre', () => {
+    const menor = ann('M3', 'MENOR', 200, 215, 'E01', { debe_generalizarse: true, generalizacion: 'MENOR_A_GENERICO' });
+    expect(ENT_AJ2([menor], [], [SUG]).generalizacion).toEqual([{ tipo: 'MENOR', esperadas: 1, presentes: 0 }]);
+  });
+});

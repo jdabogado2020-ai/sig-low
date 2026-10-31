@@ -461,7 +461,13 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
     if (g.bandera_esperada !== undefined || !g.debe_generalizarse) continue;   // las citas se cuentan en `negativos`
     const esFlag = (FLAG_TYPES as readonly string[]).includes(g.tipo);
     if (esFlag) {
-      contar(g.tipo, banderas.some((f) => f.tipo === g.tipo && f.parte === k && solapa(f, g)), g.id);
+      // AJ-2 (D-06, 10.3.2): la edad de un menor lleva el tipo `MENOR` (RG-r1) y `generalizacion: 'EDAD_A_RANGO'`, y «se mide con la
+      // sugerencia presente». G-06 crea las dos cosas, pero S-7.8 deja como máximo una bandera `MENOR` por oración (la primera): en
+      // «la menor, … nació el … y hoy tiene 13 años de edad» la primera es «la menor», y la bandera de la edad no puede existir. Se cuenta
+      // presente si hay la bandera `MENOR` sobre la mención o la sugerencia `EDAD_A_RANGO`; la bandera, cuando la hay, sigue valiendo.
+      const banderaPresente = banderas.some((f) => f.tipo === g.tipo && f.parte === k && solapa(f, g));
+      const edadDeMenor = g.tipo === 'MENOR' && g.generalizacion === 'EDAD_A_RANGO';
+      contar(g.tipo, banderaPresente || (edadDeMenor && sugerencias.some((s) => s.kind === 'EDAD_A_RANGO' && s.parte === k && solapa(s, g))), g.id);
     } else if (g.generalizacion !== undefined) {
       const kind = g.generalizacion;
       contar(kind, sugerencias.some((s) => s.kind === kind && s.parte === k && solapa(s, g))

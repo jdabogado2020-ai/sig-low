@@ -587,10 +587,12 @@ export function getEdadRegex(): RegExp {
   // una racha de blancos (la vista `reglas` colapsa los espacios, no los tabuladores: 20.000 tabuladores, 6,5 s). Con a lo sumo
   // 8 blancos por separador (H8) es lineal y el banco no cambia. `(?=[\p{L}\p{N}])` no cambia lo que casa (la edad empieza
   // por una palabra o una cifra) y evita evaluar el lookbehind en cada blanco.
+  // AJ-2: el verbo de edad admite también «cumplo» y «cumple» («por cierto cumplo 44 años»), además de «cumplió» de 7.5.6, salvo en «se cumple
+  // 3 años» (un plazo, no una edad). La cabecera de edad sigue exigiendo preposición o verbo, o «de edad» detrás.
   edadRx = {
     re: new RegExp(
       `${LB}(?=[\\p{L}\\p{N}])(?<!(?:m[aá]s|menos|mayor(?:es)?|menor(?:es)?|pena|condena|prisi[oó]n|t[eé]rmino|plazo|per[ií]odo|lapso|vigencia|duraci[oó]n|antig[uü]edad|experiencia|cerca|alrededor|hace|despu[eé]s|antes|dentro|unos|unas)${H8}(?:de${H8})?)`
-      + `(?:(?<pre>de|con|tiene|ten[ií]a|cumpli[oó]|edad${H}*:|edad${H}+de)${H}+)?(?<n>\\d{1,3}|${NUMPH})(?:${H}*\\(${H}*(?<nd>\\d{1,3})${H}*\\))?${H}+`
+      + `(?:(?<pre>de|con|tiene|ten[ií]a|cumpli[oó]|(?<!(?<!\\p{L})se${H8})cump(?:lo|le)|edad${H}*:|edad${H}+de)${H}+)?(?<n>\\d{1,3}|${NUMPH})(?:${H}*\\(${H}*(?<nd>\\d{1,3})${H}*\\))?${H}+`
       + `(?<u>a[ñn]os(?:${H}+de${H}+edad)?|a[ñn]o${H}+de${H}+edad|meses${H}+de${H}+edad)`
       + `(?!${H}+de${H}+(?:servicio|experiencia|prisi[oó]n|c[aá]rcel|pena|cotizaci[oó]n|antig[uü]edad|labor|trabajo|matrimonio|convivencia|vigencia|duraci[oó]n|casad[oa]s))(?!${H}+(?:atr[aá]s|despu[eé]s|antes))`,
       'gdiu'),
@@ -613,9 +615,14 @@ function scanEdades(t: string): EdadMatch[] {
 }
 
 /** Contexto de nacimiento (7.5.5): verbo («nació», «nacida») o rótulo («fecha de nacimiento», «F. nac.»). */
-const C_NAC = new RegExp(`(?:naci[oó]|nacid[oa]|nacimiento|f\\.${H}*(?:de${H}*)?nac\\.?|fecha${H}+de${H}+nac\\.?|natalicio)(?:${H}+(?:el|en))?(?:${H}+d[ií]a)?${H}*(?::${H}*)?$`, 'iu');
+// AJ-2: «nací» (primera persona, como «nació» y «nacida») y un salto de línea suelto entre el verbo o el rótulo y «el», «día» o la fecha
+// (la línea de un PDF acaba donde sea, 7.1.5). `GAP_NAC` pide al menos un blanco o un salto y admite un solo salto: cada tramo opcional
+// empieza por un carácter distinto, sin ambigüedad (la ventana es de 40 caracteres, pero la expresión se prueba con 40.000 blancos).
+const GAP_NAC = `(?=[ \\t\\n])${H}*(?:\\n${H}*)?`;
+const FIN_NAC = `${H}*(?:\\n${H}*)?`;
+const C_NAC = new RegExp(`(?:naci[oó]|(?<![\\p{L}\\p{N}])nac[ií](?![\\p{L}\\p{N}])|nacid[oa]|nacimiento|f\\.${H}*(?:de${H}*)?nac\\.?|fecha${H}+de${H}+nac\\.?|natalicio)(?:${GAP_NAC}(?:el|en))?(?:${GAP_NAC}d[ií]a)?${FIN_NAC}(?::${FIN_NAC})?$`, 'iu');
 const PREFIJO_ROTULO_NAC = new RegExp(`(?:fecha${H}+de${H}+|f\\.${H}*(?:de${H}*)?)$`, 'iu');
-const NAC_VERBO = /^naci[oó]|^nacid[oa]/iu;
+const NAC_VERBO = /^naci[oó]|^nac[ií](?![\p{L}\p{N}])|^nacid[oa]/iu;
 const ARTICULO_ANTES = new RegExp(`(?<![\\p{L}\\p{N}])(?<art>desde${H}+el|hasta${H}+el|el${H}+d[ií]a|del|al|el)${H}+$`, 'iu');
 const PREPOSICION_DE: Record<string, string> = { 'el': 'en ', 'el dia': 'en ', 'del': 'de ', 'al': 'a ', 'desde el': 'desde ', 'hasta el': 'hasta ' };
 

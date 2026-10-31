@@ -851,3 +851,39 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     expect(tramos.length).toBeGreaterThan(0);
   });
 });
+
+// ---- AJ-2 (D-10): contexto de nacimiento -------------------------------------------------------------------------
+describe('T-MO-01 · AJ-2: el contexto «nacimiento» de una fecha admite «nací» y un salto de línea suelto (7.5.5, 7.1.5)', () => {
+  const contextos = async (texto: string): Promise<Array<string | undefined>> =>
+    correr(texto, 'cuerpo', await cargarReglas('fechas'), 2026).filter((c) => c.type === 'FECHA').map((c) => c.context);
+  it.each([
+    ['nació el 14/03/1991', 'nacimiento'],
+    ['nació\nel 2015-08-11', 'nacimiento'],
+    ['nació el\n2015-08-11', 'nacimiento'],
+    ['nació\n2015-08-11', 'nacimiento'],
+    ['el seguro vence el 09.05.2026.\n\npor cierto cumplo 44 años; nací el 1980-06-09.', 'nacimiento'],
+    ['nací\nel 1980-06-09', 'nacimiento'],
+    ['Fecha de nacimiento:\n14/03/1991', 'nacimiento'],
+  ])('positivo «%s»', async (texto, ctx) => {
+    expect((await contextos(texto)).at(-1)).toBe(ctx);
+  });
+  it.each([
+    'nació\n\n2015-08-11',
+    'nació en Cali el 2015-08-11',
+    'Ignací 14/03/1991',
+    'nació el\n\n2015-08-11',
+  ])('negativo «%s»: no es nacimiento', async (texto) => {
+    expect((await contextos(texto)).at(-1)).not.toBe('nacimiento');
+  });
+  it.each(['\n', '\t', ' \n', '\t\n\t'])('C_NAC con 40.000 %j entre «nació» y la fecha: por debajo de 50 ms', async (sep) => {
+    const { C_NAC } = await import('../../src/core/rules/fechas.ts');
+    const texto = 'nació' + sep.repeat(40_000) + 'x';
+    const mejor = Math.min(...[0, 1, 2].map(() => {
+      const r = new RegExp(C_NAC.source, C_NAC.flags + 'g');
+      const t0 = performance.now();
+      while (r.exec(texto) !== null) { if (r.lastIndex === 0) break; }
+      return performance.now() - t0;
+    }));
+    expect(mejor).toBeLessThan(50);
+  });
+});

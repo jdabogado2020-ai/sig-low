@@ -2052,3 +2052,99 @@ describe('rendimiento (indicativo)', () => {
     expect(ms).toBeLessThan(20000);
   });
 });
+
+// ===================================================================== AJ-2 · banderas indirectas (D-10)
+
+describe('AJ-2 · R-EDAD-01 con «cumplo» y «cumple» (G-06)', () => {
+  const edades = (t: string): string[] => sugDe(correr(t, [], { sinLugares: true }).res, 'EDAD_A_RANGO').map((s) => s.originalText);
+  it('«por cierto cumplo 44 años» sugiere el rango del tramo «44 años», sin bandera MENOR', () => {
+    const { res } = correr('por cierto cumplo 44 años; nací el 1980-06-09.', [], { sinLugares: true });
+    const [s] = sugDe(res, 'EDAD_A_RANGO');
+    expect(s?.originalText).toBe('44 años');
+    expect(s?.options[0]?.template).toBe('entre 40 y 50 años');
+    expect(res.flags.some((f) => f.type === 'MENOR')).toBe(false);
+  });
+  it('«mi hija cumple 8 años» sugiere «menos de 10 años» y lleva la bandera MENOR', () => {
+    const { res } = correr('mi hija cumple 8 años en marzo', [], { sinLugares: true });
+    expect(sugDe(res, 'EDAD_A_RANGO').map((s) => [s.originalText, s.options[0]?.template])).toEqual([['8 años', 'menos de 10 años']]);
+    expect(res.flags.some((f) => f.type === 'MENOR' && f.reason === 'EXPRESION_MENOR')).toBe(true);
+  });
+  it.each([
+    'se cumple 3 años del hecho',
+    'la sociedad cumple 20 años de servicio',
+    'cumple 5 años atrás',
+    'el contrato cumple años',
+    'no cumplo 44',
+  ])('negativo «%s»: no es una edad', (t) => {
+    expect(edades(t)).toEqual([]);
+  });
+  it('cumplo/cumple no cambian lo que ya cubría 7.5.6: «cumplió», «tiene» y «de 34 años»', () => {
+    expect(edades('cumplió 34 años ayer')).toEqual(['34 años']);
+    expect(edades('tiene 34 años de edad')).toEqual(['34 años de edad']);
+    expect(edades('Ana Ficticia, de 34 años, vecina')).toEqual(['de 34 años']);
+  });
+  it('tiempo: 40.000 blancos y 30.000 repeticiones de «cumple » por debajo de 300 ms', () => {
+    correr('tiene 30 años', [], { sinLugares: true });
+    for (const texto of ['cumplo' + '\t'.repeat(40_000) + 'x', 'se' + ' '.repeat(40_000) + 'cumple 3 años', 'cumple '.repeat(30_000)]) {
+      const mejor = Math.min(...[0, 1, 2].map(() => {
+        const t0 = performance.now();
+        generalize({ part: { id: PID, text: texto }, detections: [], options: { referenceDate: REF }, ids: makeIds() });
+        return performance.now() - t0;
+      }));
+      expect(mejor).toBeLessThan(300);
+    }
+  });
+});
+
+describe('AJ-2 · G-05 con «nací» y con un salto de línea del PDF entre el verbo o el rótulo y la fecha', () => {
+  const fechaNac = (t: string, frag: string, iso: string): GenDetection => {
+    const start = t.indexOf(frag);
+    return { id: detId(start + 1), start, end: start + frag.length, type: 'FECHA', canonicalKey: `FECHA:${iso}`, context: 'nacimiento' };
+  };
+  const nac = (t: string, frag: string, iso: string): Suggestion | undefined =>
+    sugDe(correr(t, [fechaNac(t, frag, iso)], { sinLugares: true }).res, 'FECHA_NACIMIENTO_A_RANGO_EDAD')[0];
+
+  it('«nació⏎el 2015-08-11» (línea de PDF partida): el tramo incluye el verbo, el salto y la fecha; menor: bandera MENOR sobre el verbo', () => {
+    const t = 'la paciente, identificada con NIP 15081100027, nació\nel 2015-08-11 y hoy tiene 11 años de edad';
+    const { res } = correr(t, [fechaNac(t, '2015-08-11', '2015-08-11')], { sinLugares: true });
+    const [s] = sugDe(res, 'FECHA_NACIMIENTO_A_RANGO_EDAD');
+    expect(s?.originalText).toBe('nació\nel 2015-08-11');
+    expect(s?.options.map((o) => o.template)).toEqual(['de entre 10 y 20 años', 'menor de edad']);
+    expect(res.flags.filter((f) => f.type === 'MENOR' && f.text === 'nació\nel')).toHaveLength(1);
+  });
+  it('«nací el 1980-06-09» (primera persona): mismo tratamiento que «nació el»', () => {
+    const s = nac('por cierto cumplo 44 años; nací el 1980-06-09.', '1980-06-09', '1980-06-09');
+    expect(s?.originalText).toBe('nací el 1980-06-09');
+    expect(s?.options.map((o) => o.template)).toEqual(['de entre 40 y 50 años', 'mayor de edad']);
+  });
+  it('«Fecha de nacimiento:⏎14/03/1991» con el rótulo y la fecha en líneas distintas', () => {
+    const s = nac('Fecha de nacimiento:\n14/03/1991', '14/03/1991', '1991-03-14');
+    expect(s?.originalText).toBe('Fecha de nacimiento:\n14/03/1991');
+    expect(s?.options[0]?.template).toBe('edad aproximada: entre 30 y 40 años');
+  });
+  it('lo que ya cubría 7.5.5 no cambia: «nació el», «nacida el» y «Fecha de nacimiento:»', () => {
+    expect(nac('Ana nació el 14 de marzo de 1991', '14 de marzo de 1991', '1991-03-14')?.originalText).toBe('nació el 14 de marzo de 1991');
+    expect(nac('Ana, nacida el 14 de marzo de 1991', '14 de marzo de 1991', '1991-03-14')?.originalText).toBe('nacida el 14 de marzo de 1991');
+    expect(nac('Fecha de nacimiento: 14/03/1991', '14/03/1991', '1991-03-14')?.originalText).toBe('Fecha de nacimiento: 14/03/1991');
+  });
+  it('un salto no sustituye al blanco: dos saltos (párrafo nuevo) o una palabra intermedia no son nacimiento', () => {
+    expect(nac('Ana nació\n\nel 14 de marzo de 1991', '14 de marzo de 1991', '1991-03-14')).toBeUndefined();
+    expect(nac('Ana nació en Cali el 14 de marzo de 1991', '14 de marzo de 1991', '1991-03-14')).toBeUndefined();
+  });
+  it('«nací» solo como palabra entera: «Ignací» no es un verbo de nacimiento', () => {
+    expect(nac('Ignací 14 de marzo de 1991', '14 de marzo de 1991', '1991-03-14')).toBeUndefined();
+  });
+  it('tiempo: C_NAC con 40.000 saltos, blancos o tabuladores entre el verbo y la fecha, por debajo de 300 ms', () => {
+    correr('tiene 30 años', [], { sinLugares: true });
+    for (const sep of ['\n', '\t', ' \n', '\t\n\t']) {
+      const texto = 'nació' + sep.repeat(40_000) + '14 de marzo de 1990';
+      const f: GenDetection = { start: texto.length - 19, end: texto.length, type: 'FECHA', canonicalKey: 'FECHA:1990-03-14', context: 'nacimiento' };
+      const mejor = Math.min(...[0, 1, 2].map(() => {
+        const t0 = performance.now();
+        generalize({ part: { id: PID, text: texto }, detections: [f], options: { referenceDate: REF }, ids: makeIds() });
+        return performance.now() - t0;
+      }));
+      expect(mejor, JSON.stringify(sep)).toBeLessThan(300);
+    }
+  });
+});

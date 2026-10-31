@@ -64,7 +64,10 @@ export const EXC_FECHA_B = new RegExp(
   `(?:(?<adm>(?:resoluci[oó]n|acuerdo|circular|ordenanza|concepto|directiva)(?:${H}+(?:No\\.?|N[º°]\\.?|n\\.º|n[uú]mero))?${H}+[\\p{L}\\d.-]{1,20}(?:${H}+de${H}+\\d{4})?)`
   + `|(?<prov>sentencia|providencia|fallo))${H}*(?:,${H}*)?(?:del?|de${H}+fecha|expedid[oa]${H}+el)${H}*$`, 'iu');
 /** Nacimiento. */
-export const C_NAC = new RegExp(`(?:naci[oó]|nacid[oa]|nacimiento|f\\.${H}*(?:de${H}*)?nac\\.?|fecha${H}+de${H}+nac\\.?|natalicio)(?:${H}+(?:el|en))?(?:${H}+d[ií]a)?${H}*(?::${H}*)?$`, 'iu');
+// AJ-2: «nací» y un salto de línea suelto entre el verbo o el rótulo y «el», «día» o la fecha (7.1.5); igual que `C_NAC` de generalize.ts.
+const GAP_NAC = `(?=[ \\t\\n])${H}*(?:\\n${H}*)?`;
+const FIN_NAC = `${H}*(?:\\n${H}*)?`;
+export const C_NAC = new RegExp(`(?:naci[oó]|(?<![\\p{L}\\p{N}])nac[ií](?![\\p{L}\\p{N}])|nacid[oa]|nacimiento|f\\.${H}*(?:de${H}*)?nac\\.?|fecha${H}+de${H}+nac\\.?|natalicio)(?:${GAP_NAC}(?:el|en))?(?:${GAP_NAC}d[ií]a)?${FIN_NAC}(?::${FIN_NAC})?$`, 'iu');
 /** Léxico procesal o contractual. */
 export const C_PROC = new RegExp('radic|present[oóa]|interpu|notific|admiti|admisi|audiencia|t[eé]rmino|plazo|venc|ejecutori|traslado|fall[oó]|sentencia|auto(?!\\p{L})|providencia|recurso|apelaci|impugn|contestaci|vigencia|suscri|firm|celebr|otorg|expedi|corte(?!\\p{L})|emisi|emiti', 'iu');
 const ROTULO_ARTICULO = new RegExp(`(?:art[ií]culos?|arts?\\.|numeral(?:es)?|num\\.|literal(?:es)?|lit\\.|incisos?|folios?|fls?\\.|decreto|ley|cap[ií]tulo|t[ií]tulo|p[aá]ginas?|p[aá]gs?\\.|tomo|cuaderno)${H}*(?:(?:No\\.?|N[º°]\\.?)${H}*)?$`, 'iu');
