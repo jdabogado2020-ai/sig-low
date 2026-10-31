@@ -294,23 +294,106 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
     return fuera;
   };
 
-  it('INV-R02 INV-R12 el nombre del modelo que contiene un apellido suelto de la lista ya emitido se parte y ninguna letra queda a la vista (C01, C06)', async () => {
+  /** Detectar con «Ana Ficticia Rojas» en la lista; la lista marca «Ficticia» suelto dentro del nombre de otra persona. */
+  async function conApellidoSuelto(texto = T) {
     const caseList = refreshVariants([newCaseEntity('Ana Ficticia Rojas', 'persona', 'DEMANDANTE', ids) as CaseEntity]);
-    const doc = documento([T]);
+    const doc = documento([texto]);
     const b = banco();
     const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await b.enviar('detectar', { sessionId: 'ses_1', doc, caseList, table: TABLA, options: OPCIONES }));
     const ctx: ReviewContext = { table: TABLA, caseList, doc, ids };
-    let st = estadoDe(doc, det.set);
-    const desde = T.indexOf(NOMBRE);
-    const suelto = Object.values(st.detections).find((d) => d.source === 'lista' && d.start === T.indexOf('Ficticia', desde));
+    const st = estadoDe(doc, det.set);
+    const suelto = Object.values(st.detections).find((d) => d.source === 'lista' && d.start === texto.indexOf('Ficticia', texto.indexOf(NOMBRE)));
     expect(suelto?.variantClass, 'la lista marca el apellido suelto dentro del nombre de otra persona').toBe('apellido_suelto');
+    const w1 = await ventana(b, 1, 1, { [PRT(1)]: [tramo(texto, 'Ana Ficticia Rojas', 'PER', 0.97), tramo(texto, NOMBRE, 'PER', 0.95)] });
+    return { doc, ctx, st, suelto: suelto!, w1 };
+  }
+  const modelo = (st: ReviewState): string[] => Object.values(st.detections).filter((d) => d.source === 'modelo')
+    .map((d) => `${d.text}:${d.confidence}:${d.status}`).sort();
 
-    const w1 = await ventana(b, 1, 1, { [PRT(1)]: [tramo(T, 'Ana Ficticia Rojas', 'PER', 0.97), tramo(T, NOMBRE, 'PER', 0.95)] });
-    // Antes, el delta traía la lista extendida sobre todo el nombre (se solapa con «Ficticia»: el reductor la descartaba) y nada más.
-    expect(w1.detections.map((d) => `${d.text}:${d.source}:${d.confidence}`).sort()).toEqual(['Gómez:modelo:baja', 'Pedro Luis:modelo:baja']);
-    st = bien(incorporarModelo(st, 1, 1, w1, ctx));
+  it('INV-R02 INV-R12 D-03 B el nombre del modelo que contiene un apellido suelto de otra persona de la lista: la lista cede y el nombre entra entero (C01, C06)', async () => {
+    const { ctx, st: st0, suelto, w1 } = await conApellidoSuelto();
+    const desde = T.indexOf(NOMBRE);
+    // Antes (PB-2-r3), el delta traía «Pedro Luis» y «Gómez» de baja confianza y «Ficticia» seguía como la demandante.
+    expect(w1.detections.map((d) => `${d.text}:${d.source}:${d.confidence}`)).toEqual([`${NOMBRE}:modelo:media`]);
+    const st = bien(incorporarModelo(st0, 1, 1, w1, ctx));
     expect(letrasALaVista(st, T, desde, NOMBRE.length)).toEqual([]);
-    expect(st.detections[suelto!.id]).toEqual(estadoDe(doc, det.set).detections[suelto!.id]);   // la detección de la lista no cambia
+    expect(st.detections[suelto.id]).toBeUndefined();   // la variante débil cedió
+    expect(modelo(st)).toEqual([`${NOMBRE}:media:pendiente`]);
+    const nombre = Object.values(st.detections).find((d) => d.text === NOMBRE)!;
+    expect(st.entities[nombre.entityId]).toMatchObject({ canonicalKey: 'PER:pedro luis ficticia gomez', role: 'OTRA_PERSONA' });
+    // La demandante conserva su mención completa; nada más cambió.
+    for (const [id, d] of Object.entries(st0.detections)) if (id !== suelto.id) expect(st.detections[id as keyof typeof st.detections]).toEqual(d);
+    expect(st.entities[suelto.entityId]?.mentions).toHaveLength(1);
+  });
+
+  it('INV-R12 D-03 la excepción ocurre con la detección de la lista intacta y no ocurre tras cualquier acción sobre ella', async () => {
+    const base = await conApellidoSuelto();
+    const { ctx, suelto, w1 } = base;
+    const desde = T.indexOf(NOMBRE);
+    const sector = T.indexOf('sector');
+    const acciones: Array<[string, (s: ReviewState) => ReviewState]> = [
+      ['aceptar', (s) => bien(applyReviewAction(s, { kind: 'aceptar', detectionId: suelto.id }, ctx))],
+      ['rechazar', (s) => bien(applyReviewAction(s, { kind: 'rechazar', detectionId: suelto.id, reason: 'FALSO_POSITIVO' }, ctx))],
+      ['editar', (s) => bien(applyReviewAction(s, { kind: 'editar', detectionId: suelto.id, text: 'el testigo' }, ctx))],
+      ['cambiar_tipo', (s) => bien(applyReviewAction(s, { kind: 'cambiar_tipo', detectionId: suelto.id, type: 'EMPRESA' }, ctx))],
+      ['separar_mencion', (s) => bien(applyReviewAction(s, { kind: 'separar_mencion', detectionId: suelto.id }, ctx))],
+      ['cambiar_rol', (s) => bien(applyReviewAction(s, { kind: 'cambiar_rol', entityId: suelto.entityId, role: 'TESTIGO' }, ctx))],
+      ['aceptar_entidad', (s) => bien(applyReviewAction(s, { kind: 'aceptar_entidad', entityId: suelto.entityId }, ctx))],
+      ['rechazar_entidad', (s) => bien(applyReviewAction(s, { kind: 'rechazar_entidad', entityId: suelto.entityId }, ctx))],
+      ['unir_entidades', (s) => {
+        const m = bien(applyReviewAction(s, { kind: 'agregar_manual', span: { partId: PRT(1), start: sector, end: sector + 6 }, type: 'PERSONA', propagate: false }, ctx));
+        const manual = Object.values(m.detections).find((d) => d.source === 'manual')!;
+        return bien(applyReviewAction(m, { kind: 'unir_entidades', fromId: suelto.entityId, intoId: manual.entityId }, ctx));
+      }],
+    ];
+    // Intacta: la excepción ocurre (cesión, D-03 B).
+    const intacta = bien(incorporarModelo(base.st, 1, 1, w1, ctx));
+    expect(intacta.detections[suelto.id]).toBeUndefined();
+    expect(modelo(intacta)).toEqual([`${NOMBRE}:media:pendiente`]);
+    for (const [nombre, accion] of acciones) {
+      const antes = accion(base.st);
+      const despues = bien(incorporarModelo(antes, 1, 1, w1, ctx));
+      // La detección queda como la dejó el usuario; el tramo del modelo se parte como antes de D-03 (7.11.2) y no se pierde.
+      expect(despues.detections[suelto.id], nombre).toEqual(antes.detections[suelto.id]);
+      expect(modelo(despues), nombre).toEqual(['Gómez:baja:pendiente', 'Pedro Luis:baja:pendiente']);
+      expect(letrasALaVista(despues, T, desde, NOMBRE.length), nombre).toEqual([]);
+      expect(despues.flags, nombre).toEqual(antes.flags);
+      expect(despues.suggestions, nombre).toEqual(antes.suggestions);
+      expect(despues.spanEdits, nombre).toEqual(antes.spanEdits);
+      // Sin la vuelta a 7.11.2 de incorporarModelo, el reductor solo descarta la propuesta: no toca lo decidido.
+      const directo = bien(applyReviewAction(antes, { kind: 'incorporar_modelo', ventana: 1, ventanasTotales: 1, delta: w1 }, ctx));
+      expect(directo.detections, nombre).toEqual(antes.detections);
+    }
+    // Límite: restablecer devuelve la detección a su estado de nacimiento sin dejar rastro (6.4.4); vuelve a contar como intacta.
+    const restablecida = bien(applyReviewAction(acciones[0]![1](base.st), { kind: 'restablecer', detectionId: suelto.id }, ctx));
+    expect(restablecida.detections[suelto.id]).toEqual(base.st.detections[suelto.id]);
+    expect(bien(incorporarModelo(restablecida, 1, 1, w1, ctx)).detections[suelto.id]).toBeUndefined();
+  });
+
+  it('INV-R12 D-03 E la detección de la lista intacta toma el nombre completo del modelo por ventana; tras una acción, el resto entra aparte', async () => {
+    const t = 'La demandante Ana Ficticia Rojas Prueba presentó la tutela.';
+    const caseList = refreshVariants([newCaseEntity('Ana Ficticia Rojas', 'persona', 'DEMANDANTE', ids) as CaseEntity]);
+    const doc = documento([t]);
+    const b = banco();
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await b.enviar('detectar', { sessionId: 'ses_1', doc, caseList, table: TABLA, options: OPCIONES }));
+    const ctx: ReviewContext = { table: TABLA, caseList, doc, ids };
+    const st0 = estadoDe(doc, det.set);
+    const ana = Object.values(st0.detections).find((d) => d.text === 'Ana Ficticia Rojas')!;
+    expect(ana).toMatchObject({ source: 'lista', variantClass: 'exacta' });
+    const w1 = await ventana(b, 1, 1, { [PRT(1)]: [tramo(t, 'Ana Ficticia Rojas Prueba', 'PER', 0.95)] });
+    // Antes (PB-2-r3): «Prueba» de baja confianza como otra persona.
+    expect(w1.detections.map((d) => `${d.text}:${d.source}:${d.confidence}`)).toEqual(['Ana Ficticia Rojas Prueba:lista:media']);
+    const st = bien(incorporarModelo(st0, 1, 1, w1, ctx));
+    const ext = Object.values(st.detections).find((d) => d.text === 'Ana Ficticia Rojas Prueba')!;
+    expect(ext).toMatchObject({ source: 'lista', caseEntityId: ana.caseEntityId, entityId: ana.entityId, status: 'pendiente', confidence: 'media' });
+    expect(st.detections[ana.id]).toBeUndefined();
+    expect(st.entities[ana.entityId]?.mentions).toEqual([ext.id]);
+    expect(st.entities[ana.entityId]?.marker).toBe(st0.entities[ana.entityId]?.marker);
+    // Tras aceptarla, la extensión no ocurre: «Ana Ficticia Rojas» sigue aceptada y «Prueba» entra aparte, como antes.
+    const aceptada = bien(applyReviewAction(st0, { kind: 'aceptar', detectionId: ana.id }, ctx));
+    const despues = bien(incorporarModelo(aceptada, 1, 1, w1, ctx));
+    expect(despues.detections[ana.id]).toEqual(aceptada.detections[ana.id]);
+    expect(modelo(despues)).toEqual(['Prueba:baja:pendiente']);
   });
 
   it('INV-R02 una ventana posterior que se solapa en el borde con un tramo ya emitido deja entrar su resto (7.10.5 y 7.10.10)', async () => {
@@ -338,6 +421,47 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
       expect(mejorDe3(conv)).toBeLessThan(50);
       expect(conv().candidates.map((c) => [c.start, c.end])).toEqual([[0, t.length]]);   // la «Derecha» no casa: el tramo queda entero
     }
+  });
+
+  it('D-03 A 7.10.7 el tramo ORG del modelo conserva su sufijo societario final («S.A.», «Ltda.», «S.A.S.»)', () => {
+    const t = 'Pagaron Comercial Ejemplo S.A., la Ferretería Ficticia Ltda. y Inversiones Prueba S.A.S. el saldo.';
+    const part = documento([t]).parts[0]!;
+    const conv = candidatesFromNer([tramo(t, 'Comercial Ejemplo S.A.,', 'ORG', 0.9), tramo(t, 'la Ferretería Ficticia Ltda.', 'ORG', 0.9),
+      tramo(t, 'Inversiones Prueba S.A.S.', 'ORG', 0.9)], { part, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    // Antes: «Comercial Ejemplo S», «Ferretería Ficticia Ltda» e «Inversiones Prueba S.A.S».
+    expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}`))
+      .toEqual(['EMPRESA:Comercial Ejemplo S.A.', 'EMPRESA:Ferretería Ficticia Ltda.', 'EMPRESA:Inversiones Prueba S.A.S.']);
+  });
+
+  it('D-03 C y D 7.10.8 autoridad del modelo: con municipio, DESPACHO_A_GENERICO (también de 3 cifras); sin municipio y con nombre propio, ENTIDAD baja', () => {
+    const t = 'Firmaron ante la Notaría Ejemplo, el Juzgado 003 Civil Municipal de Ubaté, el Juzgado 3 Civil del Circuito de Ubaté, la Corte '
+      + 'Constitucional, la Notaría 999, el Juzgado Tercero Civil del Circuito y la Superintendencia Ficticia.';
+    const part = documento([t]).parts[0]!;
+    const conv = candidatesFromNer([
+      tramo(t, 'Notaría Ejemplo', 'ORG', 0.95), tramo(t, 'Juzgado 003 Civil Municipal de Ubaté', 'ORG', 0.95),
+      tramo(t, 'Juzgado 3 Civil del Circuito', 'ORG', 0.95),   // el municipio queda fuera del tramo: la cola de R-DESP-01 lo alcanza
+      tramo(t, 'Corte Constitucional', 'ORG', 0.95), tramo(t, 'Notaría 999', 'ORG', 0.95),
+      tramo(t, 'Juzgado Tercero Civil del Circuito', 'ORG', 0.95), tramo(t, 'Superintendencia Ficticia', 'ORG', 0.95),
+    ], { part, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    // Antes: ninguna detección ni sugerencia (la autoridad se descartaba; R-DESP-01 no admitía «003»).
+    expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}:${c.confidence}`)).toEqual(['ENTIDAD:Notaría Ejemplo:baja']);
+    expect(conv.suggestions.map((s) => `${s.kind}:${s.originalText}`)).toEqual([
+      'DESPACHO_A_GENERICO:Juzgado 003 Civil Municipal de Ubaté', 'DESPACHO_A_GENERICO:Juzgado 3 Civil del Circuito de Ubaté']);
+    expect(conv.suggestions[0]?.options.map((o) => o.template)).toEqual(['Juzgado 003 Civil Municipal de un municipio de {m}', 'un juzgado civil municipal']);
+  });
+
+  it('D-03 D despachoDesdeTramo cableado en fusionar: el despacho del modelo no es detección y su sugerencia no se duplica con la del barrido', async () => {
+    const t = 'Lo decidió el Juzgado 004 de Familia de Cartago y lo notificó la Notaría Ejemplo.';
+    const doc = documento([t]);
+    const b = banco();
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await b.enviar('detectar', { sessionId: 'ses_1', doc, caseList: [], table: TABLA, options: OPCIONES }));
+    // R-DESP-01 con 3 cifras (D-03 D) ya la propone el barrido de generalize.ts al detectar.
+    expect(det.set.suggestions.filter((s) => s.kind === 'DESPACHO_A_GENERICO').map((s) => s.originalText)).toEqual(['Juzgado 004 de Familia de Cartago']);
+    const w1 = await ventana(b, 1, 1, { [PRT(1)]: [tramo(t, 'Juzgado 004 de Familia de Cartago', 'ORG', 0.95), tramo(t, 'Notaría Ejemplo', 'ORG', 0.9)] });
+    expect(w1.detections.map((d) => `${d.type}:${d.text}:${d.confidence}`)).toEqual(['ENTIDAD:Notaría Ejemplo:baja']);
+    expect(w1.suggestions.filter((s) => s.kind === 'DESPACHO_A_GENERICO')).toEqual([]);
+    const todo = resultado<Fusion>(await b.enviar('fusionar', { sessionId: 'ses_1', ner: null, nerEngineId: 'nulo' })).set;
+    expect(todo.suggestions.filter((s) => s.kind === 'DESPACHO_A_GENERICO')).toHaveLength(1);
   });
 
   it('7.10.9 una sola fuente de umbrales: UMBRALES_MODELO es la calibración de PF-3 y la usan la interfaz, la medición y el gancho', () => {

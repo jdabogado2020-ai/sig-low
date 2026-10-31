@@ -557,6 +557,58 @@ function attach(state: ReviewState, d: Detection, e: Entity): void {
   if (!e.mentions.includes(d.id)) e.mentions.push(d.id);
 }
 const entityByKey = (state: ReviewState, key: string): Entity | undefined => Object.values(state.entities).find((e) => e.canonicalKey === key);
+
+/** D-03 B · Variante débil de una sola palabra de la lista (`apellido_suelto` o `nombre_suelto`, sin blancos). La usa merge.ts. */
+export function esVarianteDebil(c: { source: DetectionCandidate['source']; variantClass?: DetectionCandidate['variantClass'] }, texto: string): boolean {
+  return c.source === 'lista' && (c.variantClass === 'apellido_suelto' || c.variantClass === 'nombre_suelto') && !/\s/u.test(texto.trim());
+}
+
+/**
+ * INV-R12, excepción D-03 · Una detección de la lista está **intacta** si el usuario no hizo ninguna acción sobre ella, según
+ * lo que el estado de la revisión deja ver:
+ * - `pendiente`, sin `decidedBy`, `rejectReason`, texto editado, generalización, `coveredBy` ni `suggestionId`
+ *   (aceptar, rechazar, editar, aceptar_entidad, rechazar_entidad, aplicar una sugerencia);
+ * - sigue en la entidad de su `caseEntityId`, con la clave `LISTA:<id>` en ella y en la entidad (separar_mencion, unir_entidades
+ *   hacia otra, cambiar_tipo);
+ * - el tipo y el rol de la detección y de la entidad son los de la lista del caso (cambiar_tipo, cambiar_rol);
+ * - ninguna sugerencia, bandera ni edición de tramo la nombra o la toca.
+ * Límite: `restablecer` devuelve la detección al estado de nacimiento sin dejar rastro (6.4.4), así que después de
+ * aceptar y restablecer vuelve a contar como intacta; igual si se cambia el rol y se devuelve al de la lista.
+ */
+export function listaIntacta(state: ReviewState, d: Detection, caseList: readonly CaseEntity[]): boolean {
+  if (d.source !== 'lista' || d.status !== 'pendiente' || d.caseEntityId === undefined) return false;
+  if (d.decidedBy !== undefined || d.rejectReason !== undefined || d.replacement.edited !== undefined
+    || d.replacement.generalized !== undefined || d.coveredBy !== undefined || d.suggestionId !== undefined) return false;
+  const ce = caseList.find((c) => c.id === d.caseEntityId);
+  const e = state.entities[d.entityId];
+  if (ce === undefined || e === undefined) return false;
+  const key = `LISTA:${ce.id}`;
+  if (d.canonicalKey !== key || e.canonicalKey !== key || !e.mentions.includes(d.id)) return false;
+  if (d.type !== (ce.kind === 'persona' ? 'PERSONA' : ce.role) || d.role !== ce.role || e.role !== ce.role) return false;
+  for (const x of Object.values(state.suggestions)) {
+    if ((x.target.kind === 'deteccion' ? x.target.detectionId : x.target.relatedDetectionId) === d.id) return false;
+  }
+  if (Object.values(state.flags).some((f) => f.detectionId === d.id)) return false;
+  return !Object.values(state.spanEdits).some((x) => overlaps(x.span, spanOf(d)));
+}
+
+/**
+ * D-03 B y E · ¿La detección `o` del estado cede ante la detección nueva `d0` de una ventana del modelo? Solo si es de la lista,
+ * está intacta, `d0` la contiene y es más larga, y: (E) `d0` es la misma entidad de la lista con el nombre completo, o
+ * (B) `o` es una variante débil de una palabra de otra entidad. La comprobación semántica (si el tramo es variante de la
+ * entidad) la hizo la fusión (merge.ts); el reductor solo acota a quién se le puede quitar el tramo.
+ */
+export function cedeAnteModelo(state: ReviewState, o: Detection, d0: Detection, caseList: readonly CaseEntity[]): boolean {
+  if (!contains(spanOf(d0), spanOf(o)) || o.end - o.start >= d0.end - d0.start || !listaIntacta(state, o, caseList)) return false;
+  if (d0.source === 'lista' && d0.caseEntityId === o.caseEntityId) return true;
+  return (d0.source === 'modelo' || d0.source === 'lista') && esVarianteDebil(o, o.text);
+}
+
+/** D-03 · Una detección de una ventana que contiene una de la lista: la propuesta de la fusión de extenderla o de que ceda. */
+export function esPropuestaSobreLista(state: ReviewState, d0: Detection): boolean {
+  return d0.source === 'lista' || Object.values(state.detections).some((o) => o.source === 'lista' && o.id !== d0.id
+    && contains(spanOf(d0), spanOf(o)) && o.end - o.start < d0.end - d0.start);
+}
 const blocks = (state: ReviewState, span: Span): boolean =>
   Object.values(state.detections).some((d) => d.status !== 'rechazada' && overlaps(spanOf(d), span))
   || Object.values(state.spanEdits).some((s) => overlaps(s.span, span));
@@ -762,7 +814,15 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
       const deltaEntities = new Map(a.delta.entities.map((e) => [e.id, e]));
       for (const d0 of a.delta.detections) {
         const span = spanOf(d0);
-        if (s.detections[d0.id] !== undefined || rejected.some((r) => r.partId === d0.partId && r.start === d0.start && r.end === d0.end) || blocks(s, span)) continue;
+        if (s.detections[d0.id] !== undefined || rejected.some((r) => r.partId === d0.partId && r.start === d0.start && r.end === d0.end)) continue;
+        if (esPropuestaSobreLista(s, d0)) {
+          // INV-R12, única excepción (D-03 B y E): todo lo que la propuesta toca es de la lista, está intacto y cede (o se
+          // extiende). Si no, la propuesta no entra (incorporarModelo la vuelve a partir antes, como 7.11.2).
+          const tocadas = Object.values(s.detections).filter((o) => overlaps(spanOf(o), span));
+          if (tocadas.length === 0 || Object.values(s.spanEdits).some((x) => overlaps(x.span, span))
+            || !tocadas.every((o) => cedeAnteModelo(s, o, d0, ctx.caseList))) continue;
+          for (const o of tocadas) delete s.detections[o.id];
+        } else if (blocks(s, span)) continue;
         const d: Detection = structuredClone(d0);
         d.status = 'pendiente'; delete d.rejectReason; delete d.replacement.edited; delete d.decidedBy; delete d.coveredBy;
         s.detections[d.id] = d;

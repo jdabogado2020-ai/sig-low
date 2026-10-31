@@ -2,12 +2,13 @@
 // Función pura y determinista: sin estado global mutable, sin reloj, sin azar, sin DOM ni red.
 // Tipos: src/core/types.ts (sección 6).
 import type {
-  Confidence, DataType, DetectableType, DetectionCandidate, DetectionSource, MergedCandidate,
+  CaseEntityId, Confidence, DataType, DetectableType, DetectionCandidate, DetectionSource, MergedCandidate,
   NerLabel, Part, PartKind, RuleRegistry,
 } from './types.ts';
 import { FLAG_TYPES, ORG_CLASSES } from './types.ts';
 import { buildSearchView, toCanonicalSpan } from './normalize.ts';
-import { orgKey, personKey, precedenceOf } from './entities.ts';
+import { esVarianteDebil, orgKey, personKey, precedenceOf } from './entities.ts';
+import { LST } from './caselist.ts';
 
 export { precedenceOf };
 
@@ -41,6 +42,8 @@ const KEY_PREFIX: Partial<Readonly<Record<DetectableType, string>>> = {
 /** R-MOD-03 · Palabras de función y tratamientos (vista `lista`). */
 const FW = 'de|del|la|las|los|el|lo|y|e|o|u|a|al|en|por|para|con|sin|su|sus|que|se|un|una|unos|unas|senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr|mrs|mr|ms';
 const FW_SET: ReadonlySet<string> = new Set(FW.split('|'));
+/** Las palabras de función y tratamientos de R-MOD-03 (vista `lista`), para el mapeo 7.10.8 de pipeline.ts. */
+export const PALABRAS_DE_FUNCION: ReadonlySet<string> = FW_SET;
 /**
  * Izquierda y Derecha de R-MOD-03 sin el `+` interno de 7.10.7 (P0-6a M-1): `(?:[sep]+|FW)+$` sin ancla
  * al inicio retrocede de forma exponencial con signos sueltos separados por blancos. `(?:[sep]|FW)+`
@@ -49,6 +52,13 @@ const FW_SET: ReadonlySet<string> = new Set(FW.split('|'));
  */
 export const RE_TRIM_LEFT = new RegExp(String.raw`^(?:[\s\p{P}\p{S}]|(?:` + FW + String.raw`)(?=[\s\p{P}\p{S}]|$))+`, 'u');
 export const RE_TRIM_RIGHT = new RegExp(String.raw`(?:[\s\p{P}\p{S}]|(?<=^|[\s\p{P}\p{S}])(?:` + FW + String.raw`))+$`, 'u');
+/**
+ * D-03 A (7.10.7): sufijo societario de R-LST-05 (vista `lista`) entre fronteras de palabra. El recorte derecho no entra en él
+ * cuando es el final del nombre: la «a» de «S.A.» es palabra de función y el punto final, un signo. Sin cuantificadores anidados.
+ */
+const RE_SUFIJO_SOCIETARIO = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:` + LST.SUFIJO + String.raw`)(?![\p{L}\p{N}])`, 'gu');
+/** Largo máximo de un sufijo de R-LST-05 («sociedad por acciones simplificada», 34) con holgura: acota dónde se busca. */
+const SUFIJO_MAX = 48;
 /** Paso 2: lo que el modelo agrega no puede ser palabra de función ni tratamiento (R-MOD-03 y R-LST-03). */
 const NAME_STOP: ReadonlySet<string> = new Set([...FW_SET, 'ingeniera', 'ingeniero', 'ing', 'abogada', 'abogado', 'abg',
   'licenciada', 'licenciado', 'lic', 'magistrada', 'magistrado', 'jueza', 'juez', 'profesora', 'profesor', 'prof']);
@@ -153,9 +163,26 @@ export function trimFunctionWords(s: string, kind: PartKind): { start: number; e
   const l = RE_TRIM_LEFT.exec(v.text);
   const ns = l === null ? 0 : l[0].length;
   const r = RE_TRIM_RIGHT.exec(v.text.slice(ns));
-  const ne = v.text.length - (r === null ? 0 : r[0].length);
+  let ne = v.text.length - (r === null ? 0 : r[0].length);
   if (ne <= ns) return null;
+  if (r !== null) ne = finDeSufijo(v.text, ns, ne);
   return toCanonicalSpan(v, ns, ne);
+}
+
+/**
+ * D-03 A · Si un sufijo societario empieza dentro de lo conservado [ns, ne), después de la primera palabra, y el recorte derecho
+ * lo cortó, devuelve su fin (todo lo que sigue ya era recortable: signos, blancos o palabras de función); si no, `ne`.
+ * «comercial ejemplo s.a.» → el recorte deja «comercial ejemplo s» y esto devuelve el fin de «s.a.». Tiempo lineal.
+ */
+function finDeSufijo(t: string, ns: number, ne: number): number {
+  const re = new RegExp(RE_SUFIJO_SOCIETARIO.source, RE_SUFIJO_SOCIETARIO.flags);
+  re.lastIndex = Math.max(ns + 1, ne - SUFIJO_MAX);
+  let fin = ne;
+  for (let m = re.exec(t); m !== null && m.index < ne; m = re.exec(t)) {
+    fin = Math.max(fin, m.index + m[0].length);
+    if (m[0].length === 0) re.lastIndex = m.index + 1;
+  }
+  return fin;
 }
 
 /**
@@ -275,6 +302,72 @@ function onlyNameWords(extra: string, kind: PartKind): boolean {
   return words.length > 0 && words.every((w) => RE_UPPER_INITIAL.test(w) && !NAME_STOP.has(fold(w, kind)));
 }
 
+/**
+ * D-03 B · ¿El texto del modelo es una variante de esa entidad de la lista? Lo responde quien conoce la lista del caso
+ * (pipeline.ts). Sin respuesta, nunca lo es: la variante débil cede.
+ */
+export type EsVarianteDe = (caseEntityId: CaseEntityId, texto: string) => boolean;
+const NUNCA_VARIANTE: EsVarianteDe = () => false;
+
+/** Lo que agrega el modelo entre lo de la entidad: nada, solo blancos o guion entre dos trozos, o palabras de nombre (paso 2). */
+function agregaSoloNombre(extra: string, kind: PartKind): boolean {
+  return /^[\s\-‐‑]*$/u.test(extra) || onlyNameWords(extra, kind);
+}
+
+/**
+ * D-03 B y E (7.11.1 paso 2, corrección del 31-oct) · Qué pasa con el tramo M del modelo frente a los candidatos de la lista
+ * que contiene (`over`: todo lo que se solapa con M y que M no puede pisar por precedencia).
+ * - `ceder`: cada variante débil de una palabra de una entidad de la que M no es variante se retira, y M entra entero (B).
+ * - `extender`: además, lo demás es de una sola entidad de la lista, con etiqueta compatible, y M solo le agrega palabras de
+ *   nombre: la entidad toma el tramo de M (E; con un solo trozo es el paso 2 de siempre).
+ * - `null`: cualquier otro solape (regla, manual, modelo, dos entidades, solape parcial, minúscula): M se parte como antes.
+ */
+type PlanModelo = { kind: 'ceder'; ceden: MergedCandidate[] } | { kind: 'extender'; ceden: MergedCandidate[]; propias: MergedCandidate[] };
+function planDelModelo(M: MergedCandidate, over: readonly MergedCandidate[], part: Part, esVariante: EsVarianteDe): PlanModelo | null {
+  const text = part.text;
+  const label = nerLabelOf(M);
+  if (M.source !== 'modelo' || (label !== 'PER' && label !== 'ORG') || over.length === 0) return null;
+  const textoM = text.slice(M.start, M.end);
+  const ceden: MergedCandidate[] = [];
+  const propias: MergedCandidate[] = [];
+  for (const X of over) {
+    if (X.source !== 'lista' || X.caseEntityId === undefined || X.start < M.start || X.end > M.end
+      || X.end - X.start >= M.end - M.start) return null;
+    if (esVarianteDebil(X, text.slice(X.start, X.end)) && !esVariante(X.caseEntityId, textoM)) ceden.push(X);
+    else propias.push(X);
+  }
+  if (propias.length === 0) return { kind: 'ceder', ceden };
+  const base = propias[0] as MergedCandidate;
+  const want: NerLabel | undefined = base.type === 'PERSONA' ? 'PER' : ORG_SET.has(base.type) ? 'ORG' : undefined;
+  if (want !== label || propias.some((p) => p.caseEntityId !== base.caseEntityId || p.type !== base.type)) return null;
+  for (const [s, e] of uncovered(M, propias)) if (!agregaSoloNombre(text.slice(s, e), part.kind)) return null;
+  return { kind: 'extender', ceden, propias };
+}
+
+/** E · La entidad de la lista toma el tramo de M (paso 2): confianza media, `extended`. Hereda del trozo de mayor prioridad. */
+function extension(M: MergedCandidate, propias: readonly MergedCandidate[]): MergedCandidate {
+  const L = [...propias].sort(byPriority)[0] as MergedCandidate;
+  return { ...L, start: M.start, end: M.end, confidence: 'media', score: NOMINAL.media, extended: true };
+}
+
+/**
+ * D-03 B en la fusión de una sola vez: antes del paso 2, la variante débil de otra entidad cede ante el tramo del modelo que la
+ * contiene, si después M entra entero o el paso 2 lo toma con un solo trozo de la lista (lo que `extendWithModel` sabe hacer).
+ */
+function cederVariantesDebiles(work: MergedCandidate[], part: Part, esVariante: EsVarianteDe): MergedCandidate[] {
+  let out = work;
+  const modelos = out.filter((c) => c.source === 'modelo').sort(byPriority);
+  for (const M of modelos) {
+    if (!out.includes(M)) continue;
+    const over = out.filter((X) => X !== M && X.source !== 'modelo' && overlaps(X, M.start, M.end));
+    const plan = planDelModelo(M, over, part, esVariante);
+    if (plan === null || plan.ceden.length === 0 || (plan.kind === 'extender' && plan.propias.length !== 1)) continue;
+    const fuera = new Set(plan.ceden);
+    out = out.filter((c) => !fuera.has(c));
+  }
+  return out;
+}
+
 /** Paso 2 · Lista extendida por el modelo. */
 function extendWithModel(work: MergedCandidate[], part: Part): MergedCandidate[] {
   const text = part.text;
@@ -362,12 +455,14 @@ const byStart = (a: MergedCandidate, b: MergedCandidate): number => a.start - b.
  * `precedence` según 6.2.4 (INV-R04), ordenados por inicio. Un validador fallido nunca descarta (INV-R03).
  * Ignora las banderas (las recorta generalize.ts, 6.4.6) y los candidatos de otra parte.
  */
-export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[], rules: RuleRegistry): MergedCandidate[] {
+export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[], rules: RuleRegistry,
+  esVariante: EsVarianteDe = NUNCA_VARIANTE): MergedCandidate[] {
   // 0. Normalizar: límites dentro de un par sustituto, duplicados exactos y precedencia.
   let work = normalize(part, cands);
   // 1. Unir por paréntesis (R-MRG-01).
   work = joinParen(work, part);
-  // 2. Extender la lista con el modelo.
+  // 2. Extender la lista con el modelo, después de que la variante débil de otra entidad ceda (D-03 B).
+  work = cederVariantesDebiles(work, part, esVariante);
   work = extendWithModel(work, part);
   // 3. Ordenar.
   work.sort(byPriority);
@@ -379,17 +474,32 @@ export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[]
 
 /**
  * 7.10.10 (pasos 2 y 3) · Fusión de una ventana del modelo: 7.11 solo sobre los candidatos nuevos `cands`, contra el
- * conjunto ya fusionado de la parte (`fused`, salida de una fusión anterior), que **no cambia**: lo ya emitido no se
- * extiende, no se parte y no se desplaza (INV-R12). Por eso el paso 2 (extender la lista) no se aplica aquí: la detección
- * de la lista ya existe y extenderla la modificaría. Un candidato nuevo contenido en uno ya fusionado se absorbe; uno que
- * se solapa en parte se parte y cada resto pasa por 7.11.2 (en el modelo, recorte R-MOD-03 y confianza baja), en vez de
- * perderse entero. Devuelve el conjunto completo (lo de antes, igual, más lo nuevo), sin solapes y ordenado por inicio.
+ * conjunto ya fusionado de la parte (`fused`, salida de una fusión anterior), que no se parte ni se desplaza (INV-R12).
+ * Un candidato nuevo contenido en uno ya fusionado se absorbe; uno que se solapa en parte se parte y cada resto pasa por
+ * 7.11.2 (en el modelo, recorte R-MOD-03 y confianza baja), en vez de perderse entero.
+ *
+ * Única excepción (D-03 B y E, 31-oct; INV-R12 con su excepción): el paso 2 también se aplica aquí contra lo ya fusionado
+ * (`planDelModelo`). Un candidato de la lista contenido en un tramo nuevo del modelo cede (variante débil de otra entidad) o
+ * toma el tramo (nombre de la lista incompleto). El reductor solo lo acepta si esa detección sigue `pendiente` y sin ninguna
+ * acción del usuario (`cedeAnteModelo` en entities.ts); si no, `incorporarModelo` vuelve a partir el tramo como antes.
+ * Devuelve el conjunto completo, sin solapes y ordenado por inicio.
  */
 export function mergeIntoFused(part: Part, fused: readonly MergedCandidate[], cands: readonly DetectionCandidate[],
-  rules: RuleRegistry): MergedCandidate[] {
-  const fixed = fused.filter((c) => c.partId === part.id).map((c) => ({ ...c }));
+  rules: RuleRegistry, esVariante: EsVarianteDe = NUNCA_VARIANTE): MergedCandidate[] {
+  let fixed = fused.filter((c) => c.partId === part.id).map((c) => ({ ...c }));
   let work = normalize(part, cands);
   work = joinParen(work, part);
   work.sort(byPriority);
+  // Paso 2 por ventana (D-03 B y E), del tramo del modelo de mayor prioridad al de menor.
+  const tomados = new Set<MergedCandidate>();
+  for (const M of work) {
+    const over = fixed.filter((X) => overlaps(X, M.start, M.end));
+    const plan = planDelModelo(M, over, part, esVariante);
+    if (plan === null) continue;
+    const fuera = new Set<MergedCandidate>([...plan.ceden, ...(plan.kind === 'extender' ? plan.propias : [])]);
+    fixed = fixed.filter((c) => !fuera.has(c));
+    if (plan.kind === 'extender') { fixed.push(finish(extension(M, plan.propias), part.text)); tomados.add(M); }
+  }
+  work = work.filter((c) => !tomados.has(c));
   return [...fixed, ...place(part, work, fixed, rules)].sort(byStart);
 }

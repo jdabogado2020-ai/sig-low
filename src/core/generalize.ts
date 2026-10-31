@@ -207,6 +207,13 @@ const DESP_W = v3([...DESP_ORD, 'civil', 'penal', 'laboral', 'administrativo', '
   'competencia', 'múltiple', 'control', 'garantías', 'conocimiento', 'adolescentes', 'menores', 'restitución', 'tierras', 'oral', 'seccional', 'local',
   'delegada', 'sala', 'policía', 'círculo', 'registro', 'urbana', 'mayor', 'de', 'del', 'y', 'para', 'la', 'las', 'los', 'el']);
 const ORD_SET = new Set(DESP_ORD.map(vistaLista));
+/**
+ * R-DESP-01 · Cabezas de despacho y palabras del nombre de un despacho, en vista `lista`. Las usa el mapeo 7.10.8 de los tramos
+ * de autoridad del modelo (pipeline.ts, D-03 C) para no duplicar el vocabulario.
+ */
+export const VOCABULARIO_DESPACHO: { readonly cabezas: ReadonlySet<string>; readonly palabras: ReadonlySet<string> } = {
+  cabezas: new Set(DESP_HEAD.map(vistaLista)), palabras: new Set(DESP_W.map(vistaLista)),
+};
 const FEM_HEAD = /^(alcald|personer|notar|comisar|inspecci|fiscal|registradur|curadur|jueza)/;
 const CTX_PERS = v3(['residente', 'residentes', 'residenciado', 'residenciada', 'domiciliado', 'domiciliada', 'domiciliados', 'vecino', 'vecina', 'vecinos',
   'natural', 'naturales', 'nacido', 'nacida', 'oriundo', 'oriunda', 'radicado', 'radicada', 'reside', 'vive', 'vivía', 'habita', 'ubicado', 'ubicada',
@@ -227,7 +234,8 @@ function getPlaceRegexes(): PlaceRegexes {
     mun04: new RegExp(`(?<![\\p{L}\\p{N}])(?<mun>${MUN})(?!\\p{L})${DEPX}`, 'gdu'),
     mun05: new RegExp(`(?:(?<en>(?<![\\p{L}\\p{N}])(?:en|EN|En)${H}+)|(?<ini>(?:^|(?<=\\n))${H}*(?=${MUN}(?!\\p{L})${H}*,${H}*\\d{1,2}${H}+de${H}+\\p{L}+)))`
       + `(?<mun>${MUN})(?!\\p{L})(?!${H}+(?!${DEP}(?!\\p{L}))\\p{Lu}\\p{Ll})`, 'gdu'),
-    desp: new RegExp(`(?<![\\p{L}\\p{N}])(?<head>${alt(DESP_HEAD)})(?!\\p{L})(?:${H}+(?:${alt(DESP_W)}|\\d{1,2}(?:\\.?[ºª]|o)?)(?!\\p{L})){0,12}?${H}+(?:de|del|De|Del|DE|DEL)${H}+(?<mun>${MUN})(?!\\p{L})`, 'gdu'),
+    // R-DESP-01 con el número del despacho de 1 a 3 cifras, con ceros a la izquierda («Juzgado 003 Civil Municipal»; D-03 D, 31-oct).
+    desp: new RegExp(`(?<![\\p{L}\\p{N}])(?<head>${alt(DESP_HEAD)})(?!\\p{L})(?:${H}+(?:${alt(DESP_W)}|\\d{1,3}(?:\\.?[ºª]|o)?)(?!\\p{L})){0,12}?${H}+(?:de|del|De|Del|DE|DEL)${H}+(?<mun>${MUN})(?!\\p{L})`, 'gdu'),
     dep01: new RegExp(`(?<![\\p{L}\\p{N}])(?<lab>${alt(['departamento', 'Departamento', 'DEPARTAMENTO', 'depto.', 'Depto.', 'DEPTO.', 'dpto.', 'Dpto.', 'DPTO.'])})${H}+(?:(?:de|del|DE|DEL)${H}+)?(?<dep>${DEP})(?!\\p{L})`, 'gdu'),
   };
   return placeRx;

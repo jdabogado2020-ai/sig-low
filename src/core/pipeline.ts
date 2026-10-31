@@ -20,11 +20,13 @@ import { rules as rRadicado } from './rules/radicado.ts';
 import { rules as rRotulados } from './rules/rotulados.ts';
 import { rules as rValores } from './rules/valores.ts';
 import { configurarDivipola, divipolaCodes } from './validators/radicado.ts';
-import { findCaseMentions } from './caselist.ts';
-import { mergeCandidates, mergeIntoFused, trimFunctionWords } from './merge.ts';
+import { findCaseMentions, variantOwners } from './caselist.ts';
+import { mergeCandidates, mergeIntoFused, PALABRAS_DE_FUNCION, trimFunctionWords } from './merge.ts';
+import type { EsVarianteDe } from './merge.ts';
 import { buildDetectionSet, cryptoIds, orgKey, personKey } from './entities.ts';
 import {
-  DIVIPOLA, candidateFromLoc, departamentosDeRadicados, detectPlaces, generalize, vistaLista,
+  DIVIPOLA, VOCABULARIO_DESPACHO, candidateFromLoc, departamentosDeRadicados, despachoDesdeTramo, detectPlaces, generalize,
+  municipiosPorNombre, vistaLista,
 } from './generalize.ts';
 import type { GenDetection, GeneralizeResult } from './generalize.ts';
 
@@ -100,17 +102,45 @@ export interface NerContext {
   base: readonly DetectionCandidate[];
   ids: IdSource;
 }
-export interface NerConversion { candidates: DetectionCandidate[]; flags: Flag[] }
+export interface NerConversion { candidates: DetectionCandidate[]; flags: Flag[]; suggestions: Suggestion[] }
+
+/** Cola que se le deja a R-DESP-01 tras un tramo de autoridad del modelo, para llegar al municipio («… Civil del Circuito de X»). */
+const DESPACHO_COLA = 160;
+/** Nombres de municipio de la DIVIPOLA de hasta 4 palabras («San José del Guaviare»). */
+const MUNICIPIO_MAX_PALABRAS = 4;
 
 /**
- * 7.10.7 a 7.10.9: filtros, mapeo de etiquetas y bandas de confianza. PER → PERSONA; ORG → EPS, IPS o EMPRESA (un despacho o una
- * autoridad no es detección: lo cubre la sugerencia de generalize.ts); LOC → municipio, departamento o LUGAR; OTH ≥ 0,90 → bandera.
- * `media` es lo más alto que puede dar el modelo. No lanza con tramos fuera de rango: los descarta.
+ * D-03 C, acotada (7.10.8; ver la reapertura -r4 de PB-2): la autoridad del modelo sin municipio que entra como `ENTIDAD` baja.
+ * Es un despacho local (cabeza de R-DESP-01: notaría, juzgado, alcaldía…) nombrado con una palabra propia, que no es del
+ * vocabulario del nombre de un despacho, ni de función, ni un número («Notaría Ejemplo»), y sin municipio de la DIVIPOLA.
+ * Quedan fuera las corporaciones nacionales («Corte Constitucional»), el despacho genérico («Juzgado Tercero Civil del Circuito»),
+ * el número solo («Notaría 999») y el que trae municipio (lo generaliza `DESPACHO_A_GENERICO`; si R-DESP-01 no lo alcanza, nada).
+ * Con la regla literal de D-03 C (toda autoridad sin sugerencia) el desarrollo daba 2 menciones más y 26 detecciones falsas.
+ */
+export function autoridadConNombrePropio(texto: string): boolean {
+  const w = vistaLista(texto).split(/[^\p{L}\p{N}]+/u).filter((x) => x !== '');
+  if (w.length < 2 || !VOCABULARIO_DESPACHO.cabezas.has(w[0] as string)) return false;
+  for (let i = 0; i < w.length; i++) {
+    for (let n = 1; n <= MUNICIPIO_MAX_PALABRAS && i + n <= w.length; n++) {
+      if (municipiosPorNombre(w.slice(i, i + n).join(' ')).length > 0) return false;
+    }
+  }
+  return w.slice(1).some((x) => x.length >= 2 && /\p{L}/u.test(x) && !VOCABULARIO_DESPACHO.palabras.has(x)
+    && !VOCABULARIO_DESPACHO.cabezas.has(x) && !PALABRAS_DE_FUNCION.has(x));
+}
+
+/**
+ * 7.10.7 a 7.10.9: filtros, mapeo de etiquetas y bandas de confianza. PER → PERSONA; ORG → EPS, IPS, despacho o autoridad, o
+ * EMPRESA; LOC → municipio, departamento o LUGAR; OTH ≥ 0,90 → bandera. Un despacho o una autoridad (R-MOD-07) con municipio no
+ * es detección: `despachoDesdeTramo` (R-DESP-01) da su sugerencia `DESPACHO_A_GENERICO` (D-03 D); sin municipio, entra como
+ * `ENTIDAD` con confianza baja (D-03 C, 31-oct). `media` es lo más alto que puede dar el modelo. No lanza con tramos fuera de
+ * rango: los descarta.
  */
 export function candidatesFromNer(spans: readonly NerSpan[], c: NerContext): NerConversion {
   const { part } = c;
   const text = part.text;
-  const out: NerConversion = { candidates: [], flags: [] };
+  const out: NerConversion = { candidates: [], flags: [], suggestions: [] };
+  let vistaReglas: SearchView | undefined;
   for (const sp of spans) {
     if (!(sp.score >= c.options.nerMinScore) || !Number.isInteger(sp.start) || !Number.isInteger(sp.end)) continue;
     if (sp.start < 0 || sp.end > text.length || sp.end <= sp.start || !NER_LABELS.has(sp.label)) continue;
@@ -142,8 +172,14 @@ export function candidatesFromNer(spans: readonly NerSpan[], c: NerContext): Ner
       case 'ORG': {
         if (RE_EPS.test(lista)) nuevo('EPS', orgKey(piece, part.kind), banda);
         else if (RE_IPS.test(lista)) nuevo('IPS', orgKey(piece, part.kind), banda);
-        else if (RE_AUTORIDAD.test(lista)) break;   // despacho o autoridad: lo cubre DESPACHO_A_GENERICO (generalize.ts)
-        else nuevo('EMPRESA', orgKey(piece, part.kind), banda);
+        else if (RE_AUTORIDAD.test(lista)) {
+          // R-DESP-01 desde el tramo, con cola hasta el municipio: la sugerencia debe tocar el tramo del modelo.
+          vistaReglas ??= buildSearchView(text, 'reglas', part.kind);
+          const sug = despachoDesdeTramo(part, vistaReglas, s, Math.min(text.length, e + DESPACHO_COLA), c.ids, { docDepCodes: c.docDepCodes });
+          const sp = sug?.target.kind === 'tramo' ? sug.target.span : undefined;
+          if (sug !== null && sp !== undefined && sp.start < e && s < sp.end) out.suggestions.push(sug);
+          else if (autoridadConNombrePropio(piece)) nuevo('ENTIDAD', orgKey(piece, part.kind), 'baja');
+        } else nuevo('EMPRESA', orgKey(piece, part.kind), banda);
         break;
       }
       case 'LOC': {
@@ -286,6 +322,8 @@ interface Session {
   docDeps: Map<PartId, string[]>;
   model: Map<PartId, DetectionCandidate[]>;
   modelFlags: Flag[];
+  modelSugs: Suggestion[];                      // DESPACHO_A_GENERICO de los tramos de autoridad del modelo (D-03 D)
+  esVariante: EsVarianteDe;                     // D-03 B, con la lista del caso
   merged: Map<PartId, MergedCandidate[]>;
   emitted: { det: Map<string, string>; ent: Map<string, string>; sug: Map<string, string>; flg: Map<string, string> };
   ventana: number;                              // la mayor ya incorporada
@@ -294,11 +332,44 @@ interface Session {
 
 type FullSet = DetectionSet & { spanEdits: SpanEdit[] };
 
+/**
+ * D-03 B · El tramo del modelo es una variante de la entidad de la lista si es una de sus variantes activas (7.9.1) o si todas
+ * sus palabras son palabras del nombre de la entidad («Ana Rojas» de «Ana Ficticia Rojas»). Si no, la variante débil cede.
+ */
+function variantesDeLaLista(caseList: readonly CaseEntity[]): EsVarianteDe {
+  const palabras = (t: string): string[] => vistaLista(t).split(/[^\p{L}\p{N}]+/u).filter((w) => w !== '');
+  const delNombre = new Map(caseList.map((e) => [e.id as string, new Set(palabras(e.name))]));
+  return (id, texto) => {
+    const nombre = delNombre.get(id);
+    if (nombre === undefined) return false;
+    const w = palabras(texto);
+    return (w.length > 0 && w.every((x) => nombre.has(x))) || variantOwners(texto, caseList).includes(id);
+  };
+}
+
+/**
+ * Una sugerencia de despacho del modelo entra si el barrido de generalize.ts no la hizo ya y no se solapa con ningún candidato
+ * fusionado (tampoco con un municipio, que ya lleva su propia sugerencia): una sugerencia no se solapa con una detección.
+ */
+function sugerenciasDelModelo(s: Session, p: Part, deGeneralize: readonly Suggestion[]): Suggestion[] {
+  const out: Suggestion[] = [];
+  const toca = (a: { start: number; end: number }, b: { start: number; end: number }): boolean => a.start < b.end && b.start < a.end;
+  const tramos = deGeneralize.flatMap((x) => (x.target.kind === 'tramo' ? [x.target.span] : []));
+  for (const x of s.modelSugs) {
+    if (x.target.kind !== 'tramo' || x.target.span.partId !== p.id) continue;
+    const sp = x.target.span;
+    if (tramos.some((t) => toca(t, sp)) || (s.merged.get(p.id) ?? []).some((m) => toca(m, sp))) continue;
+    tramos.push(sp);
+    out.push(x);
+  }
+  return out;
+}
+
 /** Conjunto completo con los candidatos de reglas, lista y modelo acumulados, con los ids ya emitidos por la sesión. */
 function construir(s: Session, cambiadas: ReadonlySet<PartId>): FullSet {
   for (const p of s.parts) {
     if (!cambiadas.has(p.id) && s.merged.has(p.id)) continue;
-    s.merged.set(p.id, mergeCandidates(p, [...(s.base.get(p.id) ?? []), ...(s.model.get(p.id) ?? [])], s.registry));
+    s.merged.set(p.id, mergeCandidates(p, [...(s.base.get(p.id) ?? []), ...(s.model.get(p.id) ?? [])], s.registry, s.esVariante));
   }
   const todos: MergedCandidate[] = s.parts.flatMap((p) => s.merged.get(p.id) ?? []);
   const doc: DocumentModel = { ...s.doc, parts: s.parts };
@@ -325,7 +396,7 @@ function construir(s: Session, cambiadas: ReadonlySet<PartId>): FullSet {
     }
     const r: GeneralizeResult = generalize({ part: p, view, detections: gens, options: { referenceDate: s.options.referenceDate as IsoDate },
       docDepCodes: s.docDeps.get(p.id) ?? [], ids: s.ids });
-    sugerencias.push(...r.suggestions);
+    sugerencias.push(...r.suggestions, ...sugerenciasDelModelo(s, p, r.suggestions));
     banderas.push(...r.flags);
   }
   const pasada2 = buildDetectionSet(doc, todos, { ...ctx, ids: replayIds(rec.log, s.ids), suggestions: sugerencias, flags: banderas });
@@ -460,7 +531,8 @@ export function createDetectHandler(deps: DetectDeps = {}): DetectHandler {
         if (await cooperar()) { post({ v: 1, reqId, kind: 'cancelado' }); return; }
       }
       const s: Session = {
-        doc, parts, caseList, table, options, registry, ids, base, docDeps, model: new Map(), modelFlags: [], merged: new Map(),
+        doc, parts, caseList, table, options, registry, ids, base, docDeps, model: new Map(), modelFlags: [], modelSugs: [],
+        esVariante: variantesDeLaLista(caseList), merged: new Map(),
         emitted: { det: new Map(), ent: new Map(), sug: new Map(), flg: new Map() }, ventana: 0, cerrada: false,
       };
       progreso('fusion', 0, 1);
@@ -502,7 +574,7 @@ export function createDetectHandler(deps: DetectDeps = {}): DetectHandler {
     if (ventana === undefined) {
       // Todo el resultado de una vez: sustituye lo acumulado del modelo.
       if (s.cerrada) return entrada();
-      s.model.clear(); s.modelFlags = [];
+      s.model.clear(); s.modelFlags = []; s.modelSugs = [];
       const cambiadas = new Set<PartId>(s.parts.map((x) => x.id));
       aplicarNer(s, ner);
       const { todo } = emitir(s, construir(s, cambiadas));
@@ -516,12 +588,14 @@ export function createDetectHandler(deps: DetectDeps = {}): DetectHandler {
       return;
     }
     s.ventana = ventana;
-    // 7.10.10 (2 y 3): 7.11 solo sobre los candidatos nuevos contra lo ya fusionado, que no cambia (INV-R12). Volver a fusionar
-    // todo dejaba que el paso 2 extendiera una detección de la lista ya emitida: el reductor descartaba la extensión (se solapa)
-    // y el tramo del modelo desaparecía entero, con sus palabras a la vista. Ahora se parte y cada resto pasa por 7.11.2.
+    // 7.10.10 (2 y 3): 7.11 solo sobre los candidatos nuevos contra lo ya fusionado (INV-R12). Volver a fusionar todo dejaba que
+    // el paso 2 extendiera una detección de la lista ya emitida y el reductor la descartaba entera. Ahora lo que se solapa se parte
+    // y cada resto pasa por 7.11.2, salvo la excepción de D-03 B y E (la lista cede ante el nombre completo o lo toma), que el
+    // reductor solo acepta con la detección de la lista intacta.
     for (const [pid, cands] of aplicarNer(s, ner)) {
       const part = s.parts.find((x) => x.id === pid) as Part;
-      s.merged.set(pid, mergeIntoFused(part, s.merged.get(pid) ?? mergeCandidates(part, s.base.get(pid) ?? [], s.registry), cands, s.registry));
+      s.merged.set(pid, mergeIntoFused(part, s.merged.get(pid) ?? mergeCandidates(part, s.base.get(pid) ?? [], s.registry, s.esVariante),
+        cands, s.registry, s.esVariante));
     }
     const { delta } = emitir(s, construir(s, new Set()));
     post({ v: 1, reqId, kind: 'resultado', payload: { kind: 'fusionar', set: delta, ventana } satisfies DetectResult });
@@ -536,6 +610,7 @@ export function createDetectHandler(deps: DetectDeps = {}): DetectHandler {
       const r = candidatesFromNer(spans, { part, options: s.options, docDepCodes: s.docDeps.get(pid) ?? [], base: s.base.get(pid) ?? [], ids: s.ids });
       s.model.set(pid, [...(s.model.get(pid) ?? []), ...r.candidates]);
       s.modelFlags.push(...r.flags);
+      s.modelSugs.push(...r.suggestions);
       nuevos.set(pid, [...(nuevos.get(pid) ?? []), ...r.candidates]);
     }
     return nuevos;

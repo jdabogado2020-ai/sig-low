@@ -5,10 +5,12 @@
 // la revisión sin duplicar la numeración de marcadores ni el orden de lectura. Este módulo es la puerta de entrada que usa la
 // interfaz: arma la acción, llama al reductor con `doc` (orden de lectura de las partes) y comprueba el contrato del delta
 // antes de despacharlo.
-import { applyReviewAction } from '../entities.ts';
+import { applyReviewAction, cedeAnteModelo, cryptoIds, esPropuestaSobreLista } from '../entities.ts';
 import type { ReviewContext } from '../entities.ts';
+import { resolveRemainder } from '../merge.ts';
 import type {
-  DetectionSet, ModelProgress, ModelState, PlanBCause, ReviewOutcome, ReviewState,
+  Detection, DetectionCandidate, DetectionId, DetectionSet, EntityId, ModelProgress, ModelState, PlanBCause, ReviewOutcome,
+  ReviewState, RuleRegistry, Span,
 } from '../types.ts';
 
 /** Causas del plan B en palabras (8.5.12, causas de M-172). La plantilla del informe legible las usa tal cual. */
@@ -33,10 +35,71 @@ export function modeloInicial(desactivado: boolean): ModelProgress {
  * `incorporar_modelo` (6.4.4): añade el delta de una ventana como detecciones `pendiente` de `source 'modelo'`. No toca lo ya
  * existente (INV-R12), ignora una ventana repetida o anterior sin sumar `revision`, y fija `modelo` en `en_curso` o `terminado`.
  * `ventana` cuenta ventanas incorporadas (1 a N), no el índice 0 del motor.
+ *
+ * Única excepción a INV-R12 (D-03 B y E, 31-oct): la fusión propone que una detección de la lista ceda ante el nombre completo
+ * del modelo o lo tome. El reductor la acepta solo si esa detección sigue intacta (`listaIntacta` en entities.ts). Si el usuario
+ * ya actuó sobre ella, aquí la propuesta vuelve a ser el tramo del modelo partido alrededor de lo que no cede, con cada resto
+ * por 7.11.2 (recorte R-MOD-03, confianza baja): el resultado de antes de D-03, sin perder el resto del nombre.
  */
 export function incorporarModelo(state: ReviewState, ventana: number, ventanasTotales: number, delta: DetectionSet,
   ctx: ReviewContext): ReviewOutcome {
-  return applyReviewAction(state, { kind: 'incorporar_modelo', ventana, ventanasTotales, delta }, ctx);
+  return applyReviewAction(state, { kind: 'incorporar_modelo', ventana, ventanasTotales, delta: restosDePropuestas(state, ventana, delta, ctx) }, ctx);
+}
+
+const SIN_REGLAS: RuleRegistry = { rerun: () => null };
+const tocan = (x: Span, d: Detection): boolean => x.partId === d.partId && x.start < d.end && d.start < x.end;
+
+/** Trozos de [d.start, d.end) que no cubre ningún tramo de `fuera`. */
+function libres(d: Detection, fuera: readonly Span[]): Array<[number, number]> {
+  const out: Array<[number, number]> = [];
+  let cur = d.start;
+  for (const x of [...fuera].sort((a, b) => a.start - b.start || a.end - b.end)) {
+    if (x.start > cur) out.push([cur, Math.min(x.start, d.end)]);
+    cur = Math.max(cur, x.end);
+    if (cur >= d.end) break;
+  }
+  if (cur < d.end) out.push([cur, d.end]);
+  return out.filter(([s, e]) => e > s);
+}
+
+/**
+ * Reemplaza en el delta cada propuesta sobre la lista que el reductor no aceptaría por sus restos como tramos del modelo. Con la
+ * ventana ignorada, sin el texto de las partes (`ctx.doc`) o sin propuestas, devuelve el mismo delta.
+ */
+function restosDePropuestas(state: ReviewState, ventana: number, delta: DetectionSet, ctx: ReviewContext): DetectionSet {
+  if (state.modelo.kind !== 'en_curso' || ventana <= state.modelo.ventanas || ctx.doc === undefined) return delta;
+  const partes = new Map(ctx.doc.parts.map((p) => [p.id, p]));
+  const ids = ctx.ids ?? cryptoIds;
+  const existentes = Object.values(state.detections);
+  let cambio = false;
+  const detections: Detection[] = [];
+  for (const d0 of delta.detections) {
+    const part = partes.get(d0.partId);
+    if (part === undefined || state.detections[d0.id] !== undefined || !esPropuestaSobreLista(state, d0)) { detections.push(d0); continue; }
+    const tocadas = existentes.filter((o) => tocan(o, d0));
+    const ediciones = Object.values(state.spanEdits).map((x) => x.span).filter((x) => tocan(x, d0));
+    if (tocadas.length > 0 && ediciones.length === 0 && tocadas.every((o) => cedeAnteModelo(state, o, d0, ctx.caseList))) {
+      detections.push(d0);
+      continue;
+    }
+    cambio = true;
+    const role = d0.type === 'PERSONA' ? 'OTRA_PERSONA' : undefined;
+    const base: DetectionCandidate = { partId: d0.partId, start: d0.start, end: d0.end, type: d0.type, source: 'modelo',
+      nerLabel: d0.nerLabel ?? (d0.type === 'PERSONA' ? 'PER' : 'ORG'), confidence: 'baja', score: d0.score, canonicalKey: d0.canonicalKey,
+      ...(role === undefined ? {} : { role }) };
+    for (const [s, e] of libres(d0, [...tocadas, ...ediciones])) {
+      const r = resolveRemainder(part, base, s, e, SIN_REGLAS);
+      if (r === null) continue;
+      const resto: Detection = { id: ids.next('det') as DetectionId, docId: d0.docId, partId: d0.partId, start: r.start, end: r.end,
+        text: part.text.slice(r.start, r.end), type: d0.type, source: 'modelo', precedence: r.precedence, confidence: r.confidence,
+        score: r.score, canonicalKey: r.canonicalKey, status: 'pendiente', entityId: '' as EntityId,
+        replacement: { proposedTemplate: d0.replacement.proposedTemplate } };
+      resto.nerLabel = base.nerLabel ?? 'PER';
+      if (role !== undefined) resto.role = role;
+      detections.push(resto);
+    }
+  }
+  return cambio ? { ...delta, detections } : delta;
 }
 
 /**

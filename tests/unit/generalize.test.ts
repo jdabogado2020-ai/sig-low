@@ -465,6 +465,28 @@ export const CASOS: Record<string, { pos: [string, string, Record<string, unknow
      ],
      "prioridad": "opcional_ciudad_grande"
     }
+   ],
+   [
+    "Juzgado 003 Civil Municipal de Ubaté",
+    "Juzgado 003 Civil Municipal de Ubaté",
+    {
+     "options": [
+      "Juzgado 003 Civil Municipal de un municipio de {m} [DEP:25]",
+      "un juzgado civil municipal"
+     ],
+     "prioridad": "recomendada"
+    }
+   ],
+   [
+    "ante el Juzgado 999 de Familia de Cartago",
+    "Juzgado 999 de Familia de Cartago",
+    {
+     "options": [
+      "Juzgado 999 de Familia de un municipio de {m} [DEP:76]",
+      "un juzgado de familia"
+     ],
+     "prioridad": "recomendada"
+    }
    ]
   ],
   "neg": [
@@ -487,6 +509,10 @@ export const CASOS: Record<string, { pos: [string, string, Record<string, unknow
    [
     "el juzgado de conocimiento",
     "sin municipio"
+   ],
+   [
+    "Juzgado 1234 Civil Municipal de Ubaté",
+    "número de 4 cifras (D-03 D: de 1 a 3)"
    ]
   ]
  },
