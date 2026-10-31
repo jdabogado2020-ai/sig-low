@@ -5,7 +5,8 @@
 // TypeScript puro: sin DOM, sin red, sin registro. Una exclusión NO es una regla de detección: no crea candidatos ni cambia
 // tipos (7.3.1). Se ejecuta DESPUÉS de las reglas, sobre la misma vista `reglas`, y protege tramos con nombre (`n`, `n2`, `fy`,
 // `y`, `m`): un candidato de regla cuyo tramo queda contenido por completo en un tramo protegido de su alcance se suprime
-// (`suprime`) o baja una muesca (`baja`). Un solape parcial no afecta. Nunca se aplica a la lista del caso, al modelo ni a lo manual.
+// (`suprime`) o baja una muesca (`baja`). Un solape parcial no afecta. `aplicarExclusiones` nunca se aplica a la lista del caso, al
+// modelo ni a lo manual; los tramos PER y ORG del modelo consultan aparte los contextos enteros (`contextosDelModelo`, PB-2-r6, D-06).
 //
 // Decisión sobre 7.5.5 y 7.6.4 (nota 2 de la tarjeta PA-7): `fechas.ts` y `valores.ts` (PA-6) ya aplican dentro de su `assess`
 // los contextos EXC-FECHA-A/B y UVT/umbral de cuantía, porque necesitan el contexto para fijar `context` ('norma', 'cita')
@@ -257,6 +258,80 @@ export function aplicarExclusiones(view: SearchView, candidatos: readonly Detect
     } else out.push(c);
   }
   return out;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// PB-2-r6 · Los contextos de exclusión aplicados a los tramos del modelo (D-06, tarjeta PB-2-r6, punto 2)
+// ---------------------------------------------------------------------------------------------------------------------
+/**
+ * Un contexto de exclusión en posiciones canónicas, para los tramos PER y ORG del modelo. A diferencia de los tramos protegidos
+ * (`tramosProtegidos`, que son los grupos con nombre y valen para los candidatos de regla), aquí cuenta el tramo entero de la
+ * coincidencia: «Ley 1122 de 2007», «Sentencia T-074 de 2020», «CIIU 8610». `inicio`: el tramo del modelo debe empezar justo en
+ * `start` (el objeto de una cita de artículo, más abajo).
+ */
+export interface ContextoDelModelo { exclusionId: string; modo: ModoExclusion; start: number; end: number; inicio?: true }
+
+/**
+ * Objeto de una cita de artículo (E-ART-01): «artículo 49 de la Constitución Política», «artículo 1546 del Código Civil». Tras la
+ * coincidencia de E-ART-01 y el conector, el nombre de la norma empieza por una cabeza de esta lista cerrada. Solo para el modelo:
+ * el tramo debe empezar ahí y no salir de la línea.
+ */
+const RE_OBJETO_ART = /^[ ]*,?[ ]+(?:de[ ]+la|del|de)[ ]+(?=(?:constituci[óo]n|c[óo]digo|estatuto|convenci[óo]n|pacto|carta[ ]+pol[íi]tica)(?![\p{L}\p{N}]))/iu;
+const OBJETO_MAX = 24;
+
+/**
+ * Contextos de exclusión de una parte para los tramos del modelo (7.3.1 «Otros usuarios»: la fusión con el modelo consulta las
+ * exclusiones). Son las coincidencias enteras de las exclusiones de alcance «todos» (las de alcance acotado son de tipos de
+ * identificación, que el modelo no produce), con su modo, más el objeto de las citas de artículo. Mismo motor y mismos topes de
+ * tiempo que `tramosProtegidos`.
+ */
+export function contextosDelModelo(view: SearchView, options: OpcionesExclusion = {}): ContextoDelModelo[] {
+  const out: ContextoDelModelo[] = [];
+  const now = options.now ?? Date.now;
+  const limite = options.maxMsPorExclusion ?? RULE_TIME_LIMIT_MS;
+  const texto = view.text;
+  for (const e of EXCLUSIONES) {
+    if (e.alcance !== '*') continue;
+    const re = regexDe(e);
+    re.lastIndex = 0;
+    const inicio = now();
+    for (;;) {
+      const m = re.exec(texto);
+      if (m === null) break;
+      if (m[0].length === 0) { re.lastIndex += 1; continue; }
+      const modo = typeof e.modo === 'function' ? e.modo(m, texto) : e.modo;
+      const fin = m.index + m[0].length;
+      if (modo !== null) {
+        const c = toCanonicalSpan(view, m.index, fin);
+        if (c.end > c.start) out.push({ exclusionId: e.id, modo, start: c.start, end: c.end });
+        if (e.id === 'E-ART-01') {
+          const o = RE_OBJETO_ART.exec(texto.slice(fin, fin + OBJETO_MAX));
+          if (o !== null) {
+            const nl = texto.indexOf('\n', fin + o[0].length);
+            const d = toCanonicalSpan(view, fin + o[0].length, nl < 0 ? texto.length : nl);
+            if (d.end > d.start) out.push({ exclusionId: e.id, modo, start: d.start, end: d.end, inicio: true });
+          }
+        }
+      }
+      if (now() - inicio > limite) {
+        options.onTimeout?.(e.id);
+        break;
+      }
+    }
+    re.lastIndex = 0;
+  }
+  return out;
+}
+
+/** El modo del contexto que contiene el tramo [start, end) del modelo, o null: `suprime` gana a `baja`. */
+export function exclusionDelModelo(contextos: readonly ContextoDelModelo[], start: number, end: number): ModoExclusion | null {
+  let modo: ModoExclusion | null = null;
+  for (const c of contextos) {
+    if (c.start > start || end > c.end || (c.inicio === true && c.start !== start)) continue;
+    if (c.modo === 'suprime') return 'suprime';
+    modo = 'baja';
+  }
+  return modo;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -13,7 +13,8 @@ import { buildSearchView } from './normalize.ts';
 import { runRules } from './rules/catalog.ts';
 import { rules as rContacto } from './rules/contacto.ts';
 import { rules as rDireccion } from './rules/direccion.ts';
-import { aplicarExclusiones, rules as rExclusiones } from './rules/exclusiones.ts';
+import { aplicarExclusiones, contextosDelModelo, exclusionDelModelo, rules as rExclusiones } from './rules/exclusiones.ts';
+import type { ContextoDelModelo } from './rules/exclusiones.ts';
 import { rules as rFechas, consolidarFechasSinAnio } from './rules/fechas.ts';
 import { rules as rIds } from './rules/ids.ts';
 import { rules as rRadicado } from './rules/radicado.ts';
@@ -21,7 +22,9 @@ import { rules as rRotulados } from './rules/rotulados.ts';
 import { rules as rValores } from './rules/valores.ts';
 import { configurarDivipola, divipolaCodes } from './validators/radicado.ts';
 import { findCaseMentions, variantOwners } from './caselist.ts';
-import { mergeCandidates, mergeIntoFused, PALABRAS_DE_FUNCION, resolveRemainder, trimFunctionWords } from './merge.ts';
+import {
+  completarSufijoSocietario, mergeCandidates, mergeIntoFused, PALABRAS_DE_FUNCION, resolveRemainder, trimFunctionWords,
+} from './merge.ts';
 import type { EsVarianteDe } from './merge.ts';
 import { buildDetectionSet, cryptoIds, orgKey, personKey } from './entities.ts';
 import {
@@ -101,6 +104,8 @@ export interface NerContext {
   /** Candidatos de reglas y lista de la parte: una regla de fecha que cubre un DATE lo descarta. */
   base: readonly DetectionCandidate[];
   ids: IdSource;
+  /** Contextos de exclusión de la parte para los tramos PER y ORG (PB-2-r6); si faltan, se calculan aquí. La sesión los guarda. */
+  contextos?: readonly ContextoDelModelo[];
 }
 export interface NerConversion { candidates: DetectionCandidate[]; flags: Flag[]; suggestions: Suggestion[] }
 
@@ -181,6 +186,7 @@ export function candidatesFromNer(spans: readonly NerSpan[], c: NerContext): Ner
   const text = part.text;
   const out: NerConversion = { candidates: [], flags: [], suggestions: [] };
   let vistaReglas: SearchView | undefined;
+  let contextos: readonly ContextoDelModelo[] | undefined = c.contextos;
   for (const sp of spans) {
     if (!(sp.score >= c.options.nerMinScore) || !Number.isInteger(sp.start) || !Number.isInteger(sp.end)) continue;
     if (sp.start < 0 || sp.end > text.length || sp.end <= sp.start || !NER_LABELS.has(sp.label)) continue;
@@ -197,10 +203,21 @@ export function candidatesFromNer(spans: readonly NerSpan[], c: NerContext): Ner
     if (mejor === null) continue;
     const rec = recortarBordes(text, mejor[0], mejor[1], part.kind);
     if (rec === null) continue;
-    const s = rec.start; const e = rec.end;
+    const s = rec.start;
+    // D-03 A con el punto que sigue (PF-3-r1, PB-2-r6): «Comercial Ejemplo S.A» + «.» → el tramo ORG toma el punto del sufijo.
+    const e = sp.label === 'ORG' ? completarSufijoSocietario(text, s, rec.end, part.kind) : rec.end;
     const piece = text.slice(s, e);
     if ([...piece.replace(/\s+/gu, '')].length < 2 || !/\p{L}/u.test(piece)) continue;
-    const banda: Confidence = sp.score >= c.options.nerHighThreshold ? 'media' : 'baja';
+    let banda: Confidence = sp.score >= c.options.nerHighThreshold ? 'media' : 'baja';
+    if (sp.label === 'PER' || sp.label === 'ORG') {
+      // PB-2-r6 (D-06): los contextos de exclusión de PA-7 también valen para el modelo. Un tramo PER u ORG dentro de una norma,
+      // una sentencia o un código citados («Ley 1122 de 2007», «Sentencia T-074 de 2020», «CIIU 8610», «artículo 49 de la
+      // Constitución Política») se descarta (`suprime`) o baja una muesca (`baja`, 7.3.1).
+      contextos ??= contextosDelModelo(vistaReglas ??= buildSearchView(text, 'reglas', part.kind));
+      const ex = exclusionDelModelo(contextos, s, e);
+      if (ex === 'suprime') continue;
+      if (ex === 'baja') banda = 'baja';
+    }
     const nuevo = (type: DetectionCandidate['type'], key: string, confidence: Confidence, extra: Partial<DetectionCandidate> = {}): void => {
       out.candidates.push({ partId: part.id, start: s, end: e, type, source: 'modelo', nerLabel: sp.label, confidence, score: sp.score, canonicalKey: key, ...extra });
     };
@@ -371,6 +388,7 @@ interface Session {
   modelFlags: Flag[];
   modelSugs: Suggestion[];                      // DESPACHO_A_GENERICO de los tramos de autoridad del modelo (D-03 D)
   esVariante: EsVarianteDe;                     // D-03 B, con la lista del caso
+  contextosModelo: Map<PartId, readonly ContextoDelModelo[]>;   // PB-2-r6: exclusiones para los tramos PER y ORG
   merged: Map<PartId, MergedCandidate[]>;
   emitted: { det: Map<string, string>; ent: Map<string, string>; sug: Map<string, string>; flg: Map<string, string> };
   ventana: number;                              // la mayor ya incorporada
@@ -579,7 +597,7 @@ export function createDetectHandler(deps: DetectDeps = {}): DetectHandler {
       }
       const s: Session = {
         doc, parts, caseList, table, options, registry, ids, base, docDeps, model: new Map(), modelFlags: [], modelSugs: [],
-        esVariante: variantesDeLaLista(caseList), merged: new Map(),
+        esVariante: variantesDeLaLista(caseList), contextosModelo: new Map(), merged: new Map(),
         emitted: { det: new Map(), ent: new Map(), sug: new Map(), flg: new Map() }, ventana: 0, cerrada: false,
       };
       progreso('fusion', 0, 1);
@@ -654,7 +672,14 @@ export function createDetectHandler(deps: DetectDeps = {}): DetectHandler {
     for (const [pid, spans] of ner) {
       const part = s.parts.find((x) => x.id === pid);
       if (part === undefined) continue;   // parte excluida: el modelo no debería haberla procesado
-      const r = candidatesFromNer(spans, { part, options: s.options, docDepCodes: s.docDeps.get(pid) ?? [], base: s.base.get(pid) ?? [], ids: s.ids });
+      // Los contextos de exclusión de la parte (PB-2-r6) se calculan una vez por sesión y solo si llega un tramo PER u ORG.
+      let contextos = s.contextosModelo.get(pid);
+      if (contextos === undefined && spans.some((x) => x.label === 'PER' || x.label === 'ORG')) {
+        contextos = contextosDelModelo(buildSearchView(part.text, 'reglas', part.kind));
+        s.contextosModelo.set(pid, contextos);
+      }
+      const r = candidatesFromNer(spans, { part, options: s.options, docDepCodes: s.docDeps.get(pid) ?? [], base: s.base.get(pid) ?? [], ids: s.ids,
+        ...(contextos === undefined ? {} : { contextos }) });
       s.model.set(pid, [...(s.model.get(pid) ?? []), ...r.candidates]);
       s.modelFlags.push(...r.flags);
       s.modelSugs.push(...r.suggestions);

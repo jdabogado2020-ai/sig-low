@@ -614,6 +614,73 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
   });
 });
 
+describe('T-MO-12 · D-06 en la tubería: regla estructural, exclusiones para el modelo, expediente citado y sufijo (PB-2-r6)', () => {
+  async function detectarCon(texto: string, caseList: CaseEntity[]) {
+    const doc = documento([texto]);
+    const b = banco();
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await b.enviar('detectar', { sessionId: 'ses_1', doc, caseList, table: TABLA, options: OPCIONES }));
+    const ctx: ReviewContext = { table: TABLA, caseList, doc, ids };
+    return { b, doc, set: det.set, ctx };
+  }
+
+  it('INV-R02 INV-R12 D-06 decisión 5: el correo y el barrio salen enteros con el marcador de la regla aunque la lista tenga una palabra dentro, también tras una ventana', async () => {
+    const T = 'La demandante Ana Ejemplo Rojas vive en el barrio Altos del Ejemplo. Escriba a notificaciones@ferreteria-ejemplo.test hoy.';
+    const caseList = refreshVariants([newCaseEntity('Ana Ejemplo Rojas', 'persona', 'DEMANDANTE', ids) as CaseEntity,
+      newCaseEntity('Ferretería Ejemplo S.A.S.', 'organizacion', 'EMPRESA', ids) as CaseEntity]);
+    const { b, doc, set, ctx } = await detectarCon(T, caseList);
+    // Con el código anterior: «Ejemplo» (apellido suelto) y «ferreteria-ejemplo» (razón social sin sufijo) partían la regla, y
+    // «Altos del», «notificaciones@» y «.test» quedaban a la vista.
+    expect(set.detections.map((d) => `${d.type}:${d.source}:${d.text}`).sort())
+      .toEqual(['BARRIO:regla:Altos del Ejemplo', 'CORREO:regla:notificaciones@ferreteria-ejemplo.test', 'PERSONA:lista:Ana Ejemplo Rojas']);
+    // Una ventana del modelo con un ORG dentro del correo y un LOC dentro del barrio: no entra nada y lo de antes no cambia (INV-R12).
+    const w1 = await ventana(b, 1, 1, { [PRT(1)]: [tramo(T, 'ferreteria-ejemplo', 'ORG', 0.9), tramo(T, 'Altos', 'LOC', 0.6)] });
+    expect(w1.detections).toEqual([]);
+    const st0 = estadoDe(doc, set);
+    const st = bien(incorporarModelo(st0, 1, 1, w1, ctx));
+    expect(st.detections).toEqual(st0.detections);
+    const out = render(doc, st).sections[0]!.text;
+    for (const x of ['Altos', 'Ejemplo', 'notificaciones', 'ferreteria', 'test']) expect(out.includes(x), x).toBe(false);
+  });
+
+  it('D-06 los contextos de exclusión de PA-7 valen para los tramos PER y ORG del modelo: normas, sentencias, códigos y la norma de una cita de artículo', () => {
+    const t = 'Según la Ley 1122 de 2007, el Decreto 1072 de 2015, la Sentencia T-074 de 2020, el artículo 49 de la Constitución Política, '
+      + 'el artículo 1546 del Código Civil y la actividad CIIU 8610, Comercial Ejemplo S.A.S. y Ana Ficticia Rojas firmaron el artículo 3 '
+      + 'del contrato con Ferretería Ejemplo.';
+    const part = documento([t]).parts[0]!;
+    const spans = ['Ley 1122 de 2007', 'Decreto 1072 de 2015', 'Sentencia T-074 de 2020', 'Constitución Política', 'Código Civil', 'CIIU 8610',
+      'Comercial Ejemplo S.A.S.', 'Ferretería Ejemplo'].map((x) => tramo(t, x, 'ORG', 0.9));
+    spans.push(tramo(t, 'Ana Ficticia Rojas', 'PER', 0.9), tramo(t, 'Ley 1122', 'PER', 0.9));
+    const conv = candidatesFromNer(spans, { part, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    // Con el código anterior entraban los seis primeros como EMPRESA y «Ley 1122» como PERSONA.
+    expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}`))
+      .toEqual(['EMPRESA:Comercial Ejemplo S.A.S.', 'EMPRESA:Ferretería Ejemplo', 'PERSONA:Ana Ficticia Rojas']);
+  });
+
+  it('D-06 R-RAD_ADMIN-03 no toma el expediente de tutela citado como precedente (F31); el radicado citado sigue con su bandera CITA_JURISPRUDENCIAL (F32) y el expediente propio entra', async () => {
+    const T = 'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004, donde se amparó un caso análogo. '
+      + 'La Corte Suprema de Justicia, en el proceso con radicado 73001-31-03-999-2019-00022-00, recordó el principio de integralidad.\n'
+      + 'Expediente: T-9.000.001';
+    const { set } = await detectarCon(T, []);
+    const exp = T.indexOf('T-9.000.004');
+    // Con el código anterior: RADICADO_ADMIN «T-9.000.004».
+    expect(set.detections.filter((d) => d.start < exp + 'T-9.000.004'.length && exp < d.end).map((d) => d.type)).toEqual([]);
+    const rad = set.detections.find((d) => d.type === 'RADICADO');
+    expect(rad?.text).toBe('73001-31-03-999-2019-00022-00');
+    expect(set.flags.some((f) => f.type === 'CITA_JURISPRUDENCIAL' && f.detectionId === rad?.id)).toBe(true);
+    expect(set.detections.find((d) => d.text === 'T-9.000.001')?.type).toBe('RADICADO_ADMIN');
+  });
+
+  it('D-03 A con el punto que sigue (PF-3-r1): el ORG del modelo que termina en «S.A» justo antes del punto lo toma; el sufijo completo y el PER no', () => {
+    const t = 'Pagaron Comercial Ejemplo S.A. y Ferretería Ficticia SAS. Firmó Ana R.';
+    const part = documento([t]).parts[0]!;
+    const conv = candidatesFromNer([tramo(t, 'Comercial Ejemplo S.A', 'ORG', 0.9), tramo(t, 'Ferretería Ficticia SAS', 'ORG', 0.9),
+      tramo(t, 'Ana R', 'PER', 0.9)], { part, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    // Con el código anterior: «Comercial Ejemplo S.A», sin el punto, que el gold sí incluye.
+    expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}`))
+      .toEqual(['EMPRESA:Comercial Ejemplo S.A.', 'EMPRESA:Ferretería Ficticia SAS', 'PERSONA:Ana R']);
+  });
+});
+
 describe('T-MO-12 · cancelación y progreso', () => {
   it('INV-W08 tras cancelar a mitad del documento, detect no envía más progreso ni resultado, responde cancelado y la sesión no existe', async () => {
     const partes = Array.from({ length: 6 }, (_, i) => `Parte ${i + 1}: Pedro Prueba Ejemplo, C.C. 100000000${i}.`);

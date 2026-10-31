@@ -4,6 +4,7 @@
 // nunca descarta. La DIVIPOLA la configura el worker con `configurarDivipola` (validators/radicado.ts).
 import type { Confidence, RuleContext, RuleSpec, RuleVerdict } from '../types.ts';
 import { ANIO_RADICADO_MINIMO, radicado } from '../validators/radicado.ts';
+import { esContextoDeCita } from './exclusiones.ts';
 
 const R = String.raw;
 
@@ -176,9 +177,16 @@ function assessRadAdmin02(m: RegExpExecArray, ctx: RuleContext): RuleVerdict | n
   return { confidence: 'alta', canonicalKey: `RAD:${digitos(cap.v)}`, labelId: 'ROT-NI' };
 }
 
+/**
+ * R-RAD_ADMIN-03 · El expediente de la Corte («T-9.000.001»). PB-2-r6 (D-06): el expediente citado como precedente («invoco la
+ * Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004») no se toma. El criterio de cita es el único de E-CITA-01
+ * y R-CIT-01 (`esContextoDeCita`), el mismo que marca `CITA_JURISPRUDENCIAL` en los radicados; el expediente del propio caso
+ * («Expediente: T-9.000.001», «de la referencia») se sigue tomando.
+ */
 function assessRadAdmin03(m: RegExpExecArray, ctx: RuleContext): RuleVerdict | null {
   const cap = capturas(m, ctx);
   if (cap === null) return null;
+  if (esContextoDeCita(ctx.view.text, cap.ns, cap.ne)) return null;
   const verdict: RuleVerdict = { confidence: cap.l !== undefined ? 'media' : 'baja', canonicalKey: `RAD:${alfanum(cap.v)}` };
   if (cap.l !== undefined) verdict.labelId = 'ROT-EXP';
   return verdict;

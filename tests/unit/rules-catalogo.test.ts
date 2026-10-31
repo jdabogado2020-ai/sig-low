@@ -48,7 +48,9 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { buildSearchView } from '../../src/core/normalize.ts';
 import { CUE_WINDOW, RULE_TIME_LIMIT_MS, runRules } from '../../src/core/rules/catalog.ts';
-import { EXCLUSIONES, aplicarExclusiones, esContextoDeCita, tramosProtegidos } from '../../src/core/rules/exclusiones.ts';
+import {
+  EXCLUSIONES, aplicarExclusiones, contextosDelModelo, esContextoDeCita, exclusionDelModelo, tramosProtegidos,
+} from '../../src/core/rules/exclusiones.ts';
 import { generalize } from '../../src/core/generalize.ts';
 import type { GenDetection } from '../../src/core/generalize.ts';
 import { configurarDivipola, divipolaCodes } from '../../src/core/validators/radicado.ts';
@@ -512,6 +514,28 @@ describe('T-MO-01 · E-CITA-01: un radicado de jurisprudencia citada genera la b
   });
 });
 
+describe('T-MO-01 · PB-2-r6 (D-06): los contextos de exclusión enteros para los tramos PER y ORG del modelo', () => {
+  it('contextosDelModelo da la coincidencia entera de las exclusiones de alcance «todos», con su modo, y la norma de una cita de artículo', () => {
+    const t = 'Según la Ley 1122 de 2007, la Sentencia T-074 de 2020, el artículo 49 de la Constitución Política y 10 SMMLV; el artículo 3 '
+      + 'del contrato con Ferretería Ejemplo.';
+    const cx = contextosDelModelo(buildSearchView(t, 'reglas', 'cuerpo'));
+    const de = (id: string): string[] => cx.filter((c) => c.exclusionId === id)
+      .map((c) => `${t.slice(c.start, c.end)}${c.inicio === true ? ':inicio' : ''}:${c.modo}`);
+    expect(de('E-NORMA-01')).toEqual(['Ley 1122 de 2007:suprime']);
+    expect(de('E-SENT-01')).toEqual(['Sentencia T-074 de 2020:suprime']);
+    expect(de('E-ART-01')).toEqual(['artículo 49:suprime',
+      'Constitución Política y 10 SMMLV; el artículo 3 del contrato con Ferretería Ejemplo.:inicio:suprime', 'artículo 3:suprime']);
+    expect(de('E-CANT-01')).toEqual(['10 SMMLV:baja']);
+    const en = (x: string): ReturnType<typeof exclusionDelModelo> => exclusionDelModelo(cx, t.indexOf(x), t.indexOf(x) + x.length);
+    expect(en('Constitución Política')).toBe('suprime');
+    expect(en('Ley 1122')).toBe('suprime');
+    expect(en('10 SMMLV')).toBe('baja');
+    // El objeto de la cita vale solo para el tramo que empieza en él; «del contrato» no es una norma de la lista cerrada.
+    expect(en('Ferretería Ejemplo')).toBeNull();
+    expect(en('Política')).toBeNull();
+  });
+});
+
 describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas y exclusiones)', () => {
   const N = 40_000;
   const entradas: Array<[string, string]> = [
@@ -671,6 +695,22 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     const correr = (): unknown => (camino === 'fechas' ? runRules(view, PART, reglas, 2026) : esContextoDeCita(texto, i, texto.length));
     const mejor = Math.min(...[0, 1, 2].map(() => { const t0 = performance.now(); correr(); return performance.now() - t0; }));
     expect(mejor).toBeLessThan(300);
+  }, 120_000);
+
+  // PB-2-r6 (D-06): los contextos para el modelo recorren las mismas exclusiones con su coincidencia entera y miran el objeto de una
+  // cita de artículo en una ventana fija; R-RAD_ADMIN-03 consulta `esContextoDeCita` (ventanas fijas) en cada expediente. Lineales.
+  it.each([
+    ['contextosDelModelo: «artículo 49 de la», tabuladores y «Constitución»', 'artículo 49 de la' + TB + 'Constitución Política', 'modelo'],
+    ['contextosDelModelo: citas de artículo encadenadas', 'artículo 1 de la Constitución Política, '.repeat(K / 40), 'modelo'],
+    ['contextosDelModelo: normas encadenadas con tabuladores', ('Ley 1122 de 2007' + '\t'.repeat(40)).repeat(K / 56), 'modelo'],
+    ['R-RAD_ADMIN-03 con el contexto de cita: expedientes citados encadenados', 'la Sentencia T-1 y el expediente T-9.000.001, '.repeat(K / 46), 'cita'],
+  ])('PB-2-r6 %s: 40.000 caracteres por debajo de 300 ms', async (_n, texto, camino) => {
+    const reglas = (await reglasDeModulos(['radicado'])).filter((r) => r.id === 'R-RAD_ADMIN-03');
+    const view = buildSearchView(texto, 'reglas', 'cuerpo');
+    const correr = (): unknown => (camino === 'modelo' ? contextosDelModelo(view) : runRules(view, PART, reglas, 2026));
+    const mejor = Math.min(...[0, 1, 2].map(() => { const t0 = performance.now(); correr(); return performance.now() - t0; }));
+    expect(mejor).toBeLessThan(300);
+    if (camino === 'cita') expect(runRules(view, PART, reglas, 2026)).toEqual([]);
   }, 120_000);
 
   it('el tope por exclusión corta, conserva lo hallado y avisa solo con el id', () => {

@@ -492,6 +492,28 @@
       "nota": "positivo del laboratorio 07a"
     },
     {
+      "texto": "Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004, donde se amparó un caso análogo.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r6 (D-06): expediente de tutela citado como precedente (F31): contexto de cita de E-CITA-01 y R-CIT-01"
+    },
+    {
+      "texto": "de 2015 y, en particular, el expediente\nT-9.000.004, donde se amparó un caso análogo, como lo dijo la Sentencia T-074 de 2020.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r6: la misma cita con el expediente tras un salto de línea (F40) y la sentencia después"
+    },
+    {
+      "texto": "Referencia: acción de tutela del expediente T-9.000.004 de la referencia, que cita la Sentencia T-074 de 2020.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "T-9.000.004", "ruleId": "R-RAD_ADMIN-03", "confidence": "media", "canonicalKey": "RAD:T9000004" }
+      ],
+      "nota": "PB-2-r6: el expediente del propio caso («de la referencia») se sigue tomando aunque la línea cite una sentencia"
+    },
+    {
       "texto": "Expediente D-99.001",
       "reglas": ["R-RAD_ADMIN-03"],
       "esperado": [
