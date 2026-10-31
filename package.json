@@ -5,7 +5,9 @@
   "description": "Anonimizador local para equipos jurídicos (Colombia).",
   "license": "Apache-2.0",
   "type": "module",
-  "engines": { "node": ">=26.0.0" },
+  "engines": {
+    "node": ">=26.0.0"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.worker.json && tsc --noEmit -p tsconfig.node.json",
     "lint": "eslint .",
@@ -19,7 +21,10 @@
     "check-invariantes": "node scripts/check-invariantes.mjs",
     "verify": "node scripts/verify.mjs",
     "verify:full": "node scripts/verify.mjs --full",
-    "serve": "node tests/e2e/server.mjs"
+    "serve": "node tests/e2e/server.mjs",
+    "medir": "node scripts/medir.ts",
+    "medir:rapido": "node scripts/medir.ts --rapido",
+    "veredicto": "node scripts/veredicto.ts"
   },
   "dependencies": {
     "@huggingface/tokenizers": "0.2.0",
