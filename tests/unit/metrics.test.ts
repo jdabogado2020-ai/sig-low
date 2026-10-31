@@ -5,8 +5,10 @@ import { describe, expect, it } from 'vitest';
 import {
   caracteresCopiados, claveParte, clasificarMenciones, codigoDeSalida, concordancia, construirInforme, coberturaAceptable, calcularFila,
   escanearResiduos, esExacta, esPositiva, esSolape, esVerdadera, evaluarDocumento, exceso, f2, gruposDeCierre, iou, nombreInforme, omisionesPermitidas,
-  razon, tablaTexto,
+  razon, tablaTexto, datoDe, FUNCION_RMOD03, SUFIJO_RLST05, valoresDelEscaner,
 } from '../../scripts/metrics.ts';
+import { LST } from '../../src/core/caselist.ts';
+import { PALABRAS_DE_FUNCION } from '../../src/core/merge.ts';
 import type {
   BanderaMedida, CorridaInfo, DeteccionMedida, EntradaDocumento, GoldAnnotation, GoldEntity, SalidaParte, SegmentoSalida, SugerenciaMedida,
 } from '../../scripts/metrics.ts';
@@ -397,8 +399,9 @@ describe('T-ME-01 · residuos y omisiones (10.3.4)', () => {
     ]);
   });
 
-  it('una persona de la lista con todo copiado es residuo, no omisión (el motor la conocía)', () => {
-    const g = { ...GOLD, anotaciones: [a('l1', 'PERSONA', 150, 160, 'EB')] };
+  it('una persona de la lista con todo copiado es residuo, no omisión (el motor la conocía por el nombre de la lista)', () => {
+    const conNombre = GOLD.entidades.map((e) => (e.id === 'T01-EB' ? { ...e, canonico: `LISTA:${'x'.repeat(10)}` } : e));
+    const g = { ...GOLD, entidades: conNombre, anotaciones: [a('l1', 'PERSONA', 150, 160, 'EB')] };
     const s: SalidaParte[] = [{ parte: PARTE, texto: 'x'.repeat(170), segmentos: [seg(0, 170)] }];
     expect(clasificarMenciones(g, s).map((x) => x.clase)).toEqual(['residuo']);
   });
@@ -550,5 +553,91 @@ describe('T-ME-01 · AJ-4 (D-12): la fila de banderas cuenta las positivas que t
     const ev = ENT_AJ4([CARGO, CITA], [bandera('CITA_JURISPRUDENCIAL', 500, 530), bandera('CARGO', 100, 120)]);
     expect(ev.generalizacion).toEqual([{ tipo: 'CARGO', esperadas: 1, presentes: 1 }]);
     expect(ev.negativos).toMatchObject({ total: 0, citasConRadicado: 1, banderasPresentes: 1 });
+
+// PB-4-r1 · La clasificación por posición cuenta como residuo lo que el motor conocía y la salida dejó (10.3.4). Una prueba por cada
+// causa de la medición en la tabla de causas de la bitácora. Textos ficticios; las posiciones van sobre una parte inventada.
+describe('T-ME-01 · PB-4-r1 · residuo = dato que el motor conocía (10.3.4)', () => {
+  const seg = (a: number, b: number, tipo?: DataType): SegmentoSalida =>
+    ({ outStart: a, outEnd: b, partStart: a, partEnd: b, ...(tipo === undefined ? {} : { detectionId: `det-${a}`, tipo }) });
+  /** Una mención con su texto en [start, start + texto.length). */
+  const m = (id: string, tipo: DataType, start: number, texto: string, entidad: string): GoldAnnotation =>
+    ({ ...ann(id, tipo, start, start + texto.length, entidad), texto });
+  const clases = (anotaciones: GoldAnnotation[], segmentos: SegmentoSalida[], entidades: GoldEntity[] = []): string[] =>
+    clasificarMenciones({ docId: 'T01', conjunto: 'desarrollo', entidades, anotaciones },
+      [{ parte: PARTE, texto: '·'.repeat(400), segmentos }]).map((x) => `${x.g.id.slice(4)}:${x.clase}`);
+
+  it('datoDe · blancos, signos, palabras de función, tratamientos, sufijo societario y menos de 3 dígitos no llevan dato', () => {
+    expect(datoDe(' ')).toEqual({ palabras: [], iniciales: [], digitos: '' });
+    expect(datoDe(' de ')).toEqual({ palabras: [], iniciales: [], digitos: '' });
+    expect(datoDe(' DEL ')).toEqual({ palabras: [], iniciales: [], digitos: '' });
+    expect(datoDe('Doña ')).toEqual({ palabras: [], iniciales: [], digitos: '' });
+    expect(datoDe(' S.A.S.')).toEqual({ palabras: [], iniciales: [], digitos: '' });
+    expect(datoDe('(+57)\n').digitos).toBe('57');
+    expect(datoDe('S. P. R.')).toEqual({ palabras: [], iniciales: ['s', 'p', 'r'], digitos: '' });
+    expect(datoDe('Ficticio Del Río')).toEqual({ palabras: ['ficticio', 'rio'], iniciales: [], digitos: '' });
+  });
+
+  it('FUNCION_RMOD03 y SUFIJO_RLST05 son las de merge.ts y caselist.ts (una sola fuente; aquí se copian porque el script corre con Node)', () => {
+    expect([...FUNCION_RMOD03].sort()).toEqual([...PALABRAS_DE_FUNCION].sort());
+    expect(SUFIJO_RLST05).toBe(LST.SUFIJO);
+  });
+
+  it('lo copiado sin dato no es residuo: el blanco entre dos marcadores, el punto de «S. P. R.», «Doña», « de » y el prefijo «+57»', () => {
+    const an = [
+      m('a', 'PERSONA', 0, 'Ana Lucía Prueba Navarro', 'EA'),       // [PERSONA_1] [EMPRESA_1]: solo el blanco copiado
+      m('b', 'PERSONA', 30, 'S. P. R.', 'EB'),                      // «S. P. R» reemplazado; el punto copiado
+      m('c', 'PERSONA', 40, 'Doña Gloria', 'EC'),                   // «Gloria» reemplazado
+      m('d', 'MUNICIPIO', 60, 'Santiago de Cali', 'ED'),            // «Santiago» y «Cali» reemplazados
+      m('e', 'TELEFONO', 80, '+57\n318 000 0002', 'EE'),            // el número reemplazado; el prefijo copiado
+    ];
+    const s = [seg(0, 9, 'PERSONA'), seg(9, 10), seg(10, 24, 'EMPRESA'), seg(24, 30), seg(30, 37, 'PERSONA'), seg(37, 45),
+      seg(45, 51, 'PERSONA'), seg(51, 60), seg(60, 68, 'PERSONA'), seg(68, 72), seg(72, 76, 'MUNICIPIO'), seg(76, 84), seg(84, 96, 'TELEFONO'), seg(96, 400)];
+    // Con el código anterior las cinco eran residuo (un carácter copiado cualquiera bastaba).
+    expect(clases(an, s)).toEqual(['a:protegida', 'b:protegida', 'c:protegida', 'd:protegida', 'e:protegida']);
+  });
+
+  it('lo que el motor nunca vio es omisión: el apodo «mi mamá» de una persona reemplazada y el «Banco» que tocó el apellido de otra', () => {
+    const an = [
+      m('a1', 'PERSONA', 0, 'Olga Lucía Prueba Cruz', 'EA'), m('a2', 'PERSONA', 40, 'mi mamá', 'EA'),
+      m('b1', 'PROVEEDOR', 60, 'Banco Ejemplo', 'EB'),
+    ];
+    const s = [seg(0, 22, 'PERSONA'), seg(22, 66), seg(66, 73, 'PERSONA'), seg(73, 400)];
+    expect(clases(an, s)).toEqual(['a1:protegida', 'a2:omision', 'b1:omision']);
+  });
+
+  it('es residuo lo que el motor conocía: la forma reemplazada en otra mención, el nombre de la lista, las cifras del mismo titular y los límites cortos', () => {
+    const an = [
+      m('a1', 'PROVEEDOR', 0, 'Banco Ejemplo', 'EA'), m('a2', 'PROVEEDOR', 20, 'Banco Ejemplo', 'EA'),   // a1 entera reemplazada; a2 a medias
+      m('b1', 'PERSONA', 40, 'Ficticio Londoño', 'EB'),                                                // de la lista, sin reemplazar
+      m('c1', 'PERSONA', 60, 'Ejemplo Pérez', 'EC'),                                                   // «Pérez» reemplazado: límites cortos
+      m('d1', 'RADICADO', 80, '05001-40-03-919-2021-00023-00', 'ED'), m('d2', 'RADICADO', 120, '05001-40-03-919-2021-00023-00', 'ED'),
+      m('e1', 'PERSONA', 160, 'A. E. O.', 'EE'), m('e2', 'PERSONA', 170, 'Alejandro Ejemplo Orozco', 'EE'),
+    ];
+    const s = [seg(0, 13, 'EMPRESA'), seg(13, 26), seg(26, 33, 'PERSONA'), seg(33, 68), seg(68, 73, 'PERSONA'), seg(73, 80),
+      seg(80, 109, 'RADICADO'), seg(109, 170), seg(170, 194, 'PERSONA'), seg(194, 400)];
+    const entidades = [ent('EB', 'PERSONA', { enLista: true, canonico: 'LISTA:Óscar Ficticio Londoño' })];
+    expect(clases(an, s, entidades)).toEqual(['a1:protegida', 'a2:residuo', 'b1:residuo', 'c1:residuo', 'd1:protegida', 'd2:residuo',
+      'e1:residuo', 'e2:protegida']);
+  });
+
+  it('el escáner busca las formas que el motor conocía y solo cuenta lo que cae sobre una mención positiva', () => {
+    const parte = 'Firmó Ana Prueba. Lo llamamos mi mamá. PERÍODO DE PRUEBA. Ana Prueba firmó. Prueba asintió.';
+    const texto = parte.replace('Ana Prueba', '[PERSONA_1]');                   // la primera mención, reemplazada
+    const at = (s: string, desde = 0): number => parte.indexOf(s, desde);
+    const an = [m('a1', 'PERSONA', 6, 'Ana Prueba', 'EA'), m('a2', 'PERSONA', at('mi mamá'), 'mi mamá', 'EA'),
+      m('a3', 'PERSONA', at('Ana Prueba', 10), 'Ana Prueba', 'EA'), m('a4', 'PERSONA', at('Prueba asintió'), 'Prueba', 'EA')];
+    const salida: SalidaParte[] = [{ parte: PARTE, texto, segmentos: [seg(0, 6),
+      { outStart: 6, outEnd: 17, partStart: 6, partEnd: 16, detectionId: 'det-6', tipo: 'PERSONA' },
+      { outStart: 17, outEnd: texto.length, partStart: 16, partEnd: parte.length }] }];
+    const gold = { docId: 'T01', conjunto: 'desarrollo' as const, entidades: [], anotaciones: an };
+    expect(valoresDelEscaner(gold, salida)).toEqual(['Ana Prueba', 'Prueba']);   // «mi mamá» nunca se reemplazó: no es una forma conocida
+    const conHits = (hitsResidue: Array<{ parte: string; start: number; end: number }>): boolean => construirInforme([{ gold, detecciones: [],
+      banderas: [], sugerencias: [], paginas: 1, salida, hitsResidue }], CORRIDA, { escanerEstricto: true }).residuos.concordanciaResidueTs;
+    const o = (s: string, desde = 0): { parte: string; start: number; end: number } =>
+      ({ parte: PARTE, start: texto.indexOf(s, desde), end: texto.indexOf(s, desde) + s.length });
+    expect(conHits([])).toBe(false);
+    // «PRUEBA» del título no cae sobre ninguna mención positiva: basta con que residue.ts vea a3 y a4.
+    expect(conHits([o('Ana Prueba'), o('Prueba asintió')])).toBe(true);
+    expect(conHits([o('Ana Prueba')])).toBe(false);
   });
 });

@@ -166,10 +166,19 @@ export async function revisarConOraculo(a: ArgsOraculo): Promise<ResultadoOracul
   const p1 = primera as { out: RenderedOutput; run: ResidueRun };
   const pn = ultima as { out: RenderedOutput; run: ResidueRun };
   const seccionDe = (i: number): string => dc.claveDe.get((p1.out.sections[i] as { partId: Detection['partId'] }).partId) as string;
+  // PB-4-r1 · Cada segmento reemplazado lleva el tipo de su detección: la clasificación de residuos distingue así los límites cortos
+  // de una detección del mismo dato de un trozo que cubrió, por coincidencia, la detección de otro (10.3.4).
+  const conTipo = (out: RenderedOutput): SalidaParte[] => salidaDe(dc, out).map((s) => ({
+    ...s,
+    segmentos: s.segmentos.map((g) => {
+      const t = g.detectionId === undefined ? undefined : st.detections[g.detectionId as Detection['id']]?.type;
+      return t === undefined ? g : { ...g, tipo: t };
+    }),
+  }));
   return {
     state: st,
-    salidaPrimera: salidaDe(dc, p1.out),
-    salidaFinal: salidaDe(dc, pn.out),
+    salidaPrimera: conTipo(p1.out),
+    salidaFinal: conTipo(pn.out),
     hitsPrimeraVuelta: p1.run.result.hits.length,
     hitsUltimaVuelta: pn.run.result.hits.length,
     hitsResidue: p1.run.result.hits.map((h) => ({ parte: seccionDe(h.sectionIndex), start: h.start, end: h.end })),

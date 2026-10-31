@@ -46,6 +46,8 @@ export interface SugerenciaMedida { kind: SuggestionKind; parte: string; start: 
 /** Segmento de la salida renderizada (6.9): un tramo sin `detectionId` ni `spanEditId` es texto copiado. */
 export interface SegmentoSalida {
   outStart: number; outEnd: number; partStart: number; partEnd: number; detectionId?: string; spanEditId?: string;
+  /** Tipo de la detección que reemplazó el segmento (PB-4-r1): lo usa la clasificación de residuos para los límites cortos. */
+  tipo?: DataType;
 }
 export interface TramoParte { parte: string; start: number; end: number }
 export interface SalidaParte { parte: string; texto: string; segmentos: SegmentoSalida[] }
@@ -601,33 +603,131 @@ export interface ResultadoResiduo {
 }
 
 /**
- * Clasifica cada mención gold positiva tras la revisión (10.3.4). **Protegida**: ningún carácter copiado. **Residuo**: algún
- * carácter copiado y el motor conocía el dato: la entidad está en la lista del caso, tiene otra mención tocada (≥ 1 carácter
- * fuera de lo copiado), un `mismoTitular` tocado, o la propia mención quedó tocada a medias (límites cortos). **Omisión**:
- * algún carácter copiado y el motor nunca conoció el dato.
+ * Copia de las palabras de función y tratamientos de R-MOD-03 (`PALABRAS_DE_FUNCION` de `src/core/merge.ts`) y del sufijo societario
+ * de R-LST-05 (`LST.SUFIJO` de `src/core/caselist.ts`). No se importan: esos módulos no cargan con Node sin Vite y este script sí
+ * (`node scripts/metrics.ts`, `medir --solo-veredicto`). Una prueba de tests/unit/metrics.test.ts exige que sean iguales.
+ */
+export const FUNCION_RMOD03: ReadonlySet<string> = new Set(('de|del|la|las|los|el|lo|y|e|o|u|a|al|en|por|para|con|sin|su|sus|que|se|un|una|'
+  + 'unos|unas|senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr|mrs|mr|ms').split('|'));
+export const SUFIJO_RLST05 = String.raw`(?:s\. ?a\. ?s\.?|s ?a ?s|s\. ?a\.?|s ?a|ltda\.?|limitada|e\. ?s\. ?p\.?|esp|e\. ?s\. ?e\.?|e\. ?u\.?|(?:&|y) ?cia\.?(?: ?s\. ?en ?c\.?)?|s\. ?en ?c\.?(?: ?s\.?)?|s\. ?c\. ?a\.?|sociedad por acciones simplificada|sociedad anonima|empresa unipersonal)`;
+const RE_SUFIJO_MED = new RegExp(String.raw`(?<![\p{L}\p{N}])` + SUFIJO_RLST05 + String.raw`(?![\p{L}\p{N}])`, 'gu');
+
+/** Lo que identifica en un trozo de texto (10.3.4, PB-4-r1): palabras, iniciales y dígitos. */
+export interface DatoCopiado { palabras: string[]; iniciales: string[]; digitos: string }
+
+/**
+ * El dato que lleva un trozo: palabras de 2 letras o más que no son de función ni tratamiento (R-MOD-03), iniciales («A.») y los
+ * dígitos. El sufijo societario (R-LST-05), los blancos y los signos no identifican; tampoco menos de 3 dígitos sueltos (la regla
+ * de remanentes de 7.11.2 descarta un trozo así). Sobre la vista `lista` (sin tildes ni mayúsculas).
+ */
+export function datoDe(texto: string): DatoCopiado {
+  const v = buildSearchView(texto, 'lista', 'cuerpo').text.replace(RE_SUFIJO_MED, ' ');
+  const palabras: string[] = [];
+  const iniciales: string[] = [];
+  for (const m of v.matchAll(/\p{L}+(\.)?/gu)) {
+    const w = m[0].replace(/\.$/u, '');
+    if (w.length === 1 && m[1] === '.') iniciales.push(w);
+    else if (w.length >= 2 && !FUNCION_RMOD03.has(w)) palabras.push(w);
+  }
+  return { palabras, iniciales, digitos: v.replace(/[^0-9]/gu, '') };
+}
+const conDato = (d: DatoCopiado): boolean => d.palabras.length > 0 || d.iniciales.length > 0 || d.digitos.length >= 3;
+
+/** Trozos [start, end) de la parte dentro de [g.start, g.end) que caen en segmentos copiados (`copiado`) o reemplazados. */
+function trozos(segmentos: readonly SegmentoSalida[], g: Tramo, copiado: boolean): Array<{ start: number; end: number; tipo?: DataType }> {
+  const out: Array<{ start: number; end: number; tipo?: DataType }> = [];
+  for (const s of segmentos) {
+    const reemplazado = s.detectionId !== undefined || s.spanEditId !== undefined;
+    if (reemplazado === copiado) continue;
+    const a = Math.max(s.partStart, g.start);
+    const b = Math.min(s.partEnd, g.end);
+    if (b > a) out.push({ start: a, end: b, ...(s.tipo === undefined ? {} : { tipo: s.tipo }) });
+  }
+  return out;
+}
+
+/**
+ * Lo que el motor conoce de cada entidad gold: el nombre que el usuario dio en la lista del caso (`canonico` «LISTA:<nombre>») y
+ * lo que reemplazó dentro de sus menciones (palabras, primeras letras y dígitos).
+ */
+interface Conocido { palabras: Set<string>; iniciales: Set<string>; digitos: string[] }
+
+function conocidoPorEntidad(gold: GoldDocument, segs: ReadonlyMap<string, readonly SegmentoSalida[]>): Map<string, Conocido> {
+  const out = new Map<string, Conocido>();
+  const nuevo = (): Conocido => ({ palabras: new Set<string>(), iniciales: new Set<string>(), digitos: [] });
+  for (const e of gold.entidades) {
+    if (!e.enLista || !e.canonico.startsWith('LISTA:')) continue;
+    const k = nuevo();
+    const d = datoDe(e.canonico.slice('LISTA:'.length));
+    for (const p of d.palabras) { k.palabras.add(p); k.iniciales.add(p.charAt(0)); }
+    out.set(e.id, k);
+  }
+  for (const g of gold.anotaciones.filter(esPositiva)) {
+    const k = out.get(g.entidad) ?? nuevo();
+    out.set(g.entidad, k);
+    let dig = '';
+    for (const t of trozos(segs.get(claveParte(g.parte)) ?? [], g, false)) {
+      const d = datoDe(g.texto.slice(t.start - g.start, t.end - g.start));
+      for (const p of d.palabras) { k.palabras.add(p); k.iniciales.add(p.charAt(0)); }
+      for (const i of d.iniciales) k.iniciales.add(i);
+      dig += d.digitos;
+    }
+    if (dig.length >= 3) k.digitos.push(dig);
+  }
+  return out;
+}
+
+/**
+ * Clasifica cada mención gold positiva tras la revisión (10.3.4). **Protegida**: lo copiado no lleva dato (ningún carácter copiado,
+ * o solo blancos, signos, palabras de función, sufijo societario o menos de 3 dígitos). **Residuo**: lo copiado lleva un dato que el
+ * motor conocía de esa entidad (o de un `mismoTitular`): una palabra, inicial o cifra que reemplazó en otra de sus menciones; o la
+ * mención quedó reemplazada a medias por una detección de su mismo grupo de tipo (límites cortos). **Omisión**: lo copiado lleva
+ * dato y el motor nunca lo conoció (un apodo que nada detectó, o una mención tocada solo por la detección de otro dato).
+ *
+ * PB-4-r1: antes bastaba un carácter copiado cualquiera y que la entidad tuviera alguna mención tocada o estuviera en la lista; eso
+ * contaba como residuo el blanco entre dos marcadores, el punto final de «S. P. R.», «Doña» o el apodo «mi mamá» que el motor
+ * nunca vio. La condición de 10.4.1 sigue siendo la misma: lo que el motor conoce no puede quedar en la salida.
  */
 export function clasificarMenciones(gold: GoldDocument, salida: readonly SalidaParte[]): ResultadoResiduo[] {
   const segs = new Map(salida.map((s) => [s.parte, s.segmentos]));
-  const positivas = gold.anotaciones.filter(esPositiva);
-  const medida = positivas.map((g) => {
-    const s = segs.get(claveParte(g.parte)) ?? [];
-    return { g, copiados: caracteresCopiados(s, g.start, g.end) };
-  });
-  const tocada = (m: { g: GoldAnnotation; copiados: number }): boolean => m.copiados < largo(m.g);
-  const tocadaPorEntidad = new Set<string>();
-  for (const m of medida) if (tocada(m)) tocadaPorEntidad.add(m.g.entidad);
+  const conocido = conocidoPorEntidad(gold, segs);
   const entPorId = new Map(gold.entidades.map((e) => [e.id, e]));
-  const conocida = (id: string): boolean => {
-    if (tocadaPorEntidad.has(id)) return true;
-    const e = entPorId.get(id);
-    if (e === undefined) return false;
-    if (e.enLista) return true;
-    return e.mismoTitular.some((o) => tocadaPorEntidad.has(o));
-  };
-  return medida.map((m) => {
-    if (m.copiados === 0) return { g: m.g, clase: 'protegida', copiados: 0 };
-    return { g: m.g, clase: conocida(m.g.entidad) ? 'residuo' : 'omision', copiados: m.copiados };
+  const vacio: Conocido = { palabras: new Set(), iniciales: new Set(), digitos: [] };
+  const deEntidad = (id: string): Conocido[] => [conocido.get(id) ?? vacio, ...(entPorId.get(id)?.mismoTitular ?? []).map((o) => conocido.get(o) ?? vacio)];
+  return gold.anotaciones.filter(esPositiva).map((g): ResultadoResiduo => {
+    const s = segs.get(claveParte(g.parte)) ?? [];
+    const copiados = caracteresCopiados(s, g.start, g.end);
+    if (copiados === 0) return { g, clase: 'protegida', copiados: 0 };
+    const dato = datoDe(trozos(s, g, true).map((t) => g.texto.slice(t.start - g.start, t.end - g.start)).join(' '));
+    if (!conDato(dato)) return { g, clase: 'protegida', copiados };
+    const ks = deEntidad(g.entidad);
+    const sabida = dato.palabras.some((p) => ks.some((k) => k.palabras.has(p)))
+      || dato.iniciales.some((i) => ks.some((k) => k.iniciales.has(i)))
+      || (dato.digitos.length >= 3 && ks.some((k) => k.digitos.some((d) => d.includes(dato.digitos) || (d.length >= 5 && dato.digitos.includes(d)))));
+    const grupo = grupoDeTipo(g.tipo);
+    const corta = trozos(s, g, false).some((t) => t.tipo !== undefined && grupoDeTipo(t.tipo) === grupo
+      && conDato(datoDe(g.texto.slice(t.start - g.start, t.end - g.start))));
+    return { g, clase: sabida || corta ? 'residuo' : 'omision', copiados };
   });
+}
+
+/**
+ * Textos gold que el escáner independiente busca (10.3.4, PB-4-r1): los de las menciones positivas cuyo dato el motor ya conocía
+ * entero (cada palabra, inicial y cifra está en lo que reemplazó de esa entidad). Un apodo que nada detectó no es una forma conocida.
+ */
+export function valoresDelEscaner(gold: GoldDocument, salida: readonly SalidaParte[]): string[] {
+  const segs = new Map(salida.map((s) => [s.parte, s.segmentos]));
+  const conocido = conocidoPorEntidad(gold, segs);
+  const out = new Set<string>();
+  for (const g of gold.anotaciones.filter(esPositiva)) {
+    const k = conocido.get(g.entidad);
+    const d = datoDe(g.texto);
+    if (k === undefined || !conDato(d)) continue;
+    const ok = d.palabras.every((p) => k.palabras.has(p)) && d.iniciales.every((i) => k.iniciales.has(i))
+      && (d.digitos.length < 3 || k.digitos.some((x) => x.includes(d.digitos)));
+    if (ok) out.add(g.texto);
+  }
+  return [...out];
 }
 
 export interface HallazgoEscaner { parte: string; start: number; end: number; forma: 'literal' | 'lista' | 'digitos' }
@@ -756,11 +856,19 @@ export function construirInforme(
     const omi = clases.filter((c) => c.clase === 'omision');
     omisionesTotal += omi.length;
     porDocumento.push({ docId: en.gold.docId, residuos: res.length, omisiones: omi.length, idsAnotacion: [...res, ...omi].map((c) => c.g.id) });
-    // El escáner busca el texto gold de las entidades con ≥ 1 mención reemplazada; solo para comparar posiciones.
-    const tocadas = new Set(primera.filter((c) => c.copiados < c.g.end - c.g.start).map((c) => c.g.entidad));
+    // El escáner busca los textos gold cuyo dato el motor ya conocía (`valoresDelEscaner`); solo para comparar posiciones. Cuenta lo
+    // que cae sobre una mención positiva (la clasificación por posición, 10.3.4): el mismo texto en otro sitio que el gold no marca
+    // («PERÍODO DE PRUEBA», un homónimo que el revisor rechazó) no es un residuo que `residue.ts` deba ver.
+    const valores = valoresDelEscaner(en.gold, en.salida);
     for (const s of en.salida) {
-      const valores = en.gold.anotaciones.filter((g) => esPositiva(g) && tocadas.has(g.entidad)).map((g) => g.texto);
-      escaneres.push(...escanearResiduos(s.parte, s.texto, [...new Set(valores)], 'cuerpo', opciones.escanerEstricto === true));
+      const positivas = en.gold.anotaciones.filter((g) => esPositiva(g) && claveParte(g.parte) === s.parte);
+      const sobreMencion = (h: HallazgoEscaner): boolean => s.segmentos.some((g) => g.detectionId === undefined && g.spanEditId === undefined
+        && g.outEnd > h.start && g.outStart < h.end && positivas.some((m) => {
+          const a = g.partStart + (Math.max(h.start, g.outStart) - g.outStart);
+          const b = g.partStart + (Math.min(h.end, g.outEnd) - g.outStart);
+          return Math.min(b, m.end) > Math.max(a, m.start);
+        }));
+      escaneres.push(...escanearResiduos(s.parte, s.texto, valores, 'cuerpo', opciones.escanerEstricto === true).filter(sobreMencion));
     }
   }
 
