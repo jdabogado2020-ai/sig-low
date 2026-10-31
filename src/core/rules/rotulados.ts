@@ -27,7 +27,9 @@ const L_MAT_D = R`matr[íi]cula(?![ ]+(?:mercantil|profesional|inmobiliaria|de[ 
 const L_HC = R`historia[ ]+cl[íi]nica|h\.[ ]?c\.(?:[ ]?l\.)?|hcl?|n[úu]mero[ ]+de[ ]+historia(?:[ ]+cl[íi]nica)?`;
 const L_AFIL_F = R`n[úu]mero[ ]+de[ ]+afiliaci[óo]n|(?:no\.|n\.?[ ]?º)[ ]*de[ ]+afiliaci[óo]n|afiliaci[óo]n|afiliad[oa][ ]+(?=n[úu]mero|no\.|n\.?[ ]?º|#)|c[óo]digo[ ]+de[ ]+afiliad[oa]|n[úu]mero[ ]+de[ ]+afiliad[oa]`;
 // PROPUESTA PA-ids-r1: «contrato» (de servicio) como rótulo débil de afiliación.
-const L_AFIL_D = R`carn[ée]t?|contratos?(?:[ ]+de[ ]+servicios?(?:[ ]+p[úu]blicos?)?)?`;
+// AJ-2: «afiliado 000000012» (sin «número» ni «No.» entre el participio y el valor) y el subsistema de seguridad social con su número
+// («en riesgos laborales con el número 0000005») son rótulos débiles de afiliación (media); el valor sigue exigiendo 4 a 25 caracteres con 3 dígitos.
+const L_AFIL_D = R`carn[ée]t?|contratos?(?:[ ]+de[ ]+servicios?(?:[ ]+p[úu]blicos?)?)?|afiliad[oa]|(?:riesgos[ ]+laborales|arl|pensi[óo]n|pensiones|cesant[íi]as|salud|eps|caja[ ]+de[ ]+compensaci[óo]n)[ ]+con[ ]+(?:el|la)[ ]+(?:n[úu]mero|c[óo]digo)`;
 const L_SALUD = R`n[úu]mero[ ]+de[ ]+autorizaci[óo]n|autorizaci[óo]n(?:[ ]+de[ ]+servicios?)?|orden[ ]+de[ ]+servicios?|n[úu]mero[ ]+de[ ]+prescripci[óo]n|prescripci[óo]n(?:[ ]+mipres)?|mipres|n[úu]mero[ ]+de[ ]+p[óo]liza|p[óo]liza(?:[ ]+(?:soat|de[ ]+seguros?|de[ ]+salud|de[ ]+responsabilidad[ ]+civil))?|n[úu]mero[ ]+de[ ]+siniestro|siniestro|reclamaci[óo]n`;
 const L_CTA_F = R`cuentas?(?![ ]+de[ ]+cobro)(?:[ ]+(?:de[ ]+ahorros?|corriente|de[ ]+n[óo]mina|bancaria|de[ ]+dep[óo]sito))?(?:[ ]+(?:(?:del|de|en(?:[ ]+el)?)[ ]+)?(?:banco(?:[ ]+[\p{L}&.]+){1,4}?|bancolombia|davivienda|bbva|ita[úu]|colpatria|scotiabank(?:[ ]+colpatria)?|av[ ]+villas|caja[ ]+social|bancoomeva|bancam[íi]a|mibanco|nequi|daviplata|lulo[ ]+bank|nu))?|cta\.?(?:[ ]+(?:de[ ]+)?(?:ahorros?|cte\.?|corriente))?|n[úu]mero[ ]+de[ ]+(?:la[ ]+)?cuenta`;
 // PROPUESTA PA-ids-r1: un rótulo de varias palabras puede partirse en un salto de línea de PDF («del Banco⏎Ejemplo S.A.»): en

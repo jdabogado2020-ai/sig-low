@@ -1537,6 +1537,106 @@
       "negativo": true,
       "esperado": [],
       "nota": "PROPUESTA PA-ids-r1: un párrafo en blanco no es un salto de PDF"
+    },
+    {
+      "texto": "se afiliará a EL TRABAJADOR en riesgos laborales con el número 0000005 y a salud",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "0000005",
+          "ruleId": "R-AFIL-01",
+          "confidence": "media",
+          "canonicalKey": "AFIL:0000005"
+        }
+      ],
+      "nota": "AJ-2: subsistema de seguridad social con «con el número» (rótulo débil)"
+    },
+    {
+      "texto": "los aportes se harán al fondo con el afiliado 000000012 y las cesantías",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "000000012",
+          "ruleId": "R-AFIL-01",
+          "confidence": "media",
+          "canonicalKey": "AFIL:000000012"
+        }
+      ],
+      "nota": "AJ-2: «afiliado» seguido del valor, sin «número» ni «No.» (rótulo débil)"
+    },
+    {
+      "texto": "a pensiones con el código AFP-004512",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "AFP-004512",
+          "ruleId": "R-AFIL-01",
+          "confidence": "media",
+          "canonicalKey": "AFIL:AFP004512"
+        }
+      ],
+      "nota": "AJ-2: «pensiones con el código»"
+    },
+    {
+      "texto": "afiliado No. EPS-000123 vigente",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "esperado": [
+        {
+          "type": "AFILIACION",
+          "texto": "EPS-000123",
+          "ruleId": "R-AFIL-01",
+          "confidence": "alta",
+          "canonicalKey": "AFIL:EPS000123"
+        }
+      ],
+      "nota": "AJ-2: «afiliado No.» sigue siendo rótulo fuerte (alta)"
+    },
+    {
+      "texto": "afiliada a EPS Ejemplo S.A. desde enero",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "AJ-2: sin número tras el rótulo"
+    },
+    {
+      "texto": "afiliado 12",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "AJ-2: 2 dígitos (filtro estructural de R-AFIL-01)"
+    },
+    {
+      "texto": "riesgos laborales con el número de contacto",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "AJ-2: sin dígitos"
+    },
+    {
+      "texto": "los afiliados al sistema fueron 2.000",
+      "reglas": [
+        "R-AFIL-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "AJ-2: «afiliados» (plural) no es el rótulo"
     }
   ]
 }

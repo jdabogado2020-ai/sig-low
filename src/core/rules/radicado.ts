@@ -27,7 +27,9 @@ const L_RAD = R`radicad[oa]|rad\.|rdo\.|radicaci[óo]n|expediente|exp\.|proceso(
 const L_RADC = R`rad(?:icad[oa])?\.?|radicaci[óo]n|expediente|exp\.|proceso|ref\.?`;
 // «consecutivo de salida / entrada» (PA-ids-r1): 7.2.4 describe R-RAD_ADMIN-01 como la regla de «consecutivos de salida y entrada».
 const L_RADA_F = R`radicad[oa](?:[ ]+(?:de[ ]+)?(?:salida|entrada|interno))?|consecutivo[ ]+de[ ]+(?:salida|entrada)|n[úu]mero[ ]+de[ ]+radicad[oa]|radicaci[óo]n|rad\.|pqrs?d?f?`;
-const L_RADA_D = R`solicitud|caso|ticket|consecutivo|petici[óo]n|queja|reclamo|referencia|ref\.`;
+// AJ-2: el número de un título valor («pagaré en blanco No. PG-2026-00075», «letra de cambio», «cheque») identifica el documento en el
+// sistema de quien lo emite, como un radicado administrativo: rótulo genérico (débil, confianza media). Sin dígitos tras el rótulo no hay detección.
+const L_RADA_D = R`solicitud|caso|ticket|consecutivo|petici[óo]n|queja|reclamo|referencia|ref\.|pagar[ée](?:[ ]+en[ ]+blanco)?|letra[ ]+de[ ]+cambio|cheque`;
 const L_NI = R`NI|N\.[ ]?I\.|[Rr]adicado[ ]+[Ii]nterno|RADICADO[ ]+INTERNO|[Nn][úu]mero[ ]+[Ii]nterno|N[ÚU]MERO[ ]+INTERNO`;
 const L_EXP = R`[Ee]xpediente|EXPEDIENTE|[Ee]xp\.|EXP\.`;
 

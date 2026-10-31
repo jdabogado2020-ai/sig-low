@@ -813,6 +813,81 @@
       "negativo": true,
       "esperado": [],
       "nota": "PROPUESTA PA-ids-r1: celdas de tabla en líneas sucesivas siguen sin formar radicado"
+    },
+    {
+      "texto": "suscribe el pagaré en blanco No. PG-2026-00075 con carta de instrucciones",
+      "reglas": [
+        "R-RAD_ADMIN-01"
+      ],
+      "esperado": [
+        {
+          "type": "RADICADO_ADMIN",
+          "texto": "PG-2026-00075",
+          "ruleId": "R-RAD_ADMIN-01",
+          "confidence": "media",
+          "canonicalKey": "RAD:PG202600075"
+        }
+      ],
+      "nota": "AJ-2: número de un título valor (pagaré en blanco), rótulo débil"
+    },
+    {
+      "texto": "la letra de cambio No. LC-2026-001234 vencida",
+      "reglas": [
+        "R-RAD_ADMIN-01"
+      ],
+      "esperado": [
+        {
+          "type": "RADICADO_ADMIN",
+          "texto": "LC-2026-001234",
+          "ruleId": "R-RAD_ADMIN-01",
+          "confidence": "media",
+          "canonicalKey": "RAD:LC2026001234"
+        }
+      ],
+      "nota": "AJ-2: letra de cambio"
+    },
+    {
+      "texto": "el cheque 0004567890 fue devuelto",
+      "reglas": [
+        "R-RAD_ADMIN-01"
+      ],
+      "esperado": [
+        {
+          "type": "RADICADO_ADMIN",
+          "texto": "0004567890",
+          "ruleId": "R-RAD_ADMIN-01",
+          "confidence": "media",
+          "canonicalKey": "RAD:0004567890"
+        }
+      ],
+      "nota": "AJ-2: cheque"
+    },
+    {
+      "texto": "el pagaré se firmó ante notario",
+      "reglas": [
+        "R-RAD_ADMIN-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "AJ-2: sin número tras el rótulo"
+    },
+    {
+      "texto": "el cheque No. 12 se devolvió",
+      "reglas": [
+        "R-RAD_ADMIN-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "AJ-2: menos de 6 caracteres / 4 dígitos (filtro de R-RAD_ADMIN-01)"
+    },
+    {
+      "texto": "el pagaré quedó guardado el 14 de marzo",
+      "reglas": [
+        "R-RAD_ADMIN-01"
+      ],
+      "negativo": true,
+      "esperado": [],
+      "nota": "AJ-2: una fecha no es el valor"
     }
   ]
 }
