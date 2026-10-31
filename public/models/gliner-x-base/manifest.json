@@ -1,0 +1,111 @@
+{
+  "formato": "sig-low/modelo",
+  "v": 1,
+  "id": "gliner-x-base",
+  "origen": "knowledgator/gliner-x-base",
+  "familia": "gliner",
+  "base": "google/mt5-base",
+  "cuantizacion": "q8",
+  "etiquetas": [
+    "person",
+    "organization",
+    "location"
+  ],
+  "umbral": 0.3,
+  "ventanaTokens": 512,
+  "solapePalabras": 37,
+  "maxTramoPalabras": 12,
+  "tokenizador": {
+    "prefijo": 0,
+    "sufijo": 1,
+    "cls": false
+  },
+  "archivo": "onnx/model_quantized.onnx",
+  "tamano": 302646302,
+  "sha256": "9850feb5ecd7ccfa3e4f1802b7c7d404f1b357cb7b6198cc014fb441e91ace43",
+  "trozos": [
+    {
+      "ruta": "onnx/model_quantized.onnx.part000",
+      "tamano": 25165824,
+      "sha256": "c14ba94b91a76dd75de995206a3ceb682feb8a4ca0a1bd2241a49e6659982d3e"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part001",
+      "tamano": 25165824,
+      "sha256": "2c5f01d2b71e5908e55ba294b48fa63c83a30a8cc577cb027b21200d1c5e7b5a"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part002",
+      "tamano": 25165824,
+      "sha256": "81f161ada7daf6a9960aa8ca515d54e9c227f3dbebc33be334d05b8020e1445f"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part003",
+      "tamano": 25165824,
+      "sha256": "6d11fa53372145e4aa9d82ce87c381b62d0558b5e21df5757bae1c5a211e2663"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part004",
+      "tamano": 25165824,
+      "sha256": "aae0450c94a34573f7d1813fad7687b3a9241b4262985a23800b32e42b2d6041"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part005",
+      "tamano": 25165824,
+      "sha256": "901bb8d2849afc1d48c9bedf5d3146d8101348d2696e2282a7e1a4dbd53ee901"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part006",
+      "tamano": 25165824,
+      "sha256": "9ea35b122ab11359177bfe40cb9dbedf4cb683d1911d0fe8ee7dfd503b32f104"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part007",
+      "tamano": 25165824,
+      "sha256": "f247ea6d6fc463bdcc4bf8e1ddb732db6b654cc4bbf44f9028f36165c5113ed0"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part008",
+      "tamano": 25165824,
+      "sha256": "b9915cbb784fa4e8abe58a2a8b1c1f9afda51d59cb29196326b01ff8ed03fe31"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part009",
+      "tamano": 25165824,
+      "sha256": "535190cef7971dbdc29aee91c1d7920220268a0c20925023c9846819f5c8388c"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part010",
+      "tamano": 25165824,
+      "sha256": "df16f8a57432ef910996a468133d56b64619b610c474999c44c1d7c0c737ff7e"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part011",
+      "tamano": 25165824,
+      "sha256": "5e6b57dcaf70ca8f97376a0b62347084b459e5f9dfea1ae2bab1ab6763af4f22"
+    },
+    {
+      "ruta": "onnx/model_quantized.onnx.part012",
+      "tamano": 656414,
+      "sha256": "0e44ac879cc87b49a3be4fe96eb1bd2aeef40b233b748aba64229dcb43823a25"
+    }
+  ],
+  "auxiliares": [
+    {
+      "ruta": "tokenizer.json",
+      "tamano": 16335050,
+      "sha256": "619d3790cf59a0e50afdf04239db19093568fbd8d806963e35d54a8fb71d099c"
+    },
+    {
+      "ruta": "tokenizer_config.json",
+      "tamano": 19602,
+      "sha256": "08540ea44a5b8bf6a155e89902698c642d623657996c6e4d898236b159589404"
+    }
+  ],
+  "licencia": "Apache-2.0",
+  "memoria": {
+    "wasmMb": 812,
+    "jsMb": 400,
+    "minimoDispositivoGb": 4
+  }
+}
