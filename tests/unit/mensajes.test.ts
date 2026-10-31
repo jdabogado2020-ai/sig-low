@@ -224,7 +224,9 @@ describe('INV-G13 dist/ (si el build existe)', () => {
   const licencias = GRUPOS_LICENCIAS.flatMap((g) => [g.titulo, g.intro ?? '', ...g.avisos.flatMap((a) => [a.componente, a.version ?? '', a.licencia, ...a.aviso])]);
 
   it('INV-G13 los archivos propios de dist/ no nombran proveedores de IA ni prometen garantías, salvo «Créditos y licencias»', () => {
-    if (!existsSync(join(dist, 'index.html'))) return; // el paso build de verify lo genera; la E2E @humo lo repite sobre el build recién hecho
+    // Solo con un build recién hecho: verify lo corre de nuevo tras el paso 4 con SIGLOW_DIST_RECIENTE=1. Un dist/ viejo de
+    // otra rama daría falsos hallazgos en el paso 3.
+    if (process.env.SIGLOW_DIST_RECIENTE !== '1' || !existsSync(join(dist, 'index.html'))) return;
     expect(hallazgosEnDist(dist, licencias)).toEqual([]);
   });
 });

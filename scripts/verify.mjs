@@ -47,6 +47,7 @@ const pasos = [
   ['3 test:unit', N, [bin.vitest, 'run']],
   ['4 build', N, [bin.vite, 'build']],
   ['5 check-dist', N, ['scripts/check-dist.mjs']],
+  ['5 INV-G13 sobre el build recién hecho', N, [bin.vitest, 'run', 'tests/unit/mensajes.test.ts', '-t', 'INV-G13 dist'], { SIGLOW_DIST_RECIENTE: '1' }],
   ['6 test:e2e:verify', N, [bin.playwright, 'test', '--grep', '@cero-red|@humo']],
   ['7 check-publico', N, ['scripts/check-publico.mjs']],
 ];
@@ -59,9 +60,9 @@ if (FULL) {
 }
 
 const inicio = Date.now();
-for (const [nombre, cmd, args] of pasos) {
+for (const [nombre, cmd, args, envExtra] of pasos) {
   const t = Date.now();
-  const r = spawnSync(cmd, args, { stdio: 'inherit', env: { ...process.env, PORT } });
+  const r = spawnSync(cmd, args, { stdio: 'inherit', env: { ...process.env, PORT, ...envExtra } });
   const s = ((Date.now() - t) / 1000).toFixed(1);
   if (r.status !== 0) { process.stderr.write(`\nverify: FALLA en «${nombre}» (${s} s)\n`); process.exit(1); }
   process.stdout.write(`verify: ✔ ${nombre} (${s} s)\n`);
