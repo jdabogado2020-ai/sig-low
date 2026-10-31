@@ -3,7 +3,7 @@
 // importar un `.siglow`, borrar un asunto o todos, quitar el modelo de apoyo, ver el estado de `persist()` y bloquear. Las frases
 // viven solo dentro de cada operación; los errores salen como `ErrorCode`, nunca como texto del sistema (F-07).
 import './boveda/boveda.css';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { ErrorCode } from '../core/types.ts';
 import { bloquear } from './bloqueo.ts';
 import { CampoFrase, CampoTexto, Casilla } from './campos.tsx';
@@ -14,7 +14,7 @@ import { alterno, idDeCodigo, mensajeDeCodigo, ROTULOS, t, X, type MessageId, ty
 import { fijarPreseleccion } from './boveda/preseleccion.ts';
 import { B } from './boveda/textos.ts';
 import { codigoDeError, puertos, type AsuntoListado as FilaBoveda } from './servicios.ts';
-import { vaciarEstadoM } from './sesion.ts';
+import { registrarLimpieza, useFraseEscrita, vaciarEstadoM } from './sesion.ts';
 
 interface Aviso { id: MessageId; params?: Readonly<Record<string, MsgParam>>; alterno?: number; rol: 'status' | 'alert' }
 
@@ -46,6 +46,7 @@ function CuerpoExportar({ fila, alTerminar, alAviso }: { fila: FilaBoveda; alTer
   const [mostrar, setMostrar] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  useFraseEscrita(frase !== '');   // M-20: con una frase escrita, el bloqueo por inactividad corre aunque no haya asunto abierto
   const exportar = async (): Promise<void> => {
     setOcupado(true);
     setError(undefined);
@@ -53,11 +54,13 @@ function CuerpoExportar({ fila, alTerminar, alAviso }: { fila: FilaBoveda; alTer
       // El adaptador descifra, vuelve a cifrar para el .siglow y descarga; la clave no queda en memoria (B-24).
       const r = await puertos.boveda.exportarAsunto(fila.asuntoId, frase.normalize('NFC'));
       alAviso({ id: 'M-114', params: { archivo: r.archivo }, rol: 'status' });
-      setFrase('');
       alTerminar();
     } catch (e) {
+      // Un bloqueo mientras se deriva (SESION_DESCONOCIDA) ya cerró este diálogo; si el aborto vino de otra pestaña, queda M-202.
       setError(mensajeDeCodigo(codigoDeError(e), 'tabla'));
     } finally {
+      // 6.6.5 y M-7: la frase no queda en el campo al terminar el intento, salga bien o mal.
+      setFrase('');
       setOcupado(false);
     }
   };
@@ -89,6 +92,7 @@ function CuerpoCambiarFrase({ fila, alTerminar, alAviso }: { fila: FilaBoveda; a
   const [error, setError] = useState<string | undefined>(undefined);
   const ev = evaluarFrase(nueva, repetir, fila.codigo);
   const puede = actual !== '' && ev.valida && sinRecuperacion && !ocupado;
+  useFraseEscrita(actual !== '' || nueva !== '' || repetir !== '');   // M-20
   const cambiar = async (): Promise<void> => {
     if (!puede) return;
     setOcupado(true);
@@ -96,14 +100,15 @@ function CuerpoCambiarFrase({ fila, alTerminar, alAviso }: { fila: FilaBoveda; a
     try {
       // El adaptador lo hace en la cola del asunto: pasa a la clave nueva si está abierto aquí y avisa a las otras pestañas (M-6).
       await puertos.boveda.cambiarFrase(fila.asuntoId, actual.normalize('NFC'), nueva.normalize('NFC'));
-      setActual('');
-      setNueva('');
-      setRepetir('');
       alAviso({ id: B.fraseCambiada, rol: 'status' });
       alTerminar();
     } catch (e) {
       setError(mensajeDeCodigo(codigoDeError(e), 'tabla'));
     } finally {
+      // 6.6.5 y M-7: las tres frases se vacían al terminar, salga bien o mal. Quien falla vuelve a escribirlas.
+      setActual('');
+      setNueva('');
+      setRepetir('');
       setOcupado(false);
     }
   };
@@ -227,6 +232,7 @@ function ImportarTabla({ alAviso, alImportado }: { alAviso: (a: Aviso) => void; 
   const [codigoNuevo, setCodigoNuevo] = useState('');
   const [ocupado, setOcupado] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  useFraseEscrita(frase !== '');   // M-20
 
   const olvidar = (): void => {
     archivo.current = null;
@@ -256,6 +262,7 @@ function ImportarTabla({ alAviso, alImportado }: { alAviso: (a: Aviso) => void; 
     if (bytes === null || frase === '' || ocupado) return;
     setOcupado(true);
     setError(undefined);
+    let pendiente = false;
     try {
       const r = await puertos.boveda.importar(bytes, frase.normalize('NFC'), opcion);
       olvidar();
@@ -263,9 +270,17 @@ function ImportarTabla({ alAviso, alImportado }: { alAviso: (a: Aviso) => void; 
       alImportado();
     } catch (e) {
       const codigo = codigoDeError(e);
-      if (codigo === 'ASUNTO_EXISTENTE') setConflicto(true);
-      else setError(t(mensajeDeImportacion(codigo)));
+      if (codigo === 'ASUNTO_EXISTENTE') {
+        // El conflicto se resuelve con un segundo paso (reemplazar o cambiar de código) que vuelve a usar la frase: es la misma
+        // operación. La frase sigue en el campo solo hasta que se resuelva o se cancele, y el bloqueo (inactividad o canal) la vacía.
+        pendiente = true;
+        setConflicto(true);
+      } else {
+        setError(t(mensajeDeImportacion(codigo)));   // tras un bloqueo, este formulario ya se volvió a montar vacío
+      }
     } finally {
+      // 6.6.5 y M-7: la frase se vacía al terminar, salga bien o mal; el archivo elegido se olvida si salió bien.
+      if (!pendiente) setFrase('');
       setOcupado(false);
     }
   };
@@ -326,7 +341,12 @@ export function Boveda() {
   const [persistida, setPersistida] = useState<boolean | null>(null);
   const [avisos, setAvisos] = useState<readonly Aviso[]>([]);
   const [dialogo, setDialogo] = useState<Dialogos>(null);
+  const [generacion, setGeneracion] = useState(0);
   const disponible = puertos.boveda.disponible();
+
+  // M-20: cada vaciado del estado [M] (bloqueo por el botón, la inactividad, el canal o pagehide; «Borrar todo») cierra el diálogo
+  // abierto y vuelve a montar «Importar», con las frases, «Mostrar» y el archivo elegido vacíos. Se registra antes de pintar.
+  useLayoutEffect(() => registrarLimpieza(() => { setDialogo(null); setGeneracion((n) => n + 1); }), []);
 
   const cargar = async (): Promise<void> => {
     try { setFilas(await puertos.boveda.listar()); } catch { setFilas([]); }
@@ -384,7 +404,7 @@ export function Boveda() {
         <p data-prueba="persistencia" data-persistente={persistida === true ? 'si' : 'no'}>{persistida === true ? t('M-107') : alterno('M-107', 0)}</p>
       </section>
 
-      <ImportarTabla alAviso={avisar} alImportado={() => { void cargar(); }} />
+      <ImportarTabla key={`importar-${generacion}`} alAviso={avisar} alImportado={() => { void cargar(); }} />
 
       <section aria-labelledby="h-otras">
         <h2 id="h-otras">{t(B.otrasAcciones)}</h2>

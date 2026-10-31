@@ -1,6 +1,6 @@
 // Armazón común (8.2.1): cabecera, pasos, avisos transversales (8.2.10), pie y diálogos de exportación e inactividad.
 import type { ComponentChildren } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { bloquear, cerrarAsunto, seguirTrabajando, useCuentaRegresiva } from './bloqueo.ts';
 import { Casilla, CampoFrase } from './campos.tsx';
 import { Dialogo } from './dialogo.tsx';
@@ -9,7 +9,7 @@ import { evaluarFrase } from './frase.ts';
 import { mostrarAvisoGlobal, ocultarAvisoGlobal, useAvisoGlobal } from './globales.ts';
 import { calcularHuellas, compilacionCorta } from './huellas.ts';
 import { mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
-import { obtenerListaDelCaso, obtenerTabla, quitarAvisoAsunto, agregarAvisoAsunto, useAvisosAsunto, useListaDelCaso } from './sesion.ts';
+import { obtenerListaDelCaso, obtenerTabla, quitarAvisoAsunto, agregarAvisoAsunto, registrarLimpieza, useAvisosAsunto, useFraseEscrita, useListaDelCaso } from './sesion.ts';
 import { codigoDeError, puertos } from './servicios.ts';
 import { useVersionCambiada } from './useActualizacion.ts';
 
@@ -52,6 +52,7 @@ function DialogoFrase({ intencion, onCerrar }: { intencion: Exclude<Intencion, n
   const [casilla, setCasilla] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  useFraseEscrita(frase !== '' || repetir !== '');   // M-20: la misma regla que en Inicio y en la Bóveda
   if (!asunto) return null;
   const ev = evaluarFrase(frase, nueva ? repetir : null, asunto.codigo);
   const puede = (nueva ? ev.valida : frase.length > 0) && (intencion !== 'pasar_a_guardar' || casilla) && !ocupado;
@@ -71,12 +72,13 @@ function DialogoFrase({ intencion, onCerrar }: { intencion: Exclude<Intencion, n
         quitarAvisoAsunto('M-14');
         agregarAvisoAsunto({ id: r.persisted ? 'M-21' : 'M-22' });
       }
-      setFrase('');
-      setRepetir('');
       onCerrar();
     } catch (e) {
       setError(mensajeDeCodigo(codigoDeError(e), 'tabla'));
     } finally {
+      // 6.6.5 y M-7: las frases se vacían al terminar el intento, salga bien o mal.
+      setFrase('');
+      setRepetir('');
       setOcupado(false);
     }
   };
@@ -256,6 +258,10 @@ export function Armazon({ pantalla, children }: { pantalla: Screen; children: Co
   const principal = useRef<HTMLElement>(null);
   const primera = useRef(true);
   useListaDelCaso();
+
+  // Cada vaciado del estado [M] (bloqueo, «Cerrar asunto», `pagehide`, «Borrar todo») cierra el diálogo del menú del asunto: sin
+  // esto, el `<dialog>` modal quedaba abierto y vacío sobre Inicio tras el bloqueo (observación de la revisión de PC-6-r2, Q5).
+  useLayoutEffect(() => registrarLimpieza(() => { setIntencion(null); }), []);
 
   // Cambio de pantalla: foco al h1 nuevo y anuncio «Pantalla: {nombre}» (8.2.1, 8.6.3). No en la carga inicial.
   useEffect(() => {

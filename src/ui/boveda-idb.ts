@@ -39,11 +39,15 @@ export interface BovedaCompleta extends BovedaPuerto {
    * lo único que hay sin la frase (6.7.1, V-35: solo se muestra; abrir, exportar y cambiar la frase lo contrastan con el cifrado).
    */
   listar(): Promise<AsuntoGuardado[]>;
-  /** Pasos 1 a 12 de 6.7.6. Sin opción y con conflicto → ASUNTO_EXISTENTE (M-113): «Reemplazar» o «Importar con otro código». */
+  /**
+   * Pasos 1 a 12 de 6.7.6. Sin opción y con conflicto → ASUNTO_EXISTENTE (M-113): «Reemplazar» o «Importar con otro código».
+   * Si `cerrar()` corre mientras se deriva (bloqueo), SESION_DESCONOCIDA y no se escribe nada (AJ-1).
+   */
   importar(archivo: ArrayBuffer | Uint8Array, frase: string, opcion?: { reemplazar: true } | { codigoNuevo: string }): Promise<{ asuntoId: AsuntoId; codigo: string; persisted: boolean | null }>;
   /**
    * «Exportar» desde la Bóveda sin abrir el asunto (B-24): descifra el registro con la frase (la comprobación de B-16), lo vuelve
-   * a cifrar para el .siglow con sal nueva y lo descarga. La clave no queda en memoria y los textos planos quedan en ceros.
+   * a cifrar para el .siglow con sal nueva y lo descarga. La clave no queda en memoria y los textos planos quedan en ceros. Si
+   * `cerrar()` corre mientras se deriva (bloqueo), SESION_DESCONOCIDA y no se descarga nada (AJ-1).
    */
   exportarAsunto(asuntoId: AsuntoId, frase: string): Promise<{ archivo: string }>;
   /**
@@ -51,7 +55,8 @@ export interface BovedaCompleta extends BovedaPuerto {
    * de derivar nada (INV-V10); la actual errónea → CONTRASENA_O_ARCHIVO. Sal, IV e `it` nuevos; `creado` del texto cifrado; `put`
    * condicional al registro exacto que se descifró (CUOTA_EXCEDIDA o otra frase dejan el registro como estaba). Si otra pestaña
    * guardó con la clave vieja mientras se derivaba (B-28), se vuelve a leer y a cifrar su tabla, sin derivar, hasta 3 intentos;
-   * después, ERROR_INTERNO (M-205, «Intente de nuevo») sin escribir. Al terminar, el asunto abierto en esta pestaña pasa a la
+   * después, ERROR_INTERNO (M-205, «Intente de nuevo») sin escribir. Si `cerrar()` corre mientras se deriva (bloqueo),
+   * SESION_DESCONOCIDA y tampoco se escribe (AJ-1). Al terminar, el asunto abierto en esta pestaña pasa a la
    * clave nueva y las otras pestañas descartan la vieja y se bloquean.
    */
   cambiarFrase(asuntoId: AsuntoId, actual: string, nueva: string): Promise<void>;
@@ -305,17 +310,25 @@ export const bovedaIdb: BovedaCompleta = {
   },
 
   async exportarAsunto(asuntoId, frase) {
+    const e = epoca;
     exigirContexto();
     const r = await leerRegistro(asuntoId);
     if (!r) throw new SiglowError('ENTRADA_INVALIDA');
     // Descifrar con la frase es la comprobación de B-16; la clave se descarta aquí mismo (nunca entra en `abiertos`).
     const { abierto: a, payload } = await descifrarRegistro(r, frase);
+    // Época (AJ-1): un bloqueo durante la derivación descarta el resultado, sin serializar el texto plano ni descargar nada.
+    exigirEpoca(e);
     const plano = serializarPayload(payloadDe({ caseList: payload.caseList, table: payload.table }, payload.asunto, __SIGLOW_VERSION__));
-    return descargarSiglow(await exportarSiglow(frase, asuntoId, a.it, plano, null));
+    // exportarSiglow deriva otra clave (sal nueva) y pone `plano` en ceros al terminar, también si falla.
+    const json = await exportarSiglow(frase, asuntoId, a.it, plano, null);
+    exigirEpoca(e);
+    return descargarSiglow(json);
   },
 
   cambiarFrase(asuntoId, actual, nueva) {
+    const e = epoca;   // AJ-1: se lee al pedir el cambio, también si espera turno en la cola del asunto
     return encolar(asuntoId, async () => {
+      exigirEpoca(e);
       exigirContexto();
       let r = await leerRegistro(asuntoId);
       if (!r) throw new SiglowError('ENTRADA_INVALIDA');
@@ -324,12 +337,15 @@ export const bovedaIdb: BovedaCompleta = {
       const leido = await descifrarRegistro(r, actual);                          // la frase actual abre el registro
       const viejo = leido.abierto;
       let payload = leido.payload;
+      exigirEpoca(e);                                                            // un bloqueo durante la derivación: nada se escribe
       const { clave, sal, it } = await claveParaFraseNueva(nueva, r.codigo);    // sal nueva e `it` recalibrado
       for (let intento = 1; ; intento++) {
+        exigirEpoca(e);
         // B-23: `creado` del texto cifrado, nunca del campo en claro.
         const asunto: DatosAsunto = { asuntoId, codigo: payload.asunto.codigo, creado: payload.asunto.creado, actualizado: ahora() };
         const nuevo = await sellarRegistro(clave, asunto, { sal, it },
           serializarPayload(payloadDe({ caseList: payload.caseList, table: payload.table }, asunto, payload.appVersion)));
+        exigirEpoca(e);                                                          // el último punto antes del `put`
         try {
           // En la misma transacción, solo si el registro es exactamente el que se descifró (misma clave y mismo encabezado):
           // ni otra frase ni un guardado concurrente con la clave vieja se pisan (M-6, B-28).
@@ -366,6 +382,7 @@ export const bovedaIdb: BovedaCompleta = {
   },
 
   async importar(archivo, frase, opcion) {
+    const e = epoca;   // AJ-1: un bloqueo mientras se deriva la clave descarta el resultado, sin escribir nada
     exigirContexto();
     const { asuntoId: idArchivo, plano } = await abrirSiglow(archivo, frase);   // pasos 1 a 10
     let payload: VaultPayload;
@@ -374,6 +391,7 @@ export const bovedaIdb: BovedaCompleta = {
     } finally {
       plano.fill(0);
     }
+    exigirEpoca(e);
     // Paso 12: conflicto por asuntoId o por código.
     let asuntoId = idArchivo;
     let codigo = payload.asunto.codigo;
@@ -397,6 +415,7 @@ export const bovedaIdb: BovedaCompleta = {
     const asunto: DatosAsunto = { asuntoId, codigo, creado: payload.asunto.creado, actualizado: t };
     const tabla = asuntoId === idArchivo ? payload.table : { ...payload.table, asuntoId };
     const r = await sellarRegistro(clave, asunto, { sal, it }, serializarPayload(payloadDe({ caseList: payload.caseList, table: tabla }, asunto, payload.appVersion)));
+    exigirEpoca(e);   // el último punto antes de tocar `abiertos`, `perdidos` o el almacén
     // Un asunto reemplazado que estuviera abierto pierde su sesión: su clave no abre el registro nuevo. En esta pestaña, su
     // siguiente guardado bloquea; las otras se bloquean ya.
     for (const id of borrar) { abiertos.delete(id); perdidos.add(id); }

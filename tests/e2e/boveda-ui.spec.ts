@@ -85,6 +85,8 @@ test.describe('Bóveda (PC-6)', () => {
     await d.getByLabel('Frase de paso del asunto', { exact: true }).fill('una frase equivocada ficticia');
     await d.getByRole('button', { name: 'Exportar tabla cifrada' }).click();
     await expect(d.getByText('Frase de paso incorrecta o archivo dañado.')).toBeVisible({ timeout: 30_000 });
+    // M-20 (6.6.5): la frase no queda en el campo tras el intento fallido; hay que escribirla otra vez.
+    await expect(d.getByLabel('Frase de paso del asunto', { exact: true })).toHaveValue('');
     await d.getByLabel('Frase de paso del asunto', { exact: true }).fill(FRASE);
     const [descarga] = await Promise.all([page.waitForEvent('download'), d.getByRole('button', { name: 'Exportar tabla cifrada' }).click()]);
     expect(descarga.suggestedFilename()).toMatch(/^sig-low-tabla-\d{8}-\d{4}\.siglow$/);
@@ -110,6 +112,7 @@ test.describe('Bóveda (PC-6)', () => {
     await fraseArchivo.fill('una frase equivocada ficticia');
     await importar.click();
     await expect(page.getByText('Frase de paso incorrecta o archivo dañado.')).toBeVisible({ timeout: 30_000 });
+    await expect(fraseArchivo).toHaveValue('');   // M-20: tampoco queda la frase de «Importar»
     await fraseArchivo.fill(FRASE);
     await importar.click();
     const conflicto = page.locator('[data-prueba="conflicto-importar"]');
@@ -158,7 +161,13 @@ test.describe('Bóveda (PC-6)', () => {
     await d.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
     await cambiar.click();
     await expect(d.getByText('Frase de paso incorrecta o archivo dañado.')).toBeVisible({ timeout: 30_000 });
+    // M-20 (6.6.5): las tres frases se vacían al terminar el intento, también si falla; se escriben otra vez.
+    for (const etiqueta of ['Frase de paso actual', 'Frase de paso. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.', 'Repita la frase de paso']) {
+      await expect(d.getByLabel(etiqueta, { exact: true })).toHaveValue('');
+    }
     await d.getByLabel('Frase de paso actual', { exact: true }).fill(FRASE);
+    await d.getByLabel('Frase de paso. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.', { exact: true }).fill(FRASE_NUEVA);
+    await d.getByLabel('Repita la frase de paso', { exact: true }).fill(FRASE_NUEVA);
     await cambiar.click();
     await expect(aviso(page, 'M-1560')).toContainText('La frase de paso cambió.', { timeout: 30_000 });
     await expect(d).toBeHidden();
