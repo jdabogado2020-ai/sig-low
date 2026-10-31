@@ -64,6 +64,11 @@ export interface EntradaDocumento {
   paginas: number;
   /** Salida en la primera pasada de residuos, ya revisada con el oráculo y antes de incorporar residuos (10.3.4). */
   salida?: SalidaParte[];
+  /**
+   * Salida tras el bucle de residuos (PG-3b). Si viene, la clasificación protegida / residuo / omisión (10.3.4) se hace sobre
+   * ella; `salida` (primera vuelta) se usa solo para el escáner independiente y la concordancia con `residue.ts`.
+   */
+  salidaFinal?: SalidaParte[];
   hitsPrimeraVuelta?: number;
   hitsUltimaVuelta?: number;
   /** Posiciones de los hallazgos de `residue.ts` en la primera vuelta (para `concordanciaResidueTs`). */
@@ -79,6 +84,16 @@ export interface MetricsRow {
   detecciones: number; verdaderas: number; falsas: number;
   precision: number; f2: number; coincidenciaExacta: number;
   umbral?: number; omisionesPermitidas?: number; cumple?: boolean;
+  /** Ids de anotación (nunca valores) de las menciones de la fila sin cobertura aceptable; alimenta `corpus/brechas.json` (PG-3b). */
+  idsNoCubiertas?: string[];
+}
+
+/** Grupos de consistencia de 10.4.1: identificadores, lista, fechas y valores, y personas / organizaciones del modelo. */
+export type GrupoConsistencia = 'ids' | 'lista' | 'fechas_valores' | 'modelo';
+export interface ConsistenciaGrupo { evaluadas: number; consistentes: number }
+export interface ConsistenciaPorGrupo extends Record<GrupoConsistencia, ConsistenciaGrupo> {
+  /** Colisiones cuyo `Entity` cubre al menos una entidad gold del grupo `modelo` (informativas); el resto son duras. */
+  colisionesDelModelo: number;
 }
 export interface MetricsReport {
   formato: 'sig-low/metricas'; v: 1;
@@ -90,6 +105,7 @@ export interface MetricsReport {
   filas: MetricsRow[];
   global: { precision: number; f2: number; paginas: number; fpPorPagina: number; maxFpPorPaginaDoc: number };
   consistencia: { evaluadas: number; consistentes: number; colisiones: number; fusiones: number };
+  consistenciaPorGrupo?: ConsistenciaPorGrupo;
   negativos: { total: number; conDeteccion: number; citasConRadicado: number; banderasPresentes: number };
   generalizacion: Array<{ tipo: string; esperadas: number; presentes: number }>;
   residuos: {
@@ -232,9 +248,18 @@ export interface EvaluacionDocumento {
   entidades: ResultadoEntidad[];
   paginas: number;
   consistencia: { evaluadas: number; consistentes: number; colisiones: number; fusiones: number };
+  consistenciaPorGrupo: ConsistenciaPorGrupo;
   negativos: { total: number; conDeteccion: number; citasConRadicado: number; banderasPresentes: number };
   generalizacion: Array<{ tipo: string; esperadas: number; presentes: number }>;
   falsas: number;
+}
+
+/** Grupo de consistencia de una entidad gold (10.4.1): lista; fechas y valores; modelo (personas y organizaciones fuera de la lista); resto. */
+export function grupoDeConsistencia(e: Pick<GoldEntity, 'tipo' | 'enLista'>): GrupoConsistencia {
+  if (e.enLista) return 'lista';
+  if (e.tipo === 'FECHA' || e.tipo === 'VALOR') return 'fechas_valores';
+  const g = grupoDeTipo(e.tipo);
+  return g === 'personas' || g === 'organizaciones' ? 'modelo' : 'ids';
 }
 
 const porParte = <T extends { parte: string }>(xs: readonly T[]): Map<string, T[]> => {
@@ -342,12 +367,23 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
   // Consistencia: entidades gold con ≥ 2 menciones cubiertas cuyas detecciones caen en la misma Entity.
   let evaluadas = 0;
   let consistentes = 0;
-  for (const [, ms] of mencPorEntidad) {
+  const entGold = new Map(gold.entidades.map((e) => [e.id, e]));
+  const porGrupo: ConsistenciaPorGrupo = {
+    ids: { evaluadas: 0, consistentes: 0 }, lista: { evaluadas: 0, consistentes: 0 },
+    fechas_valores: { evaluadas: 0, consistentes: 0 }, modelo: { evaluadas: 0, consistentes: 0 }, colisionesDelModelo: 0,
+  };
+  const grupoDe = (id: string): GrupoConsistencia => {
+    const e = entGold.get(id);
+    return e === undefined ? 'ids' : grupoDeConsistencia(e);
+  };
+  for (const [idEnt, ms] of mencPorEntidad) {
     const cubiertas = ms.filter((m) => m.cubierta);
     if (cubiertas.length < 2) continue;
     evaluadas++;
     const ents = new Set(cubiertas.map((m) => (m.cubridoras[0] as DeteccionMedida).entidad));
-    if (ents.size === 1) consistentes++;
+    const gr = porGrupo[grupoDe(idEnt)];
+    gr.evaluadas++;
+    if (ents.size === 1) { consistentes++; gr.consistentes++; }
   }
   // Colisiones: Entity cuyas detecciones cubren ≥ 2 entidades gold.
   const goldPorEntity = new Map<string, Set<string>>();
@@ -359,7 +395,11 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
     }
   }
   let colisiones = 0;
-  for (const [, s] of goldPorEntity) if (s.size >= 2) colisiones++;
+  for (const [, s] of goldPorEntity) {
+    if (s.size < 2) continue;
+    colisiones++;
+    if ([...s].some((id) => grupoDe(id) === 'modelo')) porGrupo.colisionesDelModelo++;
+  }
   const fusiones = resDet.filter((r) => r.fusion).length;
 
   // Negativos y citas con radicado.
@@ -410,6 +450,7 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
     entidades,
     paginas: entrada.paginas,
     consistencia: { evaluadas, consistentes, colisiones, fusiones },
+    consistenciaPorGrupo: porGrupo,
     negativos: { total: sinBanderaEsperada, conDeteccion, citasConRadicado: citas, banderasPresentes: citasConBandera },
     generalizacion: [...esperadas.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([tipo, v]) => ({ tipo, ...v })),
     falsas: resDet.filter((r) => r.falsa).length,
@@ -445,7 +486,10 @@ export function gruposDeCierre(vista: RunVista): GrupoDef[] {
     ...(['CC', 'NIT', 'RADICADO', 'TELEFONO', 'CORREO'] as const).map((t) => ({ grupo: t, tipos: [t] as readonly DataType[] })),
     { grupo: 'IDS_ROTULADOS', tipos: IDS_ROTULADOS },
     ...IDS_ROTULADOS.map((t) => ({ grupo: t, tipos: [t] as readonly DataType[] })),
+    { grupo: 'IDS_ROTULADOS_CON_ROTULO', tipos: IDS_ROTULADOS, donde: (g) => g.rotulado },
     { grupo: 'LISTA', tipos: ['PERSONA', ...ORGS], donde: lista },
+    { grupo: 'LISTA_CLASES_FUERTES', tipos: ['PERSONA', ...ORGS],
+      donde: (g) => g.enLista && (g.claseVariante === 'exacta' || g.claseVariante === 'sin_tildes' || g.claseVariante === 'mayusculas') },
     { grupo: 'PERSONA_FUERA', tipos: ['PERSONA'], donde: fuera },
     { grupo: 'ORG_FUERA', tipos: ORGS, donde: fuera },
     { grupo: `PERSONA_FUERA@${vista}`, tipos: ['PERSONA'], donde: fuera },
@@ -492,6 +536,7 @@ export function calcularFila(def: GrupoDef, evals: readonly EvaluacionDocumento[
     precision,
     f2: f2(precision, exhaustividadMencion),
     coincidenciaExacta: razon(cubiertas.filter((m) => m.exacta).length, cubiertas.length),
+    idsNoCubiertas: ms.filter((m) => !m.cubierta).map((m) => m.g.id),
   };
 }
 
@@ -551,62 +596,73 @@ export interface HallazgoEscaner { parte: string; start: number; end: number; fo
 
 /**
  * Escáner independiente de residuos (no es `residue.ts`): busca en el texto de salida cada valor dado en tres formas: literal,
- * vista `lista` y solo dígitos (rachas de ≥ 5 dígitos). Devuelve posiciones en el texto de salida. Los valores son los textos
+ * vista `lista` y solo dígitos (rachas numéricas de ≥ 5 dígitos, con a lo sumo un separador entre dígitos). Un hallazgo literal o de
+ * vista `lista` no puede ir pegado a otra letra o dígito, y uno de una sola palabra exige mayúscula inicial (solo con `estricto`,
+ * que usa el informe; sin él el escáner busca la subcadena pura). Devuelve posiciones en el texto de salida. Los valores son los textos
  * gold de las entidades con ≥ 1 mención reemplazada; este módulo no los guarda ni los imprime.
  */
-export function escanearResiduos(parte: string, textoSalida: string, valores: readonly string[], kind: PartKind = 'cuerpo'): HallazgoEscaner[] {
+export function escanearResiduos(
+  parte: string, textoSalida: string, valores: readonly string[], kind: PartKind = 'cuerpo', estricto = false,
+): HallazgoEscaner[] {
   const out: HallazgoEscaner[] = [];
   const vistaSalida = buildSearchView(textoSalida, 'lista', kind);
-  const soloDigitos: Array<{ d: string; pos: number }> = [];
-  for (let i = 0; i < textoSalida.length; i++) {
-    const c = textoSalida.charCodeAt(i);
-    if (c >= 48 && c <= 57) soloDigitos.push({ d: textoSalida.charAt(i), pos: i });
-  }
-  const cadenaDigitos = soloDigitos.map((x) => x.d).join('');
   const vistos = new Set<string>();
   const poner = (h: HallazgoEscaner): void => {
     const k = `${h.parte}|${h.start}|${h.end}|${h.forma}`;
     if (!vistos.has(k)) { vistos.add(k); out.push(h); }
   };
+  const alfanum = /[\p{L}\p{N}]/u;
+  /** Letra o dígito pegado al tramo (por la izquierda o la derecha): es parte de otra palabra y no un residuo. */
+  const pegado = (t: string, ini: number, fin: number): boolean => estricto && ((ini > 0 && alfanum.test(t.charAt(ini - 1))) || (fin < t.length && alfanum.test(t.charAt(fin))));
+  // Rachas numéricas: dígitos con, a lo sumo, un separador (espacio, punto o guion) entre dos dígitos. Una racha entera es un número.
+  const rachas: Array<{ d: string; ini: number; fin: number }> = [];
+  for (const m of textoSalida.matchAll(/(?<![0-9])[0-9](?:[ .-]?[0-9])*/gu)) {
+    rachas.push({ d: m[0].replace(/\D/gu, ''), ini: m.index, fin: m.index + m[0].length });
+  }
   for (const v of valores) {
     if (v.length === 0) continue;
+    const unaPalabra = !/\s/u.test(v.trim());
+    // Un valor de una sola palabra exige mayúscula inicial en la salida (un nombre común no es un residuo); misma regla que 7.13.3.
+    const mayuscula = (t: string, ini: number): boolean => !estricto || !unaPalabra || /^\p{Lu}/u.test(t.slice(ini).replace(/^[^\p{L}]+/u, ''));
     for (let i = textoSalida.indexOf(v); i >= 0; i = textoSalida.indexOf(v, i + 1)) {
-      poner({ parte, start: i, end: i + v.length, forma: 'literal' });
+      if (!pegado(textoSalida, i, i + v.length) && mayuscula(textoSalida, i)) poner({ parte, start: i, end: i + v.length, forma: 'literal' });
     }
     const vl = buildSearchView(v, 'lista', kind).text;
     if (vl.length > 0) {
       for (let i = vistaSalida.text.indexOf(vl); i >= 0; i = vistaSalida.text.indexOf(vl, i + 1)) {
         const ini = vistaSalida.startMap[i];
         const fin = vistaSalida.endMap[i + vl.length - 1];
-        if (ini !== undefined && fin !== undefined) poner({ parte, start: ini, end: fin, forma: 'lista' });
+        if (ini !== undefined && fin !== undefined && !pegado(textoSalida, ini, fin) && mayuscula(textoSalida, ini)) {
+          poner({ parte, start: ini, end: fin, forma: 'lista' });
+        }
       }
     }
     const dv = v.replace(/\D/gu, '');
     if (dv.length >= 5) {
-      for (let i = cadenaDigitos.indexOf(dv); i >= 0; i = cadenaDigitos.indexOf(dv, i + 1)) {
-        const a = soloDigitos[i];
-        const b = soloDigitos[i + dv.length - 1];
-        if (a !== undefined && b !== undefined) poner({ parte, start: a.pos, end: b.pos + 1, forma: 'digitos' });
-      }
+      for (const r of rachas) if (r.d === dv) poner({ parte, start: r.ini, end: r.fin, forma: 'digitos' });
     }
   }
   return out;
 }
 
-/** `concordanciaResidueTs`: todo lo que halló el escáner en la primera vuelta también lo halló `residue.ts` (mismo tramo). */
+/**
+ * `concordanciaResidueTs`: todo lo que halló el escáner en la primera vuelta lo vio también `residue.ts`: algún hallazgo suyo en la
+ * misma parte se solapa con el del escáner (los dos pueden diferir en los bordes: separadores, DV pegado, artículos).
+ */
 export function concordancia(
   escaner: readonly TramoParte[],
   residue: readonly TramoParte[],
 ): boolean {
-  const r = new Set(residue.map((h) => `${h.parte}|${h.start}|${h.end}`));
-  return escaner.every((h) => r.has(`${h.parte}|${h.start}|${h.end}`));
+  return escaner.every((h) => residue.some((r) => r.parte === h.parte && Math.min(r.end, h.end) > Math.max(r.start, h.start)));
 }
 
 // ===================================================================================================================
 // Informe (10.3.3)
 // ===================================================================================================================
 
-export function construirInforme(entradas: readonly EntradaDocumento[], corrida: CorridaInfo): MetricsReport {
+export function construirInforme(
+  entradas: readonly EntradaDocumento[], corrida: CorridaInfo, opciones: { escanerEstricto?: boolean } = {},
+): MetricsReport {
   const evals = entradas.map(evaluarDocumento);
   const filas = gruposDeCierre(corrida.vista).map((def) => calcularFila(def, evals));
   const todas = calcularFila({ grupo: 'TODOS', tipos: TODOS_TIPOS }, evals);
@@ -615,6 +671,17 @@ export function construirInforme(entradas: readonly EntradaDocumento[], corrida:
   const maxFpDoc = evals.reduce((m, e) => Math.max(m, e.paginas > 0 ? e.falsas / e.paginas : 0), 0);
   const suma = <K extends keyof EvaluacionDocumento['consistencia']>(k: K): number => evals.reduce((s, e) => s + e.consistencia[k], 0);
   const sumaNeg = <K extends keyof EvaluacionDocumento['negativos']>(k: K): number => evals.reduce((s, e) => s + e.negativos[k], 0);
+  const grupos: ConsistenciaPorGrupo = {
+    ids: { evaluadas: 0, consistentes: 0 }, lista: { evaluadas: 0, consistentes: 0 },
+    fechas_valores: { evaluadas: 0, consistentes: 0 }, modelo: { evaluadas: 0, consistentes: 0 }, colisionesDelModelo: 0,
+  };
+  for (const e of evals) {
+    for (const k of ['ids', 'lista', 'fechas_valores', 'modelo'] as const) {
+      grupos[k].evaluadas += e.consistenciaPorGrupo[k].evaluadas;
+      grupos[k].consistentes += e.consistenciaPorGrupo[k].consistentes;
+    }
+    grupos.colisionesDelModelo += e.consistenciaPorGrupo.colisionesDelModelo;
+  }
   const gen = new Map<string, { esperadas: number; presentes: number }>();
   for (const e of evals) {
     for (const x of e.generalizacion) {
@@ -636,16 +703,18 @@ export function construirInforme(entradas: readonly EntradaDocumento[], corrida:
     despues += en.hitsUltimaVuelta ?? 0;
     residue.push(...(en.hitsResidue ?? []));
     if (en.salida === undefined) continue;
-    const clases = clasificarMenciones(en.gold, en.salida);
+    const primera = clasificarMenciones(en.gold, en.salida);
+    // Residuos y omisiones se cuentan tras el bucle (`salidaFinal`); sin ella, sobre la salida entregada.
+    const clases = en.salidaFinal === undefined ? primera : clasificarMenciones(en.gold, en.salidaFinal);
     const res = clases.filter((c) => c.clase === 'residuo');
     const omi = clases.filter((c) => c.clase === 'omision');
     omisionesTotal += omi.length;
     porDocumento.push({ docId: en.gold.docId, residuos: res.length, omisiones: omi.length, idsAnotacion: [...res, ...omi].map((c) => c.g.id) });
     // El escáner busca el texto gold de las entidades con ≥ 1 mención reemplazada; solo para comparar posiciones.
-    const tocadas = new Set(clases.filter((c) => c.copiados < c.g.end - c.g.start).map((c) => c.g.entidad));
+    const tocadas = new Set(primera.filter((c) => c.copiados < c.g.end - c.g.start).map((c) => c.g.entidad));
     for (const s of en.salida) {
       const valores = en.gold.anotaciones.filter((g) => esPositiva(g) && tocadas.has(g.entidad)).map((g) => g.texto);
-      escaneres.push(...escanearResiduos(s.parte, s.texto, [...new Set(valores)]));
+      escaneres.push(...escanearResiduos(s.parte, s.texto, [...new Set(valores)], 'cuerpo', opciones.escanerEstricto === true));
     }
   }
 
@@ -657,6 +726,7 @@ export function construirInforme(entradas: readonly EntradaDocumento[], corrida:
       precision: todas.precision, f2: todas.f2, paginas, fpPorPagina: razon(falsasTotal, paginas), maxFpPorPaginaDoc: maxFpDoc,
     },
     consistencia: { evaluadas: suma('evaluadas'), consistentes: suma('consistentes'), colisiones: suma('colisiones'), fusiones: suma('fusiones') },
+    consistenciaPorGrupo: grupos,
     negativos: { total: sumaNeg('total'), conDeteccion: sumaNeg('conDeteccion'), citasConRadicado: sumaNeg('citasConRadicado'), banderasPresentes: sumaNeg('banderasPresentes') },
     generalizacion: [...gen.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([tipo, v]) => ({ tipo, ...v })),
     residuos: {
