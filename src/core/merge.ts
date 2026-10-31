@@ -71,6 +71,16 @@ const RE_EDGE_LEFT = /^[\s\p{P}\p{S}]*/u;
 const RE_EDGE_CHAR = /^[\s\p{P}\p{S}]$/u;
 const RE_LETTER_OR_DIGIT = /[\p{L}\p{N}]/u;
 
+/**
+ * D-06 decisión 5 (7.11.1, corrección del 31-oct) · Tipos de las reglas estructurales que absorben una detección de la lista de
+ * una sola palabra que queda estrictamente dentro: CORREO, DIRECCION, BARRIO, RADICADO y RADICADO_ADMIN. Además, el NIT con DV
+ * y las rotuladas (`esEstructural`).
+ */
+const ESTRUCTURALES: ReadonlySet<DataType> = new Set<DataType>(['CORREO', 'DIRECCION', 'BARRIO', 'RADICADO', 'RADICADO_ADMIN']);
+/** D-06 + PF-3-r1 · Un sufijo societario de R-LST-05 con punto interno al que le falta el punto final («s.a», «s. en c»). */
+const RE_SUFIJO_SIN_PUNTO = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:` + LST.SUFIJO + String.raw`)$`, 'u');
+const RE_ABREVIATURA_ABIERTA = /\.[ ]?(?:[\p{L}]+[ ]?)?\p{L}$/u;
+
 /** R-MRG-01 · Unión por paréntesis (vista `reglas`). */
 const RE_HUECO = /^[ \t]{0,2}\([ \t]{0,2}$/u;
 const RE_CIERRE = /^[ \t]{0,2}\)/u;
@@ -249,9 +259,57 @@ function uncovered(c: MergedCandidate, over: readonly MergedCandidate[]): Array<
   return out.filter(([s, e]) => e > s);
 }
 
+/**
+ * D-03 A con el punto que sigue al tramo (hallazgo de PF-3-r1, pedido del integrador en PB-2-r6) · Si el tramo ORG [start, end)
+ * termina en un sufijo societario de R-LST-05 escrito con puntos al que le falta el punto final («Comercial Ejemplo S.A») y el
+ * carácter que sigue en el texto es ese punto, devuelve `end + 1`: el tramo se extiende sobre el punto que completa la abreviatura.
+ * Nunca toma el punto de la oración tras un sufijo ya completo: sin punto interno («SAS», «Ltda», «Cía») o ya cerrado («S.A.»),
+ * devuelve `end`. El modelo deja ese punto fuera porque lo separa como palabra aparte, y el recorte de D-03 A no lo ve porque
+ * trabaja sobre el texto del tramo. Tiempo constante: mira como mucho `SUFIJO_MAX` caracteres antes del final.
+ */
+export function completarSufijoSocietario(text: string, start: number, end: number, kind: PartKind): number {
+  if (end <= start || end >= text.length || text[end] !== '.') return end;
+  const cola = fold(text.slice(Math.max(start, end - SUFIJO_MAX), end), kind);
+  const m = RE_SUFIJO_SIN_PUNTO.exec(cola);
+  return m !== null && m.index > 0 && RE_ABREVIATURA_ABIERTA.test(m[0]) ? end + 1 : end;
+}
+
 // ---------------------------------------------------------------------------------------------
 // 7.11.1 pasos 1 y 2
 // ---------------------------------------------------------------------------------------------
+
+/**
+ * D-06 decisión 5 · ¿El candidato es de una regla estructural? CORREO, DIRECCION, BARRIO, RADICADO, RADICADO_ADMIN, el NIT con DV
+ * (validador `DV_NIT`, pase o no: el DV está escrito) y las rotuladas (con rótulo, 6.2.4).
+ */
+function esEstructural(c: MergedCandidate): boolean {
+  return c.source === 'regla' && (ESTRUCTURALES.has(c.type) || (c.type === 'NIT' && c.validator?.name === 'DV_NIT') || c.label !== undefined);
+}
+
+/**
+ * D-06 decisión 5 · ¿Es una detección de la lista de una sola palabra? Una variante débil (`apellido_suelto` o `nombre_suelto`,
+ * que siempre lo es) o cualquier coincidencia de la lista sin blancos en el texto: la razón social sin sufijo que la vista `lista`
+ * encuentra dentro del dominio de un correo («…@vida-y-salud-ejemplo-eps.test») es una sola palabra del texto (ver la reapertura
+ * -r6 de PB-2: así se presentan las 25 menciones de CORREO perdidas en desarrollo).
+ */
+function esDeUnaPalabra(c: MergedCandidate, text: string): boolean {
+  return c.source === 'lista' && !/\s/u.test(text.slice(c.start, c.end).trim());
+}
+
+/**
+ * D-06 decisión 5 (7.11.1, corrección del 31-oct) · Una detección de la lista de una sola palabra que queda estrictamente dentro de
+ * una de regla estructural se absorbe en ella, como en el paso 4b con la regla delante: «Ejemplo» (apellido suelto de una persona
+ * de la lista) dentro de «barrio Altos del Ejemplo», o la razón social dentro del dominio de un correo, ya no parte la regla, y
+ * todo el tramo queda reemplazado con el marcador de la regla. Una detección de la lista más larga o igual a la regla, o de varias
+ * palabras, conserva su precedencia (2). En la fusión por ventana se aplica a los candidatos nuevos; lo ya fusionado no cambia.
+ */
+function absorberEnEstructurales(work: MergedCandidate[], part: Part): MergedCandidate[] {
+  const text = part.text;
+  const reglas = work.filter(esEstructural);
+  if (reglas.length === 0) return work;
+  return work.filter((L) => !(esDeUnaPalabra(L, text)
+    && reglas.some((R) => R.start <= L.start && L.end <= R.end && L.end - L.start < R.end - R.start)));
+}
 
 /** Paso 1 · R-MRG-01: VALOR + VALOR o FECHA + FECHA con la misma clave, separados solo por « (» o uno dentro del otro (PA-6-r1). */
 function joinParen(work: MergedCandidate[], part: Part): MergedCandidate[] {
@@ -469,6 +527,8 @@ export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[]
   let work = normalize(part, cands);
   // 1. Unir por paréntesis (R-MRG-01).
   work = joinParen(work, part);
+  // D-06 decisión 5: la lista de una sola palabra estrictamente dentro de una regla estructural se absorbe en ella.
+  work = absorberEnEstructurales(work, part);
   // 2. Extender la lista con el modelo, después de que la variante débil de otra entidad ceda (D-03 B).
   work = cederVariantesDebiles(work, part, esVariante);
   work = extendWithModel(work, part);
@@ -497,6 +557,8 @@ export function mergeIntoFused(part: Part, fused: readonly MergedCandidate[], ca
   let fixed = fused.filter((c) => c.partId === part.id).map((c) => ({ ...c }));
   let work = normalize(part, cands);
   work = joinParen(work, part);
+  // D-06 decisión 5 entre los candidatos nuevos (lo ya fusionado no se toca: INV-R12).
+  work = absorberEnEstructurales(work, part);
   work.sort(byPriority);
   // Paso 2 por ventana (D-03 B y E), del tramo del modelo de mayor prioridad al de menor.
   const tomados = new Set<MergedCandidate>();

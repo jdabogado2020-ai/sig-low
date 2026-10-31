@@ -1,7 +1,8 @@
 // T-MO-05 · Precedencia y solapamientos (plan 7.11.4), INV-R02, INV-R03 e INV-R04. Solo datos ficticios.
 import { describe, expect, it } from 'vitest';
 import {
-  edgeRightLength, mergeCandidates, mergeIntoFused, precedenceOf, RE_TRIM_LEFT, RE_TRIM_RIGHT, resolveRemainder, trimFunctionWords,
+  completarSufijoSocietario, edgeRightLength, mergeCandidates, mergeIntoFused, precedenceOf, RE_TRIM_LEFT, RE_TRIM_RIGHT, resolveRemainder,
+  trimFunctionWords,
 } from '../../src/core/merge.ts';
 import type { EsVarianteDe } from '../../src/core/merge.ts';
 import { buildSearchView } from '../../src/core/normalize.ts';
@@ -888,6 +889,105 @@ describe('T-MO-05 · fusión de una ventana del modelo contra lo ya fusionado (7
       const part = mkPart(t);
       const fused = mergeCandidates(part, antes, NO_RULES);
       expect(mergeIntoFused(part, [...fused].reverse(), [...nuevos].reverse(), NO_RULES)).toEqual(out);
+    }
+  });
+});
+
+describe('T-MO-05 · D-06 decisión 5: la lista de una sola palabra dentro de una regla estructural se absorbe (7.11.1, PB-2-r6)', () => {
+  const lista = (t: string, sub: string, spec: Partial<DetectionCandidate> = {}, occ = 0): DetectionCandidate =>
+    mk(t, sub, { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'apellido_suelto', role: 'DEMANDANTE',
+      canonicalKey: `LISTA:${CAS_A}`, ...spec }, occ);
+  const empresa = (t: string, sub: string): DetectionCandidate =>
+    lista(t, sub, { type: 'EMPRESA', caseEntityId: CAS_F, variantClass: 'razon_social_sin_sufijo', role: 'EMPRESA', canonicalKey: `LISTA:${CAS_F}` });
+
+  it('INV-R02 CORREO: la razón social de la lista dentro del dominio ya no parte el correo (antes: solo la EMPRESA y el resto del correo a la vista)', () => {
+    const t = 'Las solicitudes se enviarán a notificaciones@ferreteria-ejemplo.test, en horario hábil.';
+    const correo = mk(t, 'notificaciones@ferreteria-ejemplo.test', { type: 'CORREO', ...r3('CORREO'), ruleId: 'R-CORREO-01', confidence: 'alta',
+      canonicalKey: 'CORREO:notificaciones@ferreteria-ejemplo.test' });
+    // Con el código anterior: ['EMPRESA:«ferreteria-ejemplo»:media'] (el remanente «notificaciones@» no tiene 3 dígitos y se descarta).
+    expect(show(t, run(t, [correo, empresa(t, 'ferreteria-ejemplo')]))).toEqual(['CORREO:«notificaciones@ferreteria-ejemplo.test»:alta']);
+    // Y en el orden inverso de llegada.
+    expect(show(t, run(t, [empresa(t, 'ferreteria-ejemplo'), correo]))).toEqual(['CORREO:«notificaciones@ferreteria-ejemplo.test»:alta']);
+  });
+
+  it('INV-R02 BARRIO y DIRECCION: el apellido suelto de una persona de la lista dentro del nombre del barrio o de la vía no recorta la regla', () => {
+    const t = 'Vivo en el barrio Altos del Ejemplo, en la Avenida Ficticia 00 # 00-03, local 10, vereda Chuscal Prueba.';
+    const barrio = mk(t, 'Altos del Ejemplo', { type: 'BARRIO', ...r4, ruleId: 'R-BAR-01', confidence: 'alta', canonicalKey: 'BARRIO:altos del ejemplo' });
+    const dir = mk(t, 'Avenida Ficticia 00 # 00-03, local 10', { type: 'DIRECCION', ...r5, ruleId: 'R-DIR-02', confidence: 'alta', canonicalKey: 'DIR:AV FICTICIA 00 00 03' });
+    const vereda = mk(t, 'Chuscal Prueba', { type: 'DIRECCION', ...r5, ruleId: 'R-DIR-05', confidence: 'alta', canonicalKey: 'DIR:VEREDA CHUSCAL PRUEBA' });
+    const out = run(t, [barrio, dir, vereda, lista(t, 'Ejemplo'), lista(t, 'Ficticia', { variantClass: 'nombre_suelto' }), lista(t, 'Prueba')]);
+    // Con el código anterior: solo las tres palabras de la lista; «Altos del», «Chuscal» y la vía sin número quedaban a la vista.
+    expect(show(t, out)).toEqual(['BARRIO:«Altos del Ejemplo»:alta', 'DIRECCION:«Avenida Ficticia 00 # 00-03, local 10»:alta', 'DIRECCION:«Chuscal Prueba»:alta']);
+  });
+
+  it('INV-R02 las demás estructurales (RADICADO, RADICADO_ADMIN, NIT con DV y las rotuladas) también absorben; la lista de una palabra fuera de ellas sigue igual', () => {
+    const casos: Array<[string, Spec]> = [
+      ['RADICADO', { type: 'RADICADO', ...r3('RADICADO'), canonicalKey: 'RAD:x' }],
+      ['RADICADO_ADMIN', { type: 'RADICADO_ADMIN', ...r5, canonicalKey: 'RAD:x' }],
+      ['NIT con DV que falla', { type: 'NIT', source: 'regla', validator: ko('DV_NIT'), canonicalKey: 'NIT:x' }],
+      ['AFILIACION rotulada', { type: 'AFILIACION', ...r4, canonicalKey: 'AFIL:x' }],
+    ];
+    for (const [nombre, spec] of casos) {
+      const t = 'Consta en el registro VSE-PRUEBA-000123 del asunto y Prueba firmó.';
+      const out = run(t, [mk(t, 'VSE-PRUEBA-000123', spec), lista(t, 'PRUEBA'), lista(t, 'Prueba', {}, 0)]);
+      expect(show(t, out), nombre).toEqual([`${spec.type}:«VSE-PRUEBA-000123»:media`, 'PERSONA:«Prueba»:media']);
+    }
+  });
+
+  it('INV-R02 controles: una regla que no es estructural, una lista de varias palabras o una lista igual a la regla conservan la precedencia 2 de la lista (como antes)', () => {
+    const t = 'Llamó al 300 Ejemplo 0001 desde el barrio Villa Ana Ficticia y del barrio Prueba.';
+    const tel = mk(t, '300 Ejemplo 0001', { type: 'TELEFONO', ...r5, canonicalKey: 'TEL:3000001' });
+    const barrio = mk(t, 'Villa Ana Ficticia', { type: 'BARRIO', ...r4, canonicalKey: 'BARRIO:villa ana ficticia' });
+    const igual = mk(t, 'Prueba', { type: 'BARRIO', ...r4, canonicalKey: 'BARRIO:prueba' });
+    const out = run(t, [tel, barrio, igual, lista(t, 'Ejemplo'), lista(t, 'Ana Ficticia', { variantClass: 'apellidos' }), lista(t, 'Prueba')]);
+    // El teléfono y el barrio se parten (7.11.2: el teléfono queda como fragmento con ≥ 3 dígitos; «Villa», sin dígitos, se descarta).
+    expect(show(t, out)).toEqual(['TELEFONO:«300»:baja:fragmento', 'PERSONA:«Ejemplo»:media', 'TELEFONO:«0001»:baja:fragmento',
+      'PERSONA:«Ana Ficticia»:media', 'PERSONA:«Prueba»:media']);
+  });
+
+  it('INV-R02 INV-R12 por ventana: mergeIntoFused absorbe entre los candidatos nuevos y un tramo nuevo del modelo dentro del correo ya fusionado no lo toca', () => {
+    const t = 'Escriba a notificaciones@ferreteria-ejemplo.test o llame.';
+    const correo = mk(t, 'notificaciones@ferreteria-ejemplo.test', { type: 'CORREO', ...r3('CORREO'), confidence: 'alta', canonicalKey: 'CORREO:n' });
+    const part = mkPart(t);
+    // Sin nada fusionado, la ventana con el correo y la lista da lo mismo que la fusión completa (antes: solo la EMPRESA).
+    const deUna = mergeIntoFused(part, [], [correo, empresa(t, 'ferreteria-ejemplo')], NO_RULES);
+    assertInvariants(part, deUna);
+    expect(show(t, deUna)).toEqual(['CORREO:«notificaciones@ferreteria-ejemplo.test»:alta']);
+    // Lo ya fusionado (el correo entero) no cambia con el ORG del modelo que cae dentro (paso 4b).
+    const fused = mergeCandidates(part, [correo, empresa(t, 'ferreteria-ejemplo')], NO_RULES);
+    const modelo = mk(t, 'ferreteria-ejemplo', { type: 'EMPRESA', source: 'modelo', nerLabel: 'ORG', confidence: 'media', score: 0.9, canonicalKey: 'ORG:f' });
+    expect(mergeIntoFused(part, fused, [modelo], NO_RULES)).toEqual(fused);
+  });
+});
+
+describe('T-MO-05 · el punto que completa el sufijo societario de un tramo ORG (D-03 A, hallazgo de PF-3-r1; PB-2-r6)', () => {
+  const fin = (t: string, sub: string): string => {
+    const s = t.indexOf(sub);
+    return t.slice(s, completarSufijoSocietario(t, s, s + sub.length, 'cuerpo'));
+  };
+  it('se extiende sobre el punto que falta: «S.A», «S.A.S», «E.S.E», «S. en C», también en MAYÚSCULAS y minúsculas', () => {
+    expect(fin('Pagó Comercial Ejemplo S.A. el saldo.', 'Comercial Ejemplo S.A')).toBe('Comercial Ejemplo S.A.');
+    expect(fin('Firmó Inversiones Prueba S.A.S. ayer.', 'Inversiones Prueba S.A.S')).toBe('Inversiones Prueba S.A.S.');
+    expect(fin('Atendió el Hospital Ficticio E.S.E. de turno.', 'Hospital Ficticio E.S.E')).toBe('Hospital Ficticio E.S.E.');
+    expect(fin('Vendió Pérez Ejemplo y Cía. S. en C. el lote.', 'Pérez Ejemplo y Cía. S. en C')).toBe('Pérez Ejemplo y Cía. S. en C.');
+    expect(fin('PAGÓ COMERCIAL EJEMPLO S.A. EL SALDO.', 'COMERCIAL EJEMPLO S.A')).toBe('COMERCIAL EJEMPLO S.A.');
+    expect(fin('pagó comercial ejemplo s. a. el saldo.', 'comercial ejemplo s. a')).toBe('comercial ejemplo s. a.');
+  });
+  it('nunca toma el punto de la oración tras un sufijo ya completo ni tras un nombre sin sufijo', () => {
+    expect(fin('Lo pagó Ferretería Ejemplo SAS.', 'Ferretería Ejemplo SAS')).toBe('Ferretería Ejemplo SAS');
+    expect(fin('Lo pagó Ferretería Ejemplo Ltda.', 'Ferretería Ejemplo Ltda')).toBe('Ferretería Ejemplo Ltda');
+    expect(fin('Lo pagó Ferretería Ejemplo S.A..', 'Ferretería Ejemplo S.A.')).toBe('Ferretería Ejemplo S.A.');
+    expect(fin('Lo pagó la Ferretería Ejemplo.', 'Ferretería Ejemplo')).toBe('Ferretería Ejemplo');
+    expect(fin('Lo pagó Comercial Ejemplo S.A, ayer.', 'Comercial Ejemplo S.A')).toBe('Comercial Ejemplo S.A');
+    expect(fin('Lo pagó Comercial Ejemplo S.A', 'Comercial Ejemplo S.A')).toBe('Comercial Ejemplo S.A');   // fin del texto
+    expect(fin('Firmó Ana Ficticia Rojas S.A.', 'S.A')).toBe('S.A');   // el sufijo solo no es un nombre
+  });
+  it('tiempo constante: 40.000 blancos o signos antes del sufijo, por debajo de 50 ms (mira solo los últimos caracteres)', () => {
+    for (const relleno of [' '.repeat(40_000), '\t'.repeat(40_000), '. '.repeat(20_000), 's.a '.repeat(10_000)]) {
+      const t = 'Comercial' + relleno + 'Ejemplo S.A.';
+      const mejor = Math.min(...[0, 1, 2].map(() => { const t0 = performance.now(); completarSufijoSocietario(t, 0, t.length - 1, 'cuerpo'); return performance.now() - t0; }));
+      expect(mejor).toBeLessThan(50);
+      expect(completarSufijoSocietario(t, 0, t.length - 1, 'cuerpo')).toBe(t.length);
     }
   });
 });
