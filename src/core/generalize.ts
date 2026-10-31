@@ -7,6 +7,7 @@
 // Los patrones buscan sobre la vista `reglas` (6.1.2) y se devuelven en posiciones canónicas.
 
 import { esContextoDeCita } from './rules/exclusiones.ts';
+import { finalesDeBarrio } from './rules/direccion.ts';
 import divipolaRaw from '../../data/divipola.json';
 import cargosRaw from '../../data/cargos.json';
 import diagnosticosRaw from '../../data/diagnosticos.json';
@@ -222,7 +223,7 @@ export const VOCABULARIO_DESPACHO: { readonly cabezas: ReadonlySet<string>; read
 const FEM_HEAD = /^(alcald|personer|notar|comisar|inspecci|fiscal|registradur|curadur|jueza)/;
 const CTX_PERS = v3(['residente', 'residentes', 'residenciado', 'residenciada', 'domiciliado', 'domiciliada', 'domiciliados', 'vecino', 'vecina', 'vecinos',
   'natural', 'naturales', 'nacido', 'nacida', 'oriundo', 'oriunda', 'radicado', 'radicada', 'reside', 'vive', 'vivía', 'habita', 'ubicado', 'ubicada',
-  'expedida', 'expedido', 'con domicilio']);
+  'expedida', 'expedido', 'con domicilio', 'jurisdicción', 'jurisdiccion']);   // PA-4-r1: «en jurisdicción de Chía»
 
 function getPlaceRegexes(): PlaceRegexes {
   if (placeRx) return placeRx;
@@ -237,7 +238,7 @@ function getPlaceRegexes(): PlaceRegexes {
     mun02: new RegExp(`(?<![\\p{L}\\p{N}])(?<ctx>${alt(CTX_PERS)})${H}+(?:en|de|EN|DE)${H}+(?:(?:la${H}+ciudad|el${H}+municipio)${H}+de${H}+)?(?<mun>${GAZ})(?!\\p{L})(?!${H}+(?!${DEP}(?!\\p{L}))\\p{Lu}\\p{Ll})${DEPX}?`, 'gdu'),
     mun03Sep: new RegExp(`(?:${H}*,${H}*|${H}+(?:de|expedida${H}+en|expedido${H}+en)${H}+|${H}*-${H}*)(?<mun>${GAZ})(?!\\p{L})${DEPX}?`, 'dyu'),
     mun04: new RegExp(`(?<![\\p{L}\\p{N}])(?<mun>${MUN})(?!\\p{L})${DEPX}`, 'gdu'),
-    mun05: new RegExp(`(?:(?<en>(?<![\\p{L}\\p{N}])(?:en|EN|En)${H}+)|(?<ini>(?:^|(?<=\\n))${H}*(?=${MUN}(?!\\p{L})${H}*,${H}*\\d{1,2}${H}+de${H}+\\p{L}+)))`
+    mun05: new RegExp(`(?:(?<en>(?<![\\p{L}\\p{N}])(?:en|EN|En)${H}+)|(?<ini>(?:^|(?<=\\n))${H}*(?=${MUN}(?!\\p{L})(?:${H}+D\\.${H}?C\\.?)?${H}*,${H}*(?:\\d{1,2}${H}+de${H}+\\p{L}+|\\d{1,2}[/.-]\\d{1,2}[/.-]\\d{2,4}))))`
       + `(?<mun>${MUN})(?!\\p{L})(?!${H}+(?!${DEP}(?!\\p{L}))\\p{Lu}\\p{Ll})`, 'gdu'),
     // R-DESP-01 con el número del despacho de 1 a 3 cifras, con ceros a la izquierda («Juzgado 003 Civil Municipal»; D-03 D, 31-oct).
     // Cada separador del nombre es de blancos horizontales o de un salto de línea (\n o \r\n) con blancos alrededor, nunca dos
@@ -338,6 +339,17 @@ function scanPlacesOnce(view: ViewLike, docDeps: readonly string[], anchorEnds: 
     rxs.lastIndex = viewIndexEndFor(view, a);
     const m = rxs.exec(t);
     if (!m || m.index !== rxs.lastIndex - m[0].length) continue;
+    const [s] = grp(m, 'mun');
+    const r = placeResult('R-MUN-03', m.groups?.['mun'] ?? '', s, endOf(m), 'alta', { depHint: depOf(m.groups ?? {}), docDeps });
+    if (r) out.push(r);
+  }
+  // R-MUN-03 (PA-4-r1): el final de un barrio rotulado también es ancla: «barrio Altos del Ejemplo de Facatativá», «barrio San Ejemplo, Soacha».
+  // `finalesDeBarrio` ya devuelve índices de la vista y deja fuera el «de <municipio>» del nombre.
+  for (const a of finalesDeBarrio(t)) {
+    const rxs = rx.mun03Sep;
+    rxs.lastIndex = a;
+    const m = rxs.exec(t);
+    if (!m) continue;
     const [s] = grp(m, 'mun');
     const r = placeResult('R-MUN-03', m.groups?.['mun'] ?? '', s, endOf(m), 'alta', { depHint: depOf(m.groups ?? {}), docDeps });
     if (r) out.push(r);

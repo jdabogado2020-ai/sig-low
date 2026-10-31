@@ -1946,6 +1946,81 @@ describe('listas de data/ (redactadas desde cero, S-4.2)', () => {
   });
 });
 
+// ===================================================================== PA-4-r1 · lo que le faltaba a MUNICIPIO_A_DEPARTAMENTO (P0-4)
+
+describe('PA-4-r1 · R-MUN-03 con el barrio rotulado como ancla, «jurisdicción de» en R-MUN-02 y el encabezado con «D.C.» y fecha numérica en R-MUN-05', () => {
+  const tramos = (texto: string, regla: string): string[] => {
+    const { cands, text } = correr(texto, [], { soloRegla: regla });
+    return cands.filter((c) => c.ruleId === regla).map((c) => textoDe(text, c));
+  };
+  const sugerencias = (texto: string): string[] => sugDe(correr(texto).res, 'MUNICIPIO_A_DEPARTAMENTO').map((s) => s.originalText);
+
+  it.each([
+    ['vivo en el barrio Altos del Ejemplo de Facatativá. Sobre este punto', 'Facatativá', 'DEP:25'],
+    ['residente en el barrio San Ejemplo, Soacha, con celular', 'Soacha', 'DEP:25'],
+    ['vivo en el barrio Prados de Prueba de Soacha, en la Av. Calle 00B', 'Soacha', 'DEP:25'],
+    ['el inmueble en el barrio La Prueba de Chía (Cundinamarca) fue', 'Chía (Cundinamarca)', 'DEP:25'],
+    ['domiciliado en la urbanización Villa Prueba - Zipaquirá, con NIT', 'Zipaquirá', 'DEP:25'],
+  ])('positivo: «%s» → R-MUN-03 «%s» (%s) y su sugerencia MUNICIPIO_A_DEPARTAMENTO', (texto, tramo, clave) => {
+    const { cands, text } = correr(texto, [], { soloRegla: 'R-MUN-03' });
+    const c = cands.find((x) => x.ruleId === 'R-MUN-03' && textoDe(text, x) === tramo);
+    expect(c, JSON.stringify(cands.map((x) => [x.ruleId, textoDe(text, x)]))).toBeDefined();
+    expect(c?.canonicalKey).toBe(clave);
+    expect(sugerencias(texto)).toContain(tramo);
+  });
+
+  it.each([
+    ['vivo en el barrio Los Almendros de Prueba, en la Cra. 0A', 'el «de Prueba» es del barrio y no es municipio'],
+    ['barrio Ejemplo y sus alrededores', 'sin municipio tras el barrio'],
+    ['vivo en Altos del Ejemplo de Facatativá', 'sin rótulo de barrio no hay ancla (R-MUN-03 no la cubre)'],
+    ['el barrio\nFacatativá', 'un salto de línea tras el rótulo cierra el nombre y no hay ancla'],
+  ])('negativo: «%s» (%s)', (texto) => {
+    expect(tramos(texto, 'R-MUN-03')).toEqual([]);
+  });
+
+  it('el barrio del ancla no se confunde con el municipio: «barrio Santa Prueba de Chía» da Chía una sola vez', () => {
+    expect(tramos('Resido en el barrio Santa Prueba de Chía, en la Cra. 0A Bis A No. 0A-01', 'R-MUN-03')).toEqual(['Chía']);
+  });
+
+  it.each([
+    ['desplazarme desde la vereda Chuscal Ejemplo, en jurisdicción de Chía, sin transporte', 'Chía'],
+    ['EN JURISDICCIÓN DE CHÍA, SIN TRANSPORTE PÚBLICO', 'CHÍA'],
+    ['en jurisdiccion de Soacha y', 'Soacha'],
+  ])('R-MUN-02 con «jurisdicción»: «%s» → «%s»', (texto, tramo) => {
+    expect(tramos(texto, 'R-MUN-02')).toEqual([tramo]);
+    expect(sugerencias(texto)).toContain(tramo);
+  });
+  it.each([
+    ['la jurisdicción de la Corte Constitucional', 'no es un municipio'],
+    ['en jurisdicción de esta ciudad', 'no hay nombre'],
+  ])('R-MUN-02 con «jurisdicción»: negativo «%s» (%s)', (texto) => {
+    expect(tramos(texto, 'R-MUN-02')).toEqual([]);
+  });
+
+  it.each([
+    ['Bucaramanga D.C., 15/03/2026\n\nSeñores\nSalud', 'Bucaramanga'],
+    ['Bucaramanga, 15/03/2026\n\nSeñores', 'Bucaramanga'],
+    ['Soacha, 3.4.26\nSeñores', 'Soacha'],
+    ['Medellín, 14 de marzo de 2026', 'Medellín'],
+  ])('R-MUN-05 encabezado: «%s» → «%s»', (texto, tramo) => {
+    expect(tramos(texto, 'R-MUN-05')).toEqual([tramo]);
+    expect(sugerencias(texto)).toContain(tramo);
+  });
+  it.each([
+    ['Bucaramanga D.C., sin fecha\nSeñores', 'sin fecha'],
+    ['Bucaramanga, 15 tutelas\nSeñores', 'el número no es una fecha'],
+    ['Bucaramanga D.C. 15/03/2026\nSeñores', 'sin la coma del encabezado'],
+  ])('R-MUN-05 encabezado: negativo «%s» (%s)', (texto) => {
+    expect(tramos(texto, 'R-MUN-05')).toEqual([]);
+  });
+
+  it('en tiempo lineal: «barrio», 40.000 blancos y una letra', () => {
+    const texto = 'barrio Ejemplo' + ' '.repeat(40_000) + 'x';
+    const mejor = Math.min(...[0, 1, 2].map(() => { const t0 = performance.now(); detectPlaces(PID, { text: texto }); return performance.now() - t0; }));
+    expect(mejor).toBeLessThan(300);
+  });
+});
+
 describe('privacidad de generalize.ts (F-01 a F-14)', () => {
   const fuente = readFileSync(new URL('../../src/core/generalize.ts', import.meta.url), 'utf8');
   const sinComentarios = fuente.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
