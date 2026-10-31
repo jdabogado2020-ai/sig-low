@@ -115,7 +115,8 @@ const MUNICIPIO_MAX_PALABRAS = 4;
  * vocabulario del nombre de un despacho, ni de función, ni un número («Notaría Ejemplo»), y sin municipio de la DIVIPOLA.
  * Quedan fuera las corporaciones nacionales («Corte Constitucional»), el despacho genérico («Juzgado Tercero Civil del Circuito»),
  * el número solo («Notaría 999») y el que trae municipio (lo generaliza `DESPACHO_A_GENERICO`; si R-DESP-01 no lo alcanza, nada).
- * Con la regla literal de D-03 C (toda autoridad sin sugerencia) el desarrollo daba 2 menciones más y 26 detecciones falsas.
+ * Con la regla literal de D-03 C (toda autoridad sin sugerencia), el corpus de desarrollo daba 2 menciones más y 25 detecciones
+ * falsas en la vista natural; con esta, las mismas 2 y ninguna falsa.
  */
 export function autoridadConNombrePropio(texto: string): boolean {
   const w = vistaLista(texto).split(/[^\p{L}\p{N}]+/u).filter((x) => x !== '');
