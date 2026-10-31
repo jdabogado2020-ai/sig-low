@@ -5,6 +5,7 @@ import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, wri
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { serializarLista, sha256Hex, type ArchivoPrecache } from '../../vite-plugins/precache.ts';
+import { guardarOriginales, type ConNativo } from './lib/originales';
 
 // Ciclo de vida del service worker (10.5.6, 3.2; PD-1): T-SW-01 a T-SW-03 y T-PV-10.
 // Cada prueba levanta su propio tests/e2e/server.mjs (la configuración real: aplica dist/_headers) con el registro de
@@ -113,6 +114,9 @@ async function buscarYEsperarVersionNueva(page: Page): Promise<void> {
   });
 }
 
+// El fetch original (tests/e2e/lib/originales.ts): la guardia de la app (src/guard.ts, 5.2.1) ya rechaza POST, query y rutas
+// fuera de su lista; con el original se prueba el interruptor del SW (o su ausencia) por sí solo.
+
 async function abrirControlada(ctx: BrowserContext): Promise<Page> {
   const page = await ctx.newPage();
   await page.goto('/');
@@ -196,6 +200,7 @@ test.describe('T-SW-01 sin controlador', () => {
     const srv = await levantar(V1);
     try {
       const ctx = await browser.newContext({ baseURL: srv.origen });
+      await guardarOriginales(ctx);
       const page = await abrirControlada(ctx);
       const cdp = await ctx.newCDPSession(page);
       // Page.reload con ignoreCache es la recarga forzada (Mayús + F5): el navegador no pasa la navegación por el SW.
@@ -209,7 +214,8 @@ test.describe('T-SW-01 sin controlador', () => {
       // Control negativo (V-13): sin controlador no hay interruptor y un POST al propio origen sí llega al servidor
       // (solo lo frena la CSP si es a otro origen). Por eso la app no acepta documentos en este estado.
       const corte = srv.peticiones().length;
-      expect(await page.evaluate(() => fetch('/control-sin-sw', { method: 'POST', body: 'x' }).then((r) => r.status, () => -1))).toBe(404);
+      expect(await page.evaluate(() => (globalThis as unknown as ConNativo).__nativo.fetch('/control-sin-sw', { method: 'POST', body: 'x' })
+        .then((r) => r.status, () => -1))).toBe(404);
       expect(srv.peticiones().slice(corte).map((p) => `${p.m} ${p.u}`)).toEqual(['POST /control-sin-sw']);
       await ctx.close();
     } finally {
@@ -223,11 +229,13 @@ test.describe('T-SW-01 sin controlador', () => {
     try {
       // bypassCSP aísla el interruptor: sin la CSP, el SW es la única barrera (la CSP la prueba T-CS-01, PD-2).
       const ctx = await browser.newContext({ baseURL: srv.origen, bypassCSP: true });
+      await guardarOriginales(ctx);
       const page = await abrirControlada(ctx);
       const ruta = JSON.parse(readFileSync(join(V1, 'precache.json'), 'utf8')).archivos.find((a: ArchivoPrecache) => a.ruta.startsWith('/assets/')).ruta as string;
       const corte = srv.peticiones().length;
       const resultados = await page.evaluate(async ({ s, ruta }) => {
-        const intento = (u: string, o?: RequestInit): Promise<string> => fetch(u, o).then((r) => `respuesta ${r.status}`, () => 'error');
+        const f = (globalThis as unknown as ConNativo).__nativo.fetch;
+        const intento = (u: string, o?: RequestInit): Promise<string> => f(u, o).then((r) => `respuesta ${r.status}`, () => 'error');
         const imagen = (u: string): Promise<string> => new Promise((ok) => {
           const i = new Image();
           i.onload = () => { ok('carga'); };

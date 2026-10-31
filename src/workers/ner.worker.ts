@@ -4,6 +4,7 @@
 // los bytes del modelo y del tokenizador salen de `/models/<id>/` del mismo origen y se verifican con SHA-256
 // contra el manifiesto antes de crear la sesión (V-44). ORT-web se sirve desde `/ort/` con la ruta fijada antes
 // del primer uso y sin proxy (V-09); no hay CDN.
+import '../guard'; // Primer import: la guardia de 5.2.1 (PD-2-r1); su fetch acotado admite /ort/ y /models/.
 import { GlinerEngine, type GlinerEngineDeps, type OrtModule } from '../core/ner/engine';
 import { crearManejadorNer } from '../core/ner/handler';
 import type { Fetcher } from '../core/ner/model-fetch';

@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 // Worker `io` (6.11.4, PE-1 a PE-3): lee un archivo y responde con un DocumentModel. Un worker nuevo por archivo.
 // Worker de módulo del mismo origen (F-09). Toda la lógica está en src/io/io-handler.ts.
+import '../guard'; // Primer import: la guardia de 5.2.1 (PD-2-r1).
 import { handleIoMessage, mensajeError } from '../io/io-handler';
 
 let ultimoReqId = 'req_' + '0'.repeat(32);

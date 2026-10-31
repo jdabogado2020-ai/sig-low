@@ -16,6 +16,7 @@ import { delModelo, distConModelos, modeloSintetico, rutasDelManifiesto } from '
 import { test, expect } from './lib/arnes';
 import { volcarAlmacenamiento, textoDelVolcado } from './lib/almacenamiento';
 import { diferenciasDeCabeceras } from './lib/cabeceras-esperadas';
+import { guardarOriginales, type ConNativo } from './lib/originales';
 import { levantarServidor } from './lib/servidores';
 
 const sha256 = (t: string): string => createHash('sha256').update(t).digest('hex');
@@ -235,6 +236,7 @@ test('T-RD-06 @cero-red INV-G02 INV-V01 INV-G10 volcado del almacenamiento: sin 
 test('@cero-red arnés canarios: el servidor registra todo y el señuelo solo ve lo que una página sin CSP envía', async ({ arnes }) => {
   const a = await arnes();
   const s = await a.sesion();
+  await guardarOriginales(s.ctx); // el fetch original: el de la guardia (src/guard.ts) rechaza otro origen antes de la CSP
   const page = await s.nuevaPagina();
   await page.goto('/');
   // Servidor: método, ruta, query, cuerpo y cabeceras de origen quedan en el registro (404 para lo que no es GET).
@@ -254,8 +256,9 @@ test('@cero-red arnés canarios: el servidor registra todo y el señuelo solo ve
   await s.ctx.request.get('/index.html');
   expect(a.inesperadasDesdeElCorte()).toEqual(['GET /sw.js?x=1', 'POST /sw.js', 'GET /index.html']);
   // La página de la app: la CSP bloquea la salida al señuelo (el navegador la intenta y el vigilante la ve) y el señuelo no recibe nada.
+  // Con el fetch original, por debajo de la guardia, que la rechazaría antes y sin violación (T-CS-01).
   const alSenuelo = `${a.senuelo.origen}/canario-app?d=x`;
-  await page.evaluate((u) => fetch(u, { mode: 'no-cors' }).then(() => 'llegó', () => 'bloqueada'), alSenuelo);
+  await page.evaluate((u) => (globalThis as unknown as ConNativo).__nativo.fetch(u, { mode: 'no-cors' }).then(() => 'llegó', () => 'bloqueada'), alSenuelo);
   await expect.poll(() => s.vigilante.violaciones).toContain('pagina:connect-src');
   expect(a.senuelo.peticiones()).toEqual([]); // (la CSP lo frena antes de la red: no hay ni evento `request`)
   // Control: una página que sirve el propio señuelo no lleva la CSP de la app; lo que ella pide llega al señuelo con su ruta, query y
@@ -293,9 +296,10 @@ test('@cero-red arnés canarios: la escucha STUN cuenta paquetes y las violacion
   await expect.poll(() => a.stun.paquetes().length, { timeout: 15_000 }).toBeGreaterThan(0);
   expect(a.stun.paquetes().some((q) => q.stun)).toBe(true);
   await aux.close();
-  // Workers: un worker de la app intenta salir al señuelo; la CSP lo bloquea y se ve por las dos vías.
-  const detect = precache().find((x) => /^\/assets\/detect\.worker-/.test(x))!;
-  const [worker] = await Promise.all([page.waitForEvent('worker'), page.evaluate((u) => { (globalThis as unknown as { w: Worker }).w = new Worker(u, { type: 'module' }); }, detect)]);
+  // Workers: un worker del mismo origen intenta salir al señuelo; la CSP lo bloquea y se ve por las dos vías. Es el de pdf.js (de
+  // terceros, sin guardia): en los propios, la guardia lo rechaza antes de la CSP (T-CS-02).
+  const sinGuardia = precache().find((x) => /^\/assets\/pdf\.worker-/.test(x))!;
+  const [worker] = await Promise.all([page.waitForEvent('worker'), page.evaluate((u) => { (globalThis as unknown as { w: Worker }).w = new Worker(u, { type: 'module' }); }, sinGuardia)]);
   await worker.evaluate((u) => fetch(u, { mode: 'no-cors' }).then(() => 'llegó', () => 'bloqueada'), `${a.senuelo.origen}/canario-worker`);
   await expect.poll(() => s.vigilante.violaciones, { timeout: 10_000 }).toContain('worker:connect-src');
   expect(a.senuelo.peticiones()).toEqual([]);
@@ -336,8 +340,10 @@ test('@cero-red arnés canarios: el perfil persistente relanzado sin conexión c
 
 // T-PV-12 (V-01; PD-2): un WebSocket al propio origen. El SW no intercepta WebSocket, y `connect-src 'self'` admite ws: y
 // wss: al mismo host: la petición llegaría al alojamiento con su query aunque la subida falle. La segunda política de la CSP
-// (`connect-src https: http:`) lo bloquea en la ventana, en un realm `about:blank` (que hereda la CSP y no la guardia) y en
-// un worker. La verdad es el registro de server.mjs; el control, con solo la política canónica, muestra que sí llegaría.
+// (`connect-src https: http:`) lo bloquea en la ventana, en un realm `about:blank` (que hereda la CSP y no la guardia; como la
+// guardia cierra ese camino, M-4, el iframe se crea con el createElement y el contentWindow originales de tests/e2e/lib/originales.ts)
+// y en un worker sin guardia (el de pdf.js; los propios llevan la guardia, T-CS-02). La verdad es el registro de server.mjs; el
+// control, con solo la política canónica, muestra que sí llegaría.
 test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y no llega al servidor; con solo la política canónica, sí (control)', async ({ browser }) => {
   const raiz = join(process.cwd(), 'test-results', `tpv12-${Date.now()}`);
   const soloCanonica = join(raiz, 'solo-canonica');
@@ -350,11 +356,12 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
     const W = (globalThis as unknown as Record<string, typeof WebSocket>)['WebSocket']!;
     let ventana: string;
     try { new W(`ws://${location.host}/tpv12-ventana?d=x`); ventana = 'creado'; } catch (e) { ventana = `lanza ${(e as Error).name}`; }
-    const f = document.createElement('iframe');
+    const N = (globalThis as unknown as ConNativo).__nativo;
+    const f = N.createElement('iframe') as HTMLIFrameElement;
     document.body.append(f);
     const violacion: string[] = [];
-    (f.contentWindow as Window).addEventListener('securitypolicyviolation', (e) => { violacion.push((e as SecurityPolicyViolationEvent).effectiveDirective); });
-    const M = (f.contentWindow as unknown as Record<string, typeof WebSocket>)['WebSocket']!;
+    (N.contentWindow(f) as Window).addEventListener('securitypolicyviolation', (e) => { violacion.push((e as SecurityPolicyViolationEvent).effectiveDirective); });
+    const M = (N.contentWindow(f) as unknown as Record<string, typeof WebSocket>)['WebSocket']!;
     const marco = await new Promise<string>((ok) => {
       const s = new M(`ws://${location.host}/tpv12-marco?d=x`);
       s.onerror = () => { ok('error'); };
@@ -371,6 +378,7 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
   try {
     // Con la CSP de PD-2 y el SW activo.
     const ctx = await browser.newContext({ baseURL: con.origen });
+    await guardarOriginales(ctx);
     const page = await ctx.newPage();
     await page.goto('/');
     await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
@@ -378,8 +386,9 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
     expect(r.ventana).toBe('lanza SiglowError'); // la guardia, antes de la CSP
     expect(r.marco).toBe('error');
     expect(r.violacion).toContain('connect-src');
-    const detect = precache().find((x) => /detect\.worker/.test(x))!;
-    const [worker] = await Promise.all([page.waitForEvent('worker'), page.evaluate((u) => { (globalThis as unknown as { w: Worker }).w = new Worker(u, { type: 'module' }); }, detect)]);
+    // Un worker sin guardia (pdf.js, de terceros): en los propios, la guardia lanza antes que la CSP (T-CS-02).
+    const sinGuardia = precache().find((x) => /pdf\.worker/.test(x))!;
+    const [worker] = await Promise.all([page.waitForEvent('worker'), page.evaluate((u) => { (globalThis as unknown as { w: Worker }).w = new Worker(u, { type: 'module' }); }, sinGuardia)]);
     expect(await worker.evaluate(async () => {
       const v: string[] = [];
       self.addEventListener('securitypolicyviolation', (e) => { v.push((e as SecurityPolicyViolationEvent).effectiveDirective); });
@@ -392,6 +401,7 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
     await ctx.close();
     // Control: solo la política canónica (`connect-src 'self'`). El WebSocket del realm sin guardia llega al servidor, query incluida.
     const ctx2 = await browser.newContext({ baseURL: sin.origen, serviceWorkers: 'block' });
+    await guardarOriginales(ctx2);
     const page2 = await ctx2.newPage();
     await page2.goto('/');
     const r2 = await intentar(page2);
@@ -421,6 +431,9 @@ const sinTransporte = (h: Record<string, string>): Record<string, string> =>
 test('T-PV-06 @cero-red INV-G10 sin conexión: crossOriginIsolated y las cabeceras de 3.6 en cada respuesta de la caché', async ({ arnes }) => {
   const a = await arnes({ reporteCsp: false });
   const s = await a.sesion();
+  // El fetch original: /tt-policy.js y /precache.json no son rutas del fetch de la guardia (5.2.1), y aquí se lee la caché del
+  // SW, no lo que pide la app.
+  await guardarOriginales(s.ctx);
   const page = await s.nuevaPagina();
   const { ctx: context } = s;
   await page.goto('/');
@@ -450,7 +463,7 @@ test('T-PV-06 @cero-red INV-G10 sin conexión: crossOriginIsolated y las cabecer
       .toEqual({ aislado: true, controlador: true });
     expect(sinTransporte(await nav!.allHeaders())).toEqual(delServidor.get('/'));
     const desdeCache = await page.evaluate(async (rs) => Promise.all(rs.map(async (ruta) => {
-      const resp = await fetch(ruta);
+      const resp = await (globalThis as unknown as ConNativo).__nativo.fetch(ruta);
       const h: Record<string, string> = {};
       resp.headers.forEach((v, k) => { h[k] = v; });
       const d = new Uint8Array(await crypto.subtle.digest('SHA-256', await resp.arrayBuffer()));

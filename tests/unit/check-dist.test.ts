@@ -17,12 +17,14 @@ const RAIZ = mkdtempSync(join(tmpdir(), 'siglow-checkdist-'));
 afterAll(() => { rmSync(RAIZ, { recursive: true, force: true }); });
 
 const ENTRADA = 'assets/index-Cx0Prueba.js';
+// Los arreglos de src/guard.ts tal como los emite el build (PD-2-r1): en el chunk de entrada y en cada worker propio.
 const LITERALES_GUARDIA = [
   '[`RTCPeerConnection`,`webkitRTCPeerConnection`,`RTCDataChannel`]',
+  '[`speechSynthesis`,`SpeechSynthesisUtterance`,`SpeechRecognition`,`webkitSpeechRecognition`]',
   '[`XMLHttpRequest`,`WebSocket`,`EventSource`,`fetchLater`,`open`]',
   '[`sendBeacon`,`share`]',
 ];
-const CHUNK_ENTRADA = `var a=${LITERALES_GUARDIA[0]},b=${LITERALES_GUARDIA[1]},c=${LITERALES_GUARDIA[2]};`;
+const CHUNK_ENTRADA = LITERALES_GUARDIA.map((l, i) => `var g${i}=${l};`).join('');
 const ORT = ['ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.wasm'];
 const VERSION_ORT = (JSON.parse(readFileSync(join(REPO, 'node_modules/onnxruntime-web/package.json'), 'utf8')) as { version: string }).version;
 
@@ -121,9 +123,13 @@ describe.concurrent('T-CD-02 un canario por regla de contenido: check-dist sale 
     ['sendBeacon', 'navigator.sendBeacon(u,d);'],
     ['WebRTC', 'new RTCPeerConnection;'],
     ['WebRTC', 'n.RTCDataChannel;'],
+    ['voz', 'speechSynthesis.speak(u);'],
+    ['voz', 'new SpeechSynthesisUtterance(t);'],
+    ['voz', 'new webkitSpeechRecognition;'],
     ['fetchLater', 'fetchLater(u);'],
     ['navigator.share', 'navigator.share({text:t});'],
     ['window.open', 'window.open(u);'],
+    ['document.open', 'document.open(u,n,f);'],
     ['location=', 'location.href=u;'],
     ['location=', 'location.assign(u);'],
     ['history', 'history.pushState({},"",u);'],
@@ -180,12 +186,26 @@ describe.concurrent('T-CD-02 un canario por regla de contenido: check-dist sale 
       '_headers: reportes ×1', '_headers: http-externo ×1', 'Content-Security-Policy distinta de la aprobada');
   });
 
-  it('la guardia: sus literales exactos solo valen en el chunk de entrada; fuera de ellos los nombres son hallazgos', async () => {
+  it('la guardia: sus literales exactos solo valen en el chunk de entrada y en los workers propios; fuera de ellos los nombres son hallazgos', async () => {
     await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA + 'new WebSocket(u);' } }, `${ENTRADA}: WebSocket ×1`);
-    await falla({ archivos: { 'assets/ui-Cx0Prueba.js': CHUNK_ENTRADA } }, 'assets/ui-Cx0Prueba.js: WebRTC ×3', 'assets/ui-Cx0Prueba.js: XMLHttpRequest ×1', 'assets/ui-Cx0Prueba.js: sendBeacon ×1');
-    // Un literal repetido o cambiado anula la excepción entera.
-    await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA + `var d=${LITERALES_GUARDIA[2]};` } }, `${ENTRADA}: sendBeacon ×2`);
-    await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA.replace('`open`]', '`open`,`postMessage`]') } }, `${ENTRADA}: WebSocket ×1`);
+    await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA + 'speechSynthesis.speak(u);' } }, `${ENTRADA}: voz ×1`);
+    await falla({ archivos: { 'assets/ui-Cx0Prueba.js': CHUNK_ENTRADA } },
+      'assets/ui-Cx0Prueba.js: WebRTC ×3', 'assets/ui-Cx0Prueba.js: voz ×4', 'assets/ui-Cx0Prueba.js: XMLHttpRequest ×1', 'assets/ui-Cx0Prueba.js: sendBeacon ×1');
+    // Un worker que no es propio (pdf.js, los hilos de ORT o uno nuevo) no goza de la excepción.
+    await falla({ archivos: { 'assets/otro.worker-Cx0Prueba.js': CHUNK_ENTRADA } }, 'assets/otro.worker-Cx0Prueba.js: WebRTC ×3');
+    // Un literal repetido o cambiado anula la excepción entera, y la guardia cuenta como ausente.
+    await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA + `var d=${LITERALES_GUARDIA[3]};` } }, `${ENTRADA}: sendBeacon ×2`, `${ENTRADA}: guardia ausente o alterada`);
+    await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA.replace('`open`]', '`open`,`postMessage`]') } }, `${ENTRADA}: WebSocket ×1`, `${ENTRADA}: guardia ausente o alterada`);
+  });
+
+  it('la guardia (PD-2-r1, B-17): es obligatoria en el chunk de entrada y en cada worker propio (detect, io, ner)', async () => {
+    const workers = { 'assets/detect.worker-Cx0Prueba.js': CHUNK_ENTRADA, 'assets/io.worker-Cx0Prueba.js': CHUNK_ENTRADA, 'assets/ner.worker-Cx0Prueba.js': CHUNK_ENTRADA };
+    expect((await correr({ archivos: workers })).salida).toBe(0);
+    await falla({ archivos: { [ENTRADA]: 'var a=1;' } }, `${ENTRADA}: guardia ausente o alterada`);
+    for (const w of Object.keys(workers)) {
+      await falla({ archivos: { ...workers, [w]: 'self.onmessage=f;' } }, `${w}: guardia ausente o alterada`);
+      await falla({ archivos: { ...workers, [w]: CHUNK_ENTRADA.replace('`share`', '`share`,`x`') } }, `${w}: guardia ausente o alterada`, `${w}: sendBeacon ×1`);
+    }
   });
 
   it('sw.js: un solo fetch( (el interruptor); dos son hallazgo', async () => {
@@ -307,10 +327,11 @@ describe.concurrent('T-CD-03 excepciones exactas de ORT y del worker ner (medida
     await falla({ archivos: { 'assets/ort.wasm.min-Cx0Prueba.js': ORT_CHUNK(2) }, versionOrt: '1.31.1' }, 'versión de ORT distinta de la aprobada');
   });
   it('el worker ner admite un fetch( a /models/ y nada más', async () => {
-    const ner = (k: number): string => 'var u=`/models/${i}/${r}`;' + 'fetch(u);'.repeat(k);
+    // Con la guardia como primer import (PD-2-r1): su fetch acotado no agrega ningún `fetch(` al worker.
+    const ner = (k: number): string => CHUNK_ENTRADA + 'var u=`/models/${i}/${r}`;' + 'fetch(u);'.repeat(k);
     expect((await correr({ archivos: { 'assets/ner.worker-Cx0Prueba.js': ner(1) } })).salida).toBe(0);
     await falla({ archivos: { 'assets/ner.worker-Cx0Prueba.js': ner(2) } }, 'assets/ner.worker-Cx0Prueba.js: fetch ×2 fuera de la excepción aprobada (tope 1)');
-    await falla({ archivos: { 'assets/ner.worker-Cx0Prueba.js': 'fetch(u);' } }, 'assets/ner.worker-Cx0Prueba.js: fetch ×1');
+    await falla({ archivos: { 'assets/ner.worker-Cx0Prueba.js': CHUNK_ENTRADA + 'fetch(u);' } }, 'assets/ner.worker-Cx0Prueba.js: fetch ×1');
   });
 });
 

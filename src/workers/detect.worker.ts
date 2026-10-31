@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 // Worker `detect` (6.11.2, PB-6): reglas, lista del caso, lugares, fusión, entidades, sugerencias y banderas, con resultados progresivos del
 // modelo. Worker de módulo del mismo origen (F-09). Toda la lógica está en src/core/pipeline.ts.
+import '../guard'; // Primer import: la guardia de 5.2.1 (PD-2-r1).
 import { createDetectHandler, mensajeError } from '../core/pipeline';
 
 const manejar = createDetectHandler();

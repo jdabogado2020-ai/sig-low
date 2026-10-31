@@ -81,14 +81,18 @@ const excepcionPdfjs = (r, t) => {
 };
 const URL_LITERAL = /https?:\/\/[^\s"'`)\\]+/g;
 
-// Guardia de arranque (src/arranque.ts, PD-2): nombra las API que neutraliza en estos arreglos literales, una sola vez y solo
-// en el chunk de entrada (el módulo que carga index.html). Fuera de esos literales exactos, los nombres son hallazgos.
+// Guardia (src/guard.ts; 5.2.1, PD-2 y PD-2-r1): nombra las API que neutraliza en estos arreglos literales, una sola vez y
+// solo en el chunk de entrada (el módulo que carga index.html) y en los tres workers propios (`detect`, `io`, `ner`, por
+// nombre). Es el primer import de cada uno: en esos archivos los literales son obligatorios, exactamente una vez cada uno.
+// Fuera de esos literales exactos, los nombres son hallazgos (en cualquier archivo).
 const LITERALES_GUARDIA = [
   '[`RTCPeerConnection`,`webkitRTCPeerConnection`,`RTCDataChannel`]',
+  '[`speechSynthesis`,`SpeechSynthesisUtterance`,`SpeechRecognition`,`webkitSpeechRecognition`]',
   '[`XMLHttpRequest`,`WebSocket`,`EventSource`,`fetchLater`,`open`]',
   '[`sendBeacon`,`share`]',
 ];
-const REGLAS_GUARDIA = new Set(['XMLHttpRequest', 'WebSocket', 'EventSource', 'sendBeacon', 'WebRTC', 'fetchLater']);
+const REGLAS_GUARDIA = new Set(['XMLHttpRequest', 'WebSocket', 'EventSource', 'sendBeacon', 'WebRTC', 'fetchLater', 'voz']);
+const esWorkerPropio = (r) => /^assets\/(?:detect|io|ner)\.worker-[\w-]+\.js$/.test(r);
 
 const PROHIBIDOS = [
   ['console', /\bconsole\s*\.\s*[a-z]+/g],
@@ -99,9 +103,13 @@ const PROHIBIDOS = [
   ['EventSource', /\bEventSource\b/g],
   ['sendBeacon', /\bsendBeacon\b/g],
   ['WebRTC', /\b(?:webkit)?RTCPeerConnection\b|\bRTCDataChannel\b/g],
+  // B-18: las voces en línea sintetizan en servidores del fabricante y el reconocimiento envía el audio; la app no los usa.
+  ['voz', /\b(?:speechSynthesis|SpeechSynthesis\w*|(?:webkit)?SpeechRecognition\w*)\b/g],
   ['fetchLater', /\bfetchLater\b/g],
   ['navigator.share', /\bnavigator\s*\.\s*share\b/g],
   ['window.open', /\bwindow\s*\.\s*open\s*\(/g],
+  // `document.open(url, nombre, opciones)` abre una ventana como window.open (V-03).
+  ['document.open', /\bdocument\s*\.\s*open\s*\(/g],
   ['location=', /\blocation\s*(?:\.\s*(?:href|hash|search|pathname|host|hostname|protocol|port)\s*)?=(?!=)|\blocation\s*\.\s*(?:assign|replace)\s*\(/g],
   ['history', /\b(?:pushState|replaceState)\b/g],
   ['localStorage', /\blocalStorage\b/g],
@@ -218,9 +226,13 @@ for (const p of archivos) {
   const r = rel(p);
   if (!/\.(m?js|html|json|txt|webmanifest|css)$/.test(p) && basename(p) !== '_headers') continue;
   const t = readFileSync(p, 'utf8');
-  // Literales de la guardia: se quitan del texto (una vez cada uno) solo en el chunk de entrada y solo si están exactos.
+  // Literales de la guardia: se quitan del texto (una vez cada uno) solo en el chunk de entrada y en los workers propios, y
+  // solo si están exactos. En esos archivos son obligatorios: si falta uno o se repite, la guardia no es su primer import.
   let tGuardia = t;
-  if (r === entrada && LITERALES_GUARDIA.every((l) => t.split(l).length === 2)) for (const l of LITERALES_GUARDIA) tGuardia = tGuardia.replace(l, '');
+  if (r === entrada || esWorkerPropio(r)) {
+    if (LITERALES_GUARDIA.every((l) => t.split(l).length === 2)) for (const l of LITERALES_GUARDIA) tGuardia = tGuardia.replace(l, '');
+    else fallar(`${r}: guardia ausente o alterada (src/guard.ts, con cada arreglo exactamente una vez)`);
+  }
   const exPdf = excepcionPdfjs(r, t);
   const reglas = [...PROHIBIDOS, ...(/\.(html|css)$/.test(r) ? PROHIBIDOS_HTML_CSS : [])];
   for (const [nombre, re] of reglas) {
