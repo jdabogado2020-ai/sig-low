@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   caracteresCopiados, claveParte, clasificarMenciones, codigoDeSalida, concordancia, construirInforme, coberturaAceptable, calcularFila,
-  escanearResiduos, esExacta, esSolape, esVerdadera, evaluarDocumento, exceso, f2, gruposDeCierre, iou, nombreInforme, omisionesPermitidas,
+  escanearResiduos, esExacta, esPositiva, esSolape, esVerdadera, evaluarDocumento, exceso, f2, gruposDeCierre, iou, nombreInforme, omisionesPermitidas,
   razon, tablaTexto,
 } from '../../scripts/metrics.ts';
 import type {
@@ -141,6 +141,13 @@ describe('T-ME-01 · aritmética básica', () => {
     expect(omisionesPermitidas(0.85, 20)).toBe(3);
     expect(omisionesPermitidas(1, 500)).toBe(0);
     expect(omisionesPermitidas(0.95, 7)).toBe(0);
+  });
+
+  it('D-06: una edad con EDAD_A_RANGO y un municipio con DESPACHO_A_GENERICO no entran en la exhaustividad de protección', () => {
+    expect(esPositiva(ann('X1', 'FECHA', 0, 20, 'EX1'))).toBe(true);
+    expect(esPositiva(ann('X2', 'FECHA', 0, 20, 'EX2', { generalizacion: 'EDAD_A_RANGO', debe_generalizarse: true }))).toBe(false);
+    expect(esPositiva(ann('X3', 'MUNICIPIO', 0, 6, 'EX3', { generalizacion: 'DESPACHO_A_GENERICO' }))).toBe(false);
+    expect(esPositiva(ann('X4', 'MUNICIPIO', 0, 6, 'EX4', { generalizacion: 'MUNICIPIO_A_DEPARTAMENTO' }))).toBe(true);
   });
 });
 

@@ -163,8 +163,11 @@ const contiene = (a: Tramo, b: Tramo): boolean => a.start <= b.start && a.end >=
 const interseccion = (a: Tramo, b: Tramo): number => Math.max(0, Math.min(a.end, b.end) - Math.max(a.start, b.start));
 const solapa = (a: Tramo, b: Tramo): boolean => interseccion(a, b) > 0;
 
+// DESPACHO_A_GENERICO y EDAD_A_RANGO (D-06, decisión del dueño del 31-oct; nota de 10.3.2) no se protegen con marcador: son
+// sugerencias, y cuentan en la fila de banderas y sugerencias, no en la exhaustividad de protección ni en las filas por entidad.
 export const esPositiva = (g: GoldAnnotation): boolean =>
-  !g.es_negativo_esperado && !(FLAG_TYPES as readonly string[]).includes(g.tipo) && g.generalizacion !== 'DESPACHO_A_GENERICO';
+  !g.es_negativo_esperado && !(FLAG_TYPES as readonly string[]).includes(g.tipo)
+  && g.generalizacion !== 'DESPACHO_A_GENERICO' && g.generalizacion !== 'EDAD_A_RANGO';
 
 // ===================================================================================================================
 // Emparejamiento (10.3.2)
