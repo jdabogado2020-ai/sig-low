@@ -15,7 +15,9 @@ import { serializarLista, sha256Hex, type ArchivoPrecache } from '../../vite-plu
 
 const DIST = resolve('dist');
 const CAMPOS = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
-const NOMBRE_INSEGURO = 'sig-low.prueba'; // resuelve a 127.0.0.1 solo en el navegador de T-SW-03: http y no localhost
+const NOMBRE_INSEGURO = 'sig-low.prueba';
+const M35 = 'Sig-Low todavía no puede recibir documentos';
+const M38 = 'Esta dirección no usa conexión cifrada (https)'; // resuelve a 127.0.0.1 solo en el navegador de T-SW-03: http y no localhost
 
 interface Peticion { t: number; m: string; u: string }
 interface Servidor { origen: string; peticiones: () => Peticion[]; parar: () => Promise<void> }
@@ -88,6 +90,13 @@ async function esperarControl(page: Page): Promise<void> {
 }
 
 /** Versión que sirve el SW que controla la página: cada versión lee «/» de su propia caché. */
+/** Estado SIN_SERVICE_WORKER de la interfaz (PC-1, 8.2.10): M-35 y M-36 (o M-38 sin https) y ningún campo. */
+async function esperarSinSw(page: Page, mensaje: string): Promise<void> {
+  await expect(page.getByRole('heading', { level: 1, name: M35 })).toBeVisible({ timeout: 25_000 });
+  await expect(page.locator('[data-prueba="sin-sw"]')).toContainText(mensaje);
+  await expect(page.locator(CAMPOS)).toHaveCount(0);
+}
+
 const servidaPor = (page: Page): Promise<string | null> =>
   page.evaluate(async () => /siglow-(v\d)/.exec(await (await fetch('/')).text())?.[1] ?? null);
 
@@ -128,7 +137,7 @@ test.afterAll(() => {
 });
 
 test.describe('T-SW-01 sin controlador', () => {
-  test('T-SW-01 @cero-red con el service worker bloqueado la página queda sin controlador y sin campos de contenido', async ({ browser }) => {
+  test('T-SW-01 @cero-red con el service worker bloqueado: SIN_SERVICE_WORKER, sin controlador y sin campos de contenido', async ({ browser }) => {
     const srv = await levantar(V1);
     try {
       const ctx = await browser.newContext({ baseURL: srv.origen, serviceWorkers: 'block' });
@@ -139,14 +148,14 @@ test.describe('T-SW-01 sin controlador', () => {
         controlador: navigator.serviceWorker.controller !== null,
         registros: (await navigator.serviceWorker.getRegistrations()).length,
       }))).toEqual({ controlador: false, registros: 0 });
-      await expect(page.locator(CAMPOS)).toHaveCount(0);
+      await esperarSinSw(page, 'Pulse «Recargar»');
       await ctx.close();
     } finally {
       await srv.parar();
     }
   });
 
-  test('T-SW-01 @cero-red Mayús + recargar deja la página sin controlador aunque el SW esté activo, y sin campos de contenido', async ({ browser }) => {
+  test('T-SW-01 @cero-red Mayús + recargar: SIN_SERVICE_WORKER aunque el SW esté activo, y sin campos de contenido', async ({ browser }) => {
     const srv = await levantar(V1);
     try {
       const ctx = await browser.newContext({ baseURL: srv.origen });
@@ -159,7 +168,7 @@ test.describe('T-SW-01 sin controlador', () => {
         controlador: navigator.serviceWorker.controller !== null,
         activo: (await navigator.serviceWorker.getRegistration())?.active?.state ?? null,
       }))).toEqual({ controlador: false, activo: 'activated' });
-      await expect(page.locator(CAMPOS)).toHaveCount(0);
+      await esperarSinSw(page, 'si recargó con Mayús + F5, recargue de forma normal');
       // Control negativo (V-13): sin controlador no hay interruptor y un POST al propio origen sí llega al servidor
       // (solo lo frena la CSP si es a otro origen). Por eso la app no acepta documentos en este estado.
       const corte = srv.peticiones().length;
@@ -271,19 +280,29 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
     expect(await cachesDe(page)).toEqual([cacheDe(V1), cacheDe(V2)].sort());
   }
 
-  test('T-SW-02 @cero-red la versión nueva queda en espera sin tomar el control y SKIP_WAITING la aplica con recarga', async ({ browser }) => {
+  test('T-SW-02 @cero-red aviso de versión nueva: v1 sigue controlando, con la tabla sin guardar no se aplica, y «Actualizar ahora» aplica v2', async ({ browser }) => {
     const ctx = await browser.newContext({ baseURL: srv.origen });
     const page = await abrirControlada(ctx);
+    const h1 = (nombre: string) => page.getByRole('heading', { level: 1, name: nombre });
+    await expect(h1('Inicio')).toBeVisible({ timeout: 25_000 });
+    // Asunto «No guardar» (ficticio): su tabla existe solo en memoria y la recarga la borraría.
+    await page.getByLabel('Código del asunto').fill('PRUEBA-SW-02');
+    await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
+    await page.getByRole('button', { name: 'Crear asunto' }).click();
+    await expect(h1('Lista del caso')).toBeVisible();
     await publicarV2(page);
-    // Lo que hace `aplicar` de useActualizacion() tras guardar o exportar: SKIP_WAITING y recarga al cambiar el controlador.
-    await Promise.all([
-      page.waitForEvent('load'),
-      page.evaluate(async () => {
-        const reg = await navigator.serviceWorker.getRegistration();
-        navigator.serviceWorker.addEventListener('controllerchange', () => { location.reload(); }, { once: true });
-        reg?.waiting?.postMessage({ tipo: 'SKIP_WAITING' });
-      }),
-    ]);
+    const banda = page.locator('[data-prueba="banda-actualizacion"]');
+    const ahora = banda.getByRole('button', { name: 'Actualizar ahora' });
+    await expect(banda).toContainText('Hay una versión nueva de Sig-Low. Se aplicará sola la próxima vez que abra Sig-Low con todas sus pestañas cerradas.');
+    // Con la tabla sin guardar ni exportar, el aviso exige hacerlo antes (8.2.10): «Actualizar ahora» no se puede usar.
+    await expect(banda.getByRole('button', { name: 'Exportar tabla cifrada' })).toBeVisible();
+    await expect(ahora).toBeDisabled();
+    expect(await servidaPor(page)).toBe('v1');
+    // Sin asunto en memoria (tras «Bloquear») se puede aplicar: SKIP_WAITING y recarga a la v2.
+    await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+    await expect(h1('Inicio')).toBeVisible();
+    await expect(ahora).toBeEnabled();
+    await Promise.all([page.waitForEvent('load'), ahora.click()]);
     await esperarControl(page);
     expect(await page.content()).toContain('siglow-v2');
     expect(await servidaPor(page)).toBe('v2');
@@ -349,7 +368,7 @@ test.describe('T-SW-03 contexto no seguro', () => {
     await navegador.close();
   });
 
-  test('T-SW-03 @cero-red servida por http:// fuera de localhost: sin service worker, sin crypto.subtle y sin campos de contenido', async () => {
+  test('T-SW-03 @cero-red INV-V08 servida por http:// fuera de localhost: CONTEXTO_NO_SEGURO, sin bóveda, sin service worker ni crypto.subtle', async () => {
     const srv = await levantar(V1);
     const puerto = new URL(srv.origen).port;
     try {
@@ -362,7 +381,9 @@ test.describe('T-SW-03 contexto no seguro', () => {
         sw: 'serviceWorker' in navigator,
         subtle: typeof (globalThis.crypto as Crypto | undefined)?.subtle,
       }))).toEqual({ seguro: false, sw: false, subtle: 'undefined' });
-      await expect(page.locator(CAMPOS)).toHaveCount(0);
+      await esperarSinSw(page, M38);
+      // INV-V08: no se ofrece la bóveda ni «Recargar» (recargar no arregla la falta de https).
+      await expect(page.getByRole('button', { name: /Bóveda|Guardar|Recargar/ })).toHaveCount(0);
       // Sin contexto seguro la app no intenta registrar el SW (sw-registro.ts): /sw.js nunca se pide.
       expect(srv.peticiones().filter((p) => p.u === '/sw.js')).toEqual([]);
       await ctx.close();

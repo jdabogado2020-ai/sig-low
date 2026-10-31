@@ -95,16 +95,11 @@ async function responder(req: Request): Promise<Response> {
   const v = await laVersion();
   const ruta = rutaPermitida(req, v.hashes);
   if (ruta === null) return Response.error();
-  const cache = await caches.open(v.cache);
-  let r = await cache.match(ruta);
-  if (!r) {
-    // Caché incompleta (borrada a mano o por el navegador): se vuelve a pedir el archivo de ESTA versión y se sirve
-    // solo si su SHA-256 coincide. Sin conexión o con otro contenido: Response.error().
-    const nuevo = await traerVerificado(ruta, v);
-    if (!nuevo) return Response.error();
-    await cache.put(ruta, nuevo.clone());
-    r = nuevo;
-  }
+  // Caché incompleta (borrada a mano o por el navegador): se vuelve a pedir el archivo de ESTA versión y se sirve solo
+  // si su SHA-256 coincide; sin conexión o con otro contenido, Response.error(). No se guarda ni se crea la caché
+  // (`caches.match` con cacheName, no `caches.open`): su existencia sigue significando «precache completo» (M-39).
+  const r = (await caches.match(ruta, { cacheName: v.cache })) ?? (await traerVerificado(ruta, v));
+  if (!r) return Response.error();
   return conCabeceras(r, ruta, v);
 }
 
