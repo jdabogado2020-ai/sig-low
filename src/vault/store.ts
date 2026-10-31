@@ -115,7 +115,23 @@ function registroLeido(x: unknown): AsuntoRecord | null {
   return o as unknown as AsuntoRecord;
 }
 
+/**
+ * La base existe ya en este navegador. Las lecturas no la crean: con «No guardar» (M-14) nada se escribe en IndexedDB, ni
+ * siquiera una base vacía. Sin indexedDB.databases() se abre la base como antes.
+ */
+async function baseExiste(): Promise<boolean> {
+  if (conexion) return true;
+  if (!idbDisponible()) throw new SiglowError('IDB_NO_DISPONIBLE');
+  if (typeof indexedDB.databases !== 'function') return true;
+  try {
+    return (await indexedDB.databases()).some((d) => d.name === DB_NOMBRE);
+  } catch {
+    return true;
+  }
+}
+
 export async function listarRegistros(): Promise<RegistroListado[]> {
+  if (!(await baseExiste())) return [];
   const todos = (await transaccion<unknown[]>('readonly', (s) => s.getAll(), 'IDB_NO_DISPONIBLE')) ?? [];
   const lista: RegistroListado[] = [];
   for (const x of todos) {
@@ -128,10 +144,12 @@ export async function listarRegistros(): Promise<RegistroListado[]> {
 }
 
 export async function leerRegistro(asuntoId: AsuntoId): Promise<AsuntoRecord | null> {
+  if (!(await baseExiste())) return null;
   return registroLeido(await transaccion<unknown>('readonly', (s) => s.get(asuntoId), 'IDB_NO_DISPONIBLE'));
 }
 
 export async function buscarPorCodigo(codigo: string): Promise<AsuntoRecord | null> {
+  if (!(await baseExiste())) return null;
   return registroLeido(await transaccion<unknown>('readonly', (s) => s.index('por_codigo').get(codigo), 'IDB_NO_DISPONIBLE'));
 }
 

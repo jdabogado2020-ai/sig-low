@@ -449,4 +449,19 @@ test.describe('bóveda en la app', () => {
     await abrirGuardado(page, 'PRUEBA-003', FRASE_APP);
     await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
   });
+
+  test('T-BO-01 @humo app: «No guardar» (M-14) no escribe nada en IndexedDB, ni una base vacía', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await expect(page.locator('[data-prueba="sin-asuntos"]')).toBeVisible();   // listar() ya corrió
+    await page.getByLabel('Código del asunto').fill('PRUEBA-004');
+    await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
+    await page.getByRole('button', { name: 'Crear asunto' }).click();
+    await page.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante');
+    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
+    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
+    await page.getByRole('button', { name: 'Continuar' }).click();
+    await expect(page.getByRole('textbox', { name: 'Texto del documento' })).toBeVisible();
+    expect(await page.evaluate(async () => (await indexedDB.databases()).map((d) => d.name))).toEqual([]);
+  });
 });
