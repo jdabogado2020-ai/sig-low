@@ -49,7 +49,8 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { buildSearchView } from '../../src/core/normalize.ts';
 import { CUE_WINDOW, RULE_TIME_LIMIT_MS, runRules } from '../../src/core/rules/catalog.ts';
 import {
-  EXCLUSIONES, aplicarExclusiones, contextosDelModelo, esContextoDeCita, exclusionDelModelo, tramosProtegidos,
+  EXCLUSIONES, aplicarExclusiones, contextoDelExpediente, contextosDelModelo, esContextoDeCita, esPrecedenteCitado, exclusionDelModelo,
+  finDeNormaAlInicio, tramosProtegidos,
 } from '../../src/core/rules/exclusiones.ts';
 import { generalize } from '../../src/core/generalize.ts';
 import type { GenDetection } from '../../src/core/generalize.ts';
@@ -523,8 +524,9 @@ describe('T-MO-01 · PB-2-r6 (D-06): los contextos de exclusión enteros para lo
       .map((c) => `${t.slice(c.start, c.end)}${c.inicio === true ? ':inicio' : ''}:${c.modo}`);
     expect(de('E-NORMA-01')).toEqual(['Ley 1122 de 2007:suprime']);
     expect(de('E-SENT-01')).toEqual(['Sentencia T-074 de 2020:suprime']);
-    expect(de('E-ART-01')).toEqual(['artículo 49:suprime',
-      'Constitución Política y 10 SMMLV; el artículo 3 del contrato con Ferretería Ejemplo.:inicio:suprime', 'artículo 3:suprime']);
+    // M-40 (PB-2-r7): el objeto es el nombre de la norma; antes iba hasta el final del renglón
+    // («Constitución Política y 10 SMMLV; el artículo 3 del contrato con Ferretería Ejemplo.»).
+    expect(de('E-ART-01')).toEqual(['artículo 49:suprime', 'Constitución Política:inicio:suprime', 'artículo 3:suprime']);
     expect(de('E-CANT-01')).toEqual(['10 SMMLV:baja']);
     const en = (x: string): ReturnType<typeof exclusionDelModelo> => exclusionDelModelo(cx, t.indexOf(x), t.indexOf(x) + x.length);
     expect(en('Constitución Política')).toBe('suprime');
@@ -533,6 +535,91 @@ describe('T-MO-01 · PB-2-r6 (D-06): los contextos de exclusión enteros para lo
     // El objeto de la cita vale solo para el tramo que empieza en él; «del contrato» no es una norma de la lista cerrada.
     expect(en('Ferretería Ejemplo')).toBeNull();
     expect(en('Política')).toBeNull();
+  });
+});
+
+describe('T-MO-01 · M-40 (PB-2-r7): el objeto de la cita de artículo es el nombre de la norma (7.3.7: 4 positivos y 4 negativos)', () => {
+  /** El objeto (contexto `inicio`) que deja `contextosDelModelo` tras cada «artículo N de la/del». */
+  const objetos = (t: string): string[] => contextosDelModelo(buildSearchView(t, 'reglas', 'cuerpo'))
+    .filter((c) => c.inicio === true).map((c) => t.slice(c.start, c.end));
+  it.each([
+    ['el artículo 49 de la Constitución Política de 1991 consagra', 'Constitución Política de 1991'],
+    ['el artículo 1546 del Código Civil, que regula', 'Código Civil'],
+    ['el artículo 90 del Código General del Proceso señala', 'Código General del Proceso'],
+    ['el artículo 64 del Código Sustantivo del Trabajo Comercial Ejemplo S.A. dispone', 'Código Sustantivo del Trabajo'],
+  ])('positivo: «%s» → objeto «%s»', (t, objeto) => {
+    expect(objetos(t)).toEqual([objeto]);
+    // El tramo del modelo igual al objeto se descarta; el que sigue más allá no (devuelve el fin de la norma para 7.11.2).
+    const cx = contextosDelModelo(buildSearchView(t, 'reglas', 'cuerpo'));
+    const s = t.indexOf(objeto);
+    expect(exclusionDelModelo(cx, s, s + objeto.length)).toBe('suprime');
+    expect(finDeNormaAlInicio(cx, s, s + objeto.length)).toBeNull();
+    expect(finDeNormaAlInicio(cx, s, t.length - 1)).toBe(s + objeto.length);
+  });
+  it.each([
+    ['el artículo 3 del contrato con Ferretería Ejemplo dispone', 'sin cabeza de la lista cerrada'],
+    ['el artículo 12 del Código de Ética de Clínica Ejemplo S.A.S. dispone', 'Clínica Ejemplo S.A.S.'],
+    ['el artículo 5 del Estatuto de Ejemplo EPS dispone', 'Ejemplo EPS'],
+    ['el artículo 2 del Pacto Ejemplo S.A.S. dispone', 'Ejemplo S.A.S.'],
+  ])('negativo: en «%s» el nombre (%s) no queda dentro de ningún contexto', (t, nombre) => {
+    const cx = contextosDelModelo(buildSearchView(t, 'reglas', 'cuerpo'));
+    const s = t.indexOf(nombre);
+    if (s >= 0) {
+      expect(exclusionDelModelo(cx, s, s + nombre.length)).toBeNull();
+      // Con el código anterior el objeto iba hasta el final del renglón y contenía al nombre.
+      expect(cx.some((c) => c.start <= s && s + nombre.length <= c.end)).toBe(false);
+    } else expect(objetos(t)).toEqual([]);
+  });
+});
+
+describe('T-MO-01 · A-1 (PB-2-r7): R-RAD_ADMIN-03 solo descarta el expediente con una señal explícita de precedente en la oración', () => {
+  const ctx = (t: string, sub = 'T-9.000.001'): ReturnType<typeof contextoDelExpediente> => {
+    const v = buildSearchView(t, 'reglas', 'cuerpo');
+    const s = v.text.indexOf(sub);
+    return contextoDelExpediente(v.text, s, s + sub.length, v);
+  };
+  it('señales de precedente en la misma oración: «precedente», «cfr.», «véase», «caso análogo», «en la sentencia T-…» y «citado» pegado', () => {
+    for (const t of [
+      'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.',
+      'Cfr. expediente T-9.000.001.',
+      'Véase también el expediente T-9.000.001.',
+      'En el expediente T-9.000.001 se resolvió un caso análogo.',
+      'Así lo dijo la Corte en la sentencia T-074 de 2020, expediente T-9.000.001.',
+      'El contratista guardará reserva, incluido el expediente T-9.000.001 citado como ejemplo.',
+      'Se examinó el citado expediente T-9.000.001.',
+    ]) expect(ctx(t), t).toBe('precedente');
+  });
+  it('«Corte», «Tribunal», «Sala», «Sección» o «sentencia» solos no bastan: se toma, con contexto de cita', () => {
+    for (const t of [
+      'Señores\nCORTE CONSTITUCIONAL\nReferencia: Expediente T-9.000.001',
+      'El Tribunal Superior de Ejemplo remitió a la Corte el expediente T-9.000.001.',
+      'La Sala de Selección escogió el expediente T-9.000.001.',
+      'La Sección Segunda revisó la sentencia del expediente T-9.000.001.',
+    ]) expect(ctx(t), t).toBe('cita');
+    expect(ctx('Expediente: T-9.000.001')).toBeNull();
+  });
+  it('la señal de precedente está en otra oración, o hay un trámite o un rótulo del propio caso: se toma', () => {
+    for (const t of [
+      'Como precedente invoco la Sentencia T-074 de 2020. Solicito a la Corte revisar el expediente T-9.000.001.',
+      'Por desconocimiento del precedente, solicito a la Corte Constitucional seleccionar para revisión el expediente T-9.000.001.',
+      'Conforme a la norma citada, otorgo poder especial para actuar en el expediente T-9.000.001.',
+      'Referencia: Expediente T-9.000.001, citado en el auto de la Sala.',
+      'Como precedente, la Corte decretó pruebas en el expediente T-9.000.001 de la referencia.',
+    ]) expect(ctx(t), t).not.toBe('precedente');
+  });
+  it('B-62 sin el índice de la vista da lo mismo (la consulta de generalize.ts y de las pruebas)', () => {
+    for (const t of [
+      'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.',
+      'Señores\nCORTE CONSTITUCIONAL\nReferencia: Expediente T-9.000.001',
+      'Expediente: T-9.000.001',
+      'Conforme a la norma citada, otorgo poder especial para actuar en el expediente T-9.000.001.',
+    ]) {
+      const v = buildSearchView(t, 'reglas', 'cuerpo');
+      const s = v.text.indexOf('T-9.000.001');
+      expect(contextoDelExpediente(v.text, s, s + 11)).toBe(ctx(t));
+      expect(esPrecedenteCitado(v.text, s, s + 11)).toBe(ctx(t) === 'precedente');
+      if (ctx(t) !== 'precedente') expect(esContextoDeCita(v.text, s, s + 11)).toBe(ctx(t) === 'cita');
+    }
   });
 });
 
@@ -710,7 +797,47 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     const correr = (): unknown => (camino === 'modelo' ? contextosDelModelo(view) : runRules(view, PART, reglas, 2026));
     const mejor = Math.min(...[0, 1, 2].map(() => { const t0 = performance.now(); correr(); return performance.now() - t0; }));
     expect(mejor).toBeLessThan(300);
-    if (camino === 'cita') expect(runRules(view, PART, reglas, 2026)).toEqual([]);
+    // A-1 (PB-2-r7): «la Sentencia T-1» sola no es una señal de precedente: cada expediente se toma, con el contexto de cita.
+    if (camino === 'cita') {
+      const c = runRules(view, PART, reglas, 2026);
+      expect(c.length).toBe(Math.floor(K / 46));
+      expect(c.every((x) => x.context === 'cita')).toBe(true);
+    }
+  }, 120_000);
+
+  // B-62 (PB-2-r7): R-RAD_ADMIN-03 consulta el contexto de cita y de precedente en cada expediente con ventanas fijas y el índice de
+  // la vista. En un solo renglón de 200.000 y 1.000.000 de caracteres no corta en el tope de 250 ms y toma todos los expedientes
+  // (-r6 cortaba: 4.441 de 7.407 y 1.602 de 37.037). La primera corrida calienta el motor; cuenta la mejor de tres.
+  it.each([
+    ['«el expediente T-9.000.001, »', 200_000, 'el expediente T-9.000.001, ', null],
+    ['«el expediente T-9.000.001, »', 1_000_000, 'el expediente T-9.000.001, ', null],
+    ['«la Corte y el expediente T-9.000.001, »', 200_000, 'la Corte y el expediente T-9.000.001, ', 'cita'],
+    ['«la Corte y el expediente T-9.000.001, »', 1_000_000, 'la Corte y el expediente T-9.000.001, ', 'cita'],
+  ] as const)('B-62 R-RAD_ADMIN-03 en un renglón con %s hasta %i caracteres: no corta en el tope y toma todos los expedientes', async (_n, largo, unidad, contexto) => {
+    const reglas = (await reglasDeModulos(['radicado'])).filter((r) => r.id === 'R-RAD_ADMIN-03');
+    const texto = unidad.repeat(Math.ceil(largo / unidad.length));
+    const total = Math.ceil(largo / unidad.length);
+    const view = buildSearchView(texto, 'reglas', 'cuerpo');
+    runRules(view, PART, reglas, 2026);
+    const corridas = [0, 1, 2].map(() => {
+      let cortes = 0;
+      const c = runRules(buildSearchView(texto, 'reglas', 'cuerpo'), PART, reglas, 2026, { onTimeout: () => { cortes++; } });
+      return { cortes, c };
+    });
+    const mejor = corridas.find((x) => x.cortes === 0);
+    expect(mejor).toBeDefined();
+    expect(mejor?.c.length).toBe(total);
+    expect(mejor?.c.every((x) => (x.context ?? null) === contexto)).toBe(true);
+  }, 120_000);
+
+  it('B-62 contextosDelModelo en un renglón de 200.000 caracteres con citas de artículo encadenadas: el objeto mira una ventana fija y no corta', () => {
+    const texto = 'artículo 1 de la Constitución Política, '.repeat(5_000);
+    let cortes = 0;
+    contextosDelModelo(buildSearchView(texto, 'reglas', 'cuerpo'));
+    const cx = contextosDelModelo(buildSearchView(texto, 'reglas', 'cuerpo'), { onTimeout: () => { cortes++; } });
+    expect(cortes).toBe(0);
+    expect(cx.filter((c) => c.inicio === true).length).toBe(5_000);
+    expect(cx.filter((c) => c.inicio === true).every((c) => texto.slice(c.start, c.end) === 'Constitución Política')).toBe(true);
   }, 120_000);
 
   it('el tope por exclusión corta, conserva lo hallado y avisa solo con el id', () => {

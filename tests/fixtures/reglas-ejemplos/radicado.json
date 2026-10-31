@@ -522,6 +522,147 @@
       "nota": "PB-2-r6: caso de integración del laboratorio 07a; el rótulo del propio caso justo antes (OWN_CASE de R-CIT-01) gana a la sentencia"
     },
     {
+      "texto": "Señores\nCORTE CONSTITUCIONAL\nReferencia: Expediente T-9.000.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "ruleId": "R-RAD_ADMIN-03", "confidence": "media", "canonicalKey": "RAD:T9000001" }],
+      "nota": "PB-2-r7 (A-1, sonda S5-1): encabezado de un memorial a la Corte; «Corte» sola no es señal de precedente"
+    },
+    {
+      "texto": "Honorables Magistrados\nCORTE CONSTITUCIONAL\nRef.: expediente T-9.000.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-2): «Ref.:» tras la Corte"
+    },
+    {
+      "texto": "Señores\nCORTE CONSTITUCIONAL\nReferencia: Acción de tutela. Expediente T-9.000.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-3)"
+    },
+    {
+      "texto": "Referencia: Expediente T-9.000.001. Magistrado ponente: Juan Ejemplo Prueba",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-4): el ponente del propio caso"
+    },
+    {
+      "texto": "Solicito a la Corte Constitucional seleccionar para revisión el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-5): insistencia de selección"
+    },
+    {
+      "texto": "La Sala de Selección Número Diez de la Corte escogió el expediente T-9.000.001 para revisión.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-6): auto de la Sala de Selección"
+    },
+    {
+      "texto": "Presento solicitud de nulidad contra la sentencia proferida dentro del expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-7): nulidad"
+    },
+    {
+      "texto": "El Tribunal Superior de Ejemplo remitió a la Corte el expediente T-9.000.001 para su eventual revisión.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-8): el tribunal que remite"
+    },
+    {
+      "texto": "Otorgo poder especial para actuar ante la Corte Constitucional en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-9): poder"
+    },
+    {
+      "texto": "Mediante auto, la Corte decretó pruebas en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-10): auto de pruebas"
+    },
+    {
+      "texto": "La sentencia T-123 de 2026, proferida en el expediente T-9.000.001, amparó los derechos de la accionante.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-11): la sentencia del propio caso"
+    },
+    {
+      "texto": "Tribunal Superior de Ejemplo\nRemite el expediente T-9.000.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1, S5-12)"
+    },
+    {
+      "texto": "Expediente: T-9.000.001\nSeñores Magistrados de la Corte Constitucional: en el expediente T-9.000.001 se discute la cobertura.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" },
+        { "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }
+      ],
+      "nota": "PB-2-r7 (A-1, S5-13): la segunda mención también"
+    },
+    {
+      "texto": "Por desconocimiento del precedente, solicito a la Corte Constitucional seleccionar para revisión el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1): «precedente» en la oración, pero con un trámite del propio expediente (selección)"
+    },
+    {
+      "texto": "Referencia: Expediente T-9.000.001, citado en el auto de la Sala.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1): «citado» pegado, pero con el rótulo del propio caso al inicio del renglón"
+    },
+    {
+      "texto": "Conforme a la norma citada, otorgo poder especial para actuar en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r7 (A-1): «citada» lejos del expediente no es señal de precedente"
+    },
+    {
+      "texto": "El artículo 49 de la Constitución Política y la Ley 1751 de 2015 garantizan el acceso oportuno; además, la Ley 1122 de 2007 regula el trámite de las peticiones.\nComo precedente invoco la Sentencia C-313 de 2014 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.\nSobre la prestación de tratamientos.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r7 (A-1): negativa del desarrollo (forma de C01)"
+    },
+    {
+      "texto": "regula el trámite de las peticiones.\nComo precedente invoco la Sentencia T-121 de 2015 y, en particular, el expediente\nT-9.000.004, donde se amparó un caso análogo.\nPRETENSIONES",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r7 (A-1): negativa del desarrollo con la oración partida por el PDF (forma de C03)"
+    },
+    {
+      "texto": "regula el trámite de las peticiones.\n\nComo precedente invoco la Sentencia T-597 de 1993 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.\n\nSobre la prestación",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r7 (A-1): negativa del desarrollo entre líneas en blanco (forma de C05)"
+    },
+    {
+      "texto": "CLÁUSULA QUINTA. CONFIDENCIALIDAD. El contratista guardará reserva sobre la información de sus clientes, incluido el expediente T-8.100.002 citado como ejemplo.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r7 (A-1): negativa del desarrollo con «citado» pegado (forma de C18)"
+    },
+    {
+      "texto": "Cfr. expediente T-9.000.003.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r7 (A-1): «cfr.»"
+    },
+    {
+      "texto": "Así lo dijo la Corte en la sentencia T-074 de 2020, expediente T-9.000.004.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r7 (A-1): «en la sentencia T-…» que remite a otra"
+    },
+    {
       "texto": "Expediente D-99.001",
       "reglas": ["R-RAD_ADMIN-03"],
       "esperado": [

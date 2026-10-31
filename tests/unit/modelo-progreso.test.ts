@@ -681,6 +681,111 @@ describe('T-MO-12 · D-06 en la tubería: regla estructural, exclusiones para el
   });
 });
 
+describe('T-MO-12 · A-1 y M-40 de la P0-6a de PB-2-r6: el expediente propio y los nombres tras una norma (PB-2-r7)', () => {
+  async function detectarCon(texto: string) {
+    const doc = documento([texto]);
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await banco().enviar('detectar', { sessionId: 'ses_1', doc, caseList: [], table: TABLA, options: OPCIONES }));
+    return { doc, set: det.set };
+  }
+  /** Las 13 sondas S5 de la revisión: el expediente del propio caso cerca de la Corte, de un tribunal, de una sala o de una sentencia. */
+  const PROPIOS: readonly string[] = [
+    'Señores\nCORTE CONSTITUCIONAL\nReferencia: Expediente T-9.000.001',
+    'Honorables Magistrados\nCORTE CONSTITUCIONAL\nRef.: expediente T-9.000.001',
+    'Señores\nCORTE CONSTITUCIONAL\nReferencia: Acción de tutela. Expediente T-9.000.001',
+    'Referencia: Expediente T-9.000.001. Magistrado ponente: Juan Ejemplo Prueba',
+    'Solicito a la Corte Constitucional seleccionar para revisión el expediente T-9.000.001.',
+    'La Sala de Selección Número Diez de la Corte escogió el expediente T-9.000.001 para revisión.',
+    'Presento solicitud de nulidad contra la sentencia proferida dentro del expediente T-9.000.001.',
+    'El Tribunal Superior de Ejemplo remitió a la Corte el expediente T-9.000.001 para su eventual revisión.',
+    'Otorgo poder especial para actuar ante la Corte Constitucional en el expediente T-9.000.001.',
+    'Mediante auto, la Corte decretó pruebas en el expediente T-9.000.001.',
+    'La sentencia T-123 de 2026, proferida en el expediente T-9.000.001, amparó los derechos de la accionante.',
+    'Tribunal Superior de Ejemplo\nRemite el expediente T-9.000.001',
+    'Expediente: T-9.000.001\nSeñores Magistrados de la Corte Constitucional: en el expediente T-9.000.001 se discute la cobertura.',
+  ];
+
+  it.each(PROPIOS.map((t, i) => [i + 1, t] as const))('A-1 sonda %i: el expediente propio se toma, con la bandera CITA_JURISPRUDENCIAL si hay contexto de cita, y no queda a la vista', async (_n, T) => {
+    const { doc, set } = await detectarCon(T);
+    const exps = set.detections.filter((d) => d.text === 'T-9.000.001');
+    // Con el código anterior (-r6): ninguna detección del expediente (salvo el «Expediente: T-9.000.001» del inicio de la sonda 13).
+    expect(exps.length).toBe((T.match(/T-9\.000\.001/gu) ?? []).length);
+    expect(exps.every((d) => d.type === 'RADICADO_ADMIN' && d.status === 'pendiente')).toBe(true);
+    for (const d of exps) {
+      const cita = set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL' && f.detectionId === d.id);
+      expect(cita.length).toBeLessThanOrEqual(1);
+      if (cita.length === 1) expect(cita[0]).toMatchObject({ reason: 'RADICADO_EN_CITA', options: [], span: { start: d.start, end: d.end } });
+    }
+    expect(render(doc, estadoDe(doc, set)).sections[0]!.text.includes('9.000.001')).toBe(false);
+  });
+
+  it('A-1 el expediente propio junto a la Corte lleva la bandera (contexto de cita sin señal de precedente); el rótulo justo antes no', async () => {
+    const { set } = await detectarCon(PROPIOS[0] as string);
+    const d = set.detections.find((x) => x.text === 'T-9.000.001');
+    expect(set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL').map((f) => f.detectionId)).toEqual([d?.id]);
+    const solo = await detectarCon('Expediente: T-9.000.001');
+    expect(solo.set.detections.map((x) => x.type)).toEqual(['RADICADO_ADMIN']);
+    expect(solo.set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL')).toEqual([]);
+  });
+
+  it('A-1 las 10 negativas del desarrollo (expediente citado como precedente) no se toman; con un trámite del propio caso en la oración, sí', async () => {
+    const previa = 'El artículo 49 de la Constitución Política y la Ley 1751 de 2015 garantizan el acceso oportuno; además, la Ley 1122 de 2007 regula el trámite de las peticiones.';
+    const citas: Array<[string, string]> = [
+      ['C-313 de 2014', 'T-9.000.001'], ['T-259 de 2019', 'T-9.000.001'], ['T-074 de 2020', 'T-9.000.004'], ['C-089 de 2011', 'T-9.000.004'],
+      ['T-597 de 1993', 'T-9.000.001'], ['T-259 de 2019', 'T-9.000.006'], ['T-121 de 2015', 'T-9.000.006'],
+    ];
+    const negativos = [
+      ...citas.map(([s, e]) => `${previa}\nComo precedente invoco la Sentencia ${s} y, en particular, el expediente ${e}, donde se amparó un caso análogo.\nSobre la prestación de tratamientos.`),
+      // C03: el PDF parte la oración antes del expediente.
+      `${previa}\nComo precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente\nT-9.000.004, donde se amparó un caso análogo.\nPRETENSIONES`,
+      `${previa}\n\nComo precedente invoco la Sentencia T-121 de 2015 y, en particular, el expediente\nT-9.000.004, donde se amparó un caso análogo.\n\nPRETENSIONES`,
+      'CLÁUSULA QUINTA. CONFIDENCIALIDAD. El contratista guardará reserva sobre la información de sus clientes, incluido el expediente T-8.100.002 citado como ejemplo.',
+    ];
+    for (const T of negativos) {
+      const { set } = await detectarCon(T);
+      expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text), T).toEqual([]);
+    }
+    for (const T of [
+      'Por desconocimiento del precedente, solicito a la Corte Constitucional seleccionar para revisión el expediente T-9.000.001.',
+      'Referencia: Expediente T-9.000.001, citado en el auto de la Sala.',
+      'Como precedente, la Corte decretó pruebas en el expediente T-9.000.001 de la referencia.',
+    ]) {
+      const { set } = await detectarCon(T);
+      expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text), T).toEqual(['T-9.000.001']);
+    }
+  });
+
+  it('M-40 las 9 sondas S4: el tramo del modelo que empieza en la cabeza de la norma y sigue con un nombre conserva el nombre (7.11.2, baja); la norma sola se sigue descartando', () => {
+    const casos: Array<[string, string, string]> = [
+      ['el artículo 12 del Código de Ética de Clínica Ejemplo S.A.S. dispone', 'Código de Ética de Clínica Ejemplo S.A.S.', 'IPS:Clínica Ejemplo S.A.S.'],
+      ['el artículo 3 del Estatuto Social de Inversiones Prueba S.A.S. dispone', 'Estatuto Social de Inversiones Prueba S.A.S.', 'EMPRESA:Inversiones Prueba S.A.S.'],
+      ['el artículo 8 de la Convención Colectiva de Ferretería Ejemplo Ltda. dispone', 'Convención Colectiva de Ferretería Ejemplo Ltda.', 'EMPRESA:Ferretería Ejemplo Ltda.'],
+      ['el artículo 2 del Pacto Arbitral entre Comercial Ejemplo S.A. y otros', 'Pacto Arbitral entre Comercial Ejemplo S.A.', 'EMPRESA:entre Comercial Ejemplo S.A.'],
+      ['el artículo 5 del Estatuto de Ejemplo EPS dispone', 'Estatuto de Ejemplo EPS', 'EPS:Ejemplo EPS'],
+      ['el artículo 1 del Pacto Ejemplo S.A.S. dispone', 'Pacto Ejemplo S.A.S.', 'EMPRESA:Ejemplo S.A.S.'],
+      ['el artículo 20 del código de comercio de pedro ejemplo gómez dispone', 'código de comercio de pedro ejemplo gómez', 'EMPRESA:pedro ejemplo gómez'],
+      ['el artículo 64 del Código Sustantivo del Trabajo Comercial Ejemplo S.A. dispone', 'Código Sustantivo del Trabajo Comercial Ejemplo S.A.', 'EMPRESA:Comercial Ejemplo S.A.'],
+      ['EL ARTÍCULO 1546 DEL CÓDIGO CIVIL PEDRO EJEMPLO GÓMEZ DISPONE', 'CÓDIGO CIVIL PEDRO EJEMPLO GÓMEZ', 'EMPRESA:PEDRO EJEMPLO GÓMEZ'],
+    ];
+    for (const [t, sub, esperado] of casos) {
+      const part = documento([t]).parts[0]!;
+      const conv = candidatesFromNer([tramo(t, sub, 'ORG', 0.95)], { part, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+      // Con el código anterior el tramo se descartaba entero y el nombre quedaba a la vista.
+      expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}`), t).toEqual([esperado]);
+      expect(conv.candidates[0]?.confidence).toBe('baja');
+    }
+    // Un PER que sigue a la norma, también.
+    const tp = 'según el artículo 49 de la Constitución Política Pedro Ejemplo Gómez reclamó';
+    const per = candidatesFromNer([tramo(tp, 'Constitución Política Pedro Ejemplo Gómez', 'PER', 0.95)],
+      { part: documento([tp]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    expect(per.candidates.map((c) => `${c.type}:${tp.slice(c.start, c.end)}:${c.confidence}`)).toEqual(['PERSONA:Pedro Ejemplo Gómez:baja']);
+    // La norma sola sigue fuera (negativos del desarrollo): «Constitución Política», «Código Civil», «Código General del Proceso».
+    const tn = 'el artículo 49 de la Constitución Política, el artículo 1546 del Código Civil y el artículo 90 del Código General del Proceso.';
+    const neg = candidatesFromNer(['Constitución Política', 'Código Civil', 'Código General del Proceso'].map((x) => tramo(tn, x, 'ORG', 0.95)),
+      { part: documento([tn]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    expect(neg.candidates).toEqual([]);
+  });
+});
+
 describe('T-MO-12 · cancelación y progreso', () => {
   it('INV-W08 tras cancelar a mitad del documento, detect no envía más progreso ni resultado, responde cancelado y la sesión no existe', async () => {
     const partes = Array.from({ length: 6 }, (_, i) => `Parte ${i + 1}: Pedro Prueba Ejemplo, C.C. 100000000${i}.`);

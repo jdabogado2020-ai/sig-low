@@ -13,7 +13,7 @@ import { buildSearchView } from './normalize.ts';
 import { runRules } from './rules/catalog.ts';
 import { rules as rContacto } from './rules/contacto.ts';
 import { rules as rDireccion } from './rules/direccion.ts';
-import { aplicarExclusiones, contextosDelModelo, exclusionDelModelo, rules as rExclusiones } from './rules/exclusiones.ts';
+import { aplicarExclusiones, contextosDelModelo, exclusionDelModelo, finDeNormaAlInicio, rules as rExclusiones } from './rules/exclusiones.ts';
 import type { ContextoDelModelo } from './rules/exclusiones.ts';
 import { rules as rFechas, consolidarFechasSinAnio } from './rules/fechas.ts';
 import { rules as rIds } from './rules/ids.ts';
@@ -175,6 +175,27 @@ function restosFueraDelDespacho(part: Part, s: number, e: number, despacho: { st
 const SIN_REGLAS: RuleRegistry = { rerun: () => null };
 
 /**
+ * M-40 (PB-2-r7) · Lo que el tramo PER u ORG del modelo trae tras el nombre de la norma citada en que empieza («artículo 12 del
+ * Código de Ética de Clínica Ejemplo S.A.S.» → «Clínica Ejemplo S.A.S.») pasa por 7.11.2 como remanente del modelo: recorte R-MOD-03,
+ * una palabra con mayúscula inicial y confianza baja. Si el tramo entero viene en minúsculas («código de comercio de pedro ejemplo
+ * gómez»), 7.11.2 no puede pedir la mayúscula: basta una palabra de dos letras o más que no sea de función, para que el nombre no
+ * quede a la vista. null: lo que sigue a la norma no es un nombre, y el tramo entero se descarta con ella.
+ */
+function restoTrasLaNorma(part: Part, sp: NerSpan, s: number, e: number, finNorma: number): { start: number; end: number } | null {
+  const base: DetectionCandidate = { partId: part.id, start: s, end: e, type: sp.label === 'PER' ? 'PERSONA' : 'EMPRESA', source: 'modelo',
+    nerLabel: sp.label, confidence: 'baja', score: sp.score, canonicalKey: '' };
+  const r = resolveRemainder(part, base, finNorma, e, SIN_REGLAS);
+  if (r !== null) return { start: r.start, end: r.end };
+  if (/\p{Lu}/u.test(part.text.slice(s, e))) return null;
+  const t = trimFunctionWords(part.text.slice(finNorma, e), part.kind);
+  if (t === null) return null;
+  const a = finNorma + t.start;
+  const b = finNorma + t.end;
+  const palabras = vistaLista(part.text.slice(a, b)).split(/[^\p{L}]+/u);
+  return palabras.some((w) => w.length >= 2 && !PALABRAS_DE_FUNCION.has(w)) ? { start: a, end: b } : null;
+}
+
+/**
  * 7.10.7 a 7.10.9: filtros, mapeo de etiquetas y bandas de confianza. PER → PERSONA; ORG → EPS, IPS, despacho o autoridad, o
  * EMPRESA; LOC → municipio, departamento o LUGAR; OTH ≥ 0,90 → bandera. Un despacho o una autoridad (R-MOD-07) con municipio no
  * es detección: `despachoDesdeTramo` (R-DESP-01) da su sugerencia `DESPACHO_A_GENERICO` (D-03 D); sin municipio, entra como
@@ -203,21 +224,30 @@ export function candidatesFromNer(spans: readonly NerSpan[], c: NerContext): Ner
     if (mejor === null) continue;
     const rec = recortarBordes(text, mejor[0], mejor[1], part.kind);
     if (rec === null) continue;
-    const s = rec.start;
+    let s = rec.start;
     // D-03 A con el punto que sigue (PF-3-r1, PB-2-r6): «Comercial Ejemplo S.A» + «.» → el tramo ORG toma el punto del sufijo.
-    const e = sp.label === 'ORG' ? completarSufijoSocietario(text, s, rec.end, part.kind) : rec.end;
-    const piece = text.slice(s, e);
-    if ([...piece.replace(/\s+/gu, '')].length < 2 || !/\p{L}/u.test(piece)) continue;
+    let e = sp.label === 'ORG' ? completarSufijoSocietario(text, s, rec.end, part.kind) : rec.end;
+    if ([...text.slice(s, e).replace(/\s+/gu, '')].length < 2 || !/\p{L}/u.test(text.slice(s, e))) continue;
     let banda: Confidence = sp.score >= c.options.nerHighThreshold ? 'media' : 'baja';
     if (sp.label === 'PER' || sp.label === 'ORG') {
       // PB-2-r6 (D-06): los contextos de exclusión de PA-7 también valen para el modelo. Un tramo PER u ORG dentro de una norma,
       // una sentencia o un código citados («Ley 1122 de 2007», «Sentencia T-074 de 2020», «CIIU 8610», «artículo 49 de la
       // Constitución Política») se descarta (`suprime`) o baja una muesca (`baja`, 7.3.1).
       contextos ??= contextosDelModelo(vistaReglas ??= buildSearchView(text, 'reglas', part.kind));
-      const ex = exclusionDelModelo(contextos, s, e);
+      let ex = exclusionDelModelo(contextos, s, e);
+      // M-40 (PB-2-r7): el tramo que empieza en el nombre de la norma citada y sigue más allá («Código de Ética de Clínica Ejemplo
+      // S.A.S.») no se descarta entero: lo que sigue a la norma pasa por 7.11.2.
+      const finNorma = ex === 'suprime' ? null : finDeNormaAlInicio(contextos, s, e);
+      if (finNorma !== null) {
+        const resto = restoTrasLaNorma(part, sp, s, e, finNorma);
+        if (resto === null) continue;
+        s = resto.start; e = resto.end; banda = 'baja';
+        ex = exclusionDelModelo(contextos, s, e);
+      }
       if (ex === 'suprime') continue;
       if (ex === 'baja') banda = 'baja';
     }
+    const piece = text.slice(s, e);
     const nuevo = (type: DetectionCandidate['type'], key: string, confidence: Confidence, extra: Partial<DetectionCandidate> = {}): void => {
       out.candidates.push({ partId: part.id, start: s, end: e, type, source: 'modelo', nerLabel: sp.label, confidence, score: sp.score, canonicalKey: key, ...extra });
     };
@@ -430,6 +460,21 @@ function sugerenciasDelModelo(s: Session, p: Part, deGeneralize: readonly Sugges
   return out;
 }
 
+/**
+ * A-1 (PB-2-r7; 7.3.3, alcance `RADICADO_ADMIN`) · El expediente de la Corte que R-RAD_ADMIN-03 toma en contexto de cita
+ * (`context: 'cita'`) lleva la bandera `CITA_JURISPRUDENCIAL` vinculada, como el radicado citado (G-13 de generalize.ts, que solo
+ * mira `RADICADO`): queda pendiente y el revisor decide si es una cita o el expediente del caso.
+ */
+function citasDeExpediente(p: Part, gens: readonly GenDetection[], ids: IdSource): Flag[] {
+  const out: Flag[] = [];
+  for (const g of gens) {
+    if (g.type !== 'RADICADO_ADMIN' || g.context !== 'cita' || g.id === undefined) continue;
+    out.push({ id: ids.next('flg') as FlagId, type: 'CITA_JURISPRUDENCIAL', span: { partId: p.id, start: g.start, end: g.end },
+      text: p.text.slice(g.start, g.end), reason: 'RADICADO_EN_CITA', detectionId: g.id, options: [], acknowledged: false });
+  }
+  return out;
+}
+
 /** Conjunto completo con los candidatos de reglas, lista y modelo acumulados, con los ids ya emitidos por la sesión. */
 function construir(s: Session, cambiadas: ReadonlySet<PartId>): FullSet {
   for (const p of s.parts) {
@@ -462,7 +507,7 @@ function construir(s: Session, cambiadas: ReadonlySet<PartId>): FullSet {
     const r: GeneralizeResult = generalize({ part: p, view, detections: gens, options: { referenceDate: s.options.referenceDate as IsoDate },
       docDepCodes: s.docDeps.get(p.id) ?? [], ids: s.ids });
     sugerencias.push(...r.suggestions, ...sugerenciasDelModelo(s, p, r.suggestions));
-    banderas.push(...r.flags);
+    banderas.push(...r.flags, ...citasDeExpediente(p, gens, s.ids));
   }
   const pasada2 = buildDetectionSet(doc, todos, { ...ctx, ids: replayIds(rec.log, s.ids), suggestions: sugerencias, flags: banderas });
   return pasada2;

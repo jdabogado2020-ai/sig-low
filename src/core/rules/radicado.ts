@@ -4,7 +4,7 @@
 // nunca descarta. La DIVIPOLA la configura el worker con `configurarDivipola` (validators/radicado.ts).
 import type { Confidence, RuleContext, RuleSpec, RuleVerdict } from '../types.ts';
 import { ANIO_RADICADO_MINIMO, radicado } from '../validators/radicado.ts';
-import { esContextoDeCita } from './exclusiones.ts';
+import { contextoDelExpediente } from './exclusiones.ts';
 
 const R = String.raw;
 
@@ -178,17 +178,23 @@ function assessRadAdmin02(m: RegExpExecArray, ctx: RuleContext): RuleVerdict | n
 }
 
 /**
- * R-RAD_ADMIN-03 · El expediente de la Corte («T-9.000.001»). PB-2-r6 (D-06): el expediente citado como precedente («invoco la
- * Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004») no se toma. El criterio de cita es el único de E-CITA-01
- * y R-CIT-01 (`esContextoDeCita`), el mismo que marca `CITA_JURISPRUDENCIAL` en los radicados; el expediente del propio caso
- * («Expediente: T-9.000.001», «de la referencia») se sigue tomando.
+ * R-RAD_ADMIN-03 · El expediente de la Corte («T-9.000.001»). PB-2-r6 (D-06) y PB-2-r7 (A-1): solo el expediente citado como
+ * precedente no se toma, y solo con una señal explícita de precedente en la misma oración («Como precedente invoco la Sentencia
+ * T-074 de 2020 y, en particular, el expediente T-9.000.004», «el expediente T-8.100.002 citado como ejemplo»): `esPrecedenteCitado`.
+ * «Corte», «Tribunal», «Sala» o «sentencia» solos no bastan, porque el expediente T **es** de la Corte y aparece así en los escritos
+ * del propio caso (el memorial, la insistencia, la nulidad, el poder). Todo otro expediente se toma como antes de -r6; si además
+ * está en contexto de cita (E-CITA-01 y R-CIT-01, `esContextoDeCita`), con `context: 'cita'`, que lleva la bandera
+ * `CITA_JURISPRUDENCIAL` (7.3.3): nunca queda sin detección.
  */
 function assessRadAdmin03(m: RegExpExecArray, ctx: RuleContext): RuleVerdict | null {
   const cap = capturas(m, ctx);
   if (cap === null) return null;
-  if (esContextoDeCita(ctx.view.text, cap.ns, cap.ne)) return null;
+  // Las dos preguntas (`esPrecedenteCitado` y `esContextoDeCita`) en una, con ventanas fijas y el índice de la vista (B-62).
+  const contexto = contextoDelExpediente(ctx.view.text, cap.ns, cap.ne, ctx.view);
+  if (contexto === 'precedente') return null;
   const verdict: RuleVerdict = { confidence: cap.l !== undefined ? 'media' : 'baja', canonicalKey: `RAD:${alfanum(cap.v)}` };
   if (cap.l !== undefined) verdict.labelId = 'ROT-EXP';
+  if (contexto === 'cita') verdict.context = 'cita';
   return verdict;
 }
 
