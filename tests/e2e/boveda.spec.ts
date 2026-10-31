@@ -849,7 +849,11 @@ test.describe('bóveda en la app', () => {
       [...document.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Abrir para anonimizar')!.click();
       dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }));
     });
-    await expect(page.getByText('No se pudo completar la operación.', { exact: false })).toBeVisible({ timeout: 30_000 });
+    // PC-6-r1: el aborto es un bloqueo, no un error de frase; Inicio ya no muestra M-202 ni M-201 (el botón vuelve a quedar disponible).
+    await expect(page.getByRole('button', { name: 'Abrir para anonimizar' })).toBeDisabled();   // deriva la clave...
+    await expect(page.getByRole('button', { name: 'Abrir para anonimizar' })).toBeEnabled({ timeout: 30_000 });   // ...y se aborta
+    await expect(page.getByText('No se pudo completar la operación.', { exact: false })).toHaveCount(0);
+    await expect(page.getByText('Frase de paso incorrecta o archivo dañado.')).toHaveCount(0);
     await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
     await expect(page.getByText('Ana Ficticia Rojas')).toHaveCount(0);
     await expect(page.getByRole('textbox', { name: 'Texto de la lista' })).toHaveCount(0);
