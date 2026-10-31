@@ -1,11 +1,11 @@
 // T-MO-06 · Claves, agrupación, numeración, tabla por asunto y reductor (plan 6.4.4, 6.6, 7.12). Solo datos ficticios.
 import { describe, expect, it } from 'vitest';
 import {
-  applyReviewAction, buildReviewState, canonicalKeyFor, consolidate, cryptoIds, emptyTable, nitCheckDigit, nitKey, orgKey,
-  personKey, phoneKey, precedenceOf, tableIndexOf, type ReviewContext,
+  applyReviewAction, buildReviewState, canonicalKeyFor, consolidate, cryptoIds, emptyTable, esSiglaSilabica, nitCheckDigit, nitKey, orgKey,
+  palabrasDeNombre, personKey, phoneKey, precedenceOf, tableIndexOf, type ReviewContext,
 } from '../../src/core/entities.ts';
 import type {
-  AsuntoId, CaseEntity, CaseEntityId, DataType, Detection, DocId, DocumentModel, Entity, Flag, FlagId, IdSource, MappingTable,
+  AsuntoId, CaseEntity, CaseEntityId, DataType, Detection, DetectionSet, DocId, DocumentModel, Entity, Flag, FlagId, IdSource, MappingTable,
   MergedCandidate, PartId, PartKind, ReviewAction, ReviewState, SpanEdit, SpanEditId, Suggestion, SuggestionId, TableIndex,
 } from '../../src/core/types.ts';
 
@@ -455,6 +455,225 @@ describe('T-MO-06 · reductor applyReviewAction (6.4.4, 7.12.6)', () => {
     const b = act(w1, { kind: 'declarar_plan_b', causa: 'cancelado' }, ctx);
     expect(b.modelo).toEqual({ kind: 'plan_b', causa: 'cancelado' });
     expect(applyReviewAction(b, { kind: 'incorporar_modelo', ventana: 2, ventanasTotales: 2, delta }, ctx)).toEqual({ ok: true, state: b });
+  });
+});
+
+describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1, 7.12.2.4, S-7.11)', () => {
+  const CAS_M = 'cas_000000000000000000000000000000b1' as CaseEntityId;
+  const CAS_S = 'cas_000000000000000000000000000000b2' as CaseEntityId;
+  const CAS_X = 'cas_000000000000000000000000000000b3' as CaseEntityId;
+  const persona = (id: CaseEntityId, name: string): CaseEntity => ({ id, name, variants: [], kind: 'persona', role: 'DEMANDANTE' });
+  const empresa = (id: CaseEntityId, name: string): CaseEntity => ({ id, name, variants: [], kind: 'organizacion', role: 'EMPRESA' });
+  const per = (doc: DocumentModel, t: string, occ = 0) => mc(doc, 0, t, { type: 'PERSONA', source: 'modelo', nerLabel: 'PER', canonicalKey: personKey(t) }, occ);
+  const org = (doc: DocumentModel, t: string, occ = 0) => mc(doc, 0, t, { type: 'EMPRESA', source: 'modelo', nerLabel: 'ORG', canonicalKey: orgKey(t) }, occ);
+  const loc = (doc: DocumentModel, t: string, occ = 0) => mc(doc, 0, t, { type: 'LUGAR', source: 'modelo', nerLabel: 'LOC', canonicalKey: `LUGAR:${t.toLowerCase()}` }, occ);
+  const lst = (doc: DocumentModel, t: string, id: CaseEntityId, variantClass: Detection['variantClass'], occ = 0, extra: Partial<MergedCandidate> = {}) =>
+    mc(doc, 0, t, { type: 'PERSONA', source: 'lista', caseEntityId: id, variantClass, canonicalKey: `LISTA:${id}`, ...extra }, occ);
+  const con = (doc: DocumentModel, cands: MergedCandidate[], caseList: CaseEntity[] = []) =>
+    buildReviewState(doc, cands, { table: EMPTY, caseList, ids: seqIds(1000) });
+  /** Textos de cada entidad, en orden de lectura. */
+  const grupos = (s: ReviewState): string[][] => {
+    const out = new Map<string, string[]>();
+    for (const d of dets(s)) out.set(d.entityId, [...(out.get(d.entityId) ?? []), d.text]);
+    return [...out.values()];
+  };
+
+  it('palabrasDeNombre: vista lista, sin función ni tratamiento; en texto mixto solo las que empiezan con mayúscula', () => {
+    expect(palabrasDeNombre('Camilo primero')).toEqual(['camilo']);
+    expect(palabrasDeNombre('nicolás ficticio gómez')).toEqual(['nicolas', 'ficticio', 'gomez']);
+    expect(palabrasDeNombre('Dra. Ana de la Prueba')).toEqual(['ana', 'prueba']);
+    expect(palabrasDeNombre('Ejemplo-Acosta Ortiz')).toEqual(['ejemplo', 'acosta', 'ortiz']);
+    expect(palabrasDeNombre('CATALINA PRUEBA DEL VALLE')).toEqual(['catalina', 'prueba', 'valle']);
+    const t0 = performance.now();
+    expect(palabrasDeNombre(`Ana${' '.repeat(40_000)}Prueba`)).toEqual(['ana', 'prueba']);
+    expect(performance.now() - t0).toBeLessThan(300);
+  });
+
+  it('C1 nombre de la lista incompleto (F44): la PER del modelo que contiene, en orden, el nombre de una sola persona de la lista es esa persona', () => {
+    let doc = mkDoc([['cuerpo', 'Martha Cecilia Ejemplo-Acosta Ortiz presentó tutela. Ejemplo-Acosta Ortiz insiste. Ejemplo-Acosta firmó.']]);
+    let s = con(doc, [per(doc, 'Martha Cecilia Ejemplo-Acosta Ortiz'), per(doc, 'Ejemplo-Acosta Ortiz'),
+      lst(doc, 'Ejemplo-Acosta', CAS_M, 'apellido_suelto', 2)], [persona(CAS_M, 'Martha Ejemplo-Acosta')]);
+    expect(grupos(s)).toEqual([['Martha Cecilia Ejemplo-Acosta Ortiz', 'Ejemplo-Acosta Ortiz', 'Ejemplo-Acosta']]);
+    expect(entOf(s, 'Ejemplo-Acosta Ortiz')).toMatchObject({ canonicalKey: `LISTA:${CAS_M}`, marker: '[DEMANDANTE_1]' });
+    expect(dets(s).map((d) => d.confidence)).toEqual(['media', 'baja', 'media']);
+    // Sin ninguna mención de la lista, la entidad del modelo pasa a ser la de la lista (nombre y rol del abogado).
+    doc = mkDoc([['cuerpo', 'Firmó Ana Lucía Prueba Navarro.']]);
+    s = con(doc, [per(doc, 'Ana Lucía Prueba Navarro')], [persona(CAS_M, 'Ana Prueba')]);
+    expect(entOf(s, 'Ana Lucía Prueba Navarro')).toMatchObject({ canonicalKey: `LISTA:${CAS_M}`, caseEntityId: CAS_M, display: 'Ana Prueba', role: 'DEMANDANTE' });
+    // Otro nombre de pila, o el nombre de dos personas de la lista dentro del mismo tramo: no se une.
+    s = con(doc, [per(doc, 'Ana Lucía Prueba Navarro')], [persona(CAS_M, 'Lucía Prueba')]);
+    expect(entOf(s, 'Ana Lucía Prueba Navarro').canonicalKey).toBe('PER:ana lucia prueba navarro');
+    s = con(doc, [per(doc, 'Ana Lucía Prueba Navarro')], [persona(CAS_M, 'Ana Prueba'), persona(CAS_S, 'Ana Navarro')]);
+    expect(entOf(s, 'Ana Lucía Prueba Navarro').canonicalKey).toBe('PER:ana lucia prueba navarro');
+  });
+
+  it('C2 sigla silábica de una organización de la lista: «FESA» es Ferretería Ejemplo S.A.S.; las iniciales solas no, y con dos candidatas tampoco', () => {
+    expect(esSiglaSilabica('fesa', ['ferreteria', 'ejemplo'], 'sas')).toBe(true);
+    expect(esSiglaSilabica('copsa', ['constructora', 'prueba'], 'sa')).toBe(true);
+    expect(esSiglaSilabica('dipru', ['distribuidora', 'prueba'], 'yciasenc')).toBe(true);
+    expect(esSiglaSilabica('tefi', ['textiles', 'ficticios'], 'sas')).toBe(true);
+    expect(esSiglaSilabica('agex', ['agroindustrias', 'ejemplo'], 'sa')).toBe(false);   // «EX» no sale del nombre
+    expect(esSiglaSilabica('eps', ['ejemplo', 'prueba', 'salud'], '')).toBe(false);     // iniciales: la sigla de 7.9.4
+    expect(esSiglaSilabica('fesa', ['ferreteria'], '')).toBe(false);
+    const doc = mkDoc([['cuerpo', 'Ferretería Ejemplo S.A.S. contrató. FESA pagó y FESA firmó.']]);
+    const cands = [mc(doc, 0, 'Ferretería Ejemplo S.A.S.', { type: 'EMPRESA', source: 'lista', caseEntityId: CAS_F, variantClass: 'exacta', canonicalKey: `LISTA:${CAS_F}` }),
+      org(doc, 'FESA'), org(doc, 'FESA', 1)];
+    let s = con(doc, cands, [empresa(CAS_F, 'Ferretería Ejemplo S.A.S.')]);
+    expect(grupos(s)).toEqual([['Ferretería Ejemplo S.A.S.', 'FESA', 'FESA']]);
+    expect(entOf(s, 'FESA').marker).toBe('[EMPRESA_1]');
+    s = con(doc, cands, [empresa(CAS_F, 'Ferretería Ejemplo S.A.S.'), empresa(CAS_X, 'Fábrica Ejemplo S.A.')]);
+    expect(grupos(s)).toEqual([['Ferretería Ejemplo S.A.S.'], ['FESA', 'FESA']]);
+  });
+
+  it('C3 mismo núcleo con otra etiqueta o con una palabra común delante: una sola entidad; EPS e IPS siguen aparte (C-12)', () => {
+    let doc = mkDoc([['cuerpo', 'la ambulancia de Papelería Ficticia no llegó; Papelería Ficticia Ltda. cotizó y la Papelería Ficticia respondió.']]);
+    let s = con(doc, [org(doc, 'Papelería Ficticia'), org(doc, 'Papelería Ficticia Ltda.'), per(doc, 'Papelería Ficticia', 2)]);
+    expect(grupos(s)).toEqual([['Papelería Ficticia', 'Papelería Ficticia Ltda.', 'Papelería Ficticia']]);
+    expect(dets(s).map((d) => d.type)).toEqual(['EMPRESA', 'EMPRESA', 'EMPRESA']);
+    doc = mkDoc([['cuerpo', 'cuando Ficticio negó la atención y luego Ficticio volvió a negarla']]);
+    s = con(doc, [loc(doc, 'Ficticio'), org(doc, 'Ficticio', 1)]);
+    expect(grupos(s)).toEqual([['Ficticio', 'Ficticio']]);
+    doc = mkDoc([['cuerpo', 'El taller Laboratorio Clínico Prueba Ltda. certificó. La póliza de Laboratorio Clínico Prueba Ltda. ampara.']]);
+    s = con(doc, [org(doc, 'taller Laboratorio Clínico Prueba Ltda.'), org(doc, 'Laboratorio Clínico Prueba Ltda.')]);
+    expect(grupos(s)).toEqual([['taller Laboratorio Clínico Prueba Ltda.', 'Laboratorio Clínico Prueba Ltda.']]);
+    expect(entOf(s, 'Laboratorio Clínico Prueba Ltda.').display).toBe('Laboratorio Clínico Prueba Ltda.');
+    doc = mkDoc([['cuerpo', 'Ejemplo EPS remitió a Ejemplo IPS']]);
+    s = con(doc, [mc(doc, 0, 'Ejemplo EPS', { type: 'EPS', source: 'modelo', canonicalKey: orgKey('Ejemplo EPS') }),
+      mc(doc, 0, 'Ejemplo IPS', { type: 'IPS', source: 'modelo', canonicalKey: orgKey('Ejemplo IPS') })]);
+    expect(grupos(s)).toHaveLength(2);
+  });
+
+  it('C4 S-7.11 con la lista: la forma corta del nombre completo que la lista tomó del modelo (D-03 E) se une a la persona de la lista', () => {
+    const doc = mkDoc([['cuerpo', 'Santiago Prueba Rojas firmó. Prueba Rojas insiste. Luego Prueba Rojas calló.']]);
+    const s = con(doc, [lst(doc, 'Santiago Prueba Rojas', CAS_S, 'exacta', 0, { extended: true, confidence: 'media' }), per(doc, 'Prueba Rojas'),
+      mc(doc, 0, 'Prueba Rojas', { type: 'EMPRESA', source: 'modelo', nerLabel: 'ORG', canonicalKey: orgKey('Prueba Rojas') }, 1)],
+    [persona(CAS_S, 'Santiago Prueba')]);
+    expect(grupos(s)).toEqual([['Santiago Prueba Rojas', 'Prueba Rojas', 'Prueba Rojas']]);
+    expect(dets(s).map((d) => `${d.type}:${d.confidence}`)).toEqual(['PERSONA:media', 'PERSONA:baja', 'PERSONA:baja']);
+    // Una forma hecha solo de palabras del nombre de la lista es una variante: la busca la lista, no la correferencia.
+    const d2 = mkDoc([['cuerpo', 'Ana Ficticia Rojas declaró. Rojas (otra persona) no vino.']]);
+    const s2 = con(d2, [mc(d2, 0, 'Ana Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'exacta', canonicalKey: `LISTA:${CAS_A}` }),
+      per(d2, 'Rojas', 1)], CASES);
+    expect(grupos(s2)).toEqual([['Ana Ficticia Rojas'], ['Rojas']]);
+  });
+
+  it('C4 S-7.11 entre etiquetas: una ORG de nombre contenida en una sola persona es esa persona; con sufijo, con palabra común o dentro de otra organización, no', () => {
+    let doc = mkDoc([['cuerpo', 'Elizabeth Ficticia Valencia firmó. Revisar la T.P. de Ficticia Valencia.']]);
+    let s = con(doc, [per(doc, 'Elizabeth Ficticia Valencia'), org(doc, 'Ficticia Valencia')]);
+    expect(grupos(s)).toEqual([['Elizabeth Ficticia Valencia', 'Ficticia Valencia']]);
+    doc = mkDoc([['cuerpo', 'Elizabeth Ficticia Valencia firmó. Pagó Ficticia Valencia S.A.S. ayer.']]);
+    s = con(doc, [per(doc, 'Elizabeth Ficticia Valencia'), org(doc, 'Ficticia Valencia S.A.S.')]);
+    expect(grupos(s)).toHaveLength(2);
+    doc = mkDoc([['cuerpo', 'Elizabeth Ficticia Valencia firmó. Ficticia Valencia Comercial vendió a Ficticia Valencia.']]);
+    s = con(doc, [per(doc, 'Elizabeth Ficticia Valencia'), org(doc, 'Ficticia Valencia Comercial'), org(doc, 'Ficticia Valencia', 2)]);
+    expect(grupos(s)).toHaveLength(3);
+    doc = mkDoc([['cuerpo', 'Elizabeth Ficticia Valencia firmó. La papelería Valencia cerró.']]);
+    s = con(doc, [per(doc, 'Elizabeth Ficticia Valencia'), org(doc, 'papelería Valencia')]);
+    expect(grupos(s)).toHaveLength(2);
+  });
+
+  it('C4 S-7.11: la palabra común que el modelo se llevó no cuenta; el nombre de pila del correo y el apodo introducido unen a la persona', () => {
+    let doc = mkDoc([['cuerpo', 'De: Camilo Ejemplo Acosta. Consulte con Camilo primero.']]);
+    let s = con(doc, [per(doc, 'Camilo Ejemplo Acosta'), per(doc, 'Camilo primero')]);
+    expect(grupos(s)).toEqual([['Camilo Ejemplo Acosta', 'Camilo primero']]);
+    doc = mkDoc([['cuerpo', 'Para: Prueba Giraldo <sergio.prueba@correo.ejemplo.test>\n\nbuenas Sergio,\nconsulte con Sergio primero.']]);
+    s = con(doc, [per(doc, 'Prueba Giraldo'), per(doc, 'Sergio'), per(doc, 'Sergio', 1)]);
+    expect(grupos(s)).toEqual([['Prueba Giraldo', 'Sergio', 'Sergio']]);
+    // El modelo etiquetó ORG el nombre del correo: el usuario del correo dice que es una persona.
+    s = con(doc, [org(doc, 'Prueba Giraldo'), per(doc, 'Sergio')]);
+    expect(grupos(s)).toEqual([['Prueba Giraldo', 'Sergio']]);
+    expect(entOf(s, 'Sergio')).toMatchObject({ type: 'PERSONA', canonicalKey: 'PER:prueba giraldo' });
+    // Un buzón genérico no da nombre de pila.
+    doc = mkDoc([['cuerpo', 'Para: Prueba Giraldo <contacto@correo.ejemplo.test>\n\nbuenas Sergio,']]);
+    expect(grupos(con(doc, [per(doc, 'Prueba Giraldo'), per(doc, 'Sergio')]))).toHaveLength(2);
+    doc = mkDoc([['cuerpo', 'el lote es de mi suegra Constanza Ficticia Ruiz, a quien le decimos Cata, desde 1998. Cata no firmó.']]);
+    s = con(doc, [per(doc, 'Constanza Ficticia Ruiz'), per(doc, 'Cata', 1)]);
+    expect(grupos(s)).toEqual([['Constanza Ficticia Ruiz', 'Cata']]);
+    doc = mkDoc([['cuerpo', 'Pedro Ficticio Gómez, alias Toto, llegó. Toto pagó.']]);
+    s = con(doc, [per(doc, 'Pedro Ficticio Gómez'), per(doc, 'Toto', 1)]);
+    expect(grupos(s)).toEqual([['Pedro Ficticio Gómez', 'Toto']]);
+    // Con dos candidatas no se une (S-7.11), aunque una sea de la lista.
+    doc = mkDoc([['cuerpo', 'Pedro Ejemplo Prueba declaró. Luisa Ejemplo Prueba también. Después Ejemplo Prueba firmó.']]);
+    s = con(doc, [per(doc, 'Pedro Ejemplo Prueba'), lst(doc, 'Luisa Ejemplo Prueba', CAS_S, 'exacta', 0, { extended: true, confidence: 'media' }),
+      per(doc, 'Ejemplo Prueba', 2)], [persona(CAS_S, 'Luisa Ejemplo')]);
+    expect(grupos(s)).toHaveLength(3);
+  });
+
+  it('INV-R12 7.12.2.4 por ventana: la forma corta de una ventana anterior se une al nombre completo que llega después; lo decidido y lo separado no se mueven', () => {
+    const doc = mkDoc([['cuerpo', 'reportó a Ejemplo Salazar como retirado. Iván Darío Ejemplo Salazar declaró. Ejemplo Salazar firmó. Diana Carolina Ejemplo Salazar vino. Ejemplo Salazar volvió.']]);
+    const t = (doc.parts[0] as DocumentModel['parts'][number]).text;
+    const partId = (doc.parts[0] as DocumentModel['parts'][number]).id;
+    let n = 0;
+    const delta = (items: Array<[string, number]>): DetectionSet => {
+      const detections: Detection[] = [];
+      const entities = new Map<string, Entity>();
+      for (const [sub, occ] of items) {
+        let i = -1; for (let k = 0; k <= occ; k++) i = t.indexOf(sub, i + 1);
+        const key = personKey(sub);
+        const e = entities.get(key) ?? { id: `ent_${(0xe00 + ++n).toString(16).padStart(32, '0')}` as Entity['id'], canonicalKey: key, type: 'PERSONA',
+          role: 'OTRA_PERSONA', family: 'PERSONA', marcadorEspecifico: false, mentions: [], sameHolderAs: [], display: sub } as Entity;
+        const d: Detection = { id: `det_${(0xd00 + ++n).toString(16).padStart(32, '0')}` as Detection['id'], docId: doc.id, partId, start: i, end: i + sub.length,
+          text: sub, type: 'PERSONA', role: 'OTRA_PERSONA', source: 'modelo', nerLabel: 'PER', precedence: 6, confidence: 'media', score: 0.6,
+          canonicalKey: key, status: 'pendiente', entityId: e.id, replacement: { proposedTemplate: '{m}' } };
+        e.mentions.push(d.id); entities.set(key, e); detections.push(d);
+      }
+      return { detections, entities: [...entities.values()], flags: [], suggestions: [] };
+    };
+    const ctx: ReviewContext = { table: EMPTY, caseList: [], doc, ids: seqIds(9000) };
+    const s0 = con(doc, []);
+    const w = (s: ReviewState, v: number, items: Array<[string, number]>) =>
+      act(s, { kind: 'incorporar_modelo', ventana: v, ventanasTotales: 3, delta: delta(items) }, ctx);
+    const s1 = w(s0, 1, [['Ejemplo Salazar', 0]]);
+    const corta = dets(s1)[0] as Detection;
+    // Apariciones de «Ejemplo Salazar» en el texto: 0 suelta, 1 dentro de Iván Darío, 2 suelta, 3 dentro de Diana Carolina, 4 suelta.
+    const s2 = w(s1, 2, [['Iván Darío Ejemplo Salazar', 0], ['Ejemplo Salazar', 2]]);
+    expect(grupos(s2)).toEqual([['Ejemplo Salazar', 'Iván Darío Ejemplo Salazar', 'Ejemplo Salazar']]);
+    expect(s2.detections[corta.id]?.confidence).toBe('baja');
+    // C0: con una segunda candidata («Diana Carolina…») la forma corta nueva ya no tiene una sola anfitriona por S-7.11, pero su clave
+    // ya está en la entidad de Iván Darío: una unión hecha no se deshace y el mismo texto lleva el mismo marcador.
+    const s3 = w(s2, 3, [['Diana Carolina Ejemplo Salazar', 0], ['Ejemplo Salazar', 4]]);
+    expect(grupos(s3)).toEqual([['Ejemplo Salazar', 'Iván Darío Ejemplo Salazar', 'Ejemplo Salazar', 'Ejemplo Salazar'], ['Diana Carolina Ejemplo Salazar']]);
+    // Aceptada o separada por el usuario antes de la ventana 2, la forma corta se queda donde está (INV-R12).
+    const aceptada = act(s1, { kind: 'aceptar', detectionId: corta.id }, ctx);
+    const a2 = w(aceptada, 2, [['Iván Darío Ejemplo Salazar', 0]]);
+    expect(a2.detections[corta.id]).toEqual(aceptada.detections[corta.id]);
+    expect(grupos(a2)).toEqual([['Ejemplo Salazar'], ['Iván Darío Ejemplo Salazar']]);
+    const separada = act(s2, { kind: 'separar_mencion', detectionId: corta.id }, ctx);
+    const p3 = w(separada, 3, [['Ejemplo Salazar', 4]]);
+    expect(p3.detections[corta.id]?.entityId).toBe(separada.detections[corta.id]?.entityId);
+    expect(p3.detections[corta.id]?.entityId).not.toBe(p3.detections[(dets(s2)[1] as Detection).id]?.entityId);
+  });
+
+  it('INV-R12 M-12 la correferencia no une a la persona de la lista un nombre que se solapa con una mención suya rechazada', () => {
+    const doc = mkDoc([['cuerpo', 'La demandante Ana Lucía Prueba Navarro presentó la tutela.']]);
+    const t = (doc.parts[0] as DocumentModel['parts'][number]).text;
+    const partId = (doc.parts[0] as DocumentModel['parts'][number]).id;
+    const ctx: ReviewContext = { table: EMPTY, caseList: [persona(CAS_M, 'Ana Prueba')], doc, ids: seqIds(9000) };
+    const s0 = con(doc, [lst(doc, 'Ana', CAS_M, 'nombre_suelto')], ctx.caseList);
+    const ana = dets(s0)[0] as Detection;
+    const r = act(s0, { kind: 'rechazar', detectionId: ana.id, reason: 'FALSO_POSITIVO' }, ctx);
+    const i = t.indexOf('Ana Lucía Prueba Navarro');
+    const d: Detection = { ...ana, id: `det_${'f1'.padStart(32, '0')}` as Detection['id'], start: i, end: i + 24, text: 'Ana Lucía Prueba Navarro',
+      source: 'modelo', nerLabel: 'PER', precedence: 6, confidence: 'media', canonicalKey: personKey('Ana Lucía Prueba Navarro'),
+      status: 'pendiente', entityId: `ent_${'f1'.padStart(32, '0')}` as Entity['id'], role: 'OTRA_PERSONA' };
+    delete d.caseEntityId; delete d.variantClass; delete d.rejectReason; delete d.decidedBy;
+    void partId;
+    const e: Entity = { id: d.entityId, canonicalKey: d.canonicalKey, type: 'PERSONA', role: 'OTRA_PERSONA', family: 'PERSONA',
+      marcadorEspecifico: false, mentions: [d.id], sameHolderAs: [], display: d.text };
+    const w1 = act(r, { kind: 'incorporar_modelo', ventana: 1, ventanasTotales: 1, delta: { detections: [d], entities: [e], flags: [], suggestions: [] } }, ctx);
+    expect(w1.entities[w1.detections[d.id]?.entityId as Entity['id']]?.canonicalKey).toBe('PER:ana lucia prueba navarro');
+    expect(w1.detections[ana.id]).toEqual(r.detections[ana.id]);
+  });
+
+  it('rendimiento: la correferencia de 3.000 entidades del modelo es lineal (índice por palabra)', () => {
+    const letras = (k: number): string => { let s = ''; let x = k; do { s += String.fromCharCode(97 + (x % 26)); x = Math.floor(x / 26); } while (x > 0); return s; };
+    const pares = Array.from({ length: 1500 }, (_, k) => [`Pedro${letras(k)} Ficticio${letras(k)} Prueba${letras(k)}`, `Ficticio${letras(k)} Prueba${letras(k)}`]);
+    const doc = mkDoc([['cuerpo', pares.map(([largo, corto]) => `${largo} firmó y ${corto} calló.`).join('\n')]]);
+    const cands = pares.flatMap(([largo, corto]) => [per(doc, largo as string), per(doc, corto as string, 1)]);
+    const t0 = performance.now();
+    const s = con(doc, cands);
+    expect(performance.now() - t0).toBeLessThan(8000);
+    expect(Object.keys(s.entities)).toHaveLength(1500);
   });
 });
 
