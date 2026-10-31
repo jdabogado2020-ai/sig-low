@@ -1,7 +1,6 @@
 // Armazón común (8.2.1): cabecera, pasos, avisos transversales (8.2.10), pie y diálogos de exportación e inactividad.
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { aplicarActualizacionYRecargar } from './arranque-sw.ts';
 import { bloquear, cerrarAsunto, seguirTrabajando, useCuentaRegresiva } from './bloqueo.ts';
 import { Casilla, CampoFrase } from './campos.tsx';
 import { Dialogo } from './dialogo.tsx';
@@ -9,9 +8,18 @@ import { actualizar, useShell, type Screen } from './estado.ts';
 import { evaluarFrase } from './frase.ts';
 import { mostrarAvisoGlobal, ocultarAvisoGlobal, useAvisoGlobal } from './globales.ts';
 import { calcularHuellas, compilacionCorta } from './huellas.ts';
-import { mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
+import { mensajeDeCodigo, registrarMensajes, ROTULOS, t, X } from './mensajes.ts';
 import { obtenerListaDelCaso, obtenerTabla, quitarAvisoAsunto, agregarAvisoAsunto, useAvisosAsunto, useListaDelCaso } from './sesion.ts';
 import { codigoDeError, puertos } from './servicios.ts';
+import { useVersionCambiada } from './useActualizacion.ts';
+
+// Textos de la actualización con varias pestañas (PD-1-r1, B-11) que 8.5 no trae: ids PROVISIONALES del rango M-13xx
+// (libres en mensajes-entrada.ts y en review/base/textos.ts), pendientes de id oficial del integrador.
+const ACTUALIZACION = { otrasPestanas: 'M-1399', versionCambiada: 'M-1369' } as const;
+registrarMensajes({
+  'M-1399': 'Cierre las otras pestañas de Sig-Low para actualizar ahora.',
+  'M-1369': 'Sig-Low se actualizó desde otra pestaña. Esta pestaña sigue con la versión anterior y algunas funciones pueden fallar: guarde o exporte la tabla y después recárguela.',
+});
 
 export const NOMBRE_PANTALLA: Record<Screen, `M-${number}`> = {
   inicio: X.inicio, lista: X.lista, entrada: X.entrada, procesando: X.procesando, revision: X.revision, listo: X.listo,
@@ -144,26 +152,50 @@ function BandaActualizacion({ alExportar }: { alExportar: () => void }) {
   const { asunto, phase } = useShell();
   const [oculta, setOculta] = useState(false);
   const [acepta, setAcepta] = useState(false);
+  const [pidiendo, setPidiendo] = useState(false);
+  const [otrasPestanas, setOtrasPestanas] = useState(false);
   if (oculta) return null;
   const respaldada = asunto === null || asunto.backedUpRevision === asunto.tableRevision;
   const enCurso = asunto !== null && phase !== 'vacio';
-  const puede = respaldada && (!enCurso || acepta);
+  const puede = respaldada && (!enCurso || acepta) && !pidiendo;
+  // SKIP_WAITING y recarga (8.2.10). El SW lo rechaza con otra pestaña de Sig-Low abierta (B-11): entonces no se recarga
+  // y se pide cerrarlas. Con 'aplicando' el botón queda deshabilitado hasta la recarga.
+  const aplicar = (): void => {
+    setPidiendo(true);
+    setOtrasPestanas(false);
+    void puertos.sw.aplicarActualizacion().then((r) => {
+      if (r !== 'aplicando') setPidiendo(false);
+      setOtrasPestanas(r === 'otras_pestanas');
+    });
+  };
   return (
     <section class="banda" aria-label={t(X.avisos)} data-prueba="banda-actualizacion">
       <p>{t('M-104')}</p>
       {enCurso ? <Casilla etiqueta={t('M-105')} marcada={acepta} onCambio={setAcepta} /> : null}
       {!respaldada ? <p class="ayuda">{t(X.antesDeActualizar)}</p> : null}
+      <p role="status" class="ayuda" data-prueba="actualizacion-otras-pestanas">{otrasPestanas ? t(ACTUALIZACION.otrasPestanas) : ''}</p>
       <div class="acciones">
         {asunto ? <button type="button" class="secundario" onClick={alExportar}>{t(ROTULOS.exportar_tabla_cifrada)}</button> : null}
-        <button
-          type="button"
-          disabled={!puede}
-          onClick={() => { aplicarActualizacionYRecargar(() => { puertos.sw.aplicarActualizacion(); }); }}
-        >
+        <button type="button" disabled={!puede} onClick={aplicar}>
           {t(ROTULOS.actualizar_ahora)}
         </button>
         <button type="button" class="secundario" onClick={() => { setOculta(true); }}>{t(ROTULOS.mas_tarde)}</button>
       </div>
+    </section>
+  );
+}
+
+/** El controlador cambió sin que esta pestaña lo pidiera (B-11): no se recarga sola; se pide guardar y recargar. */
+function AvisoVersionCambiada({ alExportar }: { alExportar: () => void }) {
+  const { asunto } = useShell();
+  return (
+    <section class="banda" aria-label={t(X.avisos)} data-prueba="aviso-version-cambiada">
+      <p role="alert">{t(ACTUALIZACION.versionCambiada)}</p>
+      {asunto ? (
+        <div class="acciones">
+          <button type="button" class="secundario" onClick={alExportar}>{t(ROTULOS.exportar_tabla_cifrada)}</button>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -223,6 +255,7 @@ function Avisos() {
 export function Armazon({ pantalla, children }: { pantalla: Screen; children: ComponentChildren }) {
   const shell = useShell();
   const asunto = shell.asunto;
+  const versionCambiada = useVersionCambiada();
   const [intencion, setIntencion] = useState<Intencion>(null);
   const [anuncio, setAnuncio] = useState('');
   const principal = useRef<HTMLElement>(null);
@@ -261,6 +294,7 @@ export function Armazon({ pantalla, children }: { pantalla: Screen; children: Co
         </div>
       </header>
       {enPasos ? <Pasos actual={pantalla} /> : null}
+      {versionCambiada ? <AvisoVersionCambiada alExportar={() => { setIntencion('exportar'); }} /> : null}
       {shell.updateWaiting ? <BandaActualizacion alExportar={() => { setIntencion('exportar'); }} /> : null}
       <Avisos />
       <main id="contenido" tabIndex={-1} ref={principal}>

@@ -7,6 +7,7 @@ import type {
   AsuntoId, CaseEntity, DocumentModel, ErrorCode, IsoDateTime, MappingTable, NerSpan, PartId, PlanBCause, ReadPdfFn,
 } from '../core/types.ts';
 import type { ModelUiState, ModelVariant } from './estado.ts';
+import { aplicarVersionNueva, type ResultadoActualizacion } from './useActualizacion.ts';
 
 export interface AsuntoListado { asuntoId: AsuntoId; codigo: string; actualizado: IsoDateTime }
 export interface AsuntoAbierto { asuntoId: AsuntoId; codigo: string; caseList: CaseEntity[]; table: MappingTable }
@@ -43,8 +44,11 @@ export interface ModeloPuerto {
 export interface SwPuerto {
   /** Hay un controlador activo para esta página. */
   controlado(): boolean;
-  /** Pide aplicar la versión en espera (SKIP_WAITING); la interfaz recarga. */
-  aplicarActualizacion(): void;
+  /**
+   * Pide aplicar la versión en espera (SKIP_WAITING) y recarga cuando cambia el controlador (PD-1). 'otras_pestanas':
+   * el SW la rechazó porque hay otra ventana de Sig-Low abierta (B-11); no queda ninguna recarga pendiente.
+   */
+  aplicarActualizacion(): Promise<ResultadoActualizacion>;
 }
 
 /** Lo que el análisis le pide al modelo de apoyo (6.11.2 y 6.11.3). Lo conecta PF-2 al fusionarse; sin él, plan B (`no_descargado`). */
@@ -84,9 +88,7 @@ const sinModelo: ModeloPuerto = {
 
 const swNativo: SwPuerto = {
   controlado: () => typeof navigator !== 'undefined' && 'serviceWorker' in navigator && navigator.serviceWorker.controller !== null,
-  aplicarActualizacion: () => {
-    void navigator.serviceWorker.getRegistration().then((r) => { r?.waiting?.postMessage({ tipo: 'SKIP_WAITING' }); });
-  },
+  aplicarActualizacion: aplicarVersionNueva,
 };
 
 /** Lector de PDF (PE-4). Mientras el integrador no lo conecte (`instalarPuertos({ pdf: readPdf })`) responde formato no disponible. */

@@ -97,8 +97,5 @@ export function iniciarArranque(): () => void {
   };
 }
 
-/** «Actualizar ahora» (8.2.10): SKIP_WAITING y recarga cuando cambia el controlador. */
-export function aplicarActualizacionYRecargar(aplicar: () => void): void {
-  navigator.serviceWorker.addEventListener('controllerchange', () => { location.reload(); }, { once: true });
-  aplicar();
-}
+// «Actualizar ahora» (8.2.10) vive en useActualizacion.ts (`puertos.sw.aplicarActualizacion`): la recarga solo queda
+// pendiente si el SW acepta SKIP_WAITING, y un cambio de controlador que esta pestaña no pidió no la recarga (B-11).

@@ -120,6 +120,43 @@ async function abrirControlada(ctx: BrowserContext): Promise<Page> {
   return page;
 }
 
+/** Marca en la memoria de la página: desaparece si la página se recarga. */
+const marcar = (page: Page): Promise<void> => page.evaluate(() => { (window as { siglowSinRecarga?: boolean }).siglowSinRecarga = true; });
+
+/** Estado de la pestaña: si no se recargó, y el SW activo y el que espera en su registro. */
+const estadoPestana = (page: Page): Promise<{ sinRecarga: boolean; activo: string | null; espera: string | null }> =>
+  page.evaluate(async () => {
+    const reg = await navigator.serviceWorker.getRegistration();
+    return {
+      sinRecarga: (window as { siglowSinRecarga?: boolean }).siglowSinRecarga === true,
+      activo: reg?.active?.state ?? null,
+      espera: reg?.waiting?.state ?? null,
+    };
+  });
+
+/** SKIP_WAITING directo al SW en espera, con un puerto: la respuesta del SW (sin pasar por la interfaz). */
+const pedirSkipWaiting = (page: Page): Promise<unknown> =>
+  page.evaluate(async () => {
+    const espera = (await navigator.serviceWorker.getRegistration())?.waiting;
+    if (!espera) return 'sin versión en espera';
+    const canal = new MessageChannel();
+    const respuesta = new Promise<unknown>((ok) => { canal.port1.onmessage = (e) => { ok(e.data); }; });
+    espera.postMessage({ tipo: 'SKIP_WAITING' }, [canal.port2]);
+    return respuesta;
+  });
+
+/** Ventanas de Sig-Low que ve el SW en espera (con y sin controlador). Se lee en el propio worker, no en la página. */
+async function ventanasQueVeLaEspera(ctx: BrowserContext): Promise<number> {
+  for (const w of ctx.serviceWorkers()) {
+    const n = await w.evaluate(async () => {
+      const g = self as unknown as { serviceWorker: { state: string }; clients: { matchAll(o: object): Promise<unknown[]> } };
+      return g.serviceWorker.state === 'installed' ? (await g.clients.matchAll({ type: 'window', includeUncontrolled: true })).length : -1;
+    }).catch(() => -1);
+    if (n >= 0) return n;
+  }
+  return -1;
+}
+
 test.beforeAll(() => {
   expect(existsSync(join(DIST, 'precache.json')), 'falta dist/: corra `npm run build` (o `npm run verify`)').toBe(true);
   tmp = mkdtempSync(join(tmpdir(), 'siglow-sw-'));
@@ -307,6 +344,103 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
     expect(await page.content()).toContain('siglow-v2');
     expect(await servidaPor(page)).toBe('v2');
     expect(await cachesDe(page)).toEqual([cacheDe(V2)]);
+    await ctx.close();
+  });
+
+  // B-11 (P0-6a de PD-1): el aviso solo ve la tabla de su pestaña, pero SKIP_WAITING vale para todas. Con otra pestaña
+  // de Sig-Low abierta, el SW no lo aplica (ni desde la interfaz ni con el mensaje directo) y el aviso pide cerrarla.
+  test('T-SW-02 @cero-red con dos pestañas abiertas, SKIP_WAITING no cambia el controlador y el aviso pide cerrar la otra; con una sola, «Actualizar ahora» aplica v2', async ({ browser }) => {
+    const ctx = await browser.newContext({ baseURL: srv.origen });
+    const page = await abrirControlada(ctx);
+    const otra = await abrirControlada(ctx);
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible({ timeout: 25_000 });
+    // La otra pestaña tiene un asunto «No guardar» (ficticio): su tabla existe solo en su memoria.
+    await expect(otra.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible({ timeout: 25_000 });
+    await otra.getByLabel('Código del asunto').fill('PRUEBA-SW-02');
+    await otra.getByRole('radio', { name: /^No guardar la tabla/ }).check();
+    await otra.getByRole('button', { name: 'Crear asunto' }).click();
+    await expect(otra.getByRole('heading', { level: 1, name: 'Lista del caso' })).toBeVisible();
+    await publicarV2(page);
+    expect(await ventanasQueVeLaEspera(ctx)).toBe(2);
+    await marcar(page);
+    await marcar(otra);
+    const banda = page.locator('[data-prueba="banda-actualizacion"]');
+    const ahora = banda.getByRole('button', { name: 'Actualizar ahora' });
+    const otrasPestanas = banda.locator('[data-prueba="actualizacion-otras-pestanas"]');
+    // Esta pestaña no tiene asunto: su propio aviso permite actualizar, pero el SW lo rechaza por la otra.
+    await expect(ahora).toBeEnabled();
+    await expect(otrasPestanas).toHaveText('');
+    await ahora.click();
+    await expect(otrasPestanas).toHaveText('Cierre las otras pestañas de Sig-Low para actualizar ahora.');
+    await expect(ahora).toBeEnabled();
+    // La guardia está en el SW, no solo en la interfaz: el mensaje directo también se rechaza, desde las dos pestañas.
+    expect(await pedirSkipWaiting(otra)).toEqual({ tipo: 'SKIP_WAITING', aplicada: false, motivo: 'otras_pestanas' });
+    await otra.evaluate(async () => { (await navigator.serviceWorker.getRegistration())?.waiting?.postMessage({ tipo: 'SKIP_WAITING' }); });
+    await page.waitForTimeout(1_500);
+    for (const p of [page, otra]) {
+      expect(await estadoPestana(p)).toEqual({ sinRecarga: true, activo: 'activated', espera: 'installed' });
+      expect(await servidaPor(p)).toBe('v1');
+      await expect(p.locator('[data-prueba="aviso-version-cambiada"]')).toHaveCount(0);
+    }
+    await expect(otra.locator('[data-prueba="chip-asunto"]')).toContainText('PRUEBA-SW-02');
+    expect(await cachesDe(page)).toEqual([cacheDe(V1), cacheDe(V2)].sort());
+    // Una pestaña sin controlador (Mayús + recargar) también cuenta: `clients.claim()` la tomaría al activar.
+    await otra.close();
+    const forzada = await abrirControlada(ctx);
+    const cdp = await ctx.newCDPSession(forzada);
+    await Promise.all([forzada.waitForEvent('load'), cdp.send('Page.reload', { ignoreCache: true })]);
+    expect(await forzada.evaluate(() => navigator.serviceWorker.controller === null)).toBe(true);
+    await expect.poll(() => ventanasQueVeLaEspera(ctx)).toBe(2);
+    await ahora.click();
+    await expect(otrasPestanas).toHaveText('Cierre las otras pestañas de Sig-Low para actualizar ahora.');
+    expect(await estadoPestana(page)).toEqual({ sinRecarga: true, activo: 'activated', espera: 'installed' });
+    // Con una sola pestaña funciona como antes: SKIP_WAITING y recarga a la v2.
+    await forzada.close();
+    await expect.poll(() => ventanasQueVeLaEspera(ctx)).toBe(1);
+    await Promise.all([page.waitForEvent('load'), ahora.click()]);
+    await esperarControl(page);
+    expect(await page.content()).toContain('siglow-v2');
+    expect(await servidaPor(page)).toBe('v2');
+    expect(await estadoPestana(page)).toEqual({ sinRecarga: false, activo: 'activated', espera: null });
+    expect(await cachesDe(page)).toEqual([cacheDe(V2)]);
+    await ctx.close();
+  });
+
+  // B-11: si el controlador cambia sin que la pestaña lo pida (una pestaña que se abre justo al aplicar, o una versión
+  // sin la guardia), la pestaña no se recarga sola: conserva la tabla en memoria y avisa. La activación se fuerza desde
+  // fuera de la interfaz con ServiceWorker.skipWaiting del protocolo de depuración.
+  test('T-SW-02 @cero-red un cambio de controlador que la pestaña no pidió no la recarga: conserva el asunto en memoria y el aviso pide guardar y recargar', async ({ browser }) => {
+    const ctx = await browser.newContext({ baseURL: srv.origen });
+    const page = await abrirControlada(ctx);
+    const otra = await abrirControlada(ctx);
+    await expect(otra.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible({ timeout: 25_000 });
+    await otra.getByLabel('Código del asunto').fill('PRUEBA-SW-02');
+    await otra.getByRole('radio', { name: /^No guardar la tabla/ }).check();
+    await otra.getByRole('button', { name: 'Crear asunto' }).click();
+    await expect(otra.getByRole('heading', { level: 1, name: 'Lista del caso' })).toBeVisible();
+    await publicarV2(page);
+    await marcar(page);
+    await marcar(otra);
+    // Primero un «Actualizar ahora» rechazado: no debe dejar una recarga pendiente en esta pestaña.
+    const banda = page.locator('[data-prueba="banda-actualizacion"]');
+    await banda.getByRole('button', { name: 'Actualizar ahora' }).click();
+    await expect(banda.locator('[data-prueba="actualizacion-otras-pestanas"]')).toHaveText('Cierre las otras pestañas de Sig-Low para actualizar ahora.');
+    const cdp = await ctx.newCDPSession(page);
+    await cdp.send('ServiceWorker.enable');
+    await cdp.send('ServiceWorker.skipWaiting', { scopeURL: `${srv.origen}/` });
+    for (const p of [page, otra]) {
+      await expect(p.locator('[data-prueba="aviso-version-cambiada"]')).toContainText('Sig-Low se actualizó desde otra pestaña.');
+      await expect(p.locator('[data-prueba="banda-actualizacion"]')).toHaveCount(0);
+      // `clients.claim()` corre en `activate`: el aviso puede llegar con v2 todavía en «activating».
+      await expect.poll(() => estadoPestana(p)).toEqual({ sinRecarga: true, activo: 'activated', espera: null });
+      expect(await servidaPor(p)).toBe('v2');
+    }
+    // La tabla «No guardar» de la otra pestaña sigue en memoria, y el aviso ofrece exportarla antes de recargar.
+    await expect(otra.getByRole('heading', { level: 1, name: 'Lista del caso' })).toBeVisible();
+    await expect(otra.locator('[data-prueba="chip-asunto"]')).toContainText('PRUEBA-SW-02');
+    await expect(otra.locator('[data-prueba="aviso-version-cambiada"]').getByRole('button', { name: 'Exportar tabla cifrada' })).toBeVisible();
+    await page.waitForTimeout(1_000);
+    for (const p of [page, otra]) expect((await estadoPestana(p)).sinRecarga).toBe(true);
     await ctx.close();
   });
 

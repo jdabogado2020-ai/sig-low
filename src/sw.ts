@@ -6,8 +6,11 @@
 // 2. Precache verificado: cada entrada se pide con cache: 'reload' y se compara su SHA-256; si uno no coincide, la
 //    instalación falla y sigue la versión anterior. Caché `siglow-app-<SHA-256 de precache.json>`.
 // 3. Actualización: sin skipWaiting automático. La versión nueva espera y el navegador la activa cuando se cierran
-//    todas las pestañas de Sig-Low; SKIP_WAITING solo llega del aviso de la interfaz (8.2.10), tras guardar o exportar.
-// Los mensajes a la página no llevan contenido: { tipo: 'avance', done, total } y { tipo: 'offlineReady' }.
+//    todas las pestañas de Sig-Low; SKIP_WAITING solo llega del aviso de la interfaz (8.2.10), tras guardar o exportar,
+//    y solo vale con una única ventana de Sig-Low abierta, la que lo pide (B-11): el aviso revisa la tabla de esa
+//    pestaña, pero la activación quitaría a las demás los archivos de su versión.
+// Los mensajes a la página no llevan contenido: { tipo: 'avance', done, total } y { tipo: 'offlineReady' }; la respuesta
+// a SKIP_WAITING, por el puerto que trae, es { tipo: 'SKIP_WAITING', aplicada, motivo? } (`otras_pestanas`, `sin_espera`).
 // vite-plugins/precache.ts escribe la lista, las cabeceras de public/_headers y los tipos en lugar de __SIGLOW_SW__.
 declare const self: ServiceWorkerGlobalScope;
 
@@ -50,7 +53,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('message', (e) => {
   const d: unknown = e.data;
   if (!(e.source instanceof WindowClient) || typeof d !== 'object' || d === null) return;
-  if ((d as { tipo?: unknown }).tipo === 'SKIP_WAITING') e.waitUntil(self.skipWaiting());
+  if ((d as { tipo?: unknown }).tipo === 'SKIP_WAITING') e.waitUntil(saltarEspera(e.source, e.ports[0]));
 });
 
 const CONFIG: ConfigSw = __SIGLOW_SW__;
@@ -167,6 +170,21 @@ async function instalar(): Promise<void> {
     if (!existia) await caches.delete(v.cache);
     throw e;
   }
+}
+
+// 3. SKIP_WAITING solo en la versión en espera y si la única ventana de Sig-Low abierta es la que lo pide (B-11).
+// `includeUncontrolled` es obligatorio: sin él, matchAll solo devuelve las ventanas que controla ESTE worker, y el que
+// está en espera no controla ninguna (daría siempre 0 y la guardia no frenaría nada). Cuenta también las pestañas sin
+// controlador (Mayús + recargar), porque `clients.claim()` las tomaría. Sin la ventana que lo pide en la lista: no.
+async function saltarEspera(origen: WindowClient, puerto: MessagePort | undefined): Promise<void> {
+  const ventanas = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+  const sola = ventanas.length === 1 && ventanas[0]?.id === origen.id;
+  const enEspera = self.serviceWorker.state === 'installed';
+  const aplicada = sola && enEspera;
+  puerto?.postMessage(aplicada
+    ? { tipo: 'SKIP_WAITING', aplicada }
+    : { tipo: 'SKIP_WAITING', aplicada, motivo: enEspera ? 'otras_pestanas' : 'sin_espera' });
+  if (aplicada) await self.skipWaiting();
 }
 
 async function activar(): Promise<void> {
