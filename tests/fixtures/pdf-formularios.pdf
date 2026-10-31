@@ -1,12 +1,12 @@
 %PDF-1.4
 1 0 obj
-<< /Type /Catalog /Pages 2 0 R /AcroForm << /Fields [6 0 R 7 0 R 8 0 R 9 0 R] /DA (/Helv 10 Tf 0 g) /DR << /Font << /Helv 4 0 R >> >> >> /Outlines 11 0 R /Names << /EmbeddedFiles << /Names [(adjunto.txt) 14 0 R] >> >> >>
+<< /Type /Catalog /Pages 2 0 R /AcroForm << /Fields [6 0 R 7 0 R 8 0 R 9 0 R 16 0 R] /DA (/Helv 10 Tf 0 g) /DR << /Font << /Helv 4 0 R >> >> >> /Outlines 11 0 R /Names << /EmbeddedFiles << /Names [(adjunto.txt) 14 0 R] >> >> >>
 endobj
 2 0 obj
 << /Type /Pages /Kids [3 0 R] /Count 1 >>
 endobj
 3 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R /Annots [6 0 R 7 0 R 8 0 R 9 0 R 10 0 R] >>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R /Annots [6 0 R 7 0 R 8 0 R 9 0 R 10 0 R 16 0 R] >>
 endobj
 4 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
@@ -50,26 +50,37 @@ stream
 Texto de un adjunto ficticio.
 endstream
 endobj
+16 0 obj
+<< /Type /Annot /Subtype /Widget /FT /Sig /T (firma) /Rect [60 500 360 530] /F 4 /P 3 0 R /AP << /N 17 0 R >> >>
+endobj
+17 0 obj
+<< /Type /XObject /Subtype /Form /BBox [0 0 300 30] /Resources << /Font << /F1 4 0 R >> >> /Length 75 >>
+stream
+BT /F1 9 Tf 4 10 Td (Firmado digitalmente por Pedro Ficticio Ejemplo) Tj ET
+endstream
+endobj
 xref
-0 16
+0 18
 0000000000 65535 f 
 0000000009 00000 n 
-0000000245 00000 n 
-0000000302 00000 n 
-0000000469 00000 n 
-0000000566 00000 n 
-0000000677 00000 n 
-0000000835 00000 n 
-0000000987 00000 n 
-0000001186 00000 n 
-0000001311 00000 n 
-0000001454 00000 n 
-0000001528 00000 n 
-0000001623 00000 n 
-0000001716 00000 n 
-0000001809 00000 n 
+0000000252 00000 n 
+0000000309 00000 n 
+0000000483 00000 n 
+0000000580 00000 n 
+0000000691 00000 n 
+0000000849 00000 n 
+0000001001 00000 n 
+0000001200 00000 n 
+0000001325 00000 n 
+0000001468 00000 n 
+0000001542 00000 n 
+0000001637 00000 n 
+0000001730 00000 n 
+0000001823 00000 n 
+0000001923 00000 n 
+0000002052 00000 n 
 trailer
-<< /Size 16 /Root 1 0 R >>
+<< /Size 18 /Root 1 0 R >>
 startxref
-1909
+2266
 %%EOF

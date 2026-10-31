@@ -22,6 +22,43 @@ const versionOrt = () => {
   }
 };
 
+// Chunks de pdf.js legacy (aprobado en la P0-6a de PE-4, 30-oct, decisión 2). Solo con estas cuentas exactas y estas URL literales,
+// solo en los dos chunks (identificados por nombre y por contener la versión) y solo con la versión de `pdfjs-dist` aprobada.
+// Nada de esto se pide: son rutas de red de pdf.js que el lector no usa (solo pasa `data`), referencias de los decodificadores de
+// imagen y cadenas de comparación de espacios de nombres XML. Ninguna excepción para `blob:`, `eval` ni `new Function`.
+const PDFJS_VERSION_APROBADA = '6.4.299';
+const CORE_JS = ['https://github.com/zloirock/core-js/blob/v3.50.0/LICENSE', 'https://github.com/zloirock/core-js'];
+const EXCEPCIONES_PDFJS = {
+  principal: {
+    nombre: /^assets\/pdf-[\w-]+\.js$/,
+    topes: { XMLHttpRequest: 3, console: 0 },
+    urls: [...CORE_JS, 'http://example.com', 'https://foo.bar', 'https://foo.bar'],
+  },
+  worker: {
+    nombre: /^assets\/pdf\.worker-[\w-]+\.js$/,
+    topes: { XMLHttpRequest: 1, console: 5 },
+    urls: [
+      ...CORE_JS,
+      ...['xci/', 'xfa-connection-set/', 'xfa-data/', 'xfa-data/1.0/', 'xfa-form/', 'xfa-locale-set/', 'xfa-source-set/', 'xfa-template/', 'xdc/']
+        .map((p) => 'http://www.xfa.org/schema/' + p),
+      ...['xdp/', 'xdp/pdf/', 'xfdf/', 'xmpmeta/'].map((p) => 'http://ns.adobe.com/' + p),
+    ],
+  },
+};
+const versionPdfjs = () => {
+  try {
+    return JSON.parse(readFileSync('node_modules/pdfjs-dist/package.json', 'utf8')).version;
+  } catch {
+    return null;
+  }
+};
+/** Qué excepción de pdf.js le toca a este archivo: por nombre y por contener la versión aprobada. Si no, ninguna. */
+const excepcionPdfjs = (r, t) => {
+  for (const e of Object.values(EXCEPCIONES_PDFJS)) if (e.nombre.test(r) && t.includes(PDFJS_VERSION_APROBADA)) return e;
+  return null;
+};
+const URL_LITERAL = /https?:\/\/[^\s"'`)\\]+/g;
+
 const PROHIBIDOS = [
   ['console', /\bconsole\s*\.\s*[a-z]+/g],
   ['XMLHttpRequest', /\bXMLHttpRequest\b/g],
@@ -78,6 +115,24 @@ for (const p of archivos) {
       const soloRolldown = nombre !== 'http-externo' || m.every((u) => URL_ROLLDOWN.startsWith(u));
       if (versionOrt() !== ORT_VERSION_APROBADA) hallazgos.push(`${r}: versión de ORT distinta de la aprobada; revisar las excepciones`);
       else if (m.length > tope || !soloRolldown) hallazgos.push(`${r}: ${nombre} ×${m.length} fuera de la excepción aprobada`);
+      continue;
+    }
+    const exPdf = excepcionPdfjs(r, t);
+    if (exPdf !== null && (nombre === 'XMLHttpRequest' || nombre === 'console')) {
+      const cuenta = (t.match(re) ?? []).length;
+      if (versionPdfjs() !== PDFJS_VERSION_APROBADA) hallazgos.push(`${r}: versión de pdfjs-dist distinta de la aprobada; revisar las excepciones`);
+      else if (cuenta > exPdf.topes[nombre]) hallazgos.push(`${r}: ${nombre} ×${cuenta} fuera de la excepción aprobada (tope ${exPdf.topes[nombre]})`);
+      continue;
+    }
+    if (exPdf !== null && nombre === 'http-externo') {
+      const reUna = new RegExp(re.source, 'i');
+      const vistas = (t.match(URL_LITERAL) ?? []).filter((u) => reUna.test(u)).sort();
+      const aprobadas = [...exPdf.urls].sort();
+      const cuenta = (t.match(re) ?? []).length;
+      if (versionPdfjs() !== PDFJS_VERSION_APROBADA) hallazgos.push(`${r}: versión de pdfjs-dist distinta de la aprobada; revisar las excepciones`);
+      else if (cuenta !== aprobadas.length || JSON.stringify(vistas) !== JSON.stringify(aprobadas)) {
+        hallazgos.push(`${r}: URL externas fuera de la lista literal aprobada (${cuenta} halladas, ${aprobadas.length} aprobadas)`);
+      }
       continue;
     }
     const n = (t.match(re) ?? []).length;

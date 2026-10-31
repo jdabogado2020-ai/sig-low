@@ -230,6 +230,7 @@ export function crearReadPdf(deps: PdfDeps = {}): ReadPdfFn {
       let conAutor = 0;
       let enlaces = 0;
       let adjuntos = 0;
+      let firmas = 0;
       onProgress(0, total);
       for (let n = 1; n <= total; n++) {
         if (terminado) throw new LecturaCancelada();
@@ -265,6 +266,8 @@ export function crearReadPdf(deps: PdfDeps = {}): ReadPdfFn {
           // El URI de un enlace y el archivo de un adjunto no se leen: solo se cuentan (CONTENIDO_PDF_NO_LEIDO).
           if (an.subtype === 'Link' && (typeof an.url === 'string' || typeof an.unsafeUrl === 'string')) enlaces++;
           if (an.subtype === 'FileAttachment') adjuntos++;
+          // B-12: pdf.js no extrae el texto de la apariencia de una firma («Firmado digitalmente por …»): se cuenta como no leído.
+          if (an.subtype === 'Widget' && an.fieldType === 'Sig' && an.hasAppearance === true) firmas++;
           for (const crudo of [cadenaDe(an.contentsObj), ...valoresDeCampo(an)]) {
             const t = canonicoPdf(crudo);
             if (t.trim() !== '') partesNota.push({ page: n, text: t });
@@ -278,7 +281,7 @@ export function crearReadPdf(deps: PdfDeps = {}): ReadPdfFn {
       let marcadores = 0;
       try { adjuntos += contarAdjuntos(await pdf.getAttachments?.()); } catch { /* sin conteo */ }
       try { marcadores = contarMarcadores(await pdf.getOutline?.()); } catch { /* sin conteo */ }
-      const noLeido = enlaces + adjuntos + marcadores;
+      const noLeido = enlaces + adjuntos + marcadores + firmas;
       if (noLeido > 0) advertencias.push({ code: 'CONTENIDO_PDF_NO_LEIDO', count: noLeido });
 
       // Inventario: solo presencia y número (6.3.3).

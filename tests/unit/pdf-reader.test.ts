@@ -21,7 +21,7 @@ const SUMAS: Record<string, string> = {
   'pdf-pagina-sin-texto.pdf': '0e028df654bd43fee49a2e480deefd394712dac901d9dd384c217e848bf16c76',
   'pdf-js-recuadro.pdf': '1991a082cc8529bca80270d3648dbf7225235283fd27530de7a3d79744cb5cf5',
   'pdf-texto-ilegible.pdf': 'aee491035d930d613194d728025b3516130a69dcc9431611c171db04cbd28cf5',
-  'pdf-formularios.pdf': 'c054ddaded4c777fddf70e5c461e8749ac788fe8eaeb55375f68302941b40e49',
+  'pdf-formularios.pdf': '93904b897da1fb2732d6c6433a5acf1f0007ffa38c862367ac3a09ab0f61b5a8',
 };
 
 function bytesDe(nombre: string): ArrayBuffer {
@@ -212,9 +212,9 @@ describe('T-LE-06 campos de formulario y contenido no leído (PE-4-r1, M-2)', ()
   it('nombres de campo, URI, adjuntos y títulos de marcadores no llegan al modelo; solo se cuentan (CONTENIDO_PDF_NO_LEIDO)', async () => {
     const d = await leer('pdf-formularios.pdf');
     const s = JSON.stringify(d);
-    for (const valor of ['ejemplo.test', 'adjunto', 'Capitulo Ejemplo', 'Anexo Ficticio', 'acepta', 'Yes', 'nombre', 'ciudad']) expect(s, valor).not.toContain(valor);
-    // 1 enlace con URI + 1 adjunto + 2 marcadores; sin valores ni categorías en el aviso
-    expect(d.warnings).toEqual([{ code: 'CONTENIDO_PDF_NO_LEIDO', count: 4 }]);
+    for (const valor of ['ejemplo.test', 'adjunto', 'Capitulo Ejemplo', 'Anexo Ficticio', 'acepta', 'Yes', 'nombre', 'ciudad', 'firma', 'Firmado digitalmente']) expect(s, valor).not.toContain(valor);
+    // 1 enlace con URI + 1 adjunto + 2 marcadores + 1 campo de firma (B-12); sin valores ni categorías en el aviso
+    expect(d.warnings).toEqual([{ code: 'CONTENIDO_PDF_NO_LEIDO', count: 5 }]);
     expect(d.metadata.categories).toEqual({ vinculos_externos: { count: 1 }, objetos_y_macros: { count: 1 } });
   });
 
@@ -229,12 +229,14 @@ describe('T-LE-06 campos de formulario y contenido no leído (PE-4-r1, M-2)', ()
         { subtype: 'Link', url: 'https://ejemplo.test/a' },
         { subtype: 'Link', dest: 'interno' },
         { subtype: 'FileAttachment', contentsObj: { str: 'Adjunto de ejemplo' } },
+        { subtype: 'Widget', fieldType: 'Sig', fieldValue: null, hasAppearance: true },
+        { subtype: 'Widget', fieldType: 'Sig', fieldValue: null, hasAppearance: false },
       ],
     }], 'normal', undefined, { adjuntos: { 'a.txt': {}, 'b.txt': {} }, marcadores: [{ title: 'A', items: [{ title: 'B', items: [] }] }, { title: 'C', items: [] }] });
     const d = await crearReadPdf({ cargarPdfjs: () => Promise.resolve(f.lib), crearWorker: () => null, ids: idsFijos() })(new ArrayBuffer(8), ctx(), sinProgreso, senal());
     expect(d.parts.filter((p) => p.kind === 'anotacion_pdf').map((p) => p.text)).toEqual(['Ciudad Ejemplo', 'Otra Ciudad', 'Valor\nficticio', 'Adjunto de ejemplo']);
-    // 1 enlace + (1 anotación FileAttachment + 2 adjuntos) + 3 marcadores
-    expect(d.warnings).toEqual([{ code: 'CONTENIDO_PDF_NO_LEIDO', count: 7 }]);
+    // 1 enlace + (1 anotación FileAttachment + 2 adjuntos) + 3 marcadores + 1 firma con apariencia (la que no la tiene no se cuenta)
+    expect(d.warnings).toEqual([{ code: 'CONTENIDO_PDF_NO_LEIDO', count: 8 }]);
     expect(d.metadata.categories).toEqual({ vinculos_externos: { count: 1 }, objetos_y_macros: { count: 3 } });
     const m = libFalsa([{ items: [item('Texto ficticio suficiente.')] }], 'normal', undefined, { adjuntos: new Map([['a.txt', {}]]) });
     const d2 = await crearReadPdf({ cargarPdfjs: () => Promise.resolve(m.lib), crearWorker: () => null })(new ArrayBuffer(8), ctx(), sinProgreso, senal());

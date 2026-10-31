@@ -1,5 +1,5 @@
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
-import { existsSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { test, expect, type Page } from '@playwright/test';
 import {
@@ -1027,5 +1027,82 @@ test.describe('Revisión I (PC-3)', () => {
     // Al enfocar o seleccionar la nueva, pierde la marca.
     await panelTexto(page).locator('[data-det]', { hasText: 'Marta' }).click();
     await expect(panelTexto(page).locator('.nueva')).toHaveCount(0);
+  });
+});
+
+// PE-4-r2 (T-PV-05): el lector de PDF conectado a la app. Los PDF son los de tests/fixtures/ (ficticios, generados en el privado).
+const pdfFixture = (nombre: string): Buffer => readFileSync(join(process.cwd(), 'tests', 'fixtures', nombre));
+
+test.describe('T-PV-05 PDF de punta a punta en la app (PE-4-r2)', () => {
+  test('T-PV-05 @cero-red PDF con JavaScript y texto bajo un recuadro negro: se lee entero, llega a Revisión y no sale nada de la página', async ({ page, baseURL }) => {
+    const origen = new URL(baseURL!).origin;
+    const ajenas: string[] = [];
+    const consola: string[] = [];
+    const rutas: string[] = [];
+    page.on('request', (r) => {
+      const u = new URL(r.url());
+      if (u.origin !== origen && u.protocol !== 'blob:' && u.protocol !== 'data:') ajenas.push(u.origin);
+      if (u.origin === origen) rutas.push(u.pathname + u.search);
+    });
+    page.on('console', (m) => { consola.push(m.type()); });
+    page.on('pageerror', () => { consola.push('pageerror'); });
+    page.on('worker', (w) => w.on('console', (m) => consola.push(m.type())));
+    await page.addInitScript(() => {
+      (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
+      addEventListener('securitypolicyviolation', (e) => {
+        (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective);
+      });
+    });
+    await irAEntrada(page);
+    await cargarArchivo(page, 'Sentencia de Prueba.pdf', pdfFixture('pdf-js-recuadro.pdf'), 'application/pdf');
+    const cargado = page.locator('[data-prueba="archivo-cargado"]');
+    await expect(cargado).toContainText('Archivo cargado: PDF, ', { timeout: 20_000 });
+    await expect(alertaEntrada(page)).toHaveCount(0);
+    await expect(analizar(page)).toBeEnabled();
+    await analizar(page).click();
+    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 30_000 });
+    // V-39: el texto bajo el recuadro negro llega a la revisión, donde el abogado puede verlo.
+    await expect(page.locator('main')).toContainText('Pedro Ficticio Ejemplo');
+    // INV-D05: el nombre del archivo no aparece en ninguna parte de la página, de la red ni del título.
+    await expect(page.locator('body')).not.toContainText('Sentencia de Prueba');
+    expect(await page.title()).toBe('Sig-Low');
+    expect(ajenas).toEqual([]);
+    expect(await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones)).toEqual([]);
+    expect(consola).toEqual([]);
+    expect(rutas.filter((r) => r.includes('Sentencia') || r.includes('?'))).toEqual([]);
+    // El worker de pdf.js salió del propio origen, como archivo del build (nunca blob:).
+    expect(rutas.some((r) => /^\/assets\/pdf\.worker-[\w-]+\.js$/.test(r))).toBe(true);
+  });
+
+  test('T-PV-05 PDF con formularios: los valores de campos son partes, las casillas no, y el aviso cuenta lo que no se lee (M-1325)', async ({ page }) => {
+    await irAEntrada(page);
+    await cargarArchivo(page, 'Formulario de Prueba.pdf', pdfFixture('pdf-formularios.pdf'), 'application/pdf');
+    await expect(page.locator('[data-prueba="archivo-cargado"]')).toContainText('Archivo cargado: PDF, ', { timeout: 20_000 });
+    for (const [etiqueta, n] of [['Página 1', 30], ['Anotación 1 (página 1)', 22], ['Anotación 2 (página 1)', 13], ['Anotación 3 (página 1)', 14]] as const) {
+      await expect(page.getByRole('checkbox', { name: `${etiqueta} · ${n} caracteres` })).toBeChecked();
+    }
+    await expect(page.getByRole('group', { name: 'Partes encontradas' }).getByRole('checkbox')).toHaveCount(4);
+    await expect(page.locator('[data-prueba="avisos-lectura"] li')).toHaveText(
+      'El PDF tiene adjuntos, vínculos o marcadores (5) cuyo contenido Sig-Low no lee. Revíselos en el original.',
+    );
+    await expect(page.locator('body')).not.toContainText('ejemplo.test');
+    await expect(page.locator('body')).not.toContainText('Capitulo Ejemplo');
+  });
+
+  test('T-PV-05 PDF escaneado y PDF con contraseña: M-54 y M-55, sin pedir la contraseña', async ({ page }) => {
+    await irAEntrada(page);
+    await cargarArchivo(page, 'Escaneado de Prueba.pdf', pdfFixture('pdf-escaneado.pdf'), 'application/pdf');
+    await expect(alertaEntrada(page)).toHaveText(
+      'Este PDF parece escaneado: más de la mitad de sus páginas no tienen texto seleccionable. Sig-Low no lee imágenes. Use un PDF con texto o pegue el texto.',
+      { timeout: 20_000 },
+    );
+    await cargarArchivo(page, 'Protegido de Prueba.pdf', pdfFixture('pdf-con-contrasena.pdf'), 'application/pdf');
+    await expect(alertaEntrada(page)).toHaveText(
+      'Este PDF está protegido con contraseña. Quite la protección y vuelva a cargarlo, o pegue el texto.',
+      { timeout: 20_000 },
+    );
+    await expect(page.getByLabel(/contraseña/i)).toHaveCount(0);
+    await expect(page.locator('body')).not.toContainText('de Prueba.');
+    await expect(analizar(page)).toBeDisabled();
   });
 });

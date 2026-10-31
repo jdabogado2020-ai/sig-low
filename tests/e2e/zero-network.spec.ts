@@ -1,5 +1,5 @@
 import { spawn, type ChildProcess } from 'node:child_process';
-import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { test, expect } from '@playwright/test';
@@ -223,8 +223,10 @@ test('T-PV-06 @cero-red INV-G10 sin conexión: crossOriginIsolated y las cabecer
 // Fase «pdf» (PE-4-r1, M-3; 10.5.1): se compila un arnés (tests/e2e/harness/pdf.ts) que usa readPdf con la configuración de la
 // app y las mismas opciones de Vite, se sirve con server.mjs (que aplica public/_headers: CSP, Trusted Types, COEP) y se leen
 // los PDF de tests/fixtures/. Exige 0 peticiones a otros orígenes, 0 violaciones de CSP y 0 consola (página y workers).
-// Sin la etiqueta @cero-red: compilar el arnés y leer los PDF toma 20 a 25 s (más de los 20 s del criterio), así que corre en
-// la suite completa (verify --full) y no en el verify normal.
+// PE-4-r2 (M-3): lleva @cero-red (≈ 4 s la prueba y ≈ 13 s con la compilación del arnés). Una violación de CSP dentro del worker
+// de pdf.js no llega a la ventana ni a la consola que ve Playwright. Por eso la copia de `_headers` del arnés (solo de la prueba;
+// producción no lleva report-uri, V-21) añade `report-uri /csp-report` a la CSP: cada violación, también la del worker, es una
+// petición que el servidor registra, y la prueba exige que no haya ninguna. Un canario demuestra que el mecanismo funciona.
 test.describe('fase pdf', () => {
   test.describe.configure({ mode: 'serial' });
   const RAIZ = process.cwd();
@@ -253,6 +255,11 @@ test.describe('fase pdf', () => {
       resolve: { conditions: [...defaultClientConditions] },
     });
     mkdirSync(join(CARPETA, 'fixtures'), { recursive: true });
+    // Solo en la copia del arnés: las violaciones de CSP, también las de workers, se reportan a /csp-report y el servidor las registra.
+    const cabeceras = join(CARPETA, '_headers');
+    writeFileSync(cabeceras, readFileSync(cabeceras, 'utf8').replace(/^(\s*Content-Security-Policy:.*)$/m, '$1; report-uri /csp-report'));
+    // Canario: un worker del mismo origen que intenta salir a la red; la CSP (connect-src 'self') lo bloquea y lo reporta.
+    writeFileSync(join(CARPETA, 'assets', 'canario-worker.js'), "fetch('https://ejemplo.test/canario').catch(() => undefined);");
     for (const f of readdirSync(join(RAIZ, 'tests/fixtures')).filter((n) => n.endsWith('.pdf'))) cpSync(join(RAIZ, 'tests/fixtures', f), join(CARPETA, 'fixtures', f));
     servidor = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', CARPETA, '--port', String(PUERTO)], {
       env: { ...process.env, SIGLOW_REGISTRO_PETICIONES: REGISTRO }, stdio: 'ignore',
@@ -276,7 +283,7 @@ test.describe('fase pdf', () => {
     'pdf-formularios.pdf': { partes: 4, avisos: ['CONTENIDO_PDF_NO_LEIDO'] },
   };
 
-  test('fase pdf de cero red: lee los PDF con el worker del mismo origen, 0 peticiones ajenas, 0 violaciones de CSP y 0 consola', async ({ page }) => {
+  test('@cero-red fase pdf: lee los PDF con el worker del mismo origen, 0 peticiones ajenas, 0 violaciones de CSP y 0 consola', async ({ page }) => {
     const ajenas: string[] = [];
     const consola: string[] = [];
     page.on('request', (r) => { if (new URL(r.url()).origin !== ORIGEN) ajenas.push(r.url()); });
@@ -310,5 +317,12 @@ test.describe('fase pdf', () => {
       expect(x.u, x.u).toMatch(/^\/(pdf\.html|tt-policy\.js|assets\/[A-Za-z0-9._-]+\.js|fixtures\/pdf-[a-z-]+\.pdf)$/);
     }
     expect(registro.some((x) => /^\/assets\/pdf\.worker-[A-Za-z0-9_-]+\.js$/.test(x.u))).toBe(true);
+  });
+
+  test('@cero-red fase pdf canario: una violación de CSP dentro de un worker llega al registro del servidor', async ({ page }) => {
+    await page.goto(`${ORIGEN}/pdf.html`);
+    await page.evaluate(() => { new Worker('/assets/canario-worker.js'); });
+    const vistas = (): string[] => readFileSync(REGISTRO, 'utf8').trim().split('\n').map((l) => (JSON.parse(l) as { u: string }).u);
+    await expect.poll(() => vistas().includes('/csp-report'), { timeout: 10_000 }).toBe(true);
   });
 });
