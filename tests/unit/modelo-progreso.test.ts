@@ -1,13 +1,16 @@
 // T-MO-12 (parte PB-6) · Resultados por ventana del modelo: `incorporar_modelo` sin tocar lo decidido (INV-R12), `declarar_plan_b`,
 // `fusionar` con `ventana` que devuelve solo el delta, `parcial` sin repetidos entre ventanas (INV-W06), cancelación (INV-W08) y la regla
 // de progreso de 6.11.1 (máximo 10 mensajes por segundo). `exportGate` con `MODELO_EN_CURSO` (INV-R11) es de PC-5. Datos ficticios.
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { newCaseEntity, refreshVariants } from '../../src/core/caselist';
 import { applyReviewAction } from '../../src/core/entities';
-import { createDetectHandler, ProgressLimiter } from '../../src/core/pipeline';
+import { candidatesFromNer, createDetectHandler, ProgressLimiter } from '../../src/core/pipeline';
 import { declararPlanB, incorporarModelo, modeloInicial } from '../../src/core/review/modelo';
 import { exportGate } from '../../src/core/review/puerta';
+import { UMBRALES_MODELO } from '../../src/core/umbrales';
 import type {
-  DetectionSet, DocId, DocumentModel, IdSource, NerSpan, PartId, PlanBCause, ResidueResult, ReviewState, TableIndex,
+  CaseEntity, DetectionSet, DocId, DocumentModel, IdSource, NerSpan, PartId, PlanBCause, ResidueResult, ReviewState, TableIndex,
 } from '../../src/core/types';
 import type { ReviewContext } from '../../src/core/entities';
 
@@ -276,6 +279,84 @@ describe('T-MO-12 · fusionar por ventana (6.11.2)', () => {
     }
     expect(vistos).toHaveLength(nombres.length);
     expect(new Set(vistos).size).toBe(vistos.length);
+  });
+});
+
+describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10.7, 7.10.9, 7.10.10; PB-2-r3)', () => {
+  const T = 'La demandante Ana Ficticia Rojas presentó la tutela. Declaró Pedro Luis Ficticia Gómez, vecino del sector, y firmó.';
+  const NOMBRE = 'Pedro Luis Ficticia Gómez';
+  const letrasALaVista = (st: ReviewState, texto: string, desde: number, largo: number): string[] => {
+    const fuera: string[] = [];
+    for (let i = desde; i < desde + largo; i++) {
+      const c = texto[i] as string;
+      if (/\p{L}/u.test(c) && !Object.values(st.detections).some((d) => d.start <= i && i < d.end)) fuera.push(c);
+    }
+    return fuera;
+  };
+
+  it('INV-R02 INV-R12 el nombre del modelo que contiene un apellido suelto de la lista ya emitido se parte y ninguna letra queda a la vista (C01, C06)', async () => {
+    const caseList = refreshVariants([newCaseEntity('Ana Ficticia Rojas', 'persona', 'DEMANDANTE', ids) as CaseEntity]);
+    const doc = documento([T]);
+    const b = banco();
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await b.enviar('detectar', { sessionId: 'ses_1', doc, caseList, table: TABLA, options: OPCIONES }));
+    const ctx: ReviewContext = { table: TABLA, caseList, doc, ids };
+    let st = estadoDe(doc, det.set);
+    const desde = T.indexOf(NOMBRE);
+    const suelto = Object.values(st.detections).find((d) => d.source === 'lista' && d.start === T.indexOf('Ficticia', desde));
+    expect(suelto?.variantClass, 'la lista marca el apellido suelto dentro del nombre de otra persona').toBe('apellido_suelto');
+
+    const w1 = await ventana(b, 1, 1, { [PRT(1)]: [tramo(T, 'Ana Ficticia Rojas', 'PER', 0.97), tramo(T, NOMBRE, 'PER', 0.95)] });
+    // Antes, el delta traía la lista extendida sobre todo el nombre (se solapa con «Ficticia»: el reductor la descartaba) y nada más.
+    expect(w1.detections.map((d) => `${d.text}:${d.source}:${d.confidence}`).sort()).toEqual(['Gómez:modelo:baja', 'Pedro Luis:modelo:baja']);
+    st = bien(incorporarModelo(st, 1, 1, w1, ctx));
+    expect(letrasALaVista(st, T, desde, NOMBRE.length)).toEqual([]);
+    expect(st.detections[suelto!.id]).toEqual(estadoDe(doc, det.set).detections[suelto!.id]);   // la detección de la lista no cambia
+  });
+
+  it('INV-R02 una ventana posterior que se solapa en el borde con un tramo ya emitido deja entrar su resto (7.10.5 y 7.10.10)', async () => {
+    const t = 'Firmaron Pedro Prueba Ejemplo Rojas y Luisa Ficticia en la oficina.';
+    const doc = documento([t]);
+    const b = banco();
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await b.enviar('detectar', { sessionId: 'ses_1', doc, caseList: [], table: TABLA, options: OPCIONES }));
+    const ctx = ctxDe(doc);
+    let st = estadoDe(doc, det.set);
+    const w1 = await ventana(b, 1, 2, { [PRT(1)]: [tramo(t, 'Pedro Prueba Ejemplo', 'PER', 0.95)] });
+    st = bien(incorporarModelo(st, 1, 2, w1, ctx));
+    const w2 = await ventana(b, 2, 2, { [PRT(1)]: [tramo(t, 'Ejemplo Rojas', 'PER', 0.95), tramo(t, 'Luisa Ficticia', 'PER', 0.95)] });
+    expect(w2.detections.map((d) => `${d.text}:${d.confidence}`)).toEqual(['Rojas:baja', 'Luisa Ficticia:media']);
+    st = bien(incorporarModelo(st, 2, 2, w2, ctx));
+    expect(letrasALaVista(st, t, t.indexOf('Pedro'), 'Pedro Prueba Ejemplo Rojas'.length)).toEqual([]);
+  });
+
+  it('M-1 candidatesFromNer recorta R-MOD-03 sin retroceso exponencial: 16 y 200 palabras hostiles en menos de 50 ms', () => {
+    const mejorDe3 = (f: () => unknown): number => Math.min(...[0, 1, 2].map(() => { const t0 = performance.now(); f(); return performance.now() - t0; }));
+    for (const palabras of [16, 200]) {
+      const t = 'x' + ' !'.repeat(palabras - 2) + ' ana';
+      const part = documento([t]).parts[0]!;
+      const conv = (): ReturnType<typeof candidatesFromNer> =>
+        candidatesFromNer([{ start: 0, end: t.length, label: 'PER', score: 0.95 }], { part, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+      expect(mejorDe3(conv)).toBeLessThan(50);
+      expect(conv().candidates.map((c) => [c.start, c.end])).toEqual([[0, t.length]]);   // la «Derecha» no casa: el tramo queda entero
+    }
+  });
+
+  it('7.10.9 una sola fuente de umbrales: UMBRALES_MODELO es la calibración de PF-3 y la usan la interfaz, la medición y el gancho', () => {
+    const cal = JSON.parse(readFileSync('metricas/calibracion-umbral.json', 'utf8')) as { nerHighThreshold: number; nerMinScore: number };
+    expect(UMBRALES_MODELO).toEqual({ nerHighThreshold: cal.nerHighThreshold, nerMinScore: cal.nerMinScore });
+    for (const f of ['src/ui/analisis.ts', 'src/ui/review/base/prueba-medicion.ts', 'tests/medicion/lib/motor.ts']) {
+      const fuente = readFileSync(f, 'utf8');
+      expect(fuente, f).toContain('...UMBRALES_MODELO');
+      expect(fuente, f).not.toMatch(/ner(?:HighThreshold|MinScore)\s*:\s*\d/u);
+    }
+    // Banda: desde nerHighThreshold, media (inclusivo); por debajo, baja; bajo nerMinScore, descartado.
+    const t = 'Firmaron Pedro Prueba Ejemplo, Luisa Ficticia Rojas y Mario Ejemplo Gómez.';
+    const part = documento([t]).parts[0]!;
+    const conv = candidatesFromNer([
+      tramo(t, 'Pedro Prueba Ejemplo', 'PER', UMBRALES_MODELO.nerHighThreshold),
+      tramo(t, 'Luisa Ficticia Rojas', 'PER', UMBRALES_MODELO.nerHighThreshold - 0.01),
+      tramo(t, 'Mario Ejemplo Gómez', 'PER', UMBRALES_MODELO.nerMinScore - 0.01),
+    ], { part, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    expect(conv.candidates.map((c) => `${t.slice(c.start, c.end)}:${c.confidence}`)).toEqual(['Pedro Prueba Ejemplo:media', 'Luisa Ficticia Rojas:baja']);
   });
 });
 

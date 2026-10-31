@@ -1,6 +1,8 @@
 // T-MO-05 · Precedencia y solapamientos (plan 7.11.4), INV-R02, INV-R03 e INV-R04. Solo datos ficticios.
 import { describe, expect, it } from 'vitest';
-import { edgeRightLength, mergeCandidates, precedenceOf, RE_TRIM_LEFT, RE_TRIM_RIGHT, resolveRemainder } from '../../src/core/merge.ts';
+import {
+  edgeRightLength, mergeCandidates, mergeIntoFused, precedenceOf, RE_TRIM_LEFT, RE_TRIM_RIGHT, resolveRemainder,
+} from '../../src/core/merge.ts';
 import { buildSearchView } from '../../src/core/normalize.ts';
 import type {
   CaseEntityId, Confidence, DataType, DetectionCandidate, DocId, LabelHit, MergeCandidatesFn, MergedCandidate, Part, PartId,
@@ -640,6 +642,102 @@ describe('T-MO-05 · borde derecho del fragmento en tiempo lineal (P0-6a, PB-2-r
     }
     expect(diff).toEqual([]);
     expect(edged).toBeGreaterThan(100);   // la muestra tiene bordes de verdad, no solo cadenas que terminan en letra
+  });
+});
+
+describe('T-MO-05 · fusión de una ventana del modelo contra lo ya fusionado (7.10.10, PB-2-r3)', () => {
+  /** Lo ya fusionado (lo que `detectar` emitió) y la ventana nueva; comprueba INV-R02 y que lo de antes sale igual. */
+  function porVentana(text: string, antes: DetectionCandidate[], nuevos: DetectionCandidate[], rules: RuleRegistry = NO_RULES) {
+    const part = mkPart(text);
+    const fused = mergeCandidates(part, antes, rules).map((c) => Object.freeze(c));
+    const copia = structuredClone(fused);
+    const out = mergeIntoFused(part, fused, nuevos.map((c) => Object.freeze(c)), rules);
+    assertInvariants(part, out);
+    expect(fused).toEqual(copia);   // la entrada no cambia
+    for (const f of fused) expect(out).toContainEqual(f);   // INV-R12: lo ya emitido sale igual, ni extendido ni partido
+    return out;
+  }
+  const apellido = (t: string, sub: string, occ = 0): DetectionCandidate =>
+    mk(t, sub, { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'apellido_suelto', role: 'DEMANDANTE', canonicalKey: `LISTA:${CAS_A}` }, occ);
+  const per = (t: string, sub: string, score = 0.95, occ = 0): DetectionCandidate =>
+    mk(t, sub, { type: 'PERSONA', source: 'modelo', nerLabel: 'PER', role: 'OTRA_PERSONA', confidence: 'media', score, canonicalKey: `PER:${sub.toLowerCase()}` }, occ);
+  const org = (t: string, sub: string): DetectionCandidate =>
+    mk(t, sub, { type: 'EMPRESA', source: 'modelo', nerLabel: 'ORG', confidence: 'media', score: 0.9, canonicalKey: `ORG:${sub.toLowerCase()}` });
+
+  it('INV-R02 INV-R12 el tramo del modelo que contiene un apellido suelto de la lista ya emitido se parte y cada resto entra (C01, C06)', () => {
+    const t = 'Declaró Pedro Luis Ejemplo Gómez ante el juez.';
+    const out = porVentana(t, [apellido(t, 'Ejemplo')], [per(t, 'Pedro Luis Ejemplo Gómez')]);
+    expect(show(t, out)).toEqual(['PERSONA:«Pedro Luis»:baja', 'PERSONA:«Ejemplo»:media', 'PERSONA:«Gómez»:baja']);
+    expect(out.map((c) => c.source)).toEqual(['modelo', 'lista', 'modelo']);
+    expect(out[0]?.canonicalKey).toBe('PER:pedro luis');
+    expect(out[2]?.canonicalKey).toBe('PER:gomez');
+    // La fusión de una sola vez (7.11.1 paso 2) extendería la lista sobre todo el tramo: con la detección ya emitida, el reductor
+    // descartaba esa extensión (se solapa, INV-R12) y «Pedro Luis» y «Gómez» quedaban a la vista.
+    expect(show(t, mergeCandidates(mkPart(t), [apellido(t, 'Ejemplo'), per(t, 'Pedro Luis Ejemplo Gómez')], NO_RULES)))
+      .toEqual(['PERSONA:«Pedro Luis Ejemplo Gómez»:media:extendido']);
+  });
+
+  it('INV-R02 INV-R12 M8 por ventana: la lista ya emitida no se extiende; el apellido que agrega el modelo entra aparte, baja', () => {
+    const t = 'Ana Ficticia Rojas Prueba declaró';
+    const lista = mk(t, 'Ana Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'exacta', confidence: 'alta', canonicalKey: `LISTA:${CAS_A}` });
+    const out = porVentana(t, [lista], [per(t, 'Ana Ficticia Rojas Prueba')]);
+    expect(show(t, out)).toEqual(['PERSONA:«Ana Ficticia Rojas»:alta', 'PERSONA:«Prueba»:baja']);
+  });
+
+  it('INV-R02 el ORG del modelo partido por la lista conserva sus restos con mayúscula (M3 por ventana)', () => {
+    const t = 'Pagó en la Droguería Ejemplo Central y en el Banco Ejemplo S.A. la cuota.';
+    const out = porVentana(t, [apellido(t, 'Ejemplo'), apellido(t, 'Ejemplo', 1)], [org(t, 'Droguería Ejemplo Central'), org(t, 'Banco Ejemplo S.A')]);
+    // El resto «S.A» pierde «.A» con R-MOD-03 (la «a» es palabra de función) y queda «S», de un carácter: se descarta (7.11.2).
+    expect(show(t, out)).toEqual(['EMPRESA:«Droguería»:baja', 'PERSONA:«Ejemplo»:media', 'EMPRESA:«Central»:baja', 'EMPRESA:«Banco»:baja', 'PERSONA:«Ejemplo»:media']);
+  });
+
+  it('INV-R02 lo contenido en algo ya fusionado se absorbe; lo que se solapa con un tramo de una ventana anterior se parte; lo libre entra igual', () => {
+    const t = 'Firmaron Pedro Prueba Ejemplo Rojas y Luisa Ficticia en Villa Ejemplo.';
+    const ventana1 = [per(t, 'Pedro Prueba Ejemplo')];
+    const out = porVentana(t, ventana1, [
+      per(t, 'Prueba Ejemplo', 0.99),            // contenido en lo de la ventana 1: se absorbe
+      per(t, 'Ejemplo Rojas', 0.9),              // se solapa en el borde de zona: queda «Rojas»
+      per(t, 'Luisa Ficticia', 0.8),             // libre: entra con su confianza
+    ]);
+    expect(show(t, out)).toEqual(['PERSONA:«Pedro Prueba Ejemplo»:media', 'PERSONA:«Rojas»:baja', 'PERSONA:«Luisa Ficticia»:media']);
+  });
+
+  it('INV-R12 un NIT ya fusionado no cambia su holderDigits por una cédula de una ventana posterior', () => {
+    const t = 'NIT 41.000.001-7 del contratista';
+    const nit = mk(t, '41.000.001-7', { type: 'NIT', ...r3('DV_NIT'), confidence: 'alta', canonicalKey: 'NIT:410000017' });
+    const out = porVentana(t, [nit], [mk(t, '41.000.001', { type: 'CC', ...r5, canonicalKey: 'CC:41000001' })]);
+    expect(show(t, out)).toEqual(['NIT:«41.000.001-7»:alta']);
+    expect(out[0]?.holderDigits).toBeUndefined();
+  });
+
+  it('INV-R02 INV-R12 200 ventanas aleatorias: sin solapes, lo de antes intacto, misma salida en cualquier orden', () => {
+    let seed = 20261031;
+    const r = (): number => { seed = (Math.imul(seed, 1103515245) + 12345) >>> 0; return seed / 2 ** 32; };
+    const pick = <T>(xs: readonly T[]): T => xs[Math.floor(r() * xs.length)] as T;
+    const PALABRAS = ['Ana', 'Pedro', 'Ficticia', 'Ejemplo', 'Prueba', 'Rojas', 'de', 'la', 'S.A.', 'firmó', '1000000017', 'y', 'Banco'];
+    for (let n = 0; n < 200; n++) {
+      const t = Array.from({ length: 6 + Math.floor(r() * 14) }, () => pick(PALABRAS)).join(' ');
+      const tramo = (): [number, number] => {
+        const s = Math.floor(r() * t.length);
+        return [s, Math.min(t.length, s + 2 + Math.floor(r() * 20))];
+      };
+      const cand = (source: Src): DetectionCandidate => {
+        const [s, e] = tramo();
+        const type = source === 'regla' ? 'CC' : pick<DataType>(['PERSONA', 'EMPRESA']);
+        const c: DetectionCandidate = { partId: PART_ID, start: s, end: e, type, source, confidence: pick<Confidence>(['alta', 'media', 'baja']),
+          score: r(), canonicalKey: `${type}:${n}:${s}` };
+        if (source === 'modelo') c.nerLabel = type === 'PERSONA' ? 'PER' : 'ORG';
+        if (source === 'lista') { c.caseEntityId = CAS_A; c.variantClass = 'apellido_suelto'; }
+        if (source === 'regla') c.ruleId = 'R-CC-01';
+        return c;
+      };
+      const antes = Array.from({ length: Math.floor(r() * 5) }, () => cand(pick<Src>(['lista', 'regla', 'modelo'])));
+      const nuevos = Array.from({ length: Math.floor(r() * 6) }, () => cand('modelo'));
+      const out = porVentana(t, antes, nuevos);
+      const part = mkPart(t);
+      const fused = mergeCandidates(part, antes, NO_RULES);
+      expect(mergeIntoFused(part, [...fused].reverse(), [...nuevos].reverse(), NO_RULES)).toEqual(out);
+    }
   });
 });
 

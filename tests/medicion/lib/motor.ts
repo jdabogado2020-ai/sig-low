@@ -4,6 +4,7 @@ import { applyReviewAction } from '../../../src/core/entities.ts';
 import type { ReviewContext } from '../../../src/core/entities.ts';
 import { createDetectHandler } from '../../../src/core/pipeline.ts';
 import { incorporarModelo, modeloInicial } from '../../../src/core/review/modelo.ts';
+import { UMBRALES_MODELO } from '../../../src/core/umbrales.ts';
 import type {
   DetectionSet, DocumentModel, IdSource, NerSpan, PartId, RenderedOutput, ReviewState, TableIndex,
 } from '../../../src/core/types.ts';
@@ -15,7 +16,7 @@ import type { DocCorpus } from './corpus.ts';
 import { idsSecuenciales } from './corpus.ts';
 
 export const TABLA_VACIA: TableIndex = { byKey: {}, counters: {}, documentCount: 0 };
-export const OPCIONES_DETECCION = { referenceDate: '2026-10-30', rulesVersion: '1.0.0', nerHighThreshold: 0.9, nerMinScore: 0.3 };
+export const OPCIONES_DETECCION = { referenceDate: '2026-10-30', rulesVersion: '1.0.0', ...UMBRALES_MODELO };
 export type OpcionesDeteccion = typeof OPCIONES_DETECCION;
 
 type Mensaje = { v: number; reqId: string; kind: string; [k: string]: unknown };

@@ -144,8 +144,11 @@ function remainderKeyFromModel(c: MergedCandidate, s: string, kind: PartKind): s
 // 7.11.2 · Remanentes
 // ---------------------------------------------------------------------------------------------
 
-/** R-MOD-03 sobre la vista `lista` del tramo; devuelve posiciones relativas al tramo o null si queda vacío. */
-function trimFunctionWords(s: string, kind: PartKind): { start: number; end: number } | null {
+/**
+ * R-MOD-03 sobre la vista `lista` del tramo; devuelve posiciones relativas al tramo o null si queda vacío. Exportada: es el
+ * mismo recorte del paso (2) de 7.10.7 en pipeline.ts (una sola copia de la expresión, sin el `+` anidado de M-1).
+ */
+export function trimFunctionWords(s: string, kind: PartKind): { start: number; end: number } | null {
   const v = buildSearchView(s, 'lista', kind);
   const l = RE_TRIM_LEFT.exec(v.text);
   const ns = l === null ? 0 : l[0].length;
@@ -303,15 +306,9 @@ function extendWithModel(work: MergedCandidate[], part: Part): MergedCandidate[]
 // 7.11.1 · Algoritmo determinista
 // ---------------------------------------------------------------------------------------------
 
-/**
- * Fusiona los candidatos de una parte (6.4.2, 7.11). Devuelve candidatos sin solapes (INV-R02), con
- * `precedence` según 6.2.4 (INV-R04), ordenados por inicio. Un validador fallido nunca descarta (INV-R03).
- * Ignora las banderas (las recorta generalize.ts, 6.4.6) y los candidatos de otra parte.
- */
-export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[], rules: RuleRegistry): MergedCandidate[] {
+/** Paso 0 · Límites dentro de un par sustituto, duplicados exactos y precedencia. Copia: no toca la entrada. */
+function normalize(part: Part, cands: readonly DetectionCandidate[]): MergedCandidate[] {
   const text = part.text;
-
-  // 0. Normalizar: límites dentro de un par sustituto, duplicados exactos y precedencia.
   const unique = new Map<string, MergedCandidate>();
   for (const c of cands) {
     if (c.partId !== part.id || FLAG_SET.has(c.type)) continue;
@@ -328,23 +325,23 @@ export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[]
       unique.set(k, w);
     }
   }
-  let work = [...unique.values()];
+  return [...unique.values()];
+}
 
-  // 1. Unir por paréntesis (R-MRG-01).
-  work = joinParen(work, part);
-  // 2. Extender la lista con el modelo.
-  work = extendWithModel(work, part);
-  // 3. Ordenar.
-  work.sort(byPriority);
-
-  // 4. Colocar en orden.
-  const accepted: MergedCandidate[] = [];
+/**
+ * Paso 4 · Coloca `work` (ya ordenado por prioridad) detrás de `fixed`, que se da por aceptado y no se modifica
+ * (ni `holderDigits`). Devuelve solo lo que se acepta de `work`, remanentes incluidos.
+ */
+function place(part: Part, work: readonly MergedCandidate[], fixed: readonly MergedCandidate[], rules: RuleRegistry): MergedCandidate[] {
+  const text = part.text;
+  const accepted: MergedCandidate[] = [...fixed];
+  const isFixed = new Set<MergedCandidate>(fixed);
   for (const c of work) {
     const over = accepted.filter((a) => overlaps(a, c.start, c.end));
     if (over.length === 0) { accepted.push(c); continue; }
     const container = over.find((a) => a.start <= c.start && c.end <= a.end);
     if (container !== undefined) {
-      if (container.type === 'NIT' && HOLDER_ABSORBED.has(c.type)) {
+      if (container.type === 'NIT' && HOLDER_ABSORBED.has(c.type) && !isFixed.has(container)) {
         const d = text.slice(c.start, c.end).replace(/[^0-9]/gu, '');
         if (d !== '') container.holderDigits = d;
       }
@@ -355,7 +352,44 @@ export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[]
       if (r !== null) accepted.push(r);
     }
   }
+  return accepted.slice(fixed.length);
+}
 
+const byStart = (a: MergedCandidate, b: MergedCandidate): number => a.start - b.start || a.end - b.end;
+
+/**
+ * Fusiona los candidatos de una parte (6.4.2, 7.11). Devuelve candidatos sin solapes (INV-R02), con
+ * `precedence` según 6.2.4 (INV-R04), ordenados por inicio. Un validador fallido nunca descarta (INV-R03).
+ * Ignora las banderas (las recorta generalize.ts, 6.4.6) y los candidatos de otra parte.
+ */
+export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[], rules: RuleRegistry): MergedCandidate[] {
+  // 0. Normalizar: límites dentro de un par sustituto, duplicados exactos y precedencia.
+  let work = normalize(part, cands);
+  // 1. Unir por paréntesis (R-MRG-01).
+  work = joinParen(work, part);
+  // 2. Extender la lista con el modelo.
+  work = extendWithModel(work, part);
+  // 3. Ordenar.
+  work.sort(byPriority);
+  // 4. Colocar en orden.
+  const accepted = place(part, work, [], rules);
   // 5. Devolver ordenado por inicio.
-  return accepted.sort((a, b) => a.start - b.start || a.end - b.end);
+  return accepted.sort(byStart);
+}
+
+/**
+ * 7.10.10 (pasos 2 y 3) · Fusión de una ventana del modelo: 7.11 solo sobre los candidatos nuevos `cands`, contra el
+ * conjunto ya fusionado de la parte (`fused`, salida de una fusión anterior), que **no cambia**: lo ya emitido no se
+ * extiende, no se parte y no se desplaza (INV-R12). Por eso el paso 2 (extender la lista) no se aplica aquí: la detección
+ * de la lista ya existe y extenderla la modificaría. Un candidato nuevo contenido en uno ya fusionado se absorbe; uno que
+ * se solapa en parte se parte y cada resto pasa por 7.11.2 (en el modelo, recorte R-MOD-03 y confianza baja), en vez de
+ * perderse entero. Devuelve el conjunto completo (lo de antes, igual, más lo nuevo), sin solapes y ordenado por inicio.
+ */
+export function mergeIntoFused(part: Part, fused: readonly MergedCandidate[], cands: readonly DetectionCandidate[],
+  rules: RuleRegistry): MergedCandidate[] {
+  const fixed = fused.filter((c) => c.partId === part.id).map((c) => ({ ...c }));
+  let work = normalize(part, cands);
+  work = joinParen(work, part);
+  work.sort(byPriority);
+  return [...fixed, ...place(part, work, fixed, rules)].sort(byStart);
 }

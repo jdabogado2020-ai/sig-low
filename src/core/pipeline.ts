@@ -9,7 +9,7 @@ import type {
   EntityId, ErrorCode, Flag, FlagId, IdSource, IsoDate, MergedCandidate, NerLabel, NerSpan, Part, PartId, PartKind, RuleRegistry, RuleSpec,
   SearchView, SpanEdit, Stage, ProgressUnit, Suggestion, TableIndex,
 } from './types.ts';
-import { buildSearchView, toCanonicalSpan } from './normalize.ts';
+import { buildSearchView } from './normalize.ts';
 import { runRules } from './rules/catalog.ts';
 import { rules as rContacto } from './rules/contacto.ts';
 import { rules as rDireccion } from './rules/direccion.ts';
@@ -21,7 +21,7 @@ import { rules as rRotulados } from './rules/rotulados.ts';
 import { rules as rValores } from './rules/valores.ts';
 import { configurarDivipola, divipolaCodes } from './validators/radicado.ts';
 import { findCaseMentions } from './caselist.ts';
-import { mergeCandidates } from './merge.ts';
+import { mergeCandidates, mergeIntoFused, trimFunctionWords } from './merge.ts';
 import { buildDetectionSet, cryptoIds, orgKey, personKey } from './entities.ts';
 import {
   DIVIPOLA, candidateFromLoc, departamentosDeRadicados, detectPlaces, generalize, vistaLista,
@@ -59,10 +59,6 @@ export function createRuleRegistry(refYear: number): RuleRegistry {
 
 /** 6.2.3 (R-MOD-04), sin anclas. */
 const MARCADOR = /\[(?:DEMANDANTE|DEMANDADO|TESTIGO|PACIENTE|CLIENTE|CONTACTO|PERSONA|EMPRESA|EPS|IPS|ENTIDAD|PROVEEDOR|CC|TI|CE|PPT|PEP|PASAPORTE|NIT|TP|DOCUMENTO|DIRECCIÓN|TELÉFONO|CORREO|RADICADO|HC|AFILIACIÓN|PLACA|MATRÍCULA|CUENTA|FECHA|VALOR|DEPARTAMENTO)_[1-9][0-9]{0,3}\]/gu;
-/** R-MOD-03 (misma lista que merge.ts, sobre la vista `lista` del tramo). */
-const FW = 'de|del|la|las|los|el|lo|y|e|o|u|a|al|en|por|para|con|sin|su|sus|que|se|un|una|unos|unas|senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr|mrs|mr|ms';
-const RE_TRIM_LEFT = new RegExp(String.raw`^(?:[\s\p{P}\p{S}]+|(?:` + FW + String.raw`)(?=[\s\p{P}\p{S}]|$))+`, 'u');
-const RE_TRIM_RIGHT = new RegExp(String.raw`(?:[\s\p{P}\p{S}]+|(?<=^|[\s\p{P}\p{S}])(?:` + FW + String.raw`))+$`, 'u');
 /** R-MOD-05, R-MOD-06 y R-MOD-07, sobre la vista `lista` del tramo. */
 const RE_EPS = /(?<![\p{L}\p{N}])(?:e\. ?p\. ?s\.?|eps|entidad promotora de salud)(?![\p{L}\p{N}])/u;
 const RE_IPS = /(?<![\p{L}\p{N}])(?:i\. ?p\. ?s\.?|ips|e\. ?s\. ?e\.?|institucion prestadora de (?:servicios de )?salud|clinica|hospital|centro medico|centro de salud|laboratorio clinico)(?![\p{L}\p{N}])/u;
@@ -85,16 +81,14 @@ function fueraDeMarcadores(text: string, start: number, end: number): Array<[num
   return out;
 }
 
-/** R-MOD-03: recorta signos, palabras de función y tratamientos en los bordes, con el mapa de la vista `lista`. */
+/**
+ * R-MOD-03: recorta signos, palabras de función y tratamientos en los bordes, con el mapa de la vista `lista`. Es el recorte
+ * de merge.ts (`trimFunctionWords`): la copia que había aquí conservaba el `+` anidado de antes de M-1 (retroceso exponencial
+ * con signos sueltos separados por blancos, PB-2-r1).
+ */
 function recortarBordes(text: string, start: number, end: number, kind: PartKind): { start: number; end: number } | null {
-  const v = buildSearchView(text.slice(start, end), 'lista', kind);
-  const l = RE_TRIM_LEFT.exec(v.text);
-  const ns = l === null ? 0 : l[0].length;
-  const r = RE_TRIM_RIGHT.exec(v.text.slice(ns));
-  const ne = v.text.length - (r === null ? 0 : r[0].length);
-  if (ne <= ns) return null;
-  const c = toCanonicalSpan(v, ns, ne);
-  return { start: start + c.start, end: start + c.end };
+  const c = trimFunctionWords(text.slice(start, end), kind);
+  return c === null ? null : { start: start + c.start, end: start + c.end };
 }
 
 export interface NerContext {
@@ -522,19 +516,29 @@ export function createDetectHandler(deps: DetectDeps = {}): DetectHandler {
       return;
     }
     s.ventana = ventana;
-    aplicarNer(s, ner);
-    const { delta } = emitir(s, construir(s, new Set(ner.keys())));
+    // 7.10.10 (2 y 3): 7.11 solo sobre los candidatos nuevos contra lo ya fusionado, que no cambia (INV-R12). Volver a fusionar
+    // todo dejaba que el paso 2 extendiera una detección de la lista ya emitida: el reductor descartaba la extensión (se solapa)
+    // y el tramo del modelo desaparecía entero, con sus palabras a la vista. Ahora se parte y cada resto pasa por 7.11.2.
+    for (const [pid, cands] of aplicarNer(s, ner)) {
+      const part = s.parts.find((x) => x.id === pid) as Part;
+      s.merged.set(pid, mergeIntoFused(part, s.merged.get(pid) ?? mergeCandidates(part, s.base.get(pid) ?? [], s.registry), cands, s.registry));
+    }
+    const { delta } = emitir(s, construir(s, new Set()));
     post({ v: 1, reqId, kind: 'resultado', payload: { kind: 'fusionar', set: delta, ventana } satisfies DetectResult });
   }
 
-  function aplicarNer(s: Session, ner: ReadonlyMap<PartId, NerSpan[]>): void {
+  /** Convierte los tramos del modelo (7.10.7 a 7.10.9), los acumula en la sesión y devuelve los candidatos nuevos por parte. */
+  function aplicarNer(s: Session, ner: ReadonlyMap<PartId, NerSpan[]>): Map<PartId, DetectionCandidate[]> {
+    const nuevos = new Map<PartId, DetectionCandidate[]>();
     for (const [pid, spans] of ner) {
       const part = s.parts.find((x) => x.id === pid);
       if (part === undefined) continue;   // parte excluida: el modelo no debería haberla procesado
       const r = candidatesFromNer(spans, { part, options: s.options, docDepCodes: s.docDeps.get(pid) ?? [], base: s.base.get(pid) ?? [], ids: s.ids });
       s.model.set(pid, [...(s.model.get(pid) ?? []), ...r.candidates]);
       s.modelFlags.push(...r.flags);
+      nuevos.set(pid, [...(nuevos.get(pid) ?? []), ...r.candidates]);
     }
+    return nuevos;
   }
 
   return async function handle(data: unknown, post: Post): Promise<void> {

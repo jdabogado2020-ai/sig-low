@@ -4,6 +4,7 @@
 // deterministas (contador): ningún valor sale del contenido. Cuando PG-3b entregue `window.__siglowMedicion.procesar`, las E2E
 // podrán obtener el mismo conjunto por ahí; esta ranura no lo necesita.
 import { createDetectHandler } from '../../../core/pipeline.ts';
+import { UMBRALES_MODELO } from '../../../core/umbrales.ts';
 import type {
   CaseEntity, DetectionSet, DetectResult, DocumentModel, DocId, IdSource, ModelProgress, PartId,
 } from '../../../core/types.ts';
@@ -34,7 +35,7 @@ async function detectar(doc: DocumentModel, caseList: readonly CaseEntity[], ids
     payload: {
       sessionId: 'sesion-de-prueba', doc, caseList: [...caseList],
       table: { byKey: {}, counters: {}, documentCount: 0 },
-      options: { referenceDate: '2026-10-30', rulesVersion: '1.0.0', nerHighThreshold: 0.9, nerMinScore: 0.3 },
+      options: { referenceDate: '2026-10-30', rulesVersion: '1.0.0', ...UMBRALES_MODELO },
     },
   }, (m) => {
     const r = m as { kind?: string; payload?: DetectResult };

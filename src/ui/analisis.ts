@@ -7,6 +7,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { cryptoIds, emptyTable, tableIndexOf } from '../core/entities.ts';
 import type { ReviewContext } from '../core/entities.ts';
 import { declararPlanB, incorporarModelo, modeloInicial } from '../core/review/modelo.ts';
+import { UMBRALES_MODELO } from '../core/umbrales.ts';
 import type {
   AsuntoId, CaseEntity, DetectOptions, DetectResult, DetectionSet, DocumentModel, ErrorCode, IdSource, MappingTable, NerSpan, PartId,
   PlanBCause, ProgressUnit, RequestId, ReviewState, Stage,
@@ -113,7 +114,7 @@ export function fechaDeReferencia(ahora: Date = new Date()): string {
   return new Date(ahora.getTime() - 5 * 3_600_000).toISOString().slice(0, 10);
 }
 
-export const OPCIONES_DETECCION = { rulesVersion: '1.0.0', nerHighThreshold: 0.9, nerMinScore: 0.3 } as const;
+export const OPCIONES_DETECCION = { rulesVersion: '1.0.0', ...UMBRALES_MODELO } as const;
 
 const tablaDelAsunto = (): MappingTable => obtenerTabla() ?? emptyTable('asu_' as AsuntoId);
 
