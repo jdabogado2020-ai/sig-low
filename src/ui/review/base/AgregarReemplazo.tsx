@@ -7,14 +7,14 @@ import { atributosDeContenedor, Casilla, Seleccion } from '../../campos.tsx';
 import { Dialogo } from '../../dialogo.tsx';
 import { etiqueta, mensajeDeCodigo, ROTULOS, t } from '../../mensajes.ts';
 import { agregarManual } from './acciones.ts';
-import { limpiarError, solicitarReemplazo, useRevision } from './almacen.ts';
+import { limpiarError, solicitarReemplazo, useRevisionUi } from './almacen.ts';
 import { nombreDeTipo, TIPOS_ELEGIBLES } from './presentacion.ts';
 import { tx } from './textos.ts';
 
 const ROLES_PERSONA: readonly Role[] = ['DEMANDANTE', 'DEMANDADO', 'TESTIGO', 'PACIENTE', 'CLIENTE', 'CONTACTO', 'OTRA_PERSONA'];
 
 export function AgregarReemplazo() {
-  const { reemplazo, doc, error } = useRevision();
+  const { reemplazo, doc, error } = useRevisionUi();
   const [tipo, setTipo] = useState<string>('PERSONA');
   const [rol, setRol] = useState<string>('OTRA_PERSONA');
   const [propagar, setPropagar] = useState(false);

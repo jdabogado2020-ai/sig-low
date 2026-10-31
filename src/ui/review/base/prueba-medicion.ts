@@ -9,7 +9,9 @@ import type {
 } from '../../../core/types.ts';
 import { ir } from '../../estado.ts';
 import { obtenerListaDelCaso } from '../../sesion.ts';
-import { despachar, estadoDesdeConjunto, fijarRevision, obtenerInstantanea } from './almacen.ts';
+import { estadoDeConjunto } from '../../analisis.ts';
+import { fijarDocumento, fijarRevision } from '../../documento.ts';
+import { despachar, obtenerInstantanea } from './almacen.ts';
 
 type Modelo = 'en_curso' | 'terminado' | 'plan_b';
 const hex = (n: number): string => n.toString(16).padStart(32, '0');
@@ -58,7 +60,8 @@ async function cargar(partes: string | readonly string[], modelo: Modelo = 'plan
   const manejar = createDetectHandler({ ids });
   const set = await detectar(doc, obtenerListaDelCaso(), ids, manejar);
   sesionActual = { manejar, doc };
-  fijarRevision(doc, estadoDesdeConjunto(doc, set, modeloDe(modelo)));
+  fijarDocumento(doc);
+  fijarRevision(estadoDeConjunto(doc, set, modeloDe(modelo)));
   ir('revision');
   return set.detections.length;
 }

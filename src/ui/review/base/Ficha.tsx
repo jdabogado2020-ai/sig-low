@@ -9,7 +9,7 @@ import { etiqueta, mensajeDeCodigo, ROTULOS, t } from '../../mensajes.ts';
 import {
   aceptar, aceptarEntidad, cambiarRol, cambiarTipo, editar, especificarDocumento, rechazar, rechazarEntidad, restablecer, separar, unir,
 } from './acciones.ts';
-import { limpiarError, marcarEdicion, pedirEnfoque, seleccionar, seleccionarEntidad, solicitarEdicion, terminarEdicion, useRevision } from './almacen.ts';
+import { limpiarError, marcarEdicion, pedirEnfoque, seleccionar, seleccionarEntidad, solicitarEdicion, terminarEdicion, useRevisionUi } from './almacen.ts';
 import {
   nombreDeTipo, pendientesDe, TIPOS_CON_MARCADOR_ESPECIFICO, TIPOS_ELEGIBLES, textoDeMenciones, textoDePendientes,
 } from './presentacion.ts';
@@ -133,7 +133,7 @@ function BloqueEntidad({ state, e }: { state: ReviewState; e: Entity }) {
 }
 
 export function Ficha() {
-  const rev = useRevision();
+  const rev = useRevisionUi();
   const { state, doc, seleccion, entidadSeleccion, edicion, error } = rev;
   const [motivo, setMotivo] = useState<RejectReason>('SIN_MOTIVO');
   const [tipoNuevo, setTipoNuevo] = useState('');

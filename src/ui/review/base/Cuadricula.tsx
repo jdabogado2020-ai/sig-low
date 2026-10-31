@@ -5,7 +5,7 @@ import type { Detection, DetectionId, Entity, EntityId, ReviewState } from '../.
 import { etiqueta, ROTULOS, t } from '../../mensajes.ts';
 import { aceptar, aceptarEntidad, rechazar, rechazarEntidad, restablecer } from './acciones.ts';
 import {
-  alternarExpandida, consumirEnfoque, irAPendiente, pedirEnfoque, seleccionar, seleccionarEntidad, solicitarEdicion, useRevision,
+  alternarExpandida, consumirEnfoque, irAPendiente, pedirEnfoque, seleccionar, seleccionarEntidad, solicitarEdicion, useRevisionUi,
 } from './almacen.ts';
 import { IconoDeEstado, Insignia } from './iconos.tsx';
 import {
@@ -40,7 +40,7 @@ export function aplanar(state: ReviewState, expandidas: ReadonlySet<EntityId>): 
 const altoDe = (f: FilaG): number => (f.tipo === 'ent' ? ALTO_ENTIDAD : ALTO_MENCION);
 
 export function Cuadricula({ singleKey }: { singleKey: boolean }) {
-  const rev = useRevision();
+  const rev = useRevisionUi();
   const { doc, state, expandidas, seleccion, entidadSeleccion, enfoque, nuevas } = rev;
   const cont = useRef<HTMLDivElement>(null);
   const rejilla = useRef<HTMLDivElement>(null);

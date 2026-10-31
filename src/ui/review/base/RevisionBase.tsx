@@ -13,7 +13,8 @@ import { Cuadricula } from './Cuadricula.tsx';
 import { Ficha } from './Ficha.tsx';
 import { ID_LEYENDA, Leyenda } from './Leyenda.tsx';
 import { PanelTexto } from './PanelTexto.tsx';
-import { cambiarVista, limpiarRevision, useRevision } from './almacen.ts';
+import { descartarAnalisis } from '../../analisis.ts';
+import { cambiarVista, useRevisionUi } from './almacen.ts';
 import { tx } from './textos.ts';
 
 if (__SIGLOW_MEDICION__) {
@@ -23,7 +24,7 @@ if (__SIGLOW_MEDICION__) {
 
 export function RevisionBase() {
   const shell = useShell();
-  const { doc, state, vista, anuncio } = useRevision();
+  const { doc, state, vista, anuncio } = useRevisionUi();
   const [leyenda, setLeyenda] = useState(false);
   const [atajos, setAtajos] = useState(false);
   const [descartar, setDescartar] = useState(false);
@@ -92,7 +93,7 @@ export function RevisionBase() {
       <Dialogo abierto={descartar} titulo={t(ROTULOS.descartar_documento)} onCerrar={() => { setDescartar(false); }}>
         <p>{t('M-75')}</p>
         <div class="acciones">
-          <button type="button" onClick={() => { setDescartar(false); limpiarRevision(); ir('entrada'); }}>{t(ROTULOS.descartar_documento)}</button>
+          <button type="button" onClick={() => { setDescartar(false); descartarAnalisis(); ir('entrada'); }}>{t(ROTULOS.descartar_documento)}</button>
           <button type="button" class="secundario" onClick={() => { setDescartar(false); }}>{t(ROTULOS.cancelar)}</button>
         </div>
       </Dialogo>

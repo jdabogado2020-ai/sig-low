@@ -10,7 +10,7 @@ import { atributosDeContenedor } from '../../campos.tsx';
 import { t } from '../../mensajes.ts';
 import { aceptar, aceptarEntidad, restablecer, rechazar } from './acciones.ts';
 import {
-  consumirEnfoque, irAPendiente, pedirEnfoque, seleccionar, solicitarEdicion, solicitarReemplazo, useRevision,
+  consumirEnfoque, irAPendiente, pedirEnfoque, seleccionar, solicitarEdicion, solicitarReemplazo, useRevisionUi,
 } from './almacen.ts';
 import { Insignia } from './iconos.tsx';
 import {
@@ -89,7 +89,7 @@ export function seleccionDelPanel(panel: HTMLElement): Span | null {
 }
 
 export function PanelTexto({ singleKey }: { singleKey: boolean }) {
-  const rev = useRevision();
+  const rev = useRevisionUi();
   const { doc, state, vista, seleccion, nuevas, enfoque } = rev;
   const panel = useRef<HTMLDivElement | null>(null);
   const arriba = useRef<HTMLDivElement>(null);

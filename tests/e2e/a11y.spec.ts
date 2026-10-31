@@ -193,7 +193,7 @@ async function abrirRevision(page: Page): Promise<void> {
   await expect(h1(page, 'Revisión')).toBeVisible();
 }
 const panelTexto = (page: Page) => page.getByRole('region', { name: 'Documento con detecciones' });
-const activo = (page: Page) => page.evaluate(() => {
+const enfocadoRev = (page: Page) => page.evaluate(() => {
   const el = document.activeElement as HTMLElement | null;
   if (el === null) return null;
   const cs = getComputedStyle(el);
@@ -213,7 +213,7 @@ test.describe('Revisión I · accesibilidad (PC-3)', () => {
     let llegado = false;
     for (let i = 0; i < 14 && !llegado; i++) {
       await page.keyboard.press('Tab');
-      const a = await activo(page);
+      const a = await enfocadoRev(page);
       expect(a?.contorno, `foco visible tras ${i + 1} Tab`).toBe(true);
       llegado = a?.det === true;
     }
