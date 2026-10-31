@@ -2148,3 +2148,177 @@ describe('AJ-2 · G-05 con «nací» y con un salto de línea del PDF entre el v
     }
   });
 });
+
+// ===================================================================== AJ-4 (D-12) · CARGO y DIAGNOSTICO fuera de R-CAR-01 y R-DIAG-01
+
+describe('AJ-4 · R-CAR-02 y R-CAR-03: el cargo que R-CAR-01 no cubre (G-08)', () => {
+  const cargos = (t: string): string[] => correr(t, [], { sinLugares: true }).res.flags.filter((x) => x.type === 'CARGO').map((x) => x.text);
+  it.each([
+    // R-CAR-02, tras un giro de cargo
+    ['la funcionaria Ana, quien se desempeña como directora regional de la entidad, informó', 'directora regional'],
+    ['quien se desempeña como jefa de talento humano de la entidad, respondió', 'jefa de talento humano'],
+    ['quien se desempeña como administradora del\nconjunto de la entidad, respondió', 'administradora del\nconjunto'],
+    ['quien actúa en su calidad de director regional y se identifica con C.C. 19.000.002', 'director regional'],
+    ['quien actúa en su calidad de gerente\ngeneral y se identifica con C.C. 10.000.002', 'gerente\ngeneral'],
+    ['Señores\nSalud Integral Prueba EPS S.A.\nAtn.: coordinadora de auditoría médica – Blanca Nubia Ejemplo Rincón\nDirección: Cal', 'coordinadora de auditoría médica'],
+    ['Atn.: líder de servicio al usuario – Viviana Prueba Beltrán', 'líder de servicio al usuario'],
+    ['Cargo: subgerente científico', 'subgerente científico'],
+    // R-CAR-03, junto a un nombre (coma, guion) o en una celda (línea, tabulador)
+    ['reclamo verbal ante la funcionaria Ángela Ejemplo, coordinadora de cartera de la entidad, quien me dio el radicado', 'coordinadora de cartera'],
+    ['a cargo de Carlos Alberto Prueba Gómez, subgerente científico de FESA, identificado con C.C. 41000010', 'subgerente científico'],
+    ['ayer hablé con santiago ejemplo caicedo, director administrativo de la empresa, y me dijo', 'director administrativo'],
+    ['Paola Andrea Ficticia Navarro – presidenta de la junta\nTeresa Ejemplo Restrepo – secretaria general\nControl', 'presidenta de la junta'],
+    ['Se dejó constancia de que Luz Marina Ejemplo, conciliadora en derecho, con T.P. No. 100, verificó', 'conciliadora en derecho'],
+    ['Se dejó constancia de que Paola Ficticia, directora del centro de conciliación, con T.P. No. 102, verificó', 'directora del centro de conciliación'],
+    ['- CATALINA PRUEBA DEL VALLE, C.C. 39.000.002, subgerente científica\n- Carmen Ejemplo', 'subgerente científica'],
+    ['Nombre\nC.C.\nCargo\nIVÁN DARÍO FICTICIO DUQUE\n1.000.000.001\nalcalde municipal\nÉdgar Ejemplo Jiménez\n52000002\n', 'alcalde municipal'],
+    ['WILSON FICTICIO RUIZ\t1.000.000.001\tadministrador del conjunto\nFernando Ficticio\t21000002\t', 'administrador del conjunto'],
+    ['Diana Carolina Ficticia Mora – coordinadora de cartera\nTel. (608) 000 0011', 'coordinadora de cartera'],
+  ])('positivo %#: «%s»', (t, esperado) => {
+    expect(cargos(t)).toContain(esperado);
+  });
+
+  it.each([
+    'el director de tesis revisó el documento',
+    'la jefa de hogar no pudo asistir',
+    'el gerente firmó el contrato',
+    'ejerce como abogado desde 2010',
+    'Acciona como representante legal de mi hijo menor de edad',
+    'en su calidad de representante legal de la menor Ejemplo',
+    'actúa en calidad de agente oficioso de su hija',
+    'Señor\nGerente\nVida y Salud Ejemplo EPS',
+    'Ejemplo denunció públicamente al\ngerente del hospital.',
+    'la orden del juez, magistrado de la Sala Civil, fue clara',
+    'Atn.: Oficina Jurídica',
+    'Cargo: abogado externo',
+    'se desempeña como asesor externo de la entidad',
+  ])('negativo %#: «%s»', (t) => {
+    expect(cargos(t)).toEqual([]);
+  });
+
+  it('el tramo del cargo no incluye el nombre de la organización (queda «de la entidad», «de FESA»)', () => {
+    const t = 'quien se desempeña como directora regional de la entidad, respondió';
+    const { res } = correr(t, [], { sinLugares: true });
+    expect(res.flags.map((f) => t.slice(f.span.start, f.span.end))).toEqual(['directora regional']);
+    const u = 'a cargo de Carlos Prueba, subgerente científico de FESA, identificado';
+    expect(correr(u, [], { sinLugares: true }).res.flags.map((f) => f.text)).toEqual(['subgerente científico']);
+  });
+
+  it('las opciones siguen el género y la clase del cargo; tras «como» y «calidad de» van sin artículo', () => {
+    const op = (t: string): string[] => correr(t, [], { sinLugares: true }).res.flags.flatMap((f) => f.options.map((o) => o.template));
+    expect(op('quien se desempeña como directora regional de la entidad')).toEqual(['directiva', 'representante']);
+    expect(op('quien actúa en su calidad de alcalde municipal y firma')).toEqual(['funcionario', 'funcionaria']);
+    expect(op('Atn.: coordinadora de cartera – Ana Ejemplo')).toEqual(['una directiva', 'una representante']);
+    expect(op('Ana Ejemplo, jefe de talento humano de la entidad, dijo')).toEqual(['un directivo', 'una directiva']);
+    expect(op('Ana Ejemplo – secretaria general\nControl')).toEqual(['una funcionaria', 'una autoridad']);
+  });
+
+  it('no duplica lo que ya marca R-CAR-01: «como rector de TEFI», «la gerente general de [EMPRESA_1]»', () => {
+    const f = (t: string): string[] => correr(t, [], { sinLugares: true }).res.flags.filter((x) => x.type === 'CARGO').map((x) => x.text);
+    expect(f('quien se desempeña como rector de TEFI, en la Trans.')).toEqual(['como rector']);
+    expect(f('la gerente general de [EMPRESA_1] firmó')).toHaveLength(1);
+  });
+
+  it('con todo en minúsculas o en mayúsculas el cargo se marca igual (vistas de 10.3.3)', () => {
+    const t = 'quien se desempeña como coordinadora de auditoría médica de la entidad, informó; ayer hablé con ana ejemplo, director médico de la empresa, y';
+    expect(cargos(t)).toEqual(['coordinadora de auditoría médica', 'director médico']);
+    expect(cargos(t.toUpperCase())).toEqual(['COMO COORDINADORA', 'DIRECTOR MÉDICO']);   // el primero lo marca R-CAR-01 (con «COMO»)
+    expect(cargos('ANA EJEMPLO – PRESIDENTA DE LA JUNTA\nTERESA EJEMPLO – SECRETARIA GENERAL\nCONTROL')).toEqual(['PRESIDENTA DE LA JUNTA', 'SECRETARIA GENERAL']);
+    expect(cargos('WILSON FICTICIO RUIZ\t1.000.000.001\tADMINISTRADOR DEL CONJUNTO\nFERNANDO')).toEqual(['ADMINISTRADOR DEL CONJUNTO']);
+  });
+
+  it('INV-R01 la bandera de cargo junto a una detección se recorta a su lado libre', () => {
+    const t = 'quien se desempeña como directora regional de FESA, informó';
+    const i = t.indexOf('FESA');
+    const { res } = correr(t, [{ start: i, end: i + 4, type: 'EMPRESA', canonicalKey: 'EMPRESA:FESA' }], { sinLugares: true });
+    expect(res.flags.map((f) => f.text)).toEqual(['directora regional']);
+  });
+
+  it('tiempo: 40.000 blancos, tabuladores o saltos, o 4.000 giros repetidos, por debajo de 300 ms', () => {
+    correr('quien se desempeña como directora regional', [], { sinLugares: true });   // construye los patrones antes de medir
+    const casos = [
+      'se desempeña como' + ' '.repeat(40_000) + 'directora regional',
+      'Atn.:' + '\t'.repeat(40_000) + 'jefa de talento humano',
+      'Ana,' + '\n'.repeat(40_000) + 'gerente general',
+      'x' + '\t'.repeat(40_000) + 'gerente' + ' '.repeat(40_000) + 'de' + ' '.repeat(40_000) + 'ventas',
+      'en su calidad de '.repeat(4_000) + 'x',
+      'gerente de '.repeat(4_000) + 'x',
+    ];
+    for (const texto of casos) {
+      const mejor = Math.min(...[0, 1, 2].map(() => {
+        const t0 = performance.now();
+        generalize({ part: { id: PID, text: texto }, detections: [], options: { referenceDate: REF }, ids: makeIds() });
+        return performance.now() - t0;
+      }));
+      expect(mejor, texto.slice(0, 30)).toBeLessThan(300);
+    }
+  });
+});
+
+describe('AJ-4 · R-DIAG-02: el término tras un giro de diagnóstico (G-10)', () => {
+  const diag = (t: string): string[] => correr(t, [], { sinLugares: true }).res.flags.filter((x) => x.type === 'DIAGNOSTICO').map((x) => x.text);
+  it.each([
+    ['tengo diagnóstico de leucemia linfoblástica aguda y la autorización 2026000002 venció', 'leucemia linfoblástica aguda'],
+    ['tengo diagnóstico de carcinoma ductal infiltrante de mama y la autorización venció', 'carcinoma ductal infiltrante de mama'],
+    ['tengo diagnóstico de enfermedad renal crónica estadio 5 y la autorización venció', 'enfermedad renal crónica estadio 5'],
+    ['tengo diagnóstico de lupus eritematoso sistémico y la autorización venció', 'lupus eritematoso sistémico'],
+    ['fue\ndiagnosticada con esclerosis múltiple (CIE-10 G35) en la Fundación Hospital Ejemplo', 'esclerosis múltiple'],
+    ['fue diagnosticada con\nesclerosis múltiple (CIE-10 G35) en la Fundación', 'esclerosis múltiple'],
+    ['3. Ordenar el tratamiento integral de esclerosis múltiple;\n4. Prevenir', 'esclerosis múltiple'],
+    ['el accionante padece de epilepsia refractaria desde hace años', 'epilepsia refractaria'],
+    ['mi hija sufre diabetes tipo 2 y requiere insulina', 'diabetes tipo 2'],
+    ['es portadora de VIH y recibe tratamiento', 'VIH'],
+    ['El diagnóstico: cáncer de pulmón, según el informe', 'cáncer de pulmón'],
+    ['diagnosticado con síndrome de Down al nacer', 'síndrome de Down'],
+  ])('positivo %#: «%s»', (t, esperado) => {
+    expect(diag(t)).toContain(esperado);
+  });
+
+  it.each([
+    'el diagnóstico de la demanda es claro',
+    'tratamiento integral de la enfermedad',
+    'ordenar el tratamiento integral de su patología',
+    'el diagnóstico de ingreso fue otro',
+    'diagnóstico de pacientes con cáncer',
+    'padece una enfermedad general',
+    'sufre perjuicios irremediables',
+    'sufre de dolor en la rodilla',
+    'sufre',
+    'diagnóstico:',
+  ])('negativo %#: «%s»', (t) => {
+    expect(diag(t)).toEqual([]);
+  });
+
+  it('INV-R01 la opción es «un diagnóstico médico» y no se duplica con R-DIAG-01 ni con R-CIE-01', () => {
+    const a = correr('diagnóstico de fibrosis quística (CIE-10 E84.0) en la Hospital', [], { sinLugares: true }).res.flags.filter((f) => f.type === 'DIAGNOSTICO');
+    expect(a.map((f) => f.text).sort()).toEqual(['E84.0', 'fibrosis quística']);
+    const b = correr('tengo diagnóstico de leucemia linfoblástica aguda', [], { sinLugares: true }).res.flags;
+    expect(b).toHaveLength(1);
+    expect(b[0]?.options.map((o) => [o.kind, o.template])).toEqual([['DIAGNOSTICO_A_GENERICO', 'un diagnóstico médico']]);
+    expect(b[0]).toMatchObject({ type: 'DIAGNOSTICO', reason: 'LISTA_DIAGNOSTICOS' });
+  });
+
+  it('un nombre propio detrás del término no entra en el tramo (salvo tras «de»: síndrome de Down)', () => {
+    expect(diag('padece diabetes Juan Ejemplo Pérez firmó')).toEqual(['diabetes']);
+    expect(diag('diagnosticado con enfermedad de Alzheimer avanzado')).toContain('enfermedad de Alzheimer avanzado');
+  });
+
+  it('tiempo: 40.000 blancos entre el giro y el término, o 4.000 giros repetidos, por debajo de 300 ms', () => {
+    correr('tengo diagnóstico de leucemia', [], { sinLugares: true });
+    const casos = [
+      'diagnóstico de' + ' '.repeat(40_000) + 'leucemia',
+      'padece' + '\t'.repeat(40_000) + 'x',
+      'diagnóstico de'.repeat(4_000) + ' x',
+      'padece de '.repeat(4_000) + 'x',
+      'diagnosticada con ' + 'leucemia '.repeat(4_000),
+    ];
+    for (const texto of casos) {
+      const mejor = Math.min(...[0, 1, 2].map(() => {
+        const t0 = performance.now();
+        generalize({ part: { id: PID, text: texto }, detections: [], options: { referenceDate: REF }, ids: makeIds() });
+        return performance.now() - t0;
+      }));
+      expect(mejor, texto.slice(0, 30)).toBeLessThan(300);
+    }
+  });
+});

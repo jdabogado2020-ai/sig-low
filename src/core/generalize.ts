@@ -628,7 +628,15 @@ const PREPOSICION_DE: Record<string, string> = { 'el': 'en ', 'el dia': 'en ', '
 
 // ===================================================================== banderas (R-CAR-01, R-CIE-01, R-DIAG-01, R-LLA-01, R-MEN-01, R-CIT-01)
 
-interface FlagRegexes { car: RegExp; cie: RegExp; diag: RegExp; lla: RegExp; men: RegExp; cargoClase: Map<string, 'privado' | 'publico'>; clin: RegExp; cieExcl: RegExp }
+interface FlagRegexes {
+  car: RegExp; cie: RegExp; diag: RegExp; lla: RegExp; men: RegExp; cargoClase: Map<string, 'privado' | 'publico'>; clin: RegExp; cieExcl: RegExp;
+  /** AJ-4 (D-12): R-CAR-02 (cargo tras un giro de cargo), R-CAR-03 (cargo junto a un nombre o en una celda) y R-DIAG-02 (término tras un giro de diagnóstico). */
+  carCue: RegExp; carSep: RegExp; dxCue: RegExp;
+  /** Cargos que solo valen con contexto (`estructurales`): una línea suelta con uno solo no basta. */
+  soloConContexto: ReadonlySet<string>;
+  /** Sustantivo de una organización genérica que cierra un cargo («… de la entidad»), al inicio del resto. */
+  entidadNoun: RegExp;
+}
 let flagRx: FlagRegexes | null = null;
 const LOWERW = `(?!(?:que|el|la|los|las|y|o|en|por|con|a|al|del|de|se|su|sus|lo|le|desde|hasta|para|sin|como|cuando|un|una)(?!\\p{L}))\\p{Ll}[\\p{Ll}-]+`;
 
@@ -644,8 +652,32 @@ function getFlagRegexes(): FlagRegexes {
   const menArt = menoresRaw.articulos.join('|');
   const menArt2 = menoresRaw.articulosMenor.join('|');
   const menNot = menoresRaw.menorNoEsPersona.map(sub).join('|');
+  // AJ-4 (D-12). Los patrones nuevos corren sobre `t.toLowerCase()` (la misma longitud) y el código revisa las mayúsculas del original.
+  // HN admite un solo salto de línea (el PDF parte la frase donde sea, 7.1.5); entre las palabras de un complemento solo van blancos H.
+  const HN = `(?:${H}+|${H}*\\n${H}*)`;
+  const STOP = '(?:que|el|la|los|las|y|o|e|u|en|por|con|a|al|del|de|se|su|sus|lo|le|desde|hasta|para|sin|como|cuando|un|una|mi|mis|nuestro|nuestra|este|esta|ese|esa|quien|quienes|identificad[oa]s?|no|ni|si|menor|menores|hij[oa]s?|ni[ñn][oa]s?)(?![\\p{L}])';
+  const ENTN = `(?:${(cargosRaw.sustantivosEntidad as string[]).map(esc).join('|')})(?![\\p{L}])`;
+  const WORD = `(?!${STOP}|${ENTN})[\\p{L}][\\p{L}-]{2,}`;
+  const CARGO_X = alt([...cargosRaw.privados, ...cargosRaw.publicos, ...(cargosRaw.estructurales as string[])].map((c) => c.toLowerCase()));
+  const CALIF = alt((cargosRaw.calificativos as string[]).map((c) => c.toLowerCase()));
+  const CARGO_FRASE = `(?<base>${CARGO_X})(?![\\p{L}])(?<cal>${HN}${CALIF}(?![\\p{L}]))?`
+    + `(?<comp>(?:${H}+(?:de|del|en)(?:${HN}(?:la|el|los|las)(?![\\p{L}]))?${HN}${WORD}(?:${H}+(?:al${H}+)?${WORD}){0,2}){1,2})?`;
+  const CUE_CARGO = `(?:(?:se${H}+desempe[ñn]a|desempe[ñn][aá]ndose|act[uú]a|actuando|obra|obrando|labora|trabaja|funge|fungiendo|ejerce|ejerciendo)${H}+(?<k1>como)`
+    + `|(?<k2>(?:en${H}+)?(?:su${H}+)?(?:calidad|condici[oó]n)${H}+de)|(?<k3>(?:en${H}+)?(?:el${H}+)?cargo${H}+de)|(?<k4>cargo${H}*:)`
+    + `|(?:atn\\.?${H}*:|atenci[oó]n${H}*:|a${H}+la${H}+atenci[oó]n${H}+de${H}*:?))`;
+  const DX_CUES = (diagnosticosRaw.cuesDiagnostico as string[]).map(sub).join('|');
+  const DX_NO = (diagnosticosRaw.noTermino as string[]).map(esc).join('|');
+  const ETAPA = `(?:estadio|grado|tipo|fase|etapa|clase|nivel)${H}+[0-9ivx]`;
+  const WORD_DX = `(?!${ETAPA})${WORD}`;
+  const DX_TERM = `(?!(?:${DX_NO})(?![\\p{L}]))(?<term>${WORD}(?:(?:${H}+(?:de|del)(?:${H}+(?:la|el))?)?${H}+${WORD_DX}){0,4}`
+    + `(?:${H}+(?:estadio|grado|tipo|fase|etapa|clase|nivel)${H}+[0-9ivx]{1,3}(?![\\p{L}\\p{N}]))?)`;
   flagRx = {
     cargoClase,
+    soloConContexto: new Set((cargosRaw.estructurales as string[]).map(vistaLista)),
+    entidadNoun: new RegExp(`^${ENTN}`, 'u'),
+    carCue: new RegExp(`(?<![\\p{L}\\p{N}])${CUE_CARGO}(?![\\p{L}])[ \\t\\n]*${CARGO_FRASE}`, 'gdu'),
+    carSep: new RegExp(`(?<=(?:^|[\\n\\t,–—]|[ \\t]-)[ \\t]{0,8})${CARGO_FRASE}`, 'gdu'),
+    dxCue: new RegExp(`(?<![\\p{L}\\p{N}])(?:${DX_CUES})[ \\t\\n]*${DX_TERM}`, 'gdu'),
     car: new RegExp(`(?<![\\p{L}\\p{N}])(?<art>${alt(v3(['el', 'la', 'del', 'al', 'su', 'como']))})${H}+(?<cargo>${CARGOS})(?!\\p{L})(?=${H}+(?:de${H}+la|del|de|DE${H}+LA|DEL|DE)${H}+(?:\\[|\\p{Lu}))`, 'gdu'),
     cie: new RegExp(`(?<![\\p{L}\\p{N}.-])(?<code>${cie10Raw.patron})(?![\\p{L}\\p{N}]|[.-]\\d)`, 'gdu'),
     diag: new RegExp(`(?<![\\p{L}\\p{N}])(?:(?<eh>${alt(v3(['enfermedad']))}${H}+(?:hu[ée]rfana|rara|ultra-?rara|de${H}+baja${H}+prevalencia|HU[ÉE]RFANA|RARA))`
@@ -668,6 +700,131 @@ interface FlagHit {
 }
 
 const CARGO_PREFIJO: Record<string, string> = { el: '', la: '', del: 'de ', al: 'a ', su: 'su ', como: 'como ' };
+
+const CONECTORES = /^(?:de|del|en|la|el|los|las)$/;
+const PALABRA_DE_ENLACE = /^(?:al|a|el|la|los|las|del|de|y|o|e|u|con|por|para|que|como|su|sus|un|una|en|ni|se|lo|le|sin|desde|hasta|ante|contra|sobre|entre)$/i;
+/** «representante legal de mi hijo», «agente oficioso de la menor»: el «cargo» es de una persona de la familia, no de una organización. */
+const DE_PERSONAL = /^[ \t]+(?:de|del)[ \t]+(?:(?:mi|mis|su|sus|nuestr[oa]s?|tu|tus)(?![\p{L}])|(?:la|el|los|las)[ \t]+(?:menor|menores|ni[ñn][oa]s?|hij[oa]s?|se[ñn]or[a]?|accionante|tutelante|paciente|afectad[oa])(?![\p{L}])|(?:menor|menores|ni[ñn][oa]s?|hij[oa]s?)(?![\p{L}]))/u;
+const esMayuscula = (c: string): boolean => c !== c.toLowerCase();
+const esMinuscula = (c: string): boolean => c !== c.toUpperCase();
+/** Fin de la última palabra «de contenido» de `[cs, ce)` antes de la primera con inicial mayúscula (el nombre de una organización); -1 si no queda ninguna. */
+function finDePalabras(t: string, cs: number, ce: number, cortaEnMayuscula: boolean): number {
+  let ult = -1;
+  for (const w of t.slice(cs, ce).matchAll(/\p{L}[\p{L}-]*/gu)) {
+    const pal = w[0];
+    if (CONECTORES.test(pal.toLowerCase())) continue;
+    if (cortaEnMayuscula && esMayuscula(pal.charAt(0))) break;
+    ult = cs + (w.index ?? 0) + pal.length;
+  }
+  return ult;
+}
+
+/**
+ * AJ-4 (D-12) · R-CAR-02 y R-CAR-03, formas de cargo que R-CAR-01 (artículo + cargo + «de» + mayúscula) no cubre y que identifican igual
+ * a una persona. Cargo = la misma lista de R-CAR-01 más `estructurales`, con un calificativo («directora regional») y un complemento
+ * de área («jefa de talento humano»), sin el nombre de la organización. Tres contextos, con el mismo cargo de la lista:
+ *   R-CAR-02 tras un giro de cargo: «se desempeña como», «en su calidad de», «en el cargo de», «Cargo:», «Atn.:».
+ *   R-CAR-03 tras coma, guion, tabulador o salto de línea (junto a un nombre o en una celda), y a continuación «de/del la entidad» u
+ *     «de» + mayúscula, o un signo (coma, punto y coma, punto, paréntesis, guion largo, salto, tabulador o fin). Una línea suelta con
+ *     una sola palabra y mayúscula inicial («Secretaria») es una firma, no un cargo, y no se marca.
+ * Los jueces y magistrados siguen fuera (no están en la lista). El tramo no se solapa con una bandera ya emitida.
+ */
+function scanCargosExtendidos(rx: FlagRegexes, t: string, previas: readonly FlagHit[]): FlagHit[] {
+  const tl = t.toLowerCase();
+  if (tl.length !== t.length) return [];
+  const sinCaso = t === tl || t === t.toUpperCase();
+  const excluidos = new RegExp(`^[ \\t]+de[ \\t]+(?:${cargosRaw.excluidosTrasDe.map((x) => esc(x).replace(/ /g, '[ \\t]+')).join('|')})`, 'iu');
+  const ocupado: Tramo2[] = previas.filter((h) => h.type === 'CARGO');
+  const nuevos: FlagHit[] = [];
+  const armar = (m: RegExpExecArray, sep: boolean): FlagHit | null => {
+    const [bs, be] = grp(m, 'base');
+    const orig = t.slice(bs, be);
+    const mayus = orig === orig.toUpperCase() && orig !== orig.toLowerCase();
+    let end = be;
+    if (hasGrp(m, 'cal')) end = grp(m, 'cal')[1];
+    if (hasGrp(m, 'comp')) {
+      const [cs, ce] = grp(m, 'comp');
+      const f = finDePalabras(t, cs, ce, !sinCaso && !mayus);
+      if (f > 0) end = f;
+    }
+    if (ocupado.some((o) => o.start < end && bs < o.end)) return null;
+    const resto = tl.slice(end, end + 80);
+    if (excluidos.test(resto) || DE_PERSONAL.test(resto)) return null;
+    const base = vistaLista(orig);
+    if (sep) {
+      let i = bs - 1;
+      while (i >= 0 && (t.charAt(i) === ' ' || t.charAt(i) === '\t')) i--;
+      const conSigno = i >= 0 && ',–—-'.includes(t.charAt(i));
+      if (!conSigno) {
+        // Línea o celda suelta: una sola palabra con mayúscula inicial es una firma, y un cargo `estructural` solo no basta.
+        if (rx.soloConContexto.has(base)) return null;
+        if (!/\s/.test(t.slice(bs, end)) && !esMinuscula(t.charAt(bs))) return null;
+        if (i >= 0 && t.charAt(i) === '\n') {
+          // Un salto de línea en mitad de una frase («denunció al⏎gerente del hospital») no abre una celda: la línea anterior no acaba en un
+          // conector ni (en un texto con mayúsculas y minúsculas) en una palabra en minúscula.
+          const previa = /(\p{L}[\p{L}-]*)[ \t\r]*$/u.exec(t.slice(Math.max(0, i - 40), i));
+          const w = previa?.[1] ?? '';
+          if (w !== '' && (PALABRA_DE_ENLACE.test(w) || (!sinCaso && esMinuscula(w.charAt(0))))) return null;
+        }
+      }
+      const delim = /^[ \t]*(?:[,;.)]|\n|\t|$|[–—]|-[ \t])/.test(resto);
+      if (!delim) {
+        const mt = /^[ \t]+(?:de[ \t]+la|del|de)[ \t]+/.exec(resto);
+        if (mt === null) return null;
+        const j = end + mt[0].length;
+        const c = t.charAt(j);
+        const ok = c === '[' || rx.entidadNoun.test(tl.slice(j, j + 20)) || (/\p{L}/u.test(c) && (sinCaso || esMayuscula(c)));
+        if (!ok) return null;
+      }
+    }
+    const cls = rx.cargoClase.get(base) ?? 'privado';
+    const primera = base.split(' ')[0] ?? '';
+    const fem = /a$/.test(primera) && !/^(gerente|presidente|jefe|comandante|superintendente|representante)/.test(base);
+    const g = fem ? 'f' : /(?:o|or)$/.test(primera) ? 'm' : 'x';
+    const sinArticulo = !sep && (m.groups?.['k1'] !== undefined || m.groups?.['k2'] !== undefined || m.groups?.['k3'] !== undefined);
+    const N = cls === 'privado'
+      ? { f: ['una directiva', 'una representante'], m: ['un directivo', 'un representante'], x: ['un directivo', 'una directiva'] }
+      : { f: ['una funcionaria', 'una autoridad'], m: ['un funcionario', 'una autoridad'], x: ['un funcionario', 'una funcionaria'] };
+    const options = N[g].map((o) => ({ kind: 'CARGO_A_GENERICO' as const, template: sinArticulo ? o.replace(/^una? /, '') : o }));
+    ocupado.push({ start: bs, end });
+    return { type: 'CARGO', reason: 'LISTA_CARGOS', start: bs, end, options };
+  };
+  nuevos.push(...scan(rx.carCue, tl, (m) => armar(m, false)));
+  nuevos.push(...scan(rx.carSep, tl, (m) => armar(m, true)));
+  return nuevos;
+}
+
+/**
+ * AJ-4 (D-12) · R-DIAG-02, el término que sigue a un giro de diagnóstico («diagnóstico de», «diagnosticada con», «padece», «sufre»,
+ * «portador de», «tratamiento integral de») aunque no esté en `terminos`: hasta cinco palabras, sin conectores ni palabras de `noTermino`.
+ * Opción: «un diagnóstico médico» (no «de baja prevalencia»: el término puede ser frecuente). No se solapa con una bandera DIAGNOSTICO previa.
+ */
+function scanDiagnosticosExtendidos(rx: FlagRegexes, t: string, previas: readonly FlagHit[]): FlagHit[] {
+  const tl = t.toLowerCase();
+  if (tl.length !== t.length) return [];
+  const sinCaso = t === tl || t === t.toUpperCase();
+  const ocupado: Tramo2[] = previas.filter((h) => h.type === 'DIAGNOSTICO');
+  return scan(rx.dxCue, tl, (m): FlagHit | null => {
+    const [ts, te] = grp(m, 'term');
+    let end = te;
+    if (!sinCaso) {
+      // Un nombre propio detrás del término («padece Juan Pérez») no es parte de la enfermedad.
+      const palabras = [...t.slice(ts, te).matchAll(/\p{L}[\p{L}-]*/gu)];
+      for (let i = 1; i < palabras.length; i++) {
+        const w = palabras[i] as RegExpMatchArray;
+        if (!esMayuscula(w[0].charAt(0)) || /^\p{Lu}+$/u.test(w[0])) continue;   // siglas y minúsculas siguen
+        if (/(?:^|\s)(?:de|del)\s+$/i.test(t.slice(ts, ts + (w.index ?? 0)))) continue;   // «síndrome de Down», «enfermedad de Alzheimer»
+        const previa = palabras[i - 1] as RegExpMatchArray;
+        end = ts + (previa.index ?? 0) + previa[0].length;
+        break;
+      }
+    }
+    if (end <= ts || ocupado.some((o) => o.start < end && ts < o.end)) return null;
+    ocupado.push({ start: ts, end });
+    return { type: 'DIAGNOSTICO', reason: 'LISTA_DIAGNOSTICOS', start: ts, end, options: [{ kind: 'DIAGNOSTICO_A_GENERICO', template: 'un diagnóstico médico' }] };
+  });
+}
+interface Tramo2 { start: number; end: number }
 function scanBanderasDeTexto(view: ViewLike): FlagHit[] {
   const rx = getFlagRegexes();
   const t = view.text;
@@ -691,6 +848,7 @@ function scanBanderasDeTexto(view: ViewLike): FlagHit[] {
     const options = N[g].map((o) => ({ kind: 'CARGO_A_GENERICO' as const, template: pre + (sinArticulo ? o.replace(/^una? /, '') : o) }));
     return { type: 'CARGO', reason: 'LISTA_CARGOS', start: m.index, end: endOf(m), options };
   }));
+  out.push(...scanCargosExtendidos(rx, t, out));
   // R-CIE-01
   out.push(...scan(rx.cie, t, (m): FlagHit | null => {
     const s = m.index, e = endOf(m);
@@ -704,6 +862,7 @@ function scanBanderasDeTexto(view: ViewLike): FlagHit[] {
     type: 'DIAGNOSTICO', reason: 'LISTA_DIAGNOSTICOS', start: m.index, end: endOf(m),
     options: [{ kind: 'DIAGNOSTICO_A_GENERICO', template: 'una enfermedad de baja prevalencia' }],
   })));
+  out.push(...scanDiagnosticosExtendidos(rx, t, out));
   // R-LLA-01
   out.push(...scan(rx.lla, t, (m): FlagHit | null => {
     const w = vistaLista(m.groups?.['w'] ?? ''), s = m.index, e = endOf(m);

@@ -16,5 +16,23 @@
     "formulario", "formato", "anexo", "torre", "bloque", "apto\\.?", "apartamento", "casa", "local", "oficina",
     "ruta", "v[ií]a", "placa", "modelo", "versi[oó]n", "referencia", "ref\\.", "sala", "cama", "habitaci[oó]n",
     "consultorio", "radicado", "rad\\."
+  ],
+  "notaExtension": "AJ-4 (D-12): `cuesDiagnostico` son los giros que anuncian un diagnóstico; el término que sigue (hasta 5 palabras) se marca aunque no esté en `terminos`. `noTermino` son palabras que, justo tras el giro, no son una enfermedad. {H} es el espacio horizontal.",
+  "cuesDiagnostico": [
+    "diagn[oó]stic(?:o|as?){H}*(?::|de(?:l)?(?![\\p{L}]))",
+    "diagnosticad[oa]s?{H}+(?:con|de)(?![\\p{L}])",
+    "padec(?:e|en|er|[ií]a|iendo)(?![\\p{L}])(?:{H}+de(?![\\p{L}]))?",
+    "sufr(?:e|en|ir|[ií]a|iendo)(?![\\p{L}])(?:{H}+de(?![\\p{L}]))?",
+    "portador(?:a|es|as)?{H}+de(?![\\p{L}])",
+    "tratamiento{H}+integral{H}+de(?![\\p{L}])"
+  ],
+  "noTermino": [
+    "paciente", "pacientes", "usuario", "usuarios", "afiliado", "afiliada", "afiliados", "afiliadas", "salud", "enfermedades",
+    "patologías", "ingreso", "egreso", "urgencias", "laboratorio", "presunción", "prueba", "pruebas", "hospitalización",
+    "tratamiento", "tratamientos", "medicamento", "medicamentos", "cirugía", "cirugías", "procedimiento", "procedimientos",
+    "servicio", "servicios", "terapia", "terapias", "atención", "orden", "órdenes", "consulta", "cita", "citas", "examen",
+    "exámenes", "incapacidad", "incapacidades", "dolor", "dolores", "ninguno", "ninguna", "alguno", "alguna", "perjuicio",
+    "perjuicios", "daño", "daños", "vulneración", "violación", "amenaza", "afectación", "discriminación", "demora", "demoras",
+    "retraso", "retrasos", "negligencia", "consecuencias", "falta", "dificultad", "dificultades", "problema", "problemas"
   ]
 }

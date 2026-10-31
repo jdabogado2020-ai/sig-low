@@ -16,5 +16,17 @@
     "comisaria de familia", "defensor de familia", "defensora de familia", "concejal", "concejala",
     "superintendente", "comandante", "párroco"
   ],
-  "excluidosTrasDe": ["la República", "la Nación"]
+  "excluidosTrasDe": ["la República", "la Nación"],
+  "notaExtension": "AJ-4 (D-12): `estructurales` son cargos que solo se marcan en contexto (tras «se desempeña como», «en su calidad de», «Atn.:», «Cargo:», o junto a un nombre tras coma, guion o línea); `calificativos` completan un cargo («directora regional»); `sustantivosEntidad` terminan el complemento («… de la entidad»).",
+  "estructurales": ["líder", "conciliador", "conciliadora"],
+  "calificativos": [
+    "regional", "municipal", "departamental", "distrital", "local", "nacional", "seccional", "zonal", "general",
+    "administrativo", "administrativa", "financiero", "financiera", "comercial", "operativo", "operativa", "técnico", "técnica",
+    "científico", "científica", "médico", "médica", "jurídico", "jurídica", "académico", "académica", "ejecutivo", "ejecutiva",
+    "adjunto", "adjunta"
+  ],
+  "sustantivosEntidad": [
+    "entidad", "empresa", "compañía", "sociedad", "institución", "organización", "fundación", "corporación", "asociación",
+    "cooperativa", "firma"
+  ]
 }
