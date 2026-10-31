@@ -1,14 +1,32 @@
 // Servidor de pruebas (10.5.1): sirve dist/ aplicando dist/_headers como Cloudflare Pages.
-// Ninguna prueba usa `vite preview`, que no aplica las cabeceras. Uso: node tests/e2e/server.mjs [--dir dist] [--port 4173]
+// Ninguna prueba usa `vite preview`, que no aplica las cabeceras.
+// Uso: node tests/e2e/server.mjs [--dir dist] [--port 4173] [--senuelo] [--sin-csp] [--reporte-csp] [--padre <pid>]
+//   --port 0      el sistema elige un puerto libre; la línea «listo» dice cuál.
+//   --senuelo     modo señuelo (PD-5a): responde 200 a todo con `Access-Control-Allow-Origin: *`, para que una fuga que pase la CSP sea visible.
+//   --sin-csp     omite solo la Content-Security-Policy (T-CS-03).
+//   --reporte-csp añade `report-uri /csp-report` a cada política (también en las del CSP de un worker, que la ventana no ve) y
+//                 recibe los informes en POST /csp-report. Solo en pruebas: producción no lleva report-uri (V-21).
+//   --padre pid   se apaga si ese proceso desaparece (una corrida cancelada no deja servidores abiertos).
+// Con SIGLOW_REGISTRO_PETICIONES=<archivo> anota cada petición, una línea JSON: { t, m, u, p, q, b, c?, h }.
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
-import { existsSync, readFileSync, appendFileSync } from 'node:fs';
+import { existsSync, readFileSync, appendFileSync, statSync } from 'node:fs';
 import { join, extname, resolve, normalize, sep } from 'node:path';
 
+import { cabecerasPara, conReporteCsp, parseHeaders } from './lib/cabeceras.mjs';
+
+export { cabecerasPara, parseHeaders };
+
 const arg = (n, d) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : d; };
+const marca = (n) => process.argv.includes(n);
 const DIR = resolve(arg('--dir', process.env.SIGLOW_DIST ?? 'dist'));
 const PORT = Number(arg('--port', process.env.PORT ?? 4173));
 const REGISTRO = process.env.SIGLOW_REGISTRO_PETICIONES; // archivo donde se anota cada petición (PD-5a)
+const SENUELO = marca('--senuelo');
+const SIN_CSP = marca('--sin-csp');
+const REPORTE_CSP = marca('--reporte-csp');
+const PADRE = Number(arg('--padre', '0'));
+const MAX_CUERPO = 64 * 1024; // del cuerpo se anota hasta aquí (los bytes se cuentan completos)
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
@@ -16,37 +34,66 @@ const MIME = {
   '.ico': 'image/x-icon', '.txt': 'text/plain; charset=utf-8', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json',
 };
 
-/** Lee el formato _headers de Cloudflare Pages: una ruta (con * como comodín) y cabeceras indentadas. */
-export function parseHeaders(texto) {
-  const reglas = [];
-  let actual = null;
-  for (const linea of texto.split(/\r?\n/)) {
-    if (!linea.trim() || linea.trim().startsWith('#')) continue;
-    if (!/^\s/.test(linea)) { actual = { patron: linea.trim(), cabeceras: [] }; reglas.push(actual); continue; }
-    const i = linea.indexOf(':');
-    if (actual && i > 0) actual.cabeceras.push([linea.slice(0, i).trim(), linea.slice(i + 1).trim()]);
-  }
-  return reglas;
-}
-const coincide = (patron, ruta) =>
-  new RegExp('^' + patron.split('*').map((s) => s.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('.*') + '$').test(ruta);
+// `_headers` se vuelve a leer solo si cambió (varias pruebas lo reescriben antes de servir); leerlo en cada petición lo hacía lento bajo carga.
+let cache = { mtime: -1, reglas: [] };
+const reglas = () => {
+  const f = join(DIR, '_headers');
+  if (!existsSync(f)) return [];
+  const m = statSync(f).mtimeMs;
+  if (m !== cache.mtime) cache = { mtime: m, reglas: parseHeaders(readFileSync(f, 'utf8')) };
+  return cache.reglas;
+};
 
-export function cabecerasPara(reglas, ruta) {
-  const h = new Map();
-  for (const r of reglas) if (coincide(r.patron, ruta)) for (const [k, v] of r.cabeceras) h.set(k, v);
-  return h;
+const CABECERAS_DE_ORIGEN = ['host', 'origin', 'referer', 'sec-fetch-site', 'sec-fetch-mode', 'sec-fetch-dest', 'content-type'];
+
+/** Anota la petición: ruta, query, bytes y texto del cuerpo y las cabeceras que dicen de dónde viene. */
+function anotar(req, url, cuerpo) {
+  if (!REGISTRO) return;
+  const h = {};
+  for (const k of CABECERAS_DE_ORIGEN) if (typeof req.headers[k] === 'string') h[k] = req.headers[k];
+  const linea = { t: Date.now(), m: req.method, u: url.pathname + url.search, p: url.pathname, q: url.search.slice(1), b: cuerpo.bytes, h };
+  if (cuerpo.bytes > 0) linea.c = cuerpo.texto;
+  appendFileSync(REGISTRO, JSON.stringify(linea) + '\n');
 }
 
-const reglas = () => { const f = join(DIR, '_headers'); return existsSync(f) ? parseHeaders(readFileSync(f, 'utf8')) : []; };
+/** Lee el cuerpo entero (cuenta los bytes y guarda el principio). Sin cuerpo (GET típico) responde de inmediato. */
+function leerCuerpo(req) {
+  const conCuerpo = req.headers['transfer-encoding'] !== undefined || Number(req.headers['content-length'] ?? 0) > 0;
+  if (!conCuerpo) return Promise.resolve({ bytes: 0, texto: '' });
+  return new Promise((ok) => {
+    let bytes = 0;
+    const trozos = [];
+    req.on('data', (b) => { bytes += b.length; if (bytes - b.length < MAX_CUERPO) trozos.push(b.subarray(0, MAX_CUERPO - (bytes - b.length))); });
+    req.on('end', () => ok({ bytes, texto: Buffer.concat(trozos).toString('utf8') }));
+    req.on('error', () => ok({ bytes, texto: Buffer.concat(trozos).toString('utf8') }));
+  });
+}
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? '/', `http://localhost:${PORT}`);
-  if (REGISTRO) appendFileSync(REGISTRO, JSON.stringify({ t: Date.now(), m: req.method, u: url.pathname + url.search }) + '\n');
+  const cuerpo = await leerCuerpo(req);
+  anotar(req, url, cuerpo);
+
+  if (SENUELO) {
+    res.statusCode = 200;
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    return res.end(req.method === 'HEAD' ? undefined : 'ok');
+  }
+
+  if (REPORTE_CSP && req.method === 'POST' && url.pathname === '/csp-report') { res.statusCode = 204; return res.end(); }
+
   let ruta = decodeURIComponent(url.pathname);
   if (ruta.endsWith('/')) ruta += 'index.html';
   const archivo = normalize(join(DIR, ruta));
   const h = cabecerasPara(reglas(), url.pathname);
-  for (const [k, v] of h) res.setHeader(k, v);
+  for (const [k, v] of h) {
+    if (SIN_CSP && k.toLowerCase() === 'content-security-policy') continue;
+    res.setHeader(k, REPORTE_CSP && k.toLowerCase() === 'content-security-policy' ? conReporteCsp(v) : v);
+  }
   if (!archivo.startsWith(DIR + sep) || req.method !== 'GET' && req.method !== 'HEAD') { res.statusCode = 404; return res.end(); }
   try {
     const s = await stat(archivo);
@@ -60,6 +107,17 @@ const server = createServer(async (req, res) => {
   }
 });
 
+// Conexiones persistentes: con el valor por defecto de Node (5 s) el servidor cierra una conexión ociosa justo cuando el cliente
+// (el APIRequestContext de Playwright) la reutiliza, y bajo carga eso es `ECONNRESET`.
+server.keepAliveTimeout = 120_000;
+server.headersTimeout = 125_000;
+
 if (import.meta.main) {
-  server.listen(PORT, '127.0.0.1', () => process.stdout.write(`server.mjs listo en http://127.0.0.1:${PORT} (${DIR})\n`));
+  server.listen(PORT, '127.0.0.1', () => {
+    const { port } = server.address();
+    process.stdout.write(`server.mjs listo en http://127.0.0.1:${port} (${DIR})\n`);
+  });
+  if (PADRE > 0) {
+    setInterval(() => { try { process.kill(PADRE, 0); } catch { process.exit(0); } }, 2000).unref();
+  }
 }

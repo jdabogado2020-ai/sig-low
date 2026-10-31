@@ -1,36 +1,48 @@
-import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
+// Prueba de cero red (10.5.1; T-RD-01 a T-RD-06, T-PV-06, T-PV-12). Todas las fases usan el arnés de tests/e2e/lib/ (PD-5a):
+// servidor de la app que registra cada petición (el registro es la verdad de referencia), servidor señuelo, escucha UDP de STUN,
+// vigilante de peticiones, consola y violaciones de CSP (página y workers) y contexto persistente. Una fase nueva (PD-4: C1 y C2) se
+// escribe sobre el arnés sin cambiar lo que comprueba: ver `bitacora/entradas/*_PD-5a.md`, sección «Cómo pasar una fase al arnés».
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { createServer } from 'node:net';
+import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 
-import { test, expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { build, defaultClientConditions } from 'vite';
 
 import { construirDocx, decl, p, pt, r, raiz, tipoRel } from '../fixtures/docx/docx-builder';
-import { delModelo, distConModelos, levantarServidor, modeloSintetico, rutasDelManifiesto } from './harness/dist-modelo';
+import { delModelo, distConModelos, modeloSintetico, rutasDelManifiesto } from './harness/dist-modelo';
+import { test, expect } from './lib/arnes';
+import { volcarAlmacenamiento, textoDelVolcado } from './lib/almacenamiento';
+import { diferenciasDeCabeceras } from './lib/cabeceras-esperadas';
+import { levantarServidor } from './lib/servidores';
 
 const sha256 = (t: string): string => createHash('sha256').update(t).digest('hex');
 
-// Fase mínima de P0-1 (10.5.1). PD-5a y PD-5b agregan el servidor que registra, el señuelo, STUN y las fases.
-test('@cero-red carga: 0 peticiones a otros orígenes y 0 violaciones de CSP', async ({ page, baseURL }) => {
-  const origen = new URL(baseURL!).origin;
-  const ajenas: string[] = [];
-  page.on('request', (r) => { if (new URL(r.url()).origin !== origen) ajenas.push(new URL(r.url()).origin); });
-  await page.addInitScript(() => {
-    (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
-    addEventListener('securitypolicyviolation', (e) => {
-      (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective);
-    });
-  });
+/** Rutas del precache (la lista blanca de la app) y los datos del build. */
+const precache = (dir = 'dist'): string[] => (JSON.parse(readFileSync(join(dir, 'precache.json'), 'utf8')) as { archivos: { ruta: string }[] }).archivos.map((a) => a.ruta);
+
+/** Inicio → crear el asunto sin guardar la tabla (pasos comunes de las fases que parten del asunto). */
+async function crearAsunto(page: Page, codigo: string): Promise<void> {
+  await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+  await page.getByLabel('Código del asunto').fill(codigo);
+  await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
+  await page.getByRole('button', { name: 'Crear asunto' }).click();
+}
+
+// Fase mínima de P0-1 (10.5.1): carga, 0 peticiones a otros orígenes y 0 violaciones de CSP.
+test('@cero-red carga: 0 peticiones a otros orígenes y 0 violaciones de CSP', async ({ arnes }) => {
+  const a = await arnes();
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
   await page.goto('/');
   await expect(page.locator('[data-prueba="promesa"]')).toBeVisible();
-  const violaciones = await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones);
-  expect(ajenas).toEqual([]);
-  expect(violaciones).toEqual([]);
+  expect(s.vigilante.ajenas).toEqual([]);
+  expect(s.vigilante.violaciones).toEqual([]);
   expect(await page.evaluate(() => crossOriginIsolated)).toBe(true);
   expect(await page.evaluate(() => typeof (globalThis as unknown as Record<string, unknown>)['RTCPeerConnection'])).toBe('undefined');
+  await a.verificar(s, { exigirCorte: false });
 });
 
 test('@humo Inicio muestra la promesa literal y el título neutro', async ({ page }) => {
@@ -41,79 +53,85 @@ test('@humo Inicio muestra la promesa literal y el título neutro', async ({ pag
   expect(await page.title()).toBe('Sig-Low');
 });
 
-// Fase «pegar» (PC-2, 10.5.1): crear asunto, pegar un texto con datos ficticios, analizar y llegar a Revisión.
-// 0 peticiones fuera del origen, 0 violaciones de CSP, 0 mensajes de consola y el texto pegado no viaja en ninguna URL ni cuerpo.
-test('@cero-red fase pegar: pegar → Procesando → Revisión sin peticiones ajenas, sin violaciones de CSP ni texto en la red', async ({ page, baseURL }) => {
-  const origen = new URL(baseURL!).origin;
-  const ajenas: string[] = [];
-  const peticiones: Array<{ url: string; cuerpo: string }> = [];
-  const consola: string[] = [];
-  page.on('request', (r) => {
-    const u = new URL(r.url());
-    if (u.origin !== origen && u.protocol !== 'blob:' && u.protocol !== 'data:') ajenas.push(u.origin);
-    peticiones.push({ url: r.url(), cuerpo: r.postData() ?? '' });
-  });
-  page.on('console', (m) => { consola.push(m.type()); });
-  page.on('pageerror', () => { consola.push('pageerror'); });
-  await page.addInitScript(() => {
-    (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
-    addEventListener('securitypolicyviolation', (e) => {
-      (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective);
-    });
-  });
+// T-RD-01 (A1–A5): primera carga con conexión. El SW se activa y controla la página; pedidos de A4–A5 desde fuera del SW; todo
+// lo que llega al servidor son GET sin query ni cuerpo a la lista blanca (precache, /precache.json, /sw.js y el manifiesto del modelo).
+test('T-RD-01 @cero-red primera carga (A1–A5): solo GET sin query a la lista blanca; SW activado y controlando', async ({ arnes }) => {
+  const a = await arnes({ reporteCsp: false });
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
-  await page.getByLabel('Código del asunto').fill('PRUEBA-CERO');
-  await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-  await page.getByRole('button', { name: 'Crear asunto' }).click();
+  await a.esperarControlador(page); // A1–A2
+  expect(await page.evaluate(async () => (await navigator.serviceWorker.ready).active?.state)).toBe('activated');
+  expect(await page.evaluate(() => navigator.serviceWorker.controller !== null)).toBe(true);
+  await expect(page.locator('[data-prueba="promesa"]')).toBeVisible();
+
+  // A4–A5: la página, el SW, la política de tipos de confianza, un chunk de cada worker, ORT y el manifiesto del modelo.
+  const lista = precache();
+  const delChunk = (nombre: RegExp): string => lista.find((x) => nombre.test(x))!;
+  const rutasA = [
+    '/', '/index.html', '/sw.js', '/tt-policy.js', delChunk(/^\/assets\/detect\.worker-/), delChunk(/^\/assets\/io\.worker-/),
+    delChunk(/^\/assets\/pdf\.worker-/), '/ort/ort-wasm-simd-threaded.wasm', '/ort/ort-wasm-simd-threaded.mjs',
+    ...lista.filter((x) => /^\/models\/[^/]+\/manifest\.json$/.test(x)),
+  ];
+  const corteA = a.app.peticiones().length;
+  for (const ruta of rutasA) expect((await s.ctx.request.get(ruta, { maxRetries: 3 })).status(), ruta).toBe(200);
+
+  const permitidas = new Set([...lista, '/index.html', '/precache.json', '/sw.js']);
+  const todas = a.app.peticiones();
+  expect(todas.filter((q) => q.m !== 'GET' || q.q !== '' || q.b !== 0).map((q) => `${q.m} ${q.u}`)).toEqual([]);
+  expect(todas.filter((q) => !permitidas.has(q.p)).map((q) => q.u)).toEqual([]);
+  // Cada ruta pedida en A4–A5 llegó al servidor (y nada más, salvo la búsqueda de versión del SW: GET /sw.js).
+  const trasA = todas.slice(corteA).map((q) => q.p);
+  expect([...trasA].sort()).toEqual(expect.arrayContaining([...rutasA].sort()));
+  expect(trasA.filter((u) => !rutasA.includes(u))).toEqual([]);
+  await a.verificar(s, { exigirCorte: false });
+});
+
+// T-RD-02: cabeceras y tipos MIME de cada recurso de A4–A5, comparados con los valores de `dist/_headers` (3.6) leídos por
+// lib/cabeceras-esperadas.ts, sin copias a mano. Se piden fuera del SW y desde la página (la navegación).
+test('T-RD-02 @cero-red cabeceras de 3.6 y Content-Type por extensión en cada recurso', async ({ arnes }) => {
+  const a = await arnes({ reporteCsp: false });
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
+  const nav = await page.goto('/');
+  expect(diferenciasDeCabeceras('/', nav!.headers())).toEqual([]);
+  await a.esperarControlador(page);
+  const lista = precache();
+  const rutas = ['/', '/index.html', '/sw.js', '/tt-policy.js', '/precache.json', ...lista.filter((x) => /^\/(assets|ort)\//.test(x))];
+  const diferencias: string[] = [];
+  for (const ruta of new Set(rutas)) {
+    const resp = await s.ctx.request.get(ruta, { maxRetries: 3 });
+    expect(resp.status(), ruta).toBe(200);
+    diferencias.push(...diferenciasDeCabeceras(ruta, resp.headers()));
+  }
+  expect(diferencias).toEqual([]);
+  await a.verificar(s, { exigirCorte: false });
+});
+
+// Fase «pegar» (PC-2, 10.5.1; T-RD-03): crear asunto, pegar un texto con datos ficticios, analizar y llegar a Revisión, sin
+// conexión desde el corte (B1). 0 peticiones fuera del origen, 0 violaciones de CSP, 0 mensajes de consola y el texto pegado no viaja en ninguna URL ni cuerpo.
+test('T-RD-03 @cero-red fase pegar: pegar → Procesando → Revisión sin peticiones ajenas, sin violaciones de CSP ni texto en la red', async ({ arnes }) => {
+  const a = await arnes();
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
+  await page.goto('/');
+  await a.cortar(s, page);
+  await crearAsunto(page, 'PRUEBA-CERO');
   await page.getByRole('button', { name: 'Continuar' }).click();
   const texto = 'Ana Ficticia Rojas, C.C. 1.000.000.017, vive en la Calle 00 n.º 00-00. Correo: ana.ficticia@ejemplo.test.';
   await page.getByRole('textbox', { name: 'Texto del documento' }).fill(texto);
   await page.getByRole('button', { name: 'Analizar', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 15_000 });
-  const violaciones = await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones);
-  expect(ajenas).toEqual([]);
-  expect(violaciones).toEqual([]);
-  expect(consola.filter((c) => c === 'error' || c === 'warning' || c === 'pageerror')).toEqual([]);
-  for (const p of peticiones) {
-    expect(decodeURIComponent(p.url)).not.toContain('Ficticia');
-    expect(p.cuerpo).not.toContain('Ficticia');
-    expect(p.cuerpo).not.toContain('1.000.000.017');
-  }
+  await a.verificar(s, { secretos: ['Ficticia', '1.000.000.017'] });
 });
 
-// Fase «docx» (PE-3-r1, B-14; 10.5.1): crear asunto, cargar un .docx ficticio armado con el docx-builder (cuerpo, encabezado,
+// Fase «docx» (PE-3-r1, B-14; 10.5.1; T-RD-03): crear asunto, cargar un .docx ficticio armado con el docx-builder (cuerpo, encabezado,
 // comentario con autor, texto eliminado, propiedades y un vínculo externo), analizar y llegar a Revisión. 0 peticiones fuera del
 // origen, 0 violaciones de CSP (página y workers, el `io` incluido), 0 mensajes de consola y nada del documento en URL ni cuerpos.
-test('@cero-red fase docx: cargar .docx → Procesando → Revisión sin peticiones ajenas, sin violaciones de CSP (página y workers) ni texto en la red', async ({ page, baseURL }) => {
-  const origen = new URL(baseURL!).origin;
-  const ajenas: string[] = [];
-  const fallidas: string[] = [];
-  const peticiones: Array<{ url: string; cuerpo: string }> = [];
-  const consola: string[] = [];
-  const workers: string[] = [];
-  page.on('request', (rq) => {
-    const u = new URL(rq.url());
-    if (u.origin !== origen && u.protocol !== 'blob:' && u.protocol !== 'data:') ajenas.push(u.origin);
-    peticiones.push({ url: rq.url(), cuerpo: rq.postData() ?? '' });
-  });
-  page.on('requestfailed', (rq) => { fallidas.push(new URL(rq.url()).origin); });
-  page.on('console', (m) => { consola.push(m.type()); });
-  page.on('pageerror', () => { consola.push('pageerror'); });
-  page.on('worker', (w) => {
-    workers.push(w.url());
-    w.on('console', (m) => { consola.push(`worker:${m.type()}`); });
-    // Un worker vive poco: su `securitypolicyviolation` se convierte en un mensaje de consola que sí llega aquí.
-    w.evaluate(() => {
-      addEventListener('securitypolicyviolation', (e) => { console.error(`CSP ${e.violatedDirective}`); });
-    }).catch(() => undefined);
-  });
-  await page.addInitScript(() => {
-    (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
-    addEventListener('securitypolicyviolation', (e) => {
-      (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective);
-    });
-  });
+test('T-RD-03 @cero-red fase docx: cargar .docx → Procesando → Revisión sin peticiones ajenas, sin violaciones de CSP (página y workers) ni texto en la red', async ({ arnes }) => {
+  const a = await arnes();
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
 
   const tipoMeta = 'http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties';
   const docx = construirDocx({
@@ -134,10 +152,8 @@ test('@cero-red fase docx: cargar .docx → Procesando → Revisión sin peticio
   });
 
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
-  await page.getByLabel('Código del asunto').fill('PRUEBA-DOCX');
-  await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-  await page.getByRole('button', { name: 'Crear asunto' }).click();
+  await a.cortar(s, page);
+  await crearAsunto(page, 'PRUEBA-DOCX');
   await page.getByRole('button', { name: 'Continuar' }).click();
   await page.getByRole('tab', { name: 'Cargar archivo' }).click();
   await page.locator('input[type="file"]').setInputFiles({
@@ -151,20 +167,171 @@ test('@cero-red fase docx: cargar .docx → Procesando → Revisión sin peticio
   await page.getByRole('button', { name: 'Analizar', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 15_000 });
 
-  const violaciones = await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones);
-  expect(workers.some((u) => /io/.test(new URL(u).pathname))).toBe(true); // la lectura corrió en el worker `io` del mismo origen
-  expect(workers.every((u) => new URL(u).origin === origen)).toBe(true);
-  expect(ajenas).toEqual([]);
-  expect(fallidas).toEqual([]);
-  expect(violaciones).toEqual([]);
-  expect(consola.filter((c) => c.endsWith('error') || c.endsWith('warning') || c === 'pageerror')).toEqual([]);
-  for (const q of peticiones) {
-    const url = decodeURIComponent(q.url);
-    for (const secreto of ['Ficticia', 'Rojas', '1.000.000.017', 'ejemplo.test', 'Autora Ejemplo', 'Revisor', 'Contrato de Prueba']) {
-      expect(url).not.toContain(secreto);
-      expect(q.cuerpo).not.toContain(secreto);
-    }
+  expect(s.vigilante.workers.some((u) => /io/.test(new URL(u).pathname))).toBe(true); // la lectura corrió en el worker `io` del mismo origen
+  await a.verificar(s, { secretos: ['Ficticia', 'Rojas', '1.000.000.017', 'ejemplo.test', 'Autora Ejemplo', 'Revisor', 'Contrato de Prueba'] });
+});
+
+// T-RD-05 (INV-W02): consola y errores. Un .docx con XML inválido que contiene «Ana Ficticia Rojas»: la app muestra su error con
+// código y ni la consola, ni un `pageerror`, ni la red, ni la pantalla llevan el texto del documento.
+test('T-RD-05 @cero-red INV-W02 un .docx con XML inválido no deja «Ana Ficticia Rojas» en consola, pageerror, red ni pantalla', async ({ arnes }) => {
+  const a = await arnes();
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
+  const invalido = construirDocx({
+    cuerpo: '',
+    documentoXml: `${decl}<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Ana Ficticia Rojas</w:t></w:r></w:p></w:body>`, // sin cerrar <w:document>
+  });
+  await page.goto('/');
+  await a.cortar(s, page);
+  await crearAsunto(page, 'PRUEBA-INVALIDO');
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await page.getByRole('tab', { name: 'Cargar archivo' }).click();
+  await page.locator('input[type="file"]').setInputFiles({
+    name: 'Invalido de Prueba.docx',
+    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    buffer: Buffer.from(invalido),
+  });
+  await expect(page.getByRole('alert').first()).toBeVisible({ timeout: 15_000 });
+  await page.waitForTimeout(500); // lo que un fallo interno escribiera en la consola llega en el mismo ciclo
+  expect(await page.locator('body').innerText()).not.toContain('Ficticia');
+  await a.verificar(s, { secretos: ['Ana Ficticia Rojas', 'Ficticia', 'Rojas'] });
+});
+
+// T-RD-06 (B10): volcado del almacenamiento del origen tras el flujo. Ningún original en claro en IndexedDB, `localStorage`,
+// `sessionStorage`, cookies, `history.state`, título ni URL (INV-G02, INV-V01); Cache Storage solo con URL de la app (INV-G10);
+// `document.title === 'Sig-Low'`. Con «No guardar la tabla» no hay base de datos; PD-4 añade aquí el volcado con «Guardar tabla cifrada».
+test('T-RD-06 @cero-red INV-G02 INV-V01 INV-G10 volcado del almacenamiento: sin originales, solo la app en Cache Storage y título neutro', async ({ arnes }) => {
+  const a = await arnes();
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
+  await page.goto('/');
+  await a.cortar(s, page);
+  await crearAsunto(page, 'PRUEBA-VOLCADO');
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await page.getByRole('textbox', { name: 'Texto del documento' }).fill('Ana Ficticia Rojas, C.C. 1.000.000.017, vive en la Calle 00 n.º 00-00. Correo: ana.ficticia@ejemplo.test.');
+  await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 15_000 });
+
+  const v = await volcarAlmacenamiento(page);
+  for (const secreto of ['Ficticia', 'Rojas', '1.000.000.017', 'ana.ficticia', 'PRUEBA-VOLCADO', 'Calle 00']) {
+    expect(textoDelVolcado(v), secreto).not.toContain(secreto);
   }
+  expect(v.localStorage).toEqual({});
+  expect(v.sessionStorage).toEqual({});
+  expect(v.cookies).toEqual([]);
+  expect(v.title).toBe('Sig-Low');
+  expect(new URL(v.url).search).toBe('');
+  expect(new URL(v.url).hash).toBe('');
+  // INV-G10: Cache Storage solo guarda la app (precache + /precache.json) y el modelo; ninguna entrada lleva query.
+  const permitidas = new Set([...precache(), '/precache.json']);
+  const guardadas = Object.values(v.caches).flat();
+  expect(guardadas.filter((u) => !permitidas.has(u) && !/^\/models\//.test(u))).toEqual([]);
+  expect(guardadas.filter((u) => u.includes('?'))).toEqual([]);
+  await a.verificar(s, { secretos: ['Ficticia', '1.000.000.017'] });
+});
+
+// Canarios del arnés (sin T-id: comprueban que los detectores de T-RD-01 a T-RD-06 ven lo que dicen ver).
+// 1) el servidor registra método, ruta, query, cuerpo y cabeceras de origen; 2) el señuelo ve lo que la CSP no bloquea y no ve lo que bloquea.
+test('@cero-red arnés canarios: el servidor registra todo y el señuelo solo ve lo que una página sin CSP envía', async ({ arnes }) => {
+  const a = await arnes();
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
+  await page.goto('/');
+  // Servidor: método, ruta, query, cuerpo y cabeceras de origen quedan en el registro (404 para lo que no es GET).
+  const resp = await s.ctx.request.post('/canario-servidor?d=x', { data: 'cuerpo de prueba', headers: { 'content-type': 'text/plain' } });
+  expect(resp.status()).toBe(404);
+  const visto = a.app.peticiones().find((q) => q.p === '/canario-servidor')!;
+  expect(visto).toMatchObject({ m: 'POST', u: '/canario-servidor?d=x', q: 'd=x', b: 16, c: 'cuerpo de prueba' });
+  expect(visto.h['host']).toBe(new URL(a.origen).host);
+  expect(visto.h['content-type']).toBe('text/plain');
+  // El corte: tras él solo `GET /sw.js` exacto y sin cuerpo es aceptable; una query, un cuerpo, otro método o otra ruta se señalan.
+  await a.esperarControlador(page);
+  a.marcarCorte(s);
+  await s.ctx.request.get('/sw.js');
+  expect(a.inesperadasDesdeElCorte()).toEqual([]);
+  await s.ctx.request.get('/sw.js?x=1');
+  await s.ctx.request.post('/sw.js', { data: 'x' });
+  await s.ctx.request.get('/index.html');
+  expect(a.inesperadasDesdeElCorte()).toEqual(['GET /sw.js?x=1', 'POST /sw.js', 'GET /index.html']);
+  // La página de la app: la CSP bloquea la salida al señuelo (el navegador la intenta y el vigilante la ve) y el señuelo no recibe nada.
+  const alSenuelo = `${a.senuelo.origen}/canario-app?d=x`;
+  await page.evaluate((u) => fetch(u, { mode: 'no-cors' }).then(() => 'llegó', () => 'bloqueada'), alSenuelo);
+  await expect.poll(() => s.vigilante.violaciones).toContain('pagina:connect-src');
+  expect(a.senuelo.peticiones()).toEqual([]); // (la CSP lo frena antes de la red: no hay ni evento `request`)
+  // Control: una página que sirve el propio señuelo no lleva la CSP de la app; lo que ella pide llega al señuelo con su ruta, query y
+  // cabeceras de origen. (Desde `about:blank` Chromium frena el acceso a 127.0.0.1 por permiso de red privada, así que no sirve de control.)
+  const aux = await s.ctx.newPage();
+  await aux.goto(`${a.senuelo.origen}/pagina-aux`);
+  await aux.evaluate(() => fetch('/canario-aux?d=x').then(() => 'llegó', () => 'bloqueada'));
+  expect(a.senuelo.peticiones().map((q) => q.u)).toEqual(['/pagina-aux', '/canario-aux?d=x']);
+  expect(a.senuelo.peticiones()[1]!.h['sec-fetch-site']).toBe('same-origin');
+  await aux.close();
+  // El señuelo responde 200 a todo, con `Access-Control-Allow-Origin: *`: una fuga que pase la CSP se vería completa.
+  const eco = await s.ctx.request.get(`${a.senuelo.origen}/cualquier-ruta`);
+  expect(eco.status()).toBe(200);
+  expect(eco.headers()['access-control-allow-origin']).toBe('*');
+});
+
+// 3) STUN: la CSP no bloquea WebRTC; una página sin guardia que lo use deja paquetes UDP en la escucha. 4) una violación de CSP dentro
+// de un worker llega al vigilante (escucha en el worker y registro CDP), que es lo que no ve la ventana.
+test('@cero-red arnés canarios: la escucha STUN cuenta paquetes y las violaciones de CSP de un worker se ven', async ({ arnes }) => {
+  const a = await arnes();
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
+  await page.goto('/');
+  await a.esperarControlador(page);
+  // STUN: en la app no existe `RTCPeerConnection` (guardia); en una página auxiliar sí, y su petición de enlace llega a la escucha.
+  expect(await page.evaluate(() => typeof (globalThis as unknown as Record<string, unknown>)['RTCPeerConnection'])).toBe('undefined');
+  expect(a.stun.paquetes()).toEqual([]);
+  const aux = await s.ctx.newPage();
+  await aux.goto('about:blank');
+  await aux.evaluate(async (stun) => {
+    const pc = new RTCPeerConnection({ iceServers: [{ urls: stun }] });
+    pc.createDataChannel('canario');
+    await pc.setLocalDescription(await pc.createOffer());
+  }, a.stun.url);
+  await expect.poll(() => a.stun.paquetes().length, { timeout: 15_000 }).toBeGreaterThan(0);
+  expect(a.stun.paquetes().some((q) => q.stun)).toBe(true);
+  await aux.close();
+  // Workers: un worker de la app intenta salir al señuelo; la CSP lo bloquea y se ve por las dos vías.
+  const detect = precache().find((x) => /^\/assets\/detect\.worker-/.test(x))!;
+  const [worker] = await Promise.all([page.waitForEvent('worker'), page.evaluate((u) => { (globalThis as unknown as { w: Worker }).w = new Worker(u, { type: 'module' }); }, detect)]);
+  await worker.evaluate((u) => fetch(u, { mode: 'no-cors' }).then(() => 'llegó', () => 'bloqueada'), `${a.senuelo.origen}/canario-worker`);
+  await expect.poll(() => s.vigilante.violaciones, { timeout: 10_000 }).toContain('worker:connect-src');
+  expect(a.senuelo.peticiones()).toEqual([]);
+});
+
+// 5) Contexto persistente (base de C1 y C2, T-RD-04): lo que se guarda con conexión sigue en el perfil relanzado sin conexión, y la
+// app sale del service worker sin que el servidor vea nada más que `GET /sw.js`.
+test('@cero-red arnés canarios: el perfil persistente relanzado sin conexión conserva IndexedDB y sale del service worker', async ({ arnes }) => {
+  const a = await arnes();
+  const s1 = await a.sesion({ persistente: true });
+  const p1 = await s1.nuevaPagina();
+  await p1.goto('/');
+  await a.esperarControlador(p1);
+  await p1.evaluate(() => new Promise<void>((ok, mal) => {
+    const rq = indexedDB.open('canario-perfil', 1);
+    rq.onupgradeneeded = () => { rq.result.createObjectStore('s'); };
+    rq.onsuccess = () => {
+      const tx = rq.result.transaction('s', 'readwrite');
+      tx.objectStore('s').put('guardado con conexión', 'k');
+      tx.oncomplete = () => { rq.result.close(); ok(); };
+      tx.onerror = () => { mal(new Error('idb')); };
+    };
+  }));
+  await a.verificar(s1, { exigirCorte: false });
+  a.marcarCorte(s1);
+  const perfil = s1.perfil!;
+  await s1.cerrar();
+
+  const s2 = await a.sesion({ persistente: perfil, offline: true });
+  const p2 = await s2.nuevaPagina();
+  await p2.goto('/');
+  await expect(p2.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+  expect(await p2.evaluate(() => ({ aislado: crossOriginIsolated, controlador: navigator.serviceWorker.controller !== null }))).toEqual({ aislado: true, controlador: true });
+  const v = await volcarAlmacenamiento(p2);
+  expect(v.indexedDB['canario-perfil']?.['s']).toEqual([{ clave: 'k', valor: 'guardado con conexión' }]);
+  await a.verificar(s2);
 });
 
 // T-PV-12 (V-01; PD-2): un WebSocket al propio origen. El SW no intercepta WebSocket, y `connect-src 'self'` admite ws: y
@@ -179,16 +346,7 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
   writeFileSync(join(soloCanonica, '_headers'), readFileSync(join(soloCanonica, '_headers'), 'utf8').replace(/^(\s*Content-Security-Policy:[^,\n]*),[^\n]*$/m, '$1'));
   writeFileSync(join(soloCanonica, 'index.html'), readFileSync(join(soloCanonica, 'index.html'), 'utf8').replace(/\s*<meta http-equiv="Content-Security-Policy" content="script-src[^"]*"\s*\/?>/, ''));
   expect(readFileSync(join(soloCanonica, 'index.html'), 'utf8').match(/http-equiv="Content-Security-Policy"/g)).toHaveLength(1);
-  const servir = async (dir: string, puerto: number): Promise<{ registro: () => string[]; parar: () => void }> => {
-    const archivo = join(raiz, `peticiones-${puerto}.jsonl`);
-    writeFileSync(archivo, '');
-    const hijo = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', dir, '--port', String(puerto)], {
-      env: { ...process.env, SIGLOW_REGISTRO_PETICIONES: archivo }, stdio: ['ignore', 'pipe', 'ignore'],
-    });
-    await new Promise<void>((ok) => { hijo.stdout?.on('data', (b: Buffer) => { if (b.toString().includes('listo')) ok(); }); });
-    return { registro: () => readFileSync(archivo, 'utf8').split('\n').filter(Boolean).map((l) => (JSON.parse(l) as { u: string }).u), parar: () => { hijo.kill(); } };
-  };
-  const intentar = (page: import('@playwright/test').Page): Promise<{ ventana: string; marco: string; violacion: string[] }> => page.evaluate(async () => {
+  const intentar = (page: Page): Promise<{ ventana: string; marco: string; violacion: string[] }> => page.evaluate(async () => {
     const W = (globalThis as unknown as Record<string, typeof WebSocket>)['WebSocket']!;
     let ventana: string;
     try { new W(`ws://${location.host}/tpv12-ventana?d=x`); ventana = 'creado'; } catch (e) { ventana = `lanza ${(e as Error).name}`; }
@@ -206,18 +364,13 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
     await new Promise((ok) => { setTimeout(ok, 300); });
     return { ventana, marco, violacion };
   });
-  // Puertos libres del sistema (otros carriles dejan servidores abiertos en puertos fijos).
-  const libre = (): Promise<number> => new Promise((ok) => {
-    const s = createServer();
-    s.listen(0, '127.0.0.1', () => { const d = s.address() as { port: number }; s.close(() => { ok(d.port); }); });
-  });
-  const puerto = await libre();
-  const puertoControl = await libre();
-  const con = await servir('dist', puerto);
-  const sin = await servir(soloCanonica, puertoControl);
+  // Puertos libres del sistema (`--port 0`): otros carriles dejan servidores abiertos en puertos fijos.
+  const con = await levantarServidor({ dir: 'dist', reporteCsp: false });
+  const sin = await levantarServidor({ dir: soloCanonica, reporteCsp: false });
+  const rutas = (srv: typeof con): string[] => srv.peticiones().map((q) => q.u).filter((u) => u.startsWith('/tpv12'));
   try {
     // Con la CSP de PD-2 y el SW activo.
-    const ctx = await browser.newContext({ baseURL: `http://127.0.0.1:${puerto}` });
+    const ctx = await browser.newContext({ baseURL: con.origen });
     const page = await ctx.newPage();
     await page.goto('/');
     await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
@@ -225,7 +378,7 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
     expect(r.ventana).toBe('lanza SiglowError'); // la guardia, antes de la CSP
     expect(r.marco).toBe('error');
     expect(r.violacion).toContain('connect-src');
-    const detect = (JSON.parse(readFileSync('dist/precache.json', 'utf8')) as { archivos: { ruta: string }[] }).archivos.map((a) => a.ruta).find((x) => /detect\.worker/.test(x))!;
+    const detect = precache().find((x) => /detect\.worker/.test(x))!;
     const [worker] = await Promise.all([page.waitForEvent('worker'), page.evaluate((u) => { (globalThis as unknown as { w: Worker }).w = new Worker(u, { type: 'module' }); }, detect)]);
     expect(await worker.evaluate(async () => {
       const v: string[] = [];
@@ -235,19 +388,19 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
       return { res, v };
     })).toEqual({ res: 'error', v: ['connect-src'] });
     await page.waitForTimeout(500);
-    expect(con.registro().filter((u) => u.startsWith('/tpv12'))).toEqual([]);
+    expect(rutas(con)).toEqual([]);
     await ctx.close();
     // Control: solo la política canónica (`connect-src 'self'`). El WebSocket del realm sin guardia llega al servidor, query incluida.
-    const ctx2 = await browser.newContext({ baseURL: `http://127.0.0.1:${puertoControl}`, serviceWorkers: 'block' });
+    const ctx2 = await browser.newContext({ baseURL: sin.origen, serviceWorkers: 'block' });
     const page2 = await ctx2.newPage();
     await page2.goto('/');
     const r2 = await intentar(page2);
     expect(r2.violacion).toEqual([]);
-    await expect.poll(() => sin.registro().filter((u) => u.startsWith('/tpv12'))).toEqual(['/tpv12-marco?d=x']);
+    await expect.poll(() => rutas(sin)).toEqual(['/tpv12-marco?d=x']);
     await ctx2.close();
   } finally {
-    con.parar();
-    sin.parar();
+    await con.parar();
+    await sin.parar();
     rmSync(raiz, { recursive: true, force: true });
   }
 });
@@ -262,24 +415,31 @@ const OBLIGATORIAS = [
 const sinTransporte = (h: Record<string, string>): Record<string, string> =>
   Object.fromEntries(Object.entries(h).filter(([k]) => !TRANSPORTE.has(k.toLowerCase())).map(([k, v]) => [k.toLowerCase(), v]).sort());
 
-test('T-PV-06 @cero-red INV-G10 sin conexión: crossOriginIsolated y las cabeceras de 3.6 en cada respuesta de la caché', async ({ page, context, request }) => {
+// El servidor es el del arnés (puerto libre, conexiones persistentes de 120 s) y los pedidos fuera del SW reintentan un `ECONNRESET`
+// (`maxRetries`, la opción de Playwright para ese error): bajo la carga de varios agentes, el cierre de una conexión ociosa del
+// servidor de Node (5 s) coincidía con su reutilización.
+test('T-PV-06 @cero-red INV-G10 sin conexión: crossOriginIsolated y las cabeceras de 3.6 en cada respuesta de la caché', async ({ arnes }) => {
+  const a = await arnes({ reporteCsp: false });
+  const s = await a.sesion();
+  const page = await s.nuevaPagina();
+  const { ctx: context } = s;
   await page.goto('/');
-  await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
+  await a.esperarControlador(page);
   const texto = readFileSync('dist/precache.json', 'utf8');
   const lista = (JSON.parse(texto) as { archivos: { ruta: string; sha256: string }[] }).archivos;
-  const esperado = new Map([...lista.map((a) => [a.ruta, a.sha256] as const), ['/precache.json', sha256(texto)]]);
+  const esperado = new Map([...lista.map((x) => [x.ruta, x.sha256] as const), ['/precache.json', sha256(texto)]]);
   const rutas = [...esperado.keys()].sort();
   // INV-G10: Cache Storage solo guarda la app: una caché `siglow-app-<SHA-256 de precache.json>` con la lista exacta.
   const cachesVistas = await page.evaluate(async () => Promise.all((await caches.keys()).map(async (k) => ({
-    k, urls: (await (await caches.open(k)).keys()).map((r) => { const u = new URL(r.url); return u.pathname + u.search; }).sort(),
+    k, urls: (await (await caches.open(k)).keys()).map((rq) => { const u = new URL(rq.url); return u.pathname + u.search; }).sort(),
   }))));
   expect(cachesVistas).toEqual([{ k: `siglow-app-${sha256(texto)}`, urls: rutas }]);
   // Cabeceras del alojamiento con conexión, pedidas por fuera del SW (server.mjs aplica dist/_headers).
   const delServidor = new Map<string, Record<string, string>>();
-  for (const r of rutas) {
-    const resp = await request.get(r);
-    expect(resp.status(), r).toBe(200);
-    delServidor.set(r, sinTransporte(resp.headers()));
+  for (const ruta of rutas) {
+    const resp = await context.request.get(ruta, { maxRetries: 3 });
+    expect(resp.status(), ruta).toBe(200);
+    delServidor.set(ruta, sinTransporte(resp.headers()));
   }
   await context.setOffline(true);
   try {
@@ -289,19 +449,19 @@ test('T-PV-06 @cero-red INV-G10 sin conexión: crossOriginIsolated y las cabecer
     expect(await page.evaluate(() => ({ aislado: crossOriginIsolated, controlador: navigator.serviceWorker.controller !== null })))
       .toEqual({ aislado: true, controlador: true });
     expect(sinTransporte(await nav!.allHeaders())).toEqual(delServidor.get('/'));
-    const desdeCache = await page.evaluate(async (rs) => Promise.all(rs.map(async (r) => {
-      const resp = await fetch(r);
+    const desdeCache = await page.evaluate(async (rs) => Promise.all(rs.map(async (ruta) => {
+      const resp = await fetch(ruta);
       const h: Record<string, string> = {};
       resp.headers.forEach((v, k) => { h[k] = v; });
       const d = new Uint8Array(await crypto.subtle.digest('SHA-256', await resp.arrayBuffer()));
-      return { r, status: resp.status, h, sha: Array.from(d, (b) => b.toString(16).padStart(2, '0')).join('') };
+      return { ruta, status: resp.status, h, sha: Array.from(d, (b) => b.toString(16).padStart(2, '0')).join('') };
     })), rutas);
-    for (const { r, status, h, sha } of desdeCache) {
-      expect({ r, status, sha }).toEqual({ r, status: 200, sha: esperado.get(r) });
-      expect(sinTransporte(h), r).toEqual(delServidor.get(r));
-      for (const k of OBLIGATORIAS) expect(h[k], `${r}: ${k}`).toBeTruthy();
-      if (r.endsWith('.wasm')) expect(h['content-type']).toBe('application/wasm');
-      if (r.endsWith('.mjs')) expect(h['content-type']).toBe('text/javascript');
+    for (const { ruta, status, h, sha } of desdeCache) {
+      expect({ ruta, status, sha }).toEqual({ ruta, status: 200, sha: esperado.get(ruta) });
+      expect(sinTransporte(h), ruta).toEqual(delServidor.get(ruta));
+      for (const k of OBLIGATORIAS) expect(h[k], `${ruta}: ${k}`).toBeTruthy();
+      if (ruta.endsWith('.wasm')) expect(h['content-type']).toBe('application/wasm');
+      if (ruta.endsWith('.mjs')) expect(h['content-type']).toBe('text/javascript');
     }
   } finally {
     await context.setOffline(false);
@@ -312,17 +472,13 @@ test('T-PV-06 @cero-red INV-G10 sin conexión: crossOriginIsolated y las cabecer
 // app y las mismas opciones de Vite, se sirve con server.mjs (que aplica public/_headers: CSP, Trusted Types, COEP) y se leen
 // los PDF de tests/fixtures/. Exige 0 peticiones a otros orígenes, 0 violaciones de CSP y 0 consola (página y workers).
 // PE-4-r2 (M-3): lleva @cero-red (≈ 4 s la prueba y ≈ 13 s con la compilación del arnés). Una violación de CSP dentro del worker
-// de pdf.js no llega a la ventana ni a la consola que ve Playwright. Por eso la copia de `_headers` del arnés (solo de la prueba;
-// producción no lleva report-uri, V-21) añade `report-uri /csp-report` a la CSP: cada violación, también la del worker, es una
+// de pdf.js no llega a la ventana ni a la consola que ve Playwright. Por eso el servidor del arnés añade `report-uri /csp-report`
+// a cada política al servirla (`--reporte-csp`; producción no lleva report-uri, V-21): cada violación, también la del worker, es una
 // petición que el servidor registra, y la prueba exige que no haya ninguna. Un canario demuestra que el mecanismo funciona.
 test.describe('fase pdf', () => {
   test.describe.configure({ mode: 'serial' });
   const RAIZ = process.cwd();
   const CARPETA = join(RAIZ, 'test-results', 'pdf-harness');
-  const PUERTO = Number(process.env['PORT'] ?? 4173) + 6;
-  const ORIGEN = `http://127.0.0.1:${PUERTO}`;
-  const REGISTRO = join(CARPETA, 'peticiones.jsonl');
-  let servidor: ChildProcess | null = null;
 
   test.beforeAll(async () => {
     rmSync(CARPETA, { recursive: true, force: true });
@@ -343,24 +499,10 @@ test.describe('fase pdf', () => {
       resolve: { conditions: [...defaultClientConditions] },
     });
     mkdirSync(join(CARPETA, 'fixtures'), { recursive: true });
-    // Solo en la copia del arnés: las violaciones de CSP, también las de workers, se reportan a /csp-report y el servidor las registra.
-    const cabeceras = join(CARPETA, '_headers');
-    // La cabecera lleva dos políticas separadas por coma (PD-2): cada una reporta sus propias violaciones.
-    const conReporte = readFileSync(cabeceras, 'utf8').replace(/^(\s*Content-Security-Policy:\s*)(.*)$/m,
-      (_, nombre: string, valor: string) => nombre + valor.split(/\s*,\s*/).map((p) => `${p}; report-uri /csp-report`).join(', '));
-    expect(conReporte.match(/report-uri \/csp-report/g)).toHaveLength(2);
-    writeFileSync(cabeceras, conReporte);
     // Canario: un worker del mismo origen que intenta salir a la red; la CSP (connect-src 'self') lo bloquea y lo reporta.
     writeFileSync(join(CARPETA, 'assets', 'canario-worker.js'), "fetch('https://ejemplo.test/canario').catch(() => undefined);");
     for (const f of readdirSync(join(RAIZ, 'tests/fixtures')).filter((n) => n.endsWith('.pdf'))) cpSync(join(RAIZ, 'tests/fixtures', f), join(CARPETA, 'fixtures', f));
-    servidor = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', CARPETA, '--port', String(PUERTO)], {
-      env: { ...process.env, SIGLOW_REGISTRO_PETICIONES: REGISTRO }, stdio: 'ignore',
-    });
-    for (let i = 0; i < 50; i++) {
-      try { if ((await fetch(`${ORIGEN}/`)).status) break; } catch { await new Promise((r) => setTimeout(r, 100)); }
-    }
   });
-  test.afterAll(() => { servidor?.kill(); });
 
   type Resumen = { error?: string; partes?: Array<{ kind: string; label: string; largo: number }>; avisos?: string[]; categorias?: string[] };
   // Resultado esperado de cada fixture (T-LE-06 a T-LE-08, M-2).
@@ -375,108 +517,81 @@ test.describe('fase pdf', () => {
     'pdf-formularios.pdf': { partes: 4, avisos: ['CONTENIDO_PDF_NO_LEIDO'] },
   };
 
-  test('@cero-red fase pdf: lee los PDF con el worker del mismo origen, 0 peticiones ajenas, 0 violaciones de CSP y 0 consola', async ({ page }) => {
-    const ajenas: string[] = [];
-    const consola: string[] = [];
-    page.on('request', (r) => { if (new URL(r.url()).origin !== ORIGEN) ajenas.push(r.url()); });
-    page.on('console', (m) => consola.push(m.text()));
-    page.on('pageerror', (e) => consola.push(String(e.message)));
-    page.on('worker', (w) => w.on('console', (m) => consola.push(m.text())));
-    await page.addInitScript(() => {
-      (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
-      addEventListener('securitypolicyviolation', (e) => (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective));
-    });
-    await page.goto(`${ORIGEN}/pdf.html`);
+  test('@cero-red fase pdf: lee los PDF con el worker del mismo origen, 0 peticiones ajenas, 0 violaciones de CSP y 0 consola', async ({ arnes }) => {
+    const a = await arnes({ dir: CARPETA, reporteCsp: true });
+    const s = await a.sesion();
+    const page = await s.nuevaPagina();
+    await page.goto('/pdf.html');
     expect(await page.evaluate(() => crossOriginIsolated)).toBe(true);
 
     for (const [nombre, esperado] of Object.entries(ESPERADO)) {
-      const r = await page.evaluate((ruta) => (globalThis as unknown as { __pdf: { leer(r: string): Promise<Resumen> } }).__pdf.leer(ruta), `/fixtures/${nombre}`);
-      if (esperado.error !== undefined) expect(r.error, nombre).toBe(esperado.error);
+      const res = await page.evaluate((ruta) => (globalThis as unknown as { __pdf: { leer(r: string): Promise<Resumen> } }).__pdf.leer(ruta), `/fixtures/${nombre}`);
+      if (esperado.error !== undefined) expect(res.error, nombre).toBe(esperado.error);
       else {
-        expect(r.error, nombre).toBeUndefined();
-        expect(r.partes, nombre).toHaveLength(esperado.partes ?? 0);
-        expect(r.avisos, nombre).toEqual(esperado.avisos);
+        expect(res.error, nombre).toBeUndefined();
+        expect(res.partes, nombre).toHaveLength(esperado.partes ?? 0);
+        expect(res.avisos, nombre).toEqual(esperado.avisos);
       }
     }
 
-    expect(ajenas).toEqual([]);
-    expect(await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones)).toEqual([]);
-    expect(consola).toEqual([]);
+    expect(s.vigilante.ajenas).toEqual([]);
+    expect(s.vigilante.peticiones.filter((q) => /^(data|blob):/.test(q.url))).toEqual([]); // el worker de pdf.js es un archivo propio, nunca blob:
+    expect(s.vigilante.consola).toEqual([]); // esta fase no admite ningún mensaje, ni de `log`
     // Todo al mismo origen: solo rutas del build, el worker de pdf.js como archivo propio (nunca blob:) y los PDF, sin query.
-    const registro = readFileSync(REGISTRO, 'utf8').trim().split('\n').map((l) => JSON.parse(l) as { m: string; u: string }).filter((x) => x.u !== '/'); // «/» es el sondeo del servidor
+    const registro = a.app.peticiones();
     for (const x of registro) {
       expect(x.m).toBe('GET');
       expect(x.u, x.u).toMatch(/^\/(pdf\.html|tt-policy\.js|assets\/[A-Za-z0-9._-]+\.js|fixtures\/pdf-[a-z-]+\.pdf)$/);
     }
     expect(registro.some((x) => /^\/assets\/pdf\.worker-[A-Za-z0-9_-]+\.js$/.test(x.u))).toBe(true);
+    await a.verificar(s, { exigirCorte: false });
   });
 
-  test('@cero-red fase pdf canario: una violación de CSP dentro de un worker llega al registro del servidor', async ({ page }) => {
-    await page.goto(`${ORIGEN}/pdf.html`);
+  // El canario viola la CSP en su primera línea, antes de que el escucha del vigilante pueda existir: lo ven el servidor (report-uri,
+  // solo en páginas sin service worker) y el registro CDP del vigilante (también con service worker).
+  test('@cero-red fase pdf canario: una violación de CSP dentro de un worker llega al registro del servidor y al vigilante', async ({ arnes }) => {
+    const a = await arnes({ dir: CARPETA, reporteCsp: true });
+    const s = await a.sesion();
+    const page = await s.nuevaPagina();
+    await page.goto('/pdf.html');
     await page.evaluate(() => { new Worker('/assets/canario-worker.js'); });
-    const vistas = (): string[] => readFileSync(REGISTRO, 'utf8').trim().split('\n').map((l) => (JSON.parse(l) as { u: string }).u);
-    await expect.poll(() => vistas().includes('/csp-report'), { timeout: 10_000 }).toBe(true);
+    await expect.poll(() => a.app.peticiones().some((q) => q.p === '/csp-report'), { timeout: 10_000 }).toBe(true);
+    await expect.poll(() => s.vigilante.violaciones, { timeout: 10_000 }).toContain('worker:connect-src');
   });
 });
 
-// Fase «exportar» (PC-5, 10.5.1, B6): pegar → Revisión → Listo → copiar → descargar .txt, .docx e informe, sin peticiones fuera del origen,
+// Fase «exportar» (PC-5, 10.5.1, B6; T-RD-03): pegar → Revisión → Listo → copiar → descargar .txt, .docx e informe, sin peticiones fuera del origen,
 // sin violaciones de CSP, sin mensajes de consola y sin que el texto del documento viaje en ninguna URL ni cuerpo. Llega a Listo con el
 // gancho del build de medición (nunca existe en `dist/`): el botón «Continuar» de Revisión es de PC-4. La descarga se hace con un
 // `<a download>` sobre una URL `blob:` bajo la misma CSP que `dist/`.
-const PUERTO_EXPORTAR = Number(process.env.PORT ?? 4173) + 300;
 /** Mtime más reciente bajo `dir`: el build de medición se reconstruye si algo de `src/` es más nuevo. */
 function masNuevo(dir: string): number {
   let m = 0;
   for (const n of readdirSync(dir)) {
-    const p = join(dir, n);
-    const s = statSync(p);
-    m = Math.max(m, s.isDirectory() ? masNuevo(p) : s.mtimeMs);
+    const ruta = join(dir, n);
+    const st = statSync(ruta);
+    m = Math.max(m, st.isDirectory() ? masNuevo(ruta) : st.mtimeMs);
   }
   return m;
 }
-let servidorExportar: ChildProcess | undefined;
 
 test.describe('@cero-red fase exportar', () => {
   test.describe.configure({ timeout: 180_000 });
-  test.use({ baseURL: `http://127.0.0.1:${PUERTO_EXPORTAR}`, permissions: ['clipboard-write'] });
-  test.beforeAll(async () => {
+  test.beforeAll(() => {
     const indice = join('dist-medicion', 'index.html');
     if (!existsSync(indice) || statSync(indice).mtimeMs < masNuevo('src')) {
-      const r = spawnSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build', '--mode', 'medicion'], { stdio: 'ignore' });
-      if (r.status !== 0) throw new Error('No se pudo construir el build de medición');
+      const rr = spawnSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build', '--mode', 'medicion'], { stdio: 'ignore' });
+      if (rr.status !== 0) throw new Error('No se pudo construir el build de medición');
     }
-    servidorExportar = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', 'dist-medicion', '--port', String(PUERTO_EXPORTAR)], { stdio: 'ignore' });
-    for (let i = 0; i < 50; i++) {
-      try { if ((await fetch(`http://127.0.0.1:${PUERTO_EXPORTAR}/`)).ok) return; } catch { /* aún no escucha */ }
-      await new Promise((r) => setTimeout(r, 100));
-    }
-    throw new Error('El servidor de la fase exportar no respondió');
   });
-  test.afterAll(() => { servidorExportar?.kill(); });
 
-  test('@cero-red fase exportar: Listo → copiar y descargar .txt, .docx e informe sin peticiones ajenas, sin violaciones de CSP ni texto en la red', async ({ page, baseURL }) => {
-    const origen = new URL(baseURL!).origin;
-    const ajenas: string[] = [];
-    const peticiones: Array<{ url: string; cuerpo: string }> = [];
-    const consola: string[] = [];
-    page.on('request', (r) => {
-      const u = new URL(r.url());
-      if (u.origin !== origen && u.protocol !== 'blob:' && u.protocol !== 'data:') ajenas.push(u.origin);
-      peticiones.push({ url: r.url(), cuerpo: r.postData() ?? '' });
-    });
-    page.on('console', (m) => { consola.push(m.type()); });
-    page.on('pageerror', () => { consola.push('pageerror'); });
-    await page.addInitScript(() => {
-      (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
-      addEventListener('securitypolicyviolation', (e) => {
-        (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective);
-      });
-    });
+  test('T-RD-03 @cero-red fase exportar: Listo → copiar y descargar .txt, .docx e informe sin peticiones ajenas, sin violaciones de CSP ni texto en la red', async ({ arnes }) => {
+    const a = await arnes({ dir: 'dist-medicion' });
+    const s = await a.sesion();
+    const page = await s.nuevaPagina();
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
-    await page.getByLabel('Código del asunto').fill('PRUEBA-EXPORTAR');
-    await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await page.getByRole('button', { name: 'Crear asunto' }).click();
+    await a.cortar(s, page);
+    await crearAsunto(page, 'PRUEBA-EXPORTAR');
     await page.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante');
     await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
     await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
@@ -506,96 +621,63 @@ test.describe('@cero-red fase exportar', () => {
       expect(d.suggestedFilename()).toMatch(patron);
       expect(d.suggestedFilename()).toMatch(/^sig-low-(anonimizado|informe)-\d{8}-\d{4}\./);
     }
-    const violaciones = await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones);
-    expect(ajenas).toEqual([]);
-    expect(violaciones).toEqual([]);
-    expect(consola.filter((c) => c === 'error' || c === 'warning' || c === 'pageerror')).toEqual([]);
-    for (const p of peticiones) {
-      expect(decodeURIComponent(p.url)).not.toContain('Ficticia');
-      expect(p.cuerpo).not.toContain('Ficticia');
-      expect(p.cuerpo).not.toContain('1.000.000.017');
-      expect(decodeURIComponent(p.url)).not.toContain('PRUEBA-EXPORTAR');
-    }
+    await a.verificar(s, { secretos: ['Ficticia', '1.000.000.017', 'PRUEBA-EXPORTAR'] });
   });
 });
 
-// Fase A3 (PF-2, 10.5.1): «Descargar modelo de apoyo» y esperar «listo»; las peticiones del modelo son SOLO las rutas del manifiesto
+// Fase A3 (PF-2, 10.5.1; T-RD-01): «Descargar modelo de apoyo» y esperar «listo»; las peticiones del modelo son SOLO las rutas del manifiesto
 // (auxiliares y trozos; el equivalente de las 26 del principal y las 13 del respaldo, con el modelo sintético de esta prueba), todas
 // GET sin query ni cuerpo; después, fase A (todo a la lista blanca: precache, manifiesto y /sw.js) y B1 sin conexión. Corre en `verify`
 // sobre el build real con un modelo ficticio de bytes pequeños (el real, de 626 MB, lo cubre model.spec.ts con SIGLOW_E2E_APP_MODELO=1).
 test.describe('@cero-red fase A3 · descarga del modelo', () => {
   test.describe.configure({ timeout: 120_000 });
 
-  test('@cero-red fase A3: el modelo se descarga solo desde las rutas del manifiesto, la fase A queda en la lista blanca y sin conexión sigue «listo»', async ({ browser }) => {
+  test('T-RD-01 @cero-red fase A3: el modelo se descarga solo desde las rutas del manifiesto, la fase A queda en la lista blanca y sin conexión sigue «listo»', async ({ arnes }) => {
     const tmp = mkdtempSync(join(tmpdir(), 'siglow-a3-'));
-    const grande = modeloSintetico('gliner-x-large', { trozos: 5, tamTrozo: 30_000, semilla: 3 });
-    const base = modeloSintetico('gliner-x-base', { trozos: 2, tamTrozo: 20_000, semilla: 5 });
-    distConModelos(resolve('dist'), join(tmp, 'dist'), [grande, base]);
-    const srv = await levantarServidor(join(tmp, 'dist'), join(tmp, 'peticiones.jsonl'));
-    const ctx = await browser.newContext();
     try {
-      const page = await ctx.newPage();
-      const ajenas: string[] = [];
-      const consola: string[] = [];
-      page.on('request', (r) => {
-        const u = new URL(r.url());
-        if (u.origin !== srv.origen && u.protocol !== 'blob:' && u.protocol !== 'data:') ajenas.push(u.origin);
-      });
-      page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type()); });
-      page.on('pageerror', () => { consola.push('pageerror'); });
-      await page.addInitScript(() => {
-        (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
-        addEventListener('securitypolicyviolation', (e) => {
-          (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective);
-        });
-        Object.defineProperty(Navigator.prototype, 'deviceMemory', { get: () => 16, configurable: true });
-      });
+      const grande = modeloSintetico('gliner-x-large', { trozos: 5, tamTrozo: 30_000, semilla: 3 });
+      const base = modeloSintetico('gliner-x-base', { trozos: 2, tamTrozo: 20_000, semilla: 5 });
+      distConModelos(join(process.cwd(), 'dist'), join(tmp, 'dist'), [grande, base]);
+      const a = await arnes({ dir: join(tmp, 'dist') });
+      const s = await a.sesion();
+      await s.ctx.addInitScript(() => { Object.defineProperty(Navigator.prototype, 'deviceMemory', { get: () => 16, configurable: true }); });
+      const page = await s.nuevaPagina();
 
       // A1–A2: el SW se activa y la app pasa de «sin service worker» a lista.
-      await page.goto(`${srv.origen}/`);
-      await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
+      await page.goto('/');
+      await a.esperarControlador(page);
       const boton = page.getByRole('button', { name: /^Descargar modelo de apoyo/ });
       await expect(boton).toBeEnabled({ timeout: 20_000 });
-      const corte = srv.peticiones().length;
+      const corte = a.app.peticiones().length;
 
       // A3: descargar y esperar «listo».
       await boton.click();
       await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Modelo de apoyo listo en este equipo.', { timeout: 60_000 });
-      const delModeloA3 = delModelo(srv.peticiones().slice(corte));
-      expect(delModeloA3.every((p) => p.m === 'GET' && !p.u.includes('?'))).toBe(true);
-      expect(delModeloA3.map((p) => p.u).sort()).toEqual(rutasDelManifiesto(grande.manifest));
+      const delModeloA3 = delModelo(a.app.peticiones().slice(corte));
+      expect(delModeloA3.every((q) => q.m === 'GET' && !q.u.includes('?'))).toBe(true);
+      expect(delModeloA3.map((q) => q.u).sort()).toEqual(rutasDelManifiesto(grande.manifest));
 
       // A4–A5: pedidos desde fuera del SW (APIRequestContext) a la lista blanca; el corte marca dónde empiezan.
-      const corteA = srv.peticiones().length;
+      const corteA = a.app.peticiones().length;
       const rutasA = ['/', '/index.html', '/sw.js', '/tt-policy.js', `/models/${grande.id}/manifest.json`, `/models/${grande.id}/onnx/model_quantized.onnx.part000`];
-      for (const r of rutasA) expect((await ctx.request.get(`${srv.origen}${r}`)).status(), r).toBe(200);
+      for (const ruta of rutasA) expect((await s.ctx.request.get(ruta, { maxRetries: 3 })).status(), ruta).toBe(200);
 
       // Fase A completa: cada petición del registro es un GET, sin query, a la lista blanca (precache + /precache.json + manifiestos + /sw.js
       // + las rutas del manifiesto del principal que acaba de pedir la descarga).
-      const lista = (JSON.parse(readFileSync(join(tmp, 'dist', 'precache.json'), 'utf8')) as { archivos: { ruta: string }[] }).archivos.map((a) => a.ruta);
-      const permitidas = new Set([...lista, '/index.html', '/precache.json', '/sw.js', ...rutasDelManifiesto(grande.manifest)]);
-      const todas = srv.peticiones();
-      expect(todas.filter((p) => p.m !== 'GET' || p.u.includes('?'))).toEqual([]);
-      expect(todas.filter((p) => !permitidas.has(p.u)).map((p) => p.u)).toEqual([]);
+      const permitidas = new Set([...precache(join(tmp, 'dist')), '/index.html', '/precache.json', '/sw.js', ...rutasDelManifiesto(grande.manifest)]);
+      const todas = a.app.peticiones();
+      expect(todas.filter((q) => q.m !== 'GET' || q.u.includes('?'))).toEqual([]);
+      expect(todas.filter((q) => !permitidas.has(q.u)).map((q) => q.u)).toEqual([]);
       // (el navegador puede añadir su búsqueda de versión: GET /sw.js, que es metadato y está en la lista blanca)
-      const trasElCorte = todas.slice(corteA).map((p) => p.u);
+      const trasElCorte = todas.slice(corteA).map((q) => q.u);
       expect([...trasElCorte].sort()).toEqual(expect.arrayContaining([...rutasA].sort()));
       expect(trasElCorte.length - rutasA.length).toBeLessThanOrEqual(1);
 
       // B1: sin conexión y recargando, el modelo sigue «listo» (se lee de siglow-modelo-<sha>) y la página sigue aislada.
-      const antes = srv.peticiones().length;
-      await ctx.setOffline(true);
-      await page.reload();
-      await page.waitForFunction(() => navigator.serviceWorker?.controller != null);
+      await a.cortar(s, page);
       await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Modelo de apoyo listo en este equipo.', { timeout: 20_000 });
-      expect(await page.evaluate(() => crossOriginIsolated)).toBe(true);
-      expect(srv.peticiones().slice(antes).filter((p) => !(p.m === 'GET' && p.u === '/sw.js'))).toEqual([]); // salvo GET /sw.js exacto (3.2)
-      expect(ajenas).toEqual([]);
-      expect(await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones)).toEqual([]);
-      expect(consola).toEqual([]);
+      await a.verificar(s); // salvo GET /sw.js exacto (3.2), nada más llega al servidor tras el corte
     } finally {
-      await ctx.close();
-      await srv.parar();
       rmSync(tmp, { recursive: true, force: true });
     }
   });
