@@ -108,7 +108,7 @@ Cada respuesta debe traer las cabeceras de `public/_headers` (fuente de verdad; 
 | `X-Content-Type-Options` | `nosniff` |
 | `X-DNS-Prefetch-Control` | `off` |
 | `X-Frame-Options` | `DENY` |
-| `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self)` |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self), browsing-topics=(), private-state-token-issuance=(), private-state-token-redemption=(), identity-credentials-get=(), interest-cohort=()` |
 | `Cache-Control` | `no-cache, no-transform` en `/`, `/index.html` y `/sw.js`; `public, max-age=31536000, immutable` en `/assets/*`. `/ort/*` no tiene regla propia [VERIFICAR el valor que aplica Cloudflare]. |
 | Tipos MIME | `/ort/ort-wasm-simd-threaded.wasm` → `application/wasm`; `/ort/ort-wasm-simd-threaded.mjs` → `text/javascript` |
 

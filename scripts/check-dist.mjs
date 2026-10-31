@@ -175,9 +175,10 @@ const CABECERAS_TODAS = {
   'X-Content-Type-Options': 'nosniff',
   'X-DNS-Prefetch-Control': 'off',
   'X-Frame-Options': 'DENY',
-  // PD-2-r2: `browsing-topics` y `private-state-token-issuance`, los dos de los cinco pedidos que Chromium reconoce sin aviso
-  // (`join-ad-interest-group`, `run-ad-auction` y `attribution-reporting` dan «Unrecognized feature»; los cubre la guardia).
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self), browsing-topics=(), private-state-token-issuance=()',
+  // PD-2-r2 (aprobado por el integrador): cinco rasgos que Chromium reconoce sin aviso, `browsing-topics`, los dos de Private
+  // State Tokens, `identity-credentials-get` (FedCM) e `interest-cohort` (`join-ad-interest-group`, `run-ad-auction` y
+  // `attribution-reporting` dan «Unrecognized feature»; los cubre la guardia).
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self), browsing-topics=(), private-state-token-issuance=(), private-state-token-redemption=(), identity-credentials-get=(), interest-cohort=()',
 };
 const QUITAR_TODAS = ['Access-Control-Allow-Origin']; // Cloudflare Pages lo agrega por defecto (entrega/despliegues.md)
 const CACHE = {

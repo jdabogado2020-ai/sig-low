@@ -21,8 +21,8 @@ import { guardarOriginales, type Nativo } from './lib/originales';
 const DIST = resolve('dist');
 const CSP_CANONICA = "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; font-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; require-trusted-types-for 'script'; trusted-types default";
 const CSP_RUTAS = "script-src 'wasm-unsafe-eval' *:*/assets/ *:*/ort/ *:*/tt-policy.js; worker-src *:*/assets/ *:*/ort/ *:*/sw.js; connect-src https: http:";
-// Permissions-Policy de 3.6 más `browsing-topics=()` y `private-state-token-issuance=()` (PD-2-r2; T-CS-07).
-const PERMISOS = 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self), browsing-topics=(), private-state-token-issuance=()';
+// Permissions-Policy de 3.6 más los cinco rasgos de PD-2-r2 que Chromium reconoce sin aviso (T-CS-07).
+const PERMISOS = 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self), browsing-topics=(), private-state-token-issuance=(), private-state-token-redemption=(), identity-credentials-get=(), interest-cohort=()';
 const GUARDIA = 'lanza SiglowError ERROR_INTERNO';
 
 interface Peticion { t: number; m: string; u: string }
@@ -741,7 +741,7 @@ test.describe('T-CS-06 y T-CS-07 Trusted Types y CSP de respaldo', () => {
     // Permissions-Policy (3.6 y PD-2-r2): el navegador reconoce cada rasgo de la cabecera, sin aviso en la consola («Unrecognized
     // feature»), y los que van con `()` quedan apagados en la página y en un iframe que la herede.
     const rasgos = PERMISOS.split(/\s*,\s*/).map((r) => /^([a-z-]+)=\((self)?\)$/.exec(r)).map((m) => ({ nombre: m![1]!, propio: m![2] === 'self' }));
-    expect(rasgos.map((r) => r.nombre)).toEqual(expect.arrayContaining(['browsing-topics', 'private-state-token-issuance']));
+    expect(rasgos.map((r) => r.nombre)).toEqual(expect.arrayContaining(['browsing-topics', 'private-state-token-issuance', 'private-state-token-redemption', 'identity-credentials-get', 'interest-cohort']));
     {
       const { ctx, page } = await abrir(browser, app.origen, 'block');
       const consola: string[] = [];

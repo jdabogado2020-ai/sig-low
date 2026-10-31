@@ -297,6 +297,7 @@ describe.concurrent('T-CD-03 _headers (3.6, T-CS-07)', () => {
   it('canario (PD-2-r2): la Permissions-Policy sin browsing-topics=() o sin private-state-token-issuance=(), o con un rasgo más', async () => {
     await falla({ cabeceras: (h) => h.replace(', browsing-topics=()', '') }, '_headers: /* Permissions-Policy distinta de la aprobada');
     await falla({ cabeceras: (h) => h.replace(', private-state-token-issuance=()', '') }, '_headers: /* Permissions-Policy distinta de la aprobada');
+    await falla({ cabeceras: (h) => h.replace(', identity-credentials-get=()', '') }, '_headers: /* Permissions-Policy distinta de la aprobada');
     // (con la coma delante: el comentario de _headers también nombra el rasgo, sin ella)
     await falla({ cabeceras: (h) => h.replace(', private-state-token-issuance=()', ', private-state-token-issuance=(), join-ad-interest-group=()') },
       '_headers: /* Permissions-Policy distinta de la aprobada');

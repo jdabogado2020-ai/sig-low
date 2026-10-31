@@ -8,10 +8,12 @@
 #     admite ws: y wss: al mismo host (V-01, T-PV-12). El host comodín `*:*` no abre nada: la primera política sigue
 #     exigiendo el propio origen; el comodín solo permite usar rutas sin escribir el host, que cambia entre producción,
 #     el despliegue de humo y las pruebas.
-# Permissions-Policy: la de 3.6 más `browsing-topics=()` y `private-state-token-issuance=()` (PD-2-r2), que apagan Topics y
-# la emisión de Private State Tokens. Solo van rasgos que el navegador reconoce sin aviso: Chromium da «Unrecognized feature»
-# con `join-ad-interest-group`, `run-ad-auction` y `attribution-reporting`, así que Protected Audience lo apaga la guardia
-# (src/guard.ts). Una Permissions-Policy no se puede dar en un <meta>: va solo aquí.
+# Permissions-Policy: la de 3.6 más cinco rasgos (PD-2-r2, aprobados por el integrador): `browsing-topics=()` (Topics),
+# `private-state-token-issuance=()` y `private-state-token-redemption=()` (Private State Tokens), `identity-credentials-get=()`
+# (FedCM, que pide su configuración a un proveedor de identidad) e `interest-cohort=()` (FLoC). Solo van rasgos que el
+# navegador reconoce sin aviso: Chromium da «Unrecognized feature» con `join-ad-interest-group`, `run-ad-auction` y
+# `attribution-reporting`, así que Protected Audience lo apaga la guardia (src/guard.ts). Una Permissions-Policy no se puede
+# dar en un <meta>: va solo aquí.
 /*
   Content-Security-Policy: default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; font-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; require-trusted-types-for 'script'; trusted-types default, script-src 'wasm-unsafe-eval' *:*/assets/ *:*/ort/ *:*/tt-policy.js; worker-src *:*/assets/ *:*/ort/ *:*/sw.js; connect-src https: http:
   Cross-Origin-Opener-Policy: same-origin
@@ -21,7 +23,7 @@
   X-Content-Type-Options: nosniff
   X-DNS-Prefetch-Control: off
   X-Frame-Options: DENY
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self), browsing-topics=(), private-state-token-issuance=()
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self), browsing-topics=(), private-state-token-issuance=(), private-state-token-redemption=(), identity-credentials-get=(), interest-cohort=()
   ! Access-Control-Allow-Origin
 
 /

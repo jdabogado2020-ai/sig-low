@@ -390,15 +390,26 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
     return { ventana, ventanaWss, ventanaWt, marco, marcoWss, violacion };
   });
   // Puertos libres del sistema (`--port 0`): otros carriles dejan servidores abiertos en puertos fijos.
-  const con = await levantarServidor({ dir: 'dist', reporteCsp: false });
+  // B-26: escucha UDP en el puerto de la app (HTTP/3 de WebTransport); el servidor de la app usa TCP en ese mismo número. El
+  // sistema elige un puerto TCP libre, pero ese número puede estar reservado en UDP (en Windows, los rangos excluidos de UDP y
+  // de TCP no coinciden: `bind EACCES`). Entonces se levanta otro servidor, hasta 5 veces.
+  const paquetes: number[] = [];
+  const escuchar = (puerto: number): Promise<ReturnType<typeof createSocket> | null> => new Promise((ok) => {
+    const s = createSocket('udp4');
+    s.once('error', () => { try { s.close(); } catch { /* ya cerrado */ } ok(null); });
+    s.bind(puerto, '127.0.0.1', () => { s.on('message', (m) => { paquetes.push(m.length); }); ok(s); });
+  });
+  let con = await levantarServidor({ dir: 'dist', reporteCsp: false });
+  let udp = await escuchar(con.puerto);
+  for (let i = 1; udp === null && i < 5; i++) {
+    await con.parar();
+    con = await levantarServidor({ dir: 'dist', reporteCsp: false });
+    udp = await escuchar(con.puerto);
+  }
   const sin = await levantarServidor({ dir: soloCanonica, reporteCsp: false });
   const rutas = (srv: typeof con): string[] => srv.peticiones().map((q) => q.u).filter((u) => u.startsWith('/tpv12'));
-  // B-26: escucha UDP en el puerto de la app (HTTP/3 de WebTransport); el servidor de la app usa TCP en ese mismo número.
-  const udp = createSocket('udp4');
-  const paquetes: number[] = [];
-  udp.on('message', (m) => { paquetes.push(m.length); });
   try {
-    await new Promise<void>((ok, mal) => { udp.once('error', mal); udp.bind(con.puerto, '127.0.0.1', () => { ok(); }); });
+    expect(udp, `sin un puerto libre a la vez en TCP y UDP (último: ${con.puerto})`).not.toBeNull();
     // Con la CSP de PD-2 y el SW activo.
     const ctx = await browser.newContext({ baseURL: con.origen });
     await guardarOriginales(ctx);
@@ -475,7 +486,7 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
   } finally {
     await con.parar();
     await sin.parar();
-    await new Promise<void>((ok) => { try { udp.close(() => { ok(); }); } catch { ok(); } });
+    await new Promise<void>((ok) => { if (udp === null) { ok(); return; } try { udp.close(() => { ok(); }); } catch { ok(); } });
     rmSync(raiz, { recursive: true, force: true });
   }
 });
