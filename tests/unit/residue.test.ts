@@ -7,7 +7,7 @@ import { refreshVariants, searchCaseList } from '../../src/core/caselist.ts';
 import {
   applyReviewAction, buildDetectionSet, buildReviewState, nitCheckDigit, precedenceOf, type ReviewContext,
 } from '../../src/core/entities.ts';
-import { mergeCandidates } from '../../src/core/merge.ts';
+import { mergeCandidates, resolveRemainder, trimFunctionWords } from '../../src/core/merge.ts';
 import { buildSearchView } from '../../src/core/normalize.ts';
 import { cierraOracion, joinOutput, render } from '../../src/core/render.ts';
 import { continuation, nameRuns, runResidueCheck, type ResidueCtxExtra } from '../../src/core/residue.ts';
@@ -822,5 +822,102 @@ describe('PB-4-r1 · lo que el motor conoce y la salida dejaba a la vista (T-RS-
     for (let i = 0; i < 200; i++) continuation(u, 3, 'derecha', false);
     expect(continuation(`${blancos}de Ejemplo [P]`, 40_011, 'izquierda', false)).toEqual({ start: 40_003, end: 40_010 });
     expect(performance.now() - t1).toBeLessThan(200);
+  });
+});
+
+// =============================================================================================================
+// PB-4-r2 (M-60, D-14 decisión 1) · Las formas que la lista del caso genera también se buscan en la salida: iniciales sin punto,
+// sigla de una razón social y el apellido corto que el sufijo societario de R-LST-05 se comía («Sá» → «sa»). Datos ficticios.
+describe('PB-4-r2 · huecos de la definición de residuo por dato (M-60)', () => {
+  const doc1 = (text: string): Part => mkDoc([['cuerpo', text]]).parts[0] as Part;
+  const C = (t: string): PartSpec => ['cuerpo', t, 'Cuerpo'];
+  const PIE = (t: string): PartSpec => ['pie', t, 'Pie 1'];
+  const lista = (name: string, kind: 'persona' | 'organizacion', role: Role = 'DEMANDANTE'): CaseEntity[] =>
+    refreshVariants([{ id: CAS, name, variants: [], kind, role } as CaseEntity]);
+  const deLista = (sub: string, type: DataType, role: Role = 'DEMANDANTE'): Mark =>
+    ({ p: 0, sub, type, key: `LISTA:${CAS}`, role, src: 'lista', cas: CAS });
+  const per = (sub: string, key: string): Mark => ({ p: 0, sub, type: 'PERSONA', key, src: 'modelo' });
+
+  it('INV-G08 M-60 G2 · iniciales sin punto de una persona de la lista: «A F R» (la lista genera «A. F. R.»)', async () => {
+    const s = scenario([C('Declaró Ana Ficticia Rojas ante el juez.'), PIE('Suscribe A F R, sin más.')], [deLista('Ana Ficticia Rojas', 'PERSONA')], ANA);
+    expect(hitsOf(await check(s))).toEqual(['Pie 1|variante|A F R']);
+  });
+
+  it('INV-G08 M-60 G2b · las iniciales pegadas sin puntos: «AFR»', async () => {
+    const s = scenario([C('Declaró Ana Ficticia Rojas ante el juez.'), PIE('Firma AFR sin más.')], [deLista('Ana Ficticia Rojas', 'PERSONA')], ANA);
+    expect(hitsOf(await check(s))).toEqual(['Pie 1|variante|AFR']);
+  });
+
+  it('INV-G08 M-60 G2c · la sigla de una razón social de la lista: «IFV» de «Inversiones Ficticias del Valle S.A.S.»', async () => {
+    const IFV = lista('Inversiones Ficticias del Valle S.A.S.', 'organizacion', 'EMPRESA' as Role);
+    const s = scenario([C('Contrató con Inversiones Ficticias del Valle S.A.S. la obra.'), PIE('El contrato con IFV sigue vigente.')],
+      [deLista('Inversiones Ficticias del Valle S.A.S.', 'EMPRESA', 'EMPRESA' as Role)], IFV);
+    expect(hitsOf(await check(s))).toEqual(['Pie 1|variante|IFV']);
+  });
+
+  it('INV-G08 M-60 G4 · el apellido «Sá» de una persona de la lista no se pierde por parecer el sufijo «S.A.»', async () => {
+    const SA = lista('Pedro Ejemplo Sá', 'persona');
+    const s = scenario([C('Declaró Pedro Ejemplo Sá ante el juez.'), PIE('Lo firmó el señor Sá en la notaría.')], [deLista('Pedro Ejemplo Sá', 'PERSONA')], SA);
+    expect(hitsOf(await check(s))).toEqual(['Pie 1|variante|Sá']);
+  });
+
+  it('INV-G08 M-60 G1 · un nombre aceptado con otra etiqueta y límites cortos deja su resto: «[EMPRESA_1] Gómez»', async () => {
+    const s = scenario([C('Declaró Pedro Ejemplo Gómez ante el juez.')], [{ p: 0, sub: 'Pedro Ejemplo', type: 'EMPRESA', key: 'ORG:pedro ejemplo', src: 'modelo' }]);
+    const r = await check(s);
+    expect(r.out.sections[0]?.text).toBe('Declaró [EMPRESA_1] Gómez ante el juez.');
+    expect(hitsOf(r)).toEqual(['Cuerpo|variante|Gómez']);
+  });
+
+  it('INV-G08 M-60 G4 · «Sá» con tilde y mayúscula inicial: «SÁ» en MAYÚSCULAS también; el sufijo «SA» de una razón social no', async () => {
+    const SA = lista('Pedro Ejemplo Sá', 'persona');
+    const mark = [deLista('Pedro Ejemplo Sá', 'PERSONA')];
+    expect(hitsOf(await check(scenario([C('Declaró Pedro Ejemplo Sá ante el juez.'), PIE('LO FIRMÓ EL SEÑOR SÁ EN LA NOTARÍA.')], mark, SA)))).toEqual(['Pie 1|variante|SÁ']);
+    expect(hitsOf(await check(scenario([C('Declaró Pedro Ejemplo Sá ante el juez.'), PIE('Contrató con Aseo Total SA y con Aseo Total S.A. ayer.')], mark, SA)))).toEqual([]);
+  });
+
+  it('INV-G08 M-60 · de «Ana de Sá» (lista) solo se busca suelta la palabra de dos letras que es nombre: «de», «y», «La» y «El» no', async () => {
+    const L = lista('Ana de Sá', 'persona');
+    const s = scenario([C('Declaró Ana de Sá ante el juez.'), PIE('Ana y de la Sá, con Li y El.')], [deLista('Ana de Sá', 'PERSONA')], L);
+    const got = hitsOf(await check(s));
+    expect(got).toContain('Pie 1|variante|Sá');
+    expect(got.some((x) => /\|(?:de|La|El|y|Li)$/u.test(x))).toBe(false);
+  });
+
+  it('INV-G08 M-60 · una palabra de dos letras de lo que dijo el modelo («No» de «Cuenta No») no se busca suelta: sería ruido en cada «No.»', async () => {
+    const s = scenario([C('Abrió la Cuenta No 123 en el banco.'), PIE('Cuenta No. 456 y No. 789.')], [per('Cuenta No', 'PER:cuenta no')]);
+    expect(hitsOf(await check(s)).filter((x) => x.endsWith('|No'))).toEqual([]);
+  });
+
+  it('INV-G08 M-60 G4 · merge.ts no come el apellido «Sá» como si fuera el sufijo societario: los recortes de R-MOD-03 lo conservan', () => {
+    const recorte = (t: string): string | null => { const r = trimFunctionWords(t, 'cuerpo'); return r === null ? null : t.slice(r.start, r.end); };
+    expect(['Sá', 'Ejemplo Sá', 'Pérez Sá.', 'de Sá', 'Sá y', 'Ejemplo Sá a', 'Ejemplo, Sá', 'Ejemplo-Sá'].map(recorte))
+      .toEqual(['Sá', 'Ejemplo Sá', 'Pérez Sá', 'Sá', 'Sá', 'Ejemplo Sá', 'Ejemplo, Sá', 'Ejemplo-Sá']);
+    // El sufijo de una razón social sigue entero (D-03 A).
+    expect(['Aseo Total S.A.', 'Aseo Total SA', 'Aseo Total S.A'].map(recorte)).toEqual(['Aseo Total S.A.', 'Aseo Total SA', 'Aseo Total S.A']);
+    // El resto «Sá» de «Pedro Ejemplo Sá» tras una detección de «Pedro Ejemplo» sobrevive a resolveRemainder.
+    for (const text of ['Declaró Pedro Ejemplo Sá, ante el juez.', 'Declaró Pedro Ejemplo Sá.', 'Pedro Ejemplo Sá']) {
+      const part = doc1(text);
+      const i = text.indexOf('Sá');
+      const modelo: MergedCandidate = { partId: part.id, start: text.indexOf('Pedro'), end: i + 2, type: 'PERSONA', source: 'modelo', confidence: 'media', score: 0.6,
+        canonicalKey: 'PER:pedro ejemplo sa', precedence: 1 };
+      const r = resolveRemainder(part, modelo, i, i + 2, registry);
+      expect(r === null ? null : text.slice(r.start, r.end)).toBe('Sá');
+    }
+  });
+
+  it('INV-G08 M-60 R-RES-03 tras un lugar · «[LUGAR_1] De la Hoz»: el modelo tomó la primera palabra de un nombre por un lugar (C08)', async () => {
+    const s = scenario([C('Por error de digitación, la cédula de Ficticia De la Hoz figura mal. Vive en Cartago de Ejemplo.')],
+      [{ p: 0, sub: 'Ficticia', type: 'LUGAR', key: 'LUGAR:ficticia', src: 'modelo' }, { p: 0, sub: 'Cartago', type: 'LUGAR', key: 'LUGAR:cartago', src: 'modelo' }]);
+    const r = await check(s);
+    // Con el código anterior: 0 impactos (R-RES-03 solo actuaba tras el marcador de una persona o una organización).
+    // «de Ejemplo» (partícula en minúscula, tras otro lugar) no es un apellido: no se toma.
+    expect(hitsOf(r)).toEqual(['Cuerpo|variante|De la Hoz']);
+    expect(r.run.result.hits[0]?.entityId).toBe(detOf(s, 0, 'Ficticia').entityId);
+  });
+
+  it('INV-G08 M-60 R-RES-03 tras un lugar · en MAYÚSCULAS, solo a la derecha y solo con partícula: «FICTICIA DE LA HOZ» sí; «EL MUNICIPIO» antes y un nombre sin partícula después, no', async () => {
+    const s = scenario([C('LA CÉDULA DE FICTICIA DE LA HOZ. VIVE EN LA CALLE EJEMPLO SUR.')],
+      [{ p: 0, sub: 'FICTICIA', type: 'LUGAR', key: 'LUGAR:ficticia', src: 'modelo' }, { p: 0, sub: 'CALLE EJEMPLO', type: 'DIRECCION', key: 'DIR:calle ejemplo', src: 'regla' }]);
+    expect(hitsOf(await check(s))).toEqual(['Cuerpo|variante|DE LA HOZ']);
   });
 });

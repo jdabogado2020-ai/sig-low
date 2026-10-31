@@ -160,6 +160,12 @@ export function continuation(text: string, pos: number, side: 'izquierda' | 'der
   return end === pos ? null : { start: pos + 1, end };
 }
 
+/** ¿La continuación empieza con una partícula de apellido escrita con mayúscula inicial («De la Hoz», «Del Río»)? */
+function startsWithCapitalParticle(run: string): boolean {
+  const w = /^[\p{L}\p{M}'’]+/u.exec(run)?.[0];
+  return w !== undefined && /^\p{Lu}/u.test(w) && PARTICULAS.has(foldWord(w));
+}
+
 /** Lo que queda de un trozo copiado tras quitar blancos, signos y palabras de función en los bordes (R-MOD-03): null si no lleva dato. */
 function dataSpan(text: string, start: number, end: number, kind: PartKind): { start: number; end: number } | null {
   const t = trimFunctionWords(text.slice(start, end), kind);
@@ -216,7 +222,11 @@ function locate(sec: Sec, s: number, e: number): Loc {
 
 interface Target { entity: Entity; primary: boolean }
 interface LiteralTarget { text: string; target: Target }
-interface FoldedTarget { folded: string; re: RegExp; single: boolean; target: Target; mode: 'normalizado' | 'variante'; conf?: Confidence; cls?: VariantClass; derived?: true }
+interface FoldedTarget {
+  folded: string; re: RegExp; single: boolean; target: Target; mode: 'normalizado' | 'variante'; conf?: Confidence; cls?: VariantClass; derived?: true;
+  /** PB-4-r2 · La forma escrita (NFC, minúsculas) de una palabra corta con tilde («sá»): el acierto de la vista plegada solo vale si la conserva. */
+  exact?: string;
+}
 interface NumTarget { digits: string; alnum: boolean; tel: boolean; dv: string | null; target: Target; re: RegExp }
 
 /** «del municipio de Cartago» → «Cartago» (7.13.2). */
@@ -363,15 +373,16 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     valuesSearched++;
     if (/\p{L}/u.test(text)) addFolded(text, target, 'normalizado', false);
   };
-  const addFolded = (text: string, target: Target, mode: 'normalizado' | 'variante', count: boolean, conf?: Confidence, cls?: VariantClass, derived?: true): void => {
+  const addFolded = (text: string, target: Target, mode: 'normalizado' | 'variante', count: boolean, conf?: Confidence, cls?: VariantClass, derived?: true, exact?: string): void => {
     const f = foldList(text).trim();
-    const k = `${mode}\u0000${f}`;
+    const k = `${mode}\u0000${f}\u0000${exact ?? ''}`;
     if (f === '' || seenFolded.has(k)) return;
     seenFolded.add(k);
     const ft: FoldedTarget = { folded: f, re: foldedRegex(f), single: f.split(/[ -]+/u).filter((x) => x !== '').length === 1, target, mode };
     if (conf !== undefined) ft.conf = conf;
     if (cls !== undefined) ft.cls = cls;
     if (derived === true) ft.derived = true;
+    if (exact !== undefined) ft.exact = exact;
     folded.push(ft);
     if (count) valuesSearched++;
   };
@@ -427,6 +438,15 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     for (const o of originals) {
       const fo = foldList(o).trim();
       for (const r of nameRuns(o)) {
+        // PB-4-r2 (M-60, G4) · La lista no genera como forma suelta una palabra de dos letras («Sá» da «sa»: la descarta 7.9.5 por corta),
+        // pero el motor la conoce: es una palabra del nombre. Se busca con su mayúscula inicial y su tilde, para no tomar el sufijo «SA».
+        // Solo en el nombre de una persona de la lista: lo que el usuario escribió es nombre; una palabra de dos letras en lo que dijo el
+        // modelo («No.» de «Cuenta No.») no lo es.
+        if (e.type === 'PERSONA' && e.caseEntityId !== undefined) {
+          for (const w of r.split(/\s+/u)) {
+            if (RE_NAME_WORD.test(w) && foldWord(w).length === 2 && !isFunctionWord(w)) addFolded(w, t, 'variante', true, 'baja', undefined, true, w.normalize('NFC').toLowerCase());
+          }
+        }
         const fr = foldList(r).trim();
         if (fr === '' || seenRun.has(fr)) continue;
         seenRun.add(fr);
@@ -477,6 +497,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
       for (const m of view.text.matchAll(ft.re)) {
         const c = toCanonicalSpan(view, m.index, m.index + m[0].length);
         if (c.end <= c.start || (single && !capitalized(text.slice(c.start, c.end)))) continue;
+        if (ft.exact !== undefined && text.slice(c.start, c.end).normalize('NFC').toLowerCase() !== ft.exact) continue;
         const h: Omit<RawHit, 'order'> = { si: sec.index, start: c.start, end: c.end, target: ft.target, mode: ft.mode, loc: locate(sec, c.start, c.end) };
         if (ft.conf !== undefined) h.conf = ft.conf;
         if (ft.cls !== undefined) h.cls = ft.cls;
@@ -649,12 +670,17 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     for (const g of sec.segs) {
       if (g.type !== 'marker' || g.detectionId === undefined) continue;
       const d = state.detections[g.detectionId];
-      const t = d === undefined || !isNameType(d.type) ? undefined : targets.get(d.entityId);
+      // PB-4-r2 · Tras el marcador de un lugar o una dirección, solo a la derecha y solo un apellido que empieza con partícula escrita
+      // con mayúscula («[DIRECCIÓN_4] De la Hoz»): el modelo tomó la primera palabra del nombre de una persona por un lugar.
+      const lugar = d !== undefined && (d.type === 'LUGAR' || d.type === 'DIRECCION');
+      const t = d === undefined || !(isNameType(d.type) || lugar) ? undefined : targets.get(d.entityId);
       if (t === undefined) continue;
       const upper = isUpperWord(part.text.slice(g.partStart, g.partEnd));
       for (const side of ['izquierda', 'derecha'] as const) {
+        if (lugar && side === 'izquierda') continue;
         const run = continuation(sec.section.text, side === 'izquierda' ? g.outStart : g.outEnd, side, upper);
-        if (run !== null) pushDecided(sec.index, run.start, run.end, t, locate(sec, run.start, run.end), 'baja');
+        if (run === null || (lugar && !startsWithCapitalParticle(sec.section.text.slice(run.start, run.end)))) continue;
+        pushDecided(sec.index, run.start, run.end, t, locate(sec, run.start, run.end), 'baja');
       }
     }
   }
