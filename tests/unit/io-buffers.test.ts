@@ -119,7 +119,7 @@ describe('T-PV-04 buffers en cero tras cifrar', () => {
       () => cifrar(clave, 'sig-low/tabla;v=1', serializarPayload(payload())),
       () => cifrar(clave, enc, new TextEncoder().encode('Ana Ficticia Rojas')),
       async () => { await cifrar(clave, enc, serializarPayload(payload())); return cifrar(clave, enc, planos[0]!); },
-      () => exportarSiglow(FRASE, ASU, 599999, planos[1]!),
+      () => exportarSiglow(FRASE, ASU, 599999, planos[1]!, null),
       () => sellarRegistro(clave, { asuntoId: ASU, codigo: 'PRUEBA-001', creado: AHORA, actualizado: AHORA }, { sal: SAL, it: 5000001 }, planos[2]!),
     ];
     for (const f of fallas) await expect(f()).rejects.toBeInstanceOf(SiglowError);
@@ -131,7 +131,7 @@ describe('T-PV-04 buffers en cero tras cifrar', () => {
 
   it('T-PV-04 exportarSiglow deja el texto plano en ceros', async () => {
     const plano = serializarPayload(payload());
-    const json = await exportarSiglow(FRASE, ASU, 600000, plano);
+    const json = await exportarSiglow(FRASE, ASU, 600000, plano, null);
     expect(todoCeroU8(plano)).toBe(true);
     expect(json).not.toContain('Ficticia');
   });

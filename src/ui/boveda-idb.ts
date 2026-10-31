@@ -7,7 +7,7 @@ import type { AsuntoId, AsuntoRecord, VaultPayload } from '../core/types.ts';
 import { randomIds } from '../io/txt-read.ts';
 import { descargarBytes, nombreDescarga } from '../io/txt-write.ts';
 import {
-  abrirRegistro, abrirSiglow, bytesAleatorios, calibrarIteraciones, claveParaFraseNueva, derivarClave, exportarSiglow, SAL_BYTES,
+  abrirRegistro, abrirSiglow, analizarEncabezado, bytesAleatorios, calibrarIteraciones, claveParaFraseNueva, derivarClave, exportarSiglow, SAL_BYTES,
   sellarRegistro, serializarPayload, type DatosAsunto,
 } from '../vault/crypto.ts';
 import { CODIGO_RE, payloadDe, validarPayload } from '../vault/export.ts';
@@ -129,20 +129,13 @@ export const bovedaIdb: BovedaCompleta = {
     if (globalThis.isSecureContext !== true || !globalThis.crypto?.subtle) throw new SiglowError('CONTEXTO_NO_SEGURO');
     const asuntoId = datos.table.asuntoId;
     const c = codigoValido(codigo);
-    // Con el asunto guardado, la frase debe abrir su registro: una frase mal escrita no produce un .siglow que nadie abre.
-    const r = idbDisponible() ? await leerRegistro(asuntoId).catch(() => null) : null;
-    let it: number;
-    let creado: string;
-    if (r) {
-      const { abierto } = await descifrarRegistro(r, frase);
-      it = abierto.it;
-      creado = abierto.creado;
-    } else {
-      it = await calibrarIteraciones();
-      creado = ahora();
-    }
+    // Con el asunto guardado, exportarSiglow exige que la frase abra su registro (B-16): una frase mal escrita no produce un
+    // .siglow que nadie abre. Un registro ilegible no se salta: el error sube. Sin registro («No guardar») no hay con qué comparar.
+    const r = idbDisponible() ? await leerRegistro(asuntoId) : null;
+    const it = r ? analizarEncabezado(r.encabezado).it : await calibrarIteraciones();
+    const creado = r ? r.creado : ahora();
     const plano = serializarPayload(payloadDe(datos, { asuntoId, codigo: c, creado, actualizado: ahora() }, __SIGLOW_VERSION__));
-    const json = await exportarSiglow(frase, asuntoId, it, plano);
+    const json = await exportarSiglow(frase, asuntoId, it, plano, r);
     const archivo = nombreDescarga('tabla', 'siglow');
     descargarBytes(new TextEncoder().encode(json), MIME_SIGLOW, archivo);
     return { archivo };

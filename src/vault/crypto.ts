@@ -130,9 +130,14 @@ export function armarEncabezado(p: { uso: UsoEncabezado; asuntoId: AsuntoId; it:
   return texto;
 }
 
-/** Encabezado con IV nuevo de crypto.getRandomValues (6.7.3: nuevo en cada cifrado). */
+/** Encabezados de nuevoEncabezado todavía sin usar: cifrar acepta solo estos, y cada uno una sola vez (B-15, INV-V02). */
+const encabezadosNuevos = new Set<string>();
+
+/** Encabezado con IV nuevo de crypto.getRandomValues (6.7.3: nuevo en cada cifrado). Sirve para un solo cifrado. */
 export function nuevoEncabezado(p: { uso: UsoEncabezado; asuntoId: AsuntoId; it: number; sal: Uint8Array }): string {
-  return armarEncabezado({ ...p, iv: bytesAleatorios(IV_BYTES) });
+  const texto = armarEncabezado({ ...p, iv: bytesAleatorios(IV_BYTES) });
+  encabezadosNuevos.add(texto);
+  return texto;
 }
 
 /**
@@ -213,7 +218,12 @@ export async function claveParaFraseNueva(pass: string, codigo: string, it?: num
 }
 
 // ===== AES-GCM con AAD (6.7.2, 6.7.3) =====
-/** IV ya usados por clave en esta sesión: un IV repetido con la misma clave se rechaza (INV-V02). */
+/**
+ * IV ya vistos por objeto CryptoKey en esta sesión: los que cifró y el del registro con que se abrió (abrirRegistro). Es una
+ * defensa adicional, no la garantía: dos CryptoKey derivados de la misma frase y sal son la misma clave pero objetos
+ * distintos. La garantía de INV-V02 es que cifrar solo acepta un encabezado recién creado por nuevoEncabezado (IV aleatorio
+ * de 96 bits) y una sola vez.
+ */
 const ivsUsados = new WeakMap<CryptoKey, Set<string>>();
 function registrarIv(clave: CryptoKey, ivB64: string): void {
   let usados = ivsUsados.get(clave);
@@ -225,13 +235,16 @@ function registrarIv(clave: CryptoKey, ivB64: string): void {
 const aad = (encabezado: string): Uint8Array<ArrayBuffer> => new TextEncoder().encode(encabezado);
 
 /**
- * Cifra `plano` (múltiplo positivo de 4096 bytes, 6.7.4) con el IV del encabezado y AAD = bytes del encabezado.
+ * Cifra `plano` (múltiplo positivo de 4096 bytes, 6.7.4) con el IV del encabezado y AAD = bytes del encabezado. Solo admite
+ * un encabezado recién creado por nuevoEncabezado y lo consume: el encabezado de un registro o de un archivo, ya usado, da
+ * ERROR_INTERNO (B-15). Para guardar se usa sellarRegistro; para exportar, exportarSiglow.
  * `plano` queda en ceros al terminar, también si falla (T-PV-04).
  */
 export async function cifrar(clave: CryptoKey, encabezado: string, plano: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> {
   try {
     const e = analizarEncabezado(encabezado);
     if (plano.byteLength === 0 || plano.byteLength % BLOQUE !== 0) falla('ENTRADA_INVALIDA');
+    if (!encabezadosNuevos.delete(encabezado)) falla('ERROR_INTERNO');
     registrarIv(clave, e.ivB64);
     try {
       return new Uint8Array(await subtle().encrypt({ name: 'AES-GCM', iv: e.iv, additionalData: aad(encabezado), tagLength: TAG_BITS }, clave, plano));
@@ -313,6 +326,7 @@ export async function abrirRegistro(r: AsuntoRecord, pass: string): Promise<{ cl
     || !igualesBytes(new Uint8Array(r.iv), e.iv) || !ctValido(r.ct.byteLength)) falla('ARCHIVO_ALTERADO');
   const clave = await derivarClave(pass, e.sal, e.it);
   const plano = await descifrar(clave, r.encabezado, new Uint8Array(r.ct));
+  registrarIv(clave, e.ivB64);   // B-15: el IV del registro ya se usó con esta clave
   return { clave, sal: e.sal, it: e.it, plano };
 }
 
@@ -331,13 +345,22 @@ export function armarSiglow(encabezado: string, ct: Uint8Array): string {
   return JSON.stringify(archivo);
 }
 
-/** Exportar: sal nueva, uso=exportacion, IV nuevo, cifrar y armar el JSON. `plano` queda en ceros, también si falla. */
-export async function exportarSiglow(pass: string, asuntoId: AsuntoId, it: number, plano: Uint8Array<ArrayBuffer>): Promise<string> {
+/**
+ * Exportar (6.7.4): con el asunto guardado (`registro`), la frase debe abrir ese registro antes de exportar (B-16): una frase
+ * mal escrita da CONTRASENA_O_ARCHIVO y no produce un .siglow que nadie abre. `registro` null solo con «No guardar» (la frase
+ * es nueva y la interfaz la pide dos veces). Después: sal nueva, uso=exportacion, IV nuevo, cifrar y armar el JSON.
+ * `plano` queda en ceros, también si falla.
+ */
+export async function exportarSiglow(pass: string, asuntoId: AsuntoId, it: number, plano: Uint8Array<ArrayBuffer>, registro: AsuntoRecord | null): Promise<string> {
   try {
     if (!itEnRango(it)) falla('PARAMETROS_FUERA_DE_RANGO');
+    if (registro !== null) {
+      if (registro.asuntoId !== asuntoId) falla('ENTRADA_INVALIDA');
+      (await abrirRegistro(registro, pass)).plano.fill(0);
+    }
     const sal = bytesAleatorios(SAL_BYTES);
-    const encabezado = nuevoEncabezado({ uso: 'exportacion', asuntoId, it, sal });
     const clave = await derivarClave(pass, sal, it);
+    const encabezado = nuevoEncabezado({ uso: 'exportacion', asuntoId, it, sal });
     return armarSiglow(encabezado, await cifrar(clave, encabezado, plano));
   } finally {
     plano.fill(0);

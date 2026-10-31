@@ -79,8 +79,10 @@ describe('T-CI-01 vector V-SIGLOW-1', () => {
     expect(sha(plano)).toBe(SHA_PLANO);
   });
 
-  it('T-CI-01 INV-V03 cifrar con la frase, la sal y el IV del vector da su ct (4112 B, 5484 car., sha256) y armarSiglow su .siglow', async () => {
-    const ct = await C.cifrar(claveVector, ENC, enc(PLANO_TXT));
+  it('T-CI-01 INV-V03 la clave de derivarClave con la frase y la sal del vector, AES-GCM con su IV y AAD = encabezado, da su ct (4112 B, 5484 car., sha256) y armarSiglow su .siglow', async () => {
+    // cifrar solo admite encabezados recién creados (B-15): el vector, con IV fijo, se cifra con Web Crypto directo.
+    expect(await codigoDe(() => C.cifrar(claveVector, ENC, enc(PLANO_TXT)))).toBe('ERROR_INTERNO');
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: C.deBase64('EBESExQVFhcYGRob')!, additionalData: enc(ENC), tagLength: 128 }, claveVector, enc(PLANO_TXT)));
     expect(ct.byteLength).toBe(4112);
     expect(sha(ct)).toBe(SHA_CT);
     const b64 = C.aBase64(ct);
@@ -239,7 +241,7 @@ describe('T-CI-04 iteraciones fuera de rango', () => {
     const e = espias();
     for (const it of [599999, 5000001, 1000000000, Number.NaN, Infinity, 600000.5]) {
       expect(await codigoDe(() => C.derivarClave(FRASE, SAL, it)), String(it)).toBe('PARAMETROS_FUERA_DE_RANGO');
-      expect(await codigoDe(() => C.exportarSiglow(FRASE, ID, it, new Uint8Array(4096))), String(it)).toBe('PARAMETROS_FUERA_DE_RANGO');
+      expect(await codigoDe(() => C.exportarSiglow(FRASE, ID, it, new Uint8Array(4096), null)), String(it)).toBe('PARAMETROS_FUERA_DE_RANGO');
       expect(await codigoDe(() => C.claveParaFraseNueva('mesa azul tren nueve lámpara', 'PRUEBA-001', it)), String(it)).toBe('PARAMETROS_FUERA_DE_RANGO');
     }
     expect(await codigoDe(() => C.derivarClave(FRASE, new Uint8Array(8), 600000))).toBe('PARAMETROS_FUERA_DE_RANGO');
@@ -365,16 +367,51 @@ describe('T-CI-07 propiedades', () => {
     expect(ivs.size).toBe(1000);
   });
 
-  it('T-CI-07 INV-V02 cifrar dos veces con la misma clave y el mismo IV se rechaza (ERROR_INTERNO)', async () => {
+  it('T-CI-07 INV-V02 INV-V03 cifrar usa el IV y los bytes de un encabezado recién creado, y lo consume: repetirlo o uno ajeno → ERROR_INTERNO', async () => {
     const clave = await C.derivarClave(FRASE, SAL, 600000);
-    await C.cifrar(clave, ENC, enc(PLANO_TXT));
-    expect(await codigoDe(() => C.cifrar(clave, ENC, enc(PLANO_TXT)))).toBe('ERROR_INTERNO');
-    expect(await codigoDe(() => C.cifrar(clave, ENC.replace('uso=exportacion', 'uso=almacen'), enc(PLANO_TXT)))).toBe('ERROR_INTERNO');
+    const h = C.nuevoEncabezado({ uso: 'almacen', asuntoId: ID, it: 600000, sal: SAL });
+    const ct = await C.cifrar(clave, h, enc(PLANO_TXT));
+    const iv = C.analizarEncabezado(h).iv;
+    expect(sha(new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv, additionalData: enc(h), tagLength: 128 }, clave, ct)))).toBe(SHA_PLANO);
+    const otro = enc(PLANO_TXT);
+    expect(await codigoDe(() => C.cifrar(clave, h, otro))).toBe('ERROR_INTERNO');           // mismo encabezado, mismo IV
+    expect(otro.every((x) => x === 0)).toBe(true);
+    expect(await codigoDe(() => C.cifrar(clave, ENC, enc(PLANO_TXT)))).toBe('ERROR_INTERNO');  // armado fuera de nuevoEncabezado
+    expect(await codigoDe(() => C.cifrar(clave, C.armarEncabezado({ uso: 'almacen', asuntoId: ID, it: 600000, sal: SAL, iv: new Uint8Array(12) }), enc(PLANO_TXT)))).toBe('ERROR_INTERNO');
+  });
+
+  it('T-CI-07 INV-V02 B-15: con la clave de abrirRegistro no se puede volver a cifrar con el encabezado (ni el IV) del registro', async () => {
+    const datos = { asuntoId: ID, codigo: 'PRUEBA-001', creado: '2026-10-22T20:00:00.000Z', actualizado: '2026-10-22T20:00:00.000Z' };
+    const r = await C.sellarRegistro(claveVector, datos, { sal: SAL, it: 600000 }, C.serializarPayload(PAYLOAD));
+    const abierto = await C.abrirRegistro(r, FRASE);
+    abierto.plano.fill(0);
+    const plano = C.serializarPayload(PAYLOAD);
+    expect(await codigoDe(() => C.cifrar(abierto.clave, r.encabezado, plano))).toBe('ERROR_INTERNO');
+    expect(plano.every((x) => x === 0)).toBe(true);
+    // Guardar otra vez con sellarRegistro: encabezado e IV nuevos.
+    const r2 = await C.sellarRegistro(abierto.clave, datos, { sal: abierto.sal, it: abierto.it }, C.serializarPayload(PAYLOAD));
+    expect(C.analizarEncabezado(r2.encabezado).ivB64).not.toBe(C.analizarEncabezado(r.encabezado).ivB64);
+    expect(sha((await C.abrirRegistro(r2, FRASE)).plano)).toBe(SHA_PLANO);
+  });
+
+  it('T-CI-07 B-16: exportarSiglow con el registro del asunto exige que la frase lo abra; frase errónea → CONTRASENA_O_ARCHIVO sin exportar', async () => {
+    const datos = { asuntoId: ID, codigo: 'PRUEBA-001', creado: '2026-10-22T20:00:00.000Z', actualizado: '2026-10-22T20:00:00.000Z' };
+    const r = await C.sellarRegistro(claveVector, datos, { sal: SAL, it: 600000 }, C.serializarPayload(PAYLOAD));
+    const e = espias();
+    const plano = C.serializarPayload(PAYLOAD);
+    expect(await codigoDe(() => C.exportarSiglow(SIN_TILDES, ID, 600000, plano, r))).toBe('CONTRASENA_O_ARCHIVO');
+    expect(plano.every((x) => x === 0)).toBe(true);
+    expect(e.deriveKey).toHaveBeenCalledTimes(1);   // solo la comprobación; no se derivó la clave de exportación
+    vi.restoreAllMocks();
+    const otroId = { ...r, asuntoId: 'asu_ffffffffffffffffffffffffffffffff' as AsuntoId };
+    expect(await codigoDe(() => C.exportarSiglow(FRASE, ID, 600000, C.serializarPayload(PAYLOAD), otroId))).toBe('ENTRADA_INVALIDA');
+    const json = await C.exportarSiglow(FRASE_NFD, ID, 600000, C.serializarPayload(PAYLOAD), r);
+    expect(sha((await C.abrirSiglow(enc(json), FRASE)).plano)).toBe(SHA_PLANO);
   });
 
   it('T-CI-07 dos exportaciones de la misma tabla, sin valores fijos, difieren en sal, iv y ct, y las dos se abren', async () => {
-    const a = JSON.parse(await C.exportarSiglow(FRASE, ID, 600000, C.serializarPayload(PAYLOAD))) as typeof VECTOR;
-    const b = JSON.parse(await C.exportarSiglow(FRASE, ID, 600000, C.serializarPayload(PAYLOAD))) as typeof VECTOR;
+    const a = JSON.parse(await C.exportarSiglow(FRASE, ID, 600000, C.serializarPayload(PAYLOAD), null)) as typeof VECTOR;
+    const b = JSON.parse(await C.exportarSiglow(FRASE, ID, 600000, C.serializarPayload(PAYLOAD), null)) as typeof VECTOR;
     expect(Object.keys(a)).toEqual(['formato', 'v', 'kdf', 'cifrado', 'encabezado', 'ct']);
     expect(a.kdf.sal).not.toBe(b.kdf.sal);
     expect(a.cifrado.iv).not.toBe(b.cifrado.iv);
@@ -566,7 +603,7 @@ describe('T-CI-03 archivo alterado: texto plano inválido (paso 11, PD-4)', () =
     const { validarPayload } = await import('../../src/vault/export');
     const o = base();
     (o['table'] as Record<string, unknown>)['counters'] = { CC: 1 };
-    const json = await C.exportarSiglow(FRASE, ID, 600000, plano(o));
+    const json = await C.exportarSiglow(FRASE, ID, 600000, plano(o), null);
     const abierto = await C.abrirSiglow(enc(json), FRASE);
     expect(await codigoDe(() => validarPayload(abierto.plano, abierto.asuntoId))).toBe('ARCHIVO_ALTERADO');
   });

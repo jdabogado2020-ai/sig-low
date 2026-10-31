@@ -33,7 +33,7 @@ const HTML = `<!doctype html>
 `;
 // Arnés: no es parte de la app; solo devuelve tiempos y huellas, nunca texto plano.
 const TS = `import { bovedaIdb } from '../../src/ui/boveda-idb.ts';
-import { abrirSiglow, armarSiglow, cifrar, derivarClave, iteracionesPara, medirT600k, serializarPayload } from '../../src/vault/crypto.ts';
+import { abrirSiglow, armarSiglow, derivarClave, exportarSiglow, iteracionesPara, medirT600k, serializarPayload } from '../../src/vault/crypto.ts';
 const FRASE = 'frase de prueba ficticia ñandú';
 const ID = 'asu_00112233445566778899aabbccddeeff';
 const ENC = 'sig-low/tabla;v=1;uso=exportacion;id=' + ID + ';kdf=PBKDF2;hash=SHA-256;it=600000;sal=AAECAwQFBgcICQoLDA0ODw==;cif=AES-GCM;iv=EBESExQVFhcYGRob;tag=128';
@@ -68,10 +68,15 @@ globalThis.__boveda = {
       appVersion: '0.1.0', table: { asuntoId: ID, counters: {}, entries: {}, documents: [] }, caseList: [], relleno: '' });
     const shaPlano = await hex(plano);
     const clave = await derivarClave(FRASE, Uint8Array.from({ length: 16 }, (_, i) => i), 600000);
-    const ct = await cifrar(clave, ENC, plano);
+    // cifrar solo admite encabezados recién creados (B-15): el vector, con IV fijo, se cifra con Web Crypto del navegador.
+    const iv = Uint8Array.from({ length: 12 }, (_, i) => 0x10 + i);
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: new TextEncoder().encode(ENC), tagLength: 128 }, clave, plano));
     const json = armarSiglow(ENC, ct);
     const nfd = await abrirSiglow(new TextEncoder().encode(json), FRASE.normalize('NFD'));
-    return { shaPlano, shaCt: await hex(ct), largoCt: ct.byteLength, shaNfd: await hex(nfd.plano), planoEnCeros: plano.every((x) => x === 0) };
+    // exportarSiglow (sin registro: «No guardar») deja el texto plano en ceros.
+    const otro = plano.slice();
+    await exportarSiglow(FRASE, ID, 600000, otro, null);
+    return { shaPlano, shaCt: await hex(ct), largoCt: ct.byteLength, shaNfd: await hex(nfd.plano), planoEnCeros: otro.every((x) => x === 0) };
   },
 };
 `;
@@ -227,6 +232,15 @@ test.describe('bóveda en el navegador (arnés)', () => {
     expect(r['almacenes']).toEqual([0, 0, '']);                                             // INV-V07
     const asuntoId = r['asuntoId'] as string;
     const salRegistro = /;sal=([^;]+);/.exec(r['encabezado'] as string)![1];
+
+    // B-16: con el asunto guardado, una frase que no abre el registro no exporta nada.
+    let descargas = 0;
+    page.on('download', () => { descargas++; });
+    expect(await page.evaluate(async ({ lista, id }) => {
+      const h = (globalThis as unknown as { __ayuda: Ayuda }).__ayuda;
+      return h.codigo(() => (globalThis as unknown as G).__bovedaIdb.exportar({ caseList: lista as never, table: h.tabla(id, 300) as never }, 'PRUEBA-001', 'frase de prueba ficticia nandu'));
+    }, { lista: LISTA, id: r['asuntoId'] as string })).toBe('CONTRASENA_O_ARCHIVO');
+    expect(descargas).toBe(0);
 
     // Exportar: descarga con nombre neutro y sal nueva.
     const [descarga] = await Promise.all([
