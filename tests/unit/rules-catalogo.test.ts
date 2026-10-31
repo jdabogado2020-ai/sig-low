@@ -525,6 +525,10 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     ['direcciones sin cerrar', 'Calle 45 Sur # '.repeat(N / 15)],
     ['mayúsculas encadenadas', 'Edificio Prueba Ejemplo Ficticio Real '.repeat(N / 37)],
     ['folios y artículos encadenados', 'artículo 1, 2, 3, 4, 5 y 6 al 7 '.repeat(N / 31)],
+    // PA-6-r1: `{NUMPH}` ya no recorre toda una racha de numerales desde cada uno (tope de 16) ni cruza más de un salto seguido.
+    ['numerales encadenados en una línea (R-FEC-06, R-VAL-04, R-VAL-05)', 'mil '.repeat(N / 4)],
+    ['numerales encadenados con un salto entre cada uno', 'mil\n'.repeat(N / 4)],
+    ['fechas y valores partidos por saltos', 'catorce (14) de marzo\nde dos mil veintiséis (2026) y cuarenta millones\nde pesos ($40.000.000)\n'.repeat(N / 96)],
   ];
   it.each(entradas)('%s', async (_n, texto) => {
     const reglas = await reglasDeModulos(MODULOS_REGLAS);
@@ -593,6 +597,16 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     ['R-BAR-01', 'R-BAR-01 (direccion.ts): «barrio» y tabuladores', 'barrio' + TB + 'x'],
     ['R-FEC-04', 'R-FEC-04 (fechas.ts): un día de la semana y tabuladores', 'lunes' + TB + 'x'],
     ['R-FEC-09', 'R-FEC-09 (fechas.ts): «14 de marzo» y tabuladores', '14 de marzo' + TB + 'x'],
+    // PA-6-r1: el separador con un salto de línea (HN) es `H+(?:⏎H*)?|⏎H*`: cada rama empieza distinto y el salto es único.
+    ['R-FEC-06', 'HN (fechas.ts): un numeral, tabuladores, un salto, tabuladores y otra cosa', 'diez' + TB + '\n' + TB + 'x'],
+    ['R-FEC-06', 'HN0 (fechas.ts): «diez», tabuladores, un salto y «(»', 'diez' + TB + '\n' + TB + '(x'],
+    ['R-FEC-04', 'HN (fechas.ts): un día, tabuladores, un salto, tabuladores y otra cosa', '14' + TB + '\n' + TB + 'x'],
+    ['R-FEC-05', 'HN (fechas.ts): un mes, tabuladores, un salto, tabuladores y otra cosa', 'marzo' + TB + '\n' + TB + 'x'],
+    ['R-FEC-09', 'HN (fechas.ts): «14 de», tabuladores, un salto, tabuladores y otra cosa', '14 de' + TB + '\n' + TB + 'x'],
+    ['R-VAL-04', 'HN (valores.ts): letras, tabuladores, un salto, tabuladores y otra cosa', 'cuarenta y ocho millones' + TB + '\n' + TB + 'x'],
+    ['R-VAL-04', 'HN0 (valores.ts): letras, tabuladores, un salto y «(»', 'cuarenta y ocho millones' + TB + '\n' + TB + '(x'],
+    ['R-VAL-05', 'HN (valores.ts): «diez (10)», tabuladores, un salto, tabuladores y otra cosa', 'diez (10)' + TB + '\n' + TB + 'x'],
+    ['R-VAL-03', 'HN (valores.ts): «48 millones», tabuladores, un salto, tabuladores y «de»', '48 millones' + TB + '\n' + TB + 'de ' + TB + 'x'],
     ['E-NORMA-01', 'E-NORMA-01 (exclusiones.ts): «decreto» y espacios', 'decreto' + SP + 'x'],
     ['E-CIE10-01', 'E-CIE10-01 (exclusiones.ts): «diagnóstico» y espacios', 'diagnóstico' + SP + 'x'],
     ['E-DESP-01', 'E-DESP-01 (exclusiones.ts): «código del despacho» y espacios', 'código del despacho' + SP + 'x'],

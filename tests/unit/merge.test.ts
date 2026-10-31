@@ -5,6 +5,11 @@ import {
 } from '../../src/core/merge.ts';
 import type { EsVarianteDe } from '../../src/core/merge.ts';
 import { buildSearchView } from '../../src/core/normalize.ts';
+import { runRules } from '../../src/core/rules/catalog.ts';
+import { aplicarExclusiones } from '../../src/core/rules/exclusiones.ts';
+import { rules as rFechas } from '../../src/core/rules/fechas.ts';
+import { rules as rIds } from '../../src/core/rules/ids.ts';
+import { rules as rValores } from '../../src/core/rules/valores.ts';
 import type {
   CaseEntityId, Confidence, DataType, DetectionCandidate, DocId, LabelHit, MergeCandidatesFn, MergedCandidate, Part, PartId,
   PartKind, RuleRegistry, ValidatorResult,
@@ -474,6 +479,79 @@ describe('T-MO-05 · normalización, remanentes y R-MRG-01', () => {
       ]);
       expect(out).toHaveLength(1);
       expect(out[0]).toMatchObject({ precedence: 4, confidence: 'alta', score: 0.9 });
+    });
+  });
+
+  // PA-6-r1 (P0-4, VALOR 37 de 46): R-VAL-04 ya trae la cifra entre paréntesis y R-VAL-01 (con rótulo, precedencia 4) queda dentro
+  // del mismo tramo con la misma clave. Antes ganaba R-VAL-01 por precedencia y recortaba a R-VAL-04: dos detecciones, ninguna entera.
+  describe('R-MRG-01 contención: el tramo largo ya trae la cifra (7.6.5)', () => {
+    it('INV-R02 un VALOR completo y el VALOR rotulado que contiene, con la misma clave: un solo tramo con la menor precedencia', () => {
+      const t = 'asciende a cuarenta y ocho millones de pesos ($48.000.000), suma que no puedo pagar';
+      const out = run(t, [
+        mk(t, 'cuarenta y ocho millones de pesos ($48.000.000)', { type: 'VALOR', ...r5, ruleId: 'R-VAL-04', canonicalKey: 'VALOR:48000000' }),
+        mk(t, '$48.000.000', { type: 'VALOR', ...r4, ruleId: 'R-VAL-01', confidence: 'alta', canonicalKey: 'VALOR:48000000' }),
+      ]);
+      expect(show(t, out)).toEqual(['VALOR:«cuarenta y ocho millones de pesos ($48.000.000)»:alta']);
+      expect(out[0]).toMatchObject({ precedence: 4, score: 0.9 });
+    });
+    it('INV-R02 la contención también une dos FECHA con la misma clave', () => {
+      const t = 'el catorce (14) de marzo de dos mil veintiséis (14/03/2026) se radicó';
+      const out = run(t, [
+        mk(t, 'catorce (14) de marzo de dos mil veintiséis (14/03/2026)', { type: 'FECHA', ...r5, canonicalKey: 'FECHA:2026-03-14' }),
+        mk(t, '14/03/2026', { type: 'FECHA', ...r4, confidence: 'alta', canonicalKey: 'FECHA:2026-03-14' }),
+      ]);
+      expect(show(t, out)).toEqual(['FECHA:«catorce (14) de marzo de dos mil veintiséis (14/03/2026)»:alta']);
+    });
+    it('INV-R02 contención con otra clave, otro tipo o el mismo tramo no se une', () => {
+      const t = 'asciende a cuarenta y ocho millones de pesos ($84.000.000), suma';
+      const todo = 'cuarenta y ocho millones de pesos ($84.000.000)';
+      const letras = (s: string) => (s.startsWith('cuarenta') ? { start: 0, end: 'cuarenta y ocho millones de pesos'.length, canonicalKey: 'VALOR:48000000' } : null);
+      const otraClave = run(t, [
+        mk(t, todo, { type: 'VALOR', ...r5, ruleId: 'R-VAL-04', canonicalKey: 'VALOR:48000000' }),
+        mk(t, '$84.000.000', { type: 'VALOR', ...r4, confidence: 'alta', canonicalKey: 'VALOR:84000000' }),
+      ], registry({ 'R-VAL-04': letras }));
+      expect(show(t, otraClave)).toEqual(['VALOR:«cuarenta y ocho millones de pesos»:media', 'VALOR:«$84.000.000»:alta']);
+      const otroTipo = run(t, [
+        mk(t, todo, { type: 'VALOR', ...r5, canonicalKey: 'VALOR:84000000' }),
+        mk(t, '84.000.000', { type: 'CC', ...r4, canonicalKey: 'VALOR:84000000' }),
+      ]);
+      expect(show(t, otroTipo).filter((x) => x.startsWith('CC'))).toEqual(['CC:«84.000.000»:media']);
+    });
+    it('INV-R02 con las reglas reales: letras y cifra entre paréntesis, con o sin salto de línea, son un solo VALOR (alta con letras = cifra)', () => {
+      const reglas = [...rIds, ...rFechas, ...rValores];
+      const casos: Array<[string, string, string]> = [
+        ['la suma de cuarenta y ocho millones de pesos ($48.000.000) por concepto', 'cuarenta y ocho millones de pesos ($48.000.000)', 'VALOR:48000000'],
+        ['el canon es de un millón ochocientos cincuenta mil pesos ($1.850.000), pagadero', 'un millón ochocientos cincuenta mil pesos ($1.850.000)', 'VALOR:1850000'],
+        ['por un valor máximo de doscientos cincuenta mil pesos M/CTE ($250.000).\nSEGUNDA.', 'doscientos cincuenta mil pesos M/CTE ($250.000)', 'VALOR:250000'],
+        ['cobrar TRES MILLONES DE PESOS M/CTE ($3.000.000) por concepto', 'TRES MILLONES DE PESOS M/CTE ($3.000.000)', 'VALOR:3000000'],
+        ['con un salario de un\nmillón cuatrocientos veintitrés mil quinientos pesos ($1.423.500), lo que', 'un\nmillón cuatrocientos veintitrés mil quinientos pesos ($1.423.500)', 'VALOR:1423500'],
+        ['precio es de trescientos ochenta\nmillones de pesos ($380.000.000); a\ntítulo', 'trescientos ochenta\nmillones de pesos ($380.000.000)', 'VALOR:380000000'],
+        ['cobrar SIETE MILLONES\nQUINIENTOS MIL PESOS M/CTE ($7.500.000)\npor concepto', 'SIETE MILLONES\nQUINIENTOS MIL PESOS M/CTE ($7.500.000)', 'VALOR:7500000'],
+        ['por mil millones doscientos cincuenta millones de pesos ($1.250.000.000), elección', 'mil millones doscientos cincuenta millones de pesos ($1.250.000.000)', 'VALOR:1250000000'],
+      ];
+      for (const [t, esperado, clave] of casos) {
+        const part = mkPart(t);
+        const view = buildSearchView(t, 'reglas', 'cuerpo');
+        const out = mergeCandidates(part, aplicarExclusiones(view, runRules(view, PART_ID, reglas, 2026)), NO_RULES);
+        assertInvariants(part, out);
+        expect(out.filter((d) => d.type === 'VALOR').map((d) => [t.slice(d.start, d.end), d.canonicalKey]), t).toEqual([[esperado, clave]]);
+      }
+    });
+    it('INV-R02 con las reglas reales: una fecha en letras y cifra partida por un salto de línea es una sola FECHA', () => {
+      const reglas = [...rIds, ...rFechas, ...rValores];
+      const casos: Array<[string, string, string]> = [
+        ['declaró el dieciocho (18) de julio\nde dos mil veintiséis (2026). Luego', 'dieciocho (18) de julio\nde dos mil veintiséis (2026)', 'FECHA:2026-07-18'],
+        ['firman en Bucaramanga a los\ndiecisiete (17) días del mes de julio de\n2026\nEntre los suscritos', 'diecisiete (17) días del mes de julio de\n2026', 'FECHA:2026-07-17'],
+        ['se otorgará el quince\n(15) de septiembre de dos mil veintiséis\n(2026) en la Notaría', 'quince\n(15) de septiembre de dos mil veintiséis\n(2026)', 'FECHA:2026-09-15'],
+        ['hasta el\nveintiuno (21) de agosto de dos mil\nveintisiete (2027). Sobre', 'veintiuno (21) de agosto de dos mil\nveintisiete (2027)', 'FECHA:2027-08-21'],
+      ];
+      for (const [t, esperado, clave] of casos) {
+        const part = mkPart(t);
+        const view = buildSearchView(t, 'reglas', 'cuerpo');
+        const out = mergeCandidates(part, aplicarExclusiones(view, runRules(view, PART_ID, reglas, 2026)), NO_RULES);
+        assertInvariants(part, out);
+        expect(out.filter((d) => d.type === 'FECHA').map((d) => [t.slice(d.start, d.end), d.canonicalKey]), t).toEqual([[esperado, clave]]);
+      }
     });
   });
 });

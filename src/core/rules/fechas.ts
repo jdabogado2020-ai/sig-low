@@ -9,6 +9,14 @@ import { MES_ABR, MESES, NUMERAL_WORDS, expandYY, isoDate, monthNum, romanMonth,
 // ---------------------------------------------------------------------------------------------------------------------
 /** `{H}`: blanco horizontal (ninguna expresión cruza un salto de línea). */
 export const H = '[ \\t]';
+/**
+ * `{HN}` (PA-6-r1): separador entre dos componentes de una fecha o de un valor: blancos, o blancos con **un** salto de línea
+ * (el que mete el PDF al partir una línea, F43). Dos saltos son un párrafo y no se cruzan. Es el lenguaje de `H+` más `H*⏎H*`,
+ * escrito sin ambigüedad (cada alternativa empieza distinto y el salto es único): lineal en la racha de blancos.
+ */
+export const HN = `(?:${H}+(?:\\n${H}*)?|\\n${H}*)`;
+/** `{HN0}`: como `{HN}`, pero admite vacío (`H*` con un salto opcional). */
+export const HN0 = `${H}*(?:\\n${H}*)?`;
 /** `{LB}` y `{RB}`: fronteras Unicode de palabra/número (sin `\b`, que solo entiende ASCII). */
 export const LB = '(?<![\\p{L}\\p{N}])';
 export const RB = '(?![\\p{L}\\p{N}])';
@@ -32,7 +40,10 @@ export const F = {
   MES: alt(MESES) + '(?!\\p{L})',
   MES_ABR: alt(MES_ABR) + '(?!\\p{L})\\.?',
 };
-F.NUMPH = `${F.NW}(?:${H}+(?:y${H}+)?${F.NW})*`;
+// Hasta 16 numerales seguidos (la cifra más larga del corpus tiene 9): sin tope, una racha de «mil mil mil…» se recorría entera desde
+// cada «mil» y la búsqueda era cuadrática (40.000 caracteres: 2,3 s; con un salto entre palabras, PA-6-r1, habría pasado a las dos
+// formas). El tope no cambia el resultado de ningún monto ni fecha reales.
+F.NUMPH = `${F.NW}(?:${HN}(?:y${HN})?${F.NW}){0,15}`;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Contexto de las fechas (7.5.5). Se evalúa sobre el texto anterior a la fecha.
@@ -129,21 +140,21 @@ const rFEC03: RuleSpec = {
 
 const rFEC04: RuleSpec = {
   id: 'R-FEC-04', type: 'FECHA', flags: 'dgiu',
-  source: `${LB}(?:(?<wd>lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)(?:${H}*,)?${H}+)?(?<d>[12]\\d|3[01]|0?[1-9])(?!\\d)(?:\\.?º\\.?|o\\.?(?!\\p{L}))?${H}+(?:de${H}+)?(?<m>${F.MES}|${F.MES_ABR})(?:${H}*,)?${H}+(?:(?:de|del)${H}+)?(?:a[ñn]o${H}+)?(?<y>(?:1[89]|20)\\d{2})${RB}`,
+  source: `${LB}(?:(?<wd>lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)(?:${H}*,)?${HN})?(?<d>[12]\\d|3[01]|0?[1-9])(?!\\d)(?:\\.?º\\.?|o\\.?(?!\\p{L}))?${HN}(?:de${HN})?(?<m>${F.MES}|${F.MES_ABR})(?:${H}*,)?${HN}(?:(?:de|del)${HN})?(?:a[ñn]o${HN})?(?<y>(?:1[89]|20)\\d{2})${RB}`,
   assess: (m, ctx) => cerrarFecha(m, ctx.view.text, Number(g(m, 'y')), monthNum(g(m, 'm')), Number(g(m, 'd')), 'alta'),
 };
 
 const rFEC05: RuleSpec = {
   id: 'R-FEC-05', type: 'FECHA', flags: 'dgiu',
-  source: `${LB}(?<m>${F.MES}|${F.MES_ABR})${H}+(?<d>[12]\\d|3[01]|0?[1-9])(?!\\d)(?:${H}*,${H}*|${H}+(?:de|del)${H}+)(?<y>(?:1[89]|20)\\d{2})${RB}`,
+  source: `${LB}(?<m>${F.MES}|${F.MES_ABR})${HN}(?<d>[12]\\d|3[01]|0?[1-9])(?!\\d)(?:${H}*,${HN0}|${HN}(?:de|del)${HN})(?<y>(?:1[89]|20)\\d{2})${RB}`,
   assess: (m, ctx) => cerrarFecha(m, ctx.view.text, Number(g(m, 'y')), monthNum(g(m, 'm')), Number(g(m, 'd')), 'alta'),
 };
 
 const rFEC06: RuleSpec = {
   id: 'R-FEC-06', type: 'FECHA', flags: 'dgiu',
-  source: `${LB}(?:a${H}+los${H}+)?(?:(?<dw>${F.NUMPH})(?:${H}*\\(${H}*(?<dd>\\d{1,2})(?:\\.?º|o)?${H}*\\))?|(?<dn>\\d{1,2})(?:\\.?º)?)`
-    + `${H}+(?:d[ií]as?${H}+del${H}+mes${H}+de|del${H}+mes${H}+de|de)${H}+(?<m>${F.MES})${H}+(?:de|del)(?:${H}+a[ñn]o)?${H}+`
-    + `(?:(?<yw>${F.NUMPH})(?:${H}*\\(${H}*(?<yd>\\d{4})${H}*\\))?|(?<yn>\\d{4}))${RB}`,
+  source: `${LB}(?:a${H}+los${H}+)?(?:(?<dw>${F.NUMPH})(?:${HN0}\\(${H}*(?<dd>\\d{1,2})(?:\\.?º|o)?${H}*\\))?|(?<dn>\\d{1,2})(?:\\.?º)?)`
+    + `${HN}(?:d[ií]as?${HN}del${HN}mes${HN}de|del${HN}mes${HN}de|de)${HN}(?<m>${F.MES})${HN}(?:de|del)(?:${HN}a[ñn]o)?${HN}`
+    + `(?:(?<yw>${F.NUMPH})(?:${HN0}\\(${H}*(?<yd>\\d{4})${H}*\\))?|(?<yn>\\d{4}))${RB}`,
   assess(m, ctx) {
     const dw = g(m, 'dw'), dd = g(m, 'dd'), yw = g(m, 'yw'), yd = g(m, 'yd');
     if (dw === '' && yw === '') return null;                                                // sin letras: lo cubre R-FEC-04
@@ -186,7 +197,7 @@ const rFEC08: RuleSpec = {
 
 const rFEC09: RuleSpec = {
   id: 'R-FEC-09', type: 'FECHA', flags: 'dgiu',
-  source: `${LB}(?<d>[12]\\d|3[01]|0?[1-9]|primero)(?!\\d)(?:\\.?º\\.?|o\\.(?!\\p{L}))?${H}+de${H}+(?<m>${F.MES})(?!(?:${H}*,)?${H}+(?:de|del)${H}+(?:a[ñn]o${H}+)?(?:\\d{4}|${F.NW}))(?!${H}*(?:,${H}*)?\\d{4})`,
+  source: `${LB}(?<d>[12]\\d|3[01]|0?[1-9]|primero)(?!\\d)(?:\\.?º\\.?|o\\.(?!\\p{L}))?${HN}de${HN}(?<m>${F.MES})(?!(?:${H}*,)?${HN}(?:de|del)${HN}(?:a[ñn]o${HN})?(?:\\d{4}|${F.NW}))(?!${H}*(?:,${HN0})?\\d{4})`,
   assess(m, ctx) {
     const t = ctx.view.text;
     const ixMes = m.indices?.groups?.['m'];

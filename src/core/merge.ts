@@ -253,7 +253,7 @@ function uncovered(c: MergedCandidate, over: readonly MergedCandidate[]): Array<
 // 7.11.1 pasos 1 y 2
 // ---------------------------------------------------------------------------------------------
 
-/** Paso 1 · R-MRG-01: VALOR + VALOR o FECHA + FECHA con la misma clave, separados solo por « (». */
+/** Paso 1 · R-MRG-01: VALOR + VALOR o FECHA + FECHA con la misma clave, separados solo por « (» o uno dentro del otro (PA-6-r1). */
 function joinParen(work: MergedCandidate[], part: Part): MergedCandidate[] {
   const text = part.text;
   let out = work;
@@ -264,6 +264,14 @@ function joinParen(work: MergedCandidate[], part: Part): MergedCandidate[] {
       const A = cand[i] as MergedCandidate;
       for (let j = 0; j < cand.length; j++) {
         const B = cand[j] as MergedCandidate;
+        if (A !== B && A.type === B.type && A.canonicalKey === B.canonicalKey && A.start <= B.start && B.end <= A.end && A.end - A.start > B.end - B.start) {
+          // PA-6-r1 (7.6.5): el tramo más largo ya trae la cifra entre paréntesis (R-VAL-04 completa contiene a R-VAL-01, que lleva
+          // rótulo y precedencia 4). Es el mismo dato con la misma clave: un solo candidato, con la menor precedencia y la mayor confianza.
+          const best = B.precedence < A.precedence ? B : A;
+          const conf = CONF_RANK[B.confidence] > CONF_RANK[A.confidence] ? B.confidence : A.confidence;
+          joined = { a: A, b: B, w: { ...best, start: A.start, end: A.end, confidence: conf, score: Math.max(A.score, B.score), precedence: best.precedence } };
+          break;
+        }
         if (A === B || A.type !== B.type || A.canonicalKey !== B.canonicalKey || A.end > B.start) continue;
         const gap = text.slice(A.end, B.start);
         if (RE_LETTER_OR_DIGIT.test(gap) || !RE_HUECO.test(buildSearchView(gap, 'reglas', part.kind).text)) continue;

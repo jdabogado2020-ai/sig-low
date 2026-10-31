@@ -4,7 +4,7 @@
 // la cifra si difieren (Decreto 960 de 1970, art. 19).
 import type { Confidence, RuleContext, RuleSpec, RuleVerdict } from '../types.ts';
 import { wordsToNumber } from '../numerals.ts';
-import { F, H, LB, vistaLista } from './fechas.ts';
+import { F, H, HN, HN0, LB, vistaLista } from './fechas.ts';
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Lectura de cifras y multiplicadores (7.6.2)
@@ -77,7 +77,7 @@ const NOTA_ROT = { simbolo: 'ROT_VAL_1', moneda: 'ROT_VAL_2', salarios: 'ROT_VAL
 // R-VAL-01 · símbolo de pesos o COP + cifra. El grupo `l` es el símbolo (rótulo).
 const rVAL01: RuleSpec = {
   id: 'R-VAL-01', type: 'VALOR', flags: 'dgu',
-  source: `(?<![\\p{L}\\p{N}$])(?<l>COP\\$|COL\\$|\\$${H}*COP|COP|\\$)${H}*(?<num>\\d{1,3}\\.\\d{1,2}(?=${H}*${MULT_MILL})|${NUMCOP})(?:${H}*(?<mult>${MULT_MILL}|mill\\.|MM|M(?!/))(?!\\p{L}))?(?:${H}*(?<suf>${SUF_PESOS}))?(?![\\p{L}\\p{N}]|[.,]\\d)`,
+  source: `(?<![\\p{L}\\p{N}$])(?<l>COP\\$|COL\\$|\\$${H}*COP|COP|\\$)${H}*(?<num>\\d{1,3}\\.\\d{1,2}(?=${H}*(?:${MULT_MILL}|mill\\.|MM|M(?!/))(?!\\p{L}))|${NUMCOP})(?:${H}*(?<mult>${MULT_MILL}|mill\\.|MM|M(?!/))(?!\\p{L}))?(?:${H}*(?<suf>${SUF_PESOS}))?(?![\\p{L}\\p{N}]|[.,]\\d)`,
   assess(m, ctx: RuleContext) {
     const v = Math.round(parseCifra(g(m, 'num')) * multiplier(g(m, 'mult')));
     if (!Number.isFinite(v)) return null;
@@ -98,7 +98,7 @@ const rVAL02: RuleSpec = {
 // R-VAL-03 · N millones sin símbolo (alta con «de pesos»; media sin él)
 const rVAL03: RuleSpec = {
   id: 'R-VAL-03', type: 'VALOR', flags: 'dgu',
-  source: `(?<![\\p{L}\\p{N}$.,'])(?<!\\$${H8})(?<num>\\d{1,3}(?:[.,]\\d{1,3})?)${H}+(?<mult>${MULT_MILL})(?!\\p{L})(?<dp>${H}+(?:de|DE|De)${H}+(?:pesos|PESOS|Pesos)(?:${H}+(?:m/cte|M/CTE|mcte))?)?(?!${H}+(?:de|DE|De)${H}+(?!pesos|PESOS|Pesos)\\p{L})(?![\\p{L}\\p{N}])`,
+  source: `(?<![\\p{L}\\p{N}$.,'])(?<!\\$${H8})(?<num>\\d{1,3}(?:[.,]\\d{1,3})?)${H}+(?<mult>${MULT_MILL})(?!\\p{L})(?:(?<dp>${HN}(?:de|DE|De)${HN}(?:pesos|PESOS|Pesos)(?:${HN}(?:m/cte|M/CTE|mcte))?)|(?!${HN}(?:de|DE|De)${HN}(?!pesos|PESOS|Pesos)\\p{L}))(?![\\p{L}\\p{N}])`,
   assess(m, ctx) {
     const v = Math.round(parseCifra(g(m, 'num')) * multiplier(g(m, 'mult')));
     return Number.isFinite(v) ? cerrarValor(m.index, fin(m), ctx.view.text, v, g(m, 'dp') !== '' ? 'alta' : 'media') : null;
@@ -106,16 +106,18 @@ const rVAL03: RuleSpec = {
 };
 
 // R-VAL-04 · cantidad en letras y cifra entre paréntesis: UNA detección (NUMPH viene de fechas.ts)
+/** «un millón de habitantes»: tras un monto sin moneda, «de» y otra cosa (en la misma línea o en la siguiente, PA-6-r1). */
+const DE_OTRA_COSA = new RegExp(`^${HN}de${HN}(?!pesos)\\p{L}`, 'iu');
 const rVAL04: RuleSpec = {
   id: 'R-VAL-04', type: 'VALOR', flags: 'dgiu',
-  source: `${LB}(?<w>${F.NUMPH})(?:${H}+(?<cur1>de${H}+pesos|pesos)(?:${H}+(?:colombianos|m/cte|mcte|moneda${H}+(?:corriente|legal)(?:${H}+colombiana)?))*)?`
-    + `(?:${H}*\\(${H}*(?<cif>(?:\\$|COP\\$?)?${H}*(?:${NUMCOP}))${H}*\\))?(?:${H}+(?<cur2>de${H}+pesos|pesos)(?:${H}+(?:colombianos|m/cte|mcte))*)?`,
+  source: `${LB}(?<w>${F.NUMPH})(?:${HN}(?<cur1>de${HN}pesos|pesos)(?:${HN}(?:colombianos|m/cte|mcte|moneda${HN}(?:corriente|legal)(?:${HN}colombiana)?))*)?`
+    + `(?:${HN0}\\(${H}*(?<cif>(?:\\$|COP\\$?)?${H}*(?:${NUMCOP}))${H}*\\))?(?:${HN}(?<cur2>de${HN}pesos|pesos)(?:${HN}(?:colombianos|m/cte|mcte))*)?`,
   assess(m, ctx) {
     const t = ctx.view.text;
     const w = g(m, 'w'), cif = g(m, 'cif');
     const sinMoneda = g(m, 'cur1') === '' && g(m, 'cur2') === '' && !(cif !== '' && /\$|cop/iu.test(cif));
     if (sinMoneda && !/mill[oó]n/iu.test(w)) return null;                                   // sin moneda solo con millón/millones
-    if (sinMoneda && /^[ \t]+de[ \t]+(?!pesos)\p{L}/iu.test(t.slice(fin(m)))) return null;  // «un millón de habitantes»
+    if (sinMoneda && DE_OTRA_COSA.test(t.slice(fin(m)))) return null;  // «un millón de habitantes»
     const r = wordsToNumber(w);
     const c = cif !== '' ? Math.round(parseCifra(cif.replace(/^(?:\$|COP\$?)\s*/iu, ''))) : null;
     let valor: number;
@@ -137,8 +139,8 @@ const rVAL04: RuleSpec = {
 // R-VAL-05 · salarios mínimos. El grupo `l` es la unidad.
 const rVAL05: RuleSpec = {
   id: 'R-VAL-05', type: 'VALOR', flags: 'dgiu',
-  source: `${LB}(?<n>${F.NUMPH}|\\d{1,4}(?:[.,]\\d{1,2})?)(?:${H}*\\(${H}*(?<nd>\\d{1,4}(?:[.,]\\d{1,2})?)${H}*\\))?${H}+`
-    + `(?<l>salarios?${H}+m[ií]nimos?(?:${H}+(?:legales|mensuales|diarios|vigentes|legal|mensual|diario|vigente)){0,3}|s\\.m\\.m\\.l\\.m\\.v\\.?|s\\.m\\.m\\.l\\.v\\.?|s\\.m\\.l\\.m\\.v\\.?|s\\.m\\.l\\.d\\.v\\.?|s\\.m\\.l\\.v\\.?|smmlmv|smmlv|smlmv|smldv|smlv)(?![\\p{L}\\p{N}])`,
+  source: `${LB}(?<n>${F.NUMPH}|\\d{1,4}(?:[.,]\\d{1,2})?)(?:${HN0}\\(${H}*(?<nd>\\d{1,4}(?:[.,]\\d{1,2})?)${H}*\\))?${HN}`
+    + `(?<l>salarios?${HN}m[ií]nimos?(?:${HN}(?:legales|mensuales|diarios|vigentes|legal|mensual|diario|vigente)){0,3}|s\\.m\\.m\\.l\\.m\\.v\\.?|s\\.m\\.m\\.l\\.v\\.?|s\\.m\\.l\\.m\\.v\\.?|s\\.m\\.l\\.d\\.v\\.?|s\\.m\\.l\\.v\\.?|smmlmv|smmlv|smlmv|smldv|smlv)(?![\\p{L}\\p{N}])`,
   assess(m, ctx) {
     const t = ctx.view.text;
     const nTxt = g(m, 'n'), nd = g(m, 'nd');
