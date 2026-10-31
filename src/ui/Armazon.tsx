@@ -8,18 +8,13 @@ import { actualizar, useShell, type Screen } from './estado.ts';
 import { evaluarFrase } from './frase.ts';
 import { mostrarAvisoGlobal, ocultarAvisoGlobal, useAvisoGlobal } from './globales.ts';
 import { calcularHuellas, compilacionCorta } from './huellas.ts';
-import { mensajeDeCodigo, registrarMensajes, ROTULOS, t, X } from './mensajes.ts';
+import { mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
 import { obtenerListaDelCaso, obtenerTabla, quitarAvisoAsunto, agregarAvisoAsunto, useAvisosAsunto, useListaDelCaso } from './sesion.ts';
 import { codigoDeError, puertos } from './servicios.ts';
 import { useVersionCambiada } from './useActualizacion.ts';
 
-// Textos de la actualización con varias pestañas (PD-1-r1, B-11) que 8.5 no trae: ids PROVISIONALES del rango M-13xx
-// (libres en mensajes-entrada.ts y en review/base/textos.ts), pendientes de id oficial del integrador.
-const ACTUALIZACION = { otrasPestanas: 'M-1399', versionCambiada: 'M-1369' } as const;
-registrarMensajes({
-  'M-1399': 'Cierre las otras pestañas de Sig-Low para actualizar ahora.',
-  'M-1369': 'Sig-Low se actualizó desde otra pestaña. Esta pestaña sigue con la versión anterior y algunas funciones pueden fallar: guarde o exporte la tabla y después recárguela.',
-});
+// Textos de la actualización con varias pestañas (PD-1-r1, B-11): ids definitivos M-1212 y M-1213, en `EXTRA` de mensajes.ts.
+const ACTUALIZACION = { otrasPestanas: 'M-1212', versionCambiada: 'M-1213' } as const;
 
 export const NOMBRE_PANTALLA: Record<Screen, `M-${number}`> = {
   inicio: X.inicio, lista: X.lista, entrada: X.entrada, procesando: X.procesando, revision: X.revision, listo: X.listo,

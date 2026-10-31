@@ -11,7 +11,7 @@ function anunciarMencion(id: DetectionId): void {
   const s = obtenerInstantanea().state;
   const d = s?.detections[id];
   if (d === undefined) return;
-  anunciar(tx('M-1360', { tipo: nombreDeTipo(d.type), estado: estadoEnMinusculas(d) }));
+  anunciar(tx('M-1760', { tipo: nombreDeTipo(d.type), estado: estadoEnMinusculas(d) }));
 }
 
 export function aceptar(id: DetectionId): boolean {
@@ -54,29 +54,29 @@ export function rechazarEntidad(id: EntityId, reason?: RejectReason): boolean {
   const n = antes !== null && e !== undefined ? pendientesDe(antes, e) : 0;
   const tipo = e === undefined ? '' : nombreDeTipo(e.type);
   const r = despachar(reason === undefined ? { kind: 'rechazar_entidad', entityId: id } : { kind: 'rechazar_entidad', entityId: id, reason });
-  if (r.ok) anunciar(tx('M-1361', { n, tipo, p: pendientesTotales(r.state) }));
+  if (r.ok) anunciar(tx('M-1761', { n, tipo, p: pendientesTotales(r.state) }));
   return r.ok;
 }
 export function cambiarRol(id: EntityId, role: Role): boolean {
   const e = obtenerInstantanea().state?.entities[id];
   const r = despachar({ kind: 'cambiar_rol', entityId: id, role });
-  if (r.ok && e !== undefined) anunciar(tx('M-1365', { tipo: nombreDeTipo(e.type) }));
+  if (r.ok && e !== undefined) anunciar(tx('M-1765', { tipo: nombreDeTipo(e.type) }));
   return r.ok;
 }
 export function cambiarTipo(id: DetectionId, tipo: DetectableType): boolean {
   const r = despachar({ kind: 'cambiar_tipo', detectionId: id, type: tipo });
-  if (r.ok) anunciar(tx('M-1364', { tipo: nombreDeTipo(tipo) }));
+  if (r.ok) anunciar(tx('M-1764', { tipo: nombreDeTipo(tipo) }));
   return r.ok;
 }
 export function separar(id: DetectionId): boolean {
   const r = despachar({ kind: 'separar_mencion', detectionId: id });
-  if (r.ok) anunciar(tx('M-1363'));
+  if (r.ok) anunciar(tx('M-1763'));
   return r.ok;
 }
 export function unir(desde: EntityId, hacia: EntityId): boolean {
   const e = obtenerInstantanea().state?.entities[hacia];
   const r = despachar({ kind: 'unir_entidades', fromId: desde, intoId: hacia });
-  if (r.ok && e !== undefined) anunciar(tx('M-1362', { tipo: nombreDeTipo(e.type) }));
+  if (r.ok && e !== undefined) anunciar(tx('M-1762', { tipo: nombreDeTipo(e.type) }));
   return r.ok;
 }
 /** Marcador específico de TI, CE, PPT y PEP (M-177 y M-178). */
@@ -92,7 +92,7 @@ export function agregarManual(span: Span, tipo: DetectableType, role: Role | und
   if (r.ok && antes !== null) {
     const n = Object.values(r.state.detections).filter((d) => d.source === 'manual').length
       - Object.values(antes.detections).filter((d) => d.source === 'manual').length;
-    anunciar(tx('M-1366', { tipo: nombreDeTipo(tipo), n: Math.max(1, n) }));
+    anunciar(tx('M-1766', { tipo: nombreDeTipo(tipo), n: Math.max(1, n) }));
   }
   return r.ok;
 }

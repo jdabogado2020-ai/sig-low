@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { DetectableType, Detection, Entity, RejectReason, ReviewState, Role } from '../../../core/types.ts';
 import { ORG_CLASSES } from '../../../core/types.ts';
-import { atributosDeContenido, Seleccion, useIdNeutro } from '../../campos.tsx';
+import { atributosDeContenedor, atributosDeContenido, Seleccion, useIdNeutro } from '../../campos.tsx';
 import { etiqueta, mensajeDeCodigo, ROTULOS, t } from '../../mensajes.ts';
 import {
   aceptar, aceptarEntidad, cambiarRol, cambiarTipo, editar, especificarDocumento, rechazar, rechazarEntidad, restablecer, separar, unir,
@@ -40,7 +40,7 @@ function EditorDeReemplazo({ d, e }: { d: Detection; e: Entity | undefined }) {
   const confirmar = (): void => { if (editar(d.id, valor)) cerrar(); };
   return (
     <div class="campo editor-reemplazo" data-prueba="editor-reemplazo">
-      <label for={id}>{tx('M-1343')}</label>
+      <label for={id}>{tx('M-1743')}</label>
       <input
         id={id}
         name={id}
@@ -54,7 +54,7 @@ function EditorDeReemplazo({ d, e }: { d: Detection; e: Entity | undefined }) {
         }}
       />
       <div class="acciones">
-        <button type="button" onClick={confirmar}>{tx('M-1344')}</button>
+        <button type="button" onClick={confirmar}>{tx('M-1744')}</button>
         <button type="button" class="secundario" onClick={cerrar}>{t('M-1161')}</button>
       </div>
     </div>
@@ -77,17 +77,17 @@ function BloqueEntidad({ state, e }: { state: ReviewState; e: Entity }) {
   const txtRechazar = t(ROTULOS.rechazar_todas_las_menciones);
   const idAyuda = useIdNeutro();
   return (
-    <section class="ficha-entidad" aria-label={tx('M-1341')}>
-      <h4>{tx('M-1341')}</h4>
+    <section class="ficha-entidad" aria-label={tx('M-1741')} ref={atributosDeContenedor} onContextMenu={(e) => { e.preventDefault(); }}>
+      <h4>{tx('M-1741')}</h4>
       <dl class="datos">
         <dt>{t('M-1143')}</dt><dd>{tipo}</dd>
-        <dt>{tx('M-1350')}</dt><dd data-prueba="ficha-marcador">{e.marker ?? t('M-958')}</dd>
-        <dt>{tx('M-1352')}</dt><dd>{e.display}</dd>
-        <dt>{tx('M-1319')}</dt><dd>{textoDeMenciones(e.mentions.length)}, {textoDePendientes(pend)}</dd>
+        <dt>{tx('M-1750')}</dt><dd data-prueba="ficha-marcador">{e.marker ?? t('M-958')}</dd>
+        <dt>{tx('M-1752')}</dt><dd>{e.display}</dd>
+        <dt>{tx('M-1719')}</dt><dd>{textoDeMenciones(e.mentions.length)}, {textoDePendientes(pend)}</dd>
       </dl>
       <div class="acciones">
-        <button type="button" class="secundario" disabled={pend === 0} aria-label={tx('M-1357', { visible: txtAceptar })} onClick={() => { aceptarEntidad(e.id); }}>{txtAceptar}</button>
-        <button type="button" class="secundario" disabled={pend === 0} aria-label={tx('M-1357', { visible: txtRechazar })} onClick={() => { rechazarEntidad(e.id); }}>{txtRechazar}</button>
+        <button type="button" class="secundario" disabled={pend === 0} aria-label={tx('M-1757', { visible: txtAceptar })} onClick={() => { aceptarEntidad(e.id); }}>{txtAceptar}</button>
+        <button type="button" class="secundario" disabled={pend === 0} aria-label={tx('M-1757', { visible: txtRechazar })} onClick={() => { rechazarEntidad(e.id); }}>{txtRechazar}</button>
       </div>
       {esPersona || esOrg ? (
         <div class="fila">
@@ -111,7 +111,7 @@ function BloqueEntidad({ state, e }: { state: ReviewState; e: Entity }) {
             opciones={[['', ''], ...otras.map((x): readonly [string, string] => [x.id, `${x.marker ?? t('M-958')} · ${x.display}`])]}
             onCambio={setDestino}
           />
-          <button type="button" class="secundario" disabled={destino === ''} onClick={() => { if (unir(e.id, destino as Entity['id'])) setDestino(''); }}>{tx('M-1349')}</button>
+          <button type="button" class="secundario" disabled={destino === ''} onClick={() => { if (unir(e.id, destino as Entity['id'])) setDestino(''); }}>{tx('M-1749')}</button>
         </div>
       ) : null}
       {especificable ? (
@@ -145,38 +145,38 @@ export function Ficha() {
   const parte = d !== undefined ? doc.parts.find((p) => p.id === d.partId) : undefined;
 
   return (
-    <section class="ficha" role="region" aria-label={tx('M-1304')} data-prueba="ficha">
-      <h3>{tx('M-1340')}</h3>
+    <section class="ficha" role="region" aria-label={tx('M-1704')} data-prueba="ficha" ref={atributosDeContenedor} onContextMenu={(e) => { e.preventDefault(); }}>
+      <h3>{tx('M-1740')}</h3>
       {error !== null ? <p class="error-campo" role="alert" data-prueba="error-revision">{mensajeDeCodigo(error)}</p> : null}
-      {d === undefined && entidad === undefined ? <p class="ayuda">{tx('M-1354')}</p> : null}
+      {d === undefined && entidad === undefined ? <p class="ayuda">{tx('M-1754')}</p> : null}
       {d !== undefined ? (
         <>
           <dl class="datos">
             <dt>{t('M-1143')}</dt><dd>{nombreDeTipo(d.type)}</dd>
-            <dt>{tx('M-1320')}</dt><dd>{etiqueta('estado', d.status)}</dd>
-            <dt>{tx('M-1323')}</dt><dd>{etiqueta('confianza', d.confidence)}</dd>
-            <dt>{tx('M-1324')}</dt><dd>{etiqueta('fuente', d.source)}</dd>
-            <dt>{tx('M-1322')}</dt><dd>{parte?.label ?? ''}</dd>
-            <dt>{tx('M-1329')}</dt><dd data-prueba="ficha-texto">{d.text}</dd>
-            <dt>{tx('M-1351')}</dt><dd>{d.status === 'rechazada' ? tx('M-1359') : textoFinal(d, entidad) || tx('M-1355')}</dd>
+            <dt>{tx('M-1720')}</dt><dd>{etiqueta('estado', d.status)}</dd>
+            <dt>{tx('M-1723')}</dt><dd>{etiqueta('confianza', d.confidence)}</dd>
+            <dt>{tx('M-1724')}</dt><dd>{etiqueta('fuente', d.source)}</dd>
+            <dt>{tx('M-1722')}</dt><dd>{parte?.label ?? ''}</dd>
+            <dt>{tx('M-1729')}</dt><dd data-prueba="ficha-texto">{d.text}</dd>
+            <dt>{tx('M-1751')}</dt><dd>{d.status === 'rechazada' ? tx('M-1759') : textoFinal(d, entidad) || tx('M-1755')}</dd>
           </dl>
           {d.validator?.passed === false ? <p class="aviso-validador" data-prueba="validador-fallido">{t('M-71')}</p> : null}
           <div class="acciones">
-            <button type="button" class="secundario" aria-label={tx('M-1356', { accion: t(ROTULOS.aceptar) })} disabled={d.status === 'aceptada'} onClick={() => { aceptar(d.id); }}>{t(ROTULOS.aceptar)}</button>
-            <button type="button" class="secundario" aria-label={tx('M-1356', { accion: t(ROTULOS.rechazar) })} disabled={d.status === 'rechazada'} onClick={() => { rechazar(d.id, motivo); }}>{t(ROTULOS.rechazar)}</button>
-            <button type="button" class="secundario" aria-label={tx('M-1356', { accion: t(ROTULOS.editar) })} onClick={() => { solicitarEdicion(d.id); }}>{t(ROTULOS.editar)}</button>
-            <button type="button" class="secundario" aria-label={tx('M-1356', { accion: t(ROTULOS.restablecer) })} disabled={d.status === 'pendiente'} onClick={() => { restablecer(d.id); }}>{t(ROTULOS.restablecer)}</button>
+            <button type="button" class="secundario" aria-label={tx('M-1756', { accion: t(ROTULOS.aceptar) })} disabled={d.status === 'aceptada'} onClick={() => { aceptar(d.id); }}>{t(ROTULOS.aceptar)}</button>
+            <button type="button" class="secundario" aria-label={tx('M-1756', { accion: t(ROTULOS.rechazar) })} disabled={d.status === 'rechazada'} onClick={() => { rechazar(d.id, motivo); }}>{t(ROTULOS.rechazar)}</button>
+            <button type="button" class="secundario" aria-label={tx('M-1756', { accion: t(ROTULOS.editar) })} onClick={() => { solicitarEdicion(d.id); }}>{t(ROTULOS.editar)}</button>
+            <button type="button" class="secundario" aria-label={tx('M-1756', { accion: t(ROTULOS.restablecer) })} disabled={d.status === 'pendiente'} onClick={() => { restablecer(d.id); }}>{t(ROTULOS.restablecer)}</button>
           </div>
           {edicion === d.id ? <EditorDeReemplazo key={d.id} d={d} e={entidad} /> : null}
           <Seleccion
-            etiqueta={tx('M-1342')}
+            etiqueta={tx('M-1742')}
             valor={motivo}
             opciones={MOTIVOS.map((m): readonly [string, string] => [m, etiqueta('rechazo', m)])}
             onCambio={(v) => { setMotivo(v as RejectReason); }}
           />
           <div class="fila">
             <Seleccion
-              etiqueta={tx('M-1345')}
+              etiqueta={tx('M-1745')}
               valor={tipoNuevo}
               opciones={TIPOS_ELEGIBLES.map((x): readonly [string, string] => [x, nombreDeTipo(x)])}
               onCambio={setTipoNuevo}
@@ -191,7 +191,7 @@ export function Ficha() {
       {entidad !== undefined ? <BloqueEntidad state={state} e={entidad} /> : null}
       {d !== undefined || entidad !== undefined ? (
         <div class="acciones">
-          <button type="button" class="enlace" onClick={() => { seleccionar(null); seleccionarEntidad(null); }}>{tx('M-1305')}</button>
+          <button type="button" class="enlace" onClick={() => { seleccionar(null); seleccionarEntidad(null); }}>{tx('M-1705')}</button>
         </div>
       ) : null}
     </section>

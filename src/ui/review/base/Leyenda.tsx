@@ -9,8 +9,8 @@ export const ID_LEYENDA = 'leyenda-revision';
 export function Leyenda({ abierta }: { abierta: boolean }) {
   if (!abierta) return null;
   return (
-    <section id={ID_LEYENDA} class="leyenda" aria-label={tx('M-1370')} data-prueba="leyenda">
-      <h3>{tx('M-1370')}</h3>
+    <section id={ID_LEYENDA} class="leyenda" aria-label={tx('M-1770')} data-prueba="leyenda">
+      <h3>{tx('M-1770')}</h3>
       <ul class="leyenda-categorias">
         {CATEGORIAS.map((c) => (
           <li key={c.id}>
@@ -28,21 +28,21 @@ export function Leyenda({ abierta }: { abierta: boolean }) {
           </li>
         ))}
       </ul>
-      <h3>{tx('M-1371')}</h3>
+      <h3>{tx('M-1771')}</h3>
       <ul class="leyenda-bordes">
-        <li><span class="res muestra cat-per conf-alta est-pendiente"><span>{tx('M-1373')}</span></span></li>
-        <li><span class="res muestra cat-per conf-media est-pendiente"><span>{tx('M-1374')}</span></span></li>
-        <li><span class="res muestra cat-per conf-baja est-pendiente"><span>{tx('M-1375')}</span></span></li>
+        <li><span class="res muestra cat-per conf-alta est-pendiente"><span>{tx('M-1773')}</span></span></li>
+        <li><span class="res muestra cat-per conf-media est-pendiente"><span>{tx('M-1774')}</span></span></li>
+        <li><span class="res muestra cat-per conf-baja est-pendiente"><span>{tx('M-1775')}</span></span></li>
       </ul>
-      <h3>{tx('M-1372')}</h3>
+      <h3>{tx('M-1772')}</h3>
       <ul class="leyenda-marcas">
-        <li><span class="ins" aria-hidden="true"><IconoDeEstado estado="pendiente" /></span> {tx('M-1376')}</li>
-        <li><span class="ins" aria-hidden="true"><IconoDeEstado estado="aceptada" /></span> {tx('M-1377')}</li>
-        <li><span class="ins" aria-hidden="true"><IconoDeEstado estado="editada" /></span> {tx('M-1378')}</li>
-        <li><span class="ins" aria-hidden="true"><IconoDeEstado estado="rechazada" /></span> {tx('M-1379')}</li>
-        <li><Insignia abreviatura="" estado="pendiente" sugerencia /> {tx('M-1380')}</li>
-        <li><Insignia abreviatura="" bandera /> {tx('M-1381')}</li>
-        <li><Insignia abreviatura="" estado="pendiente" nueva /> {tx('M-1382')}</li>
+        <li><span class="ins" aria-hidden="true"><IconoDeEstado estado="pendiente" /></span> {tx('M-1776')}</li>
+        <li><span class="ins" aria-hidden="true"><IconoDeEstado estado="aceptada" /></span> {tx('M-1777')}</li>
+        <li><span class="ins" aria-hidden="true"><IconoDeEstado estado="editada" /></span> {tx('M-1778')}</li>
+        <li><span class="ins" aria-hidden="true"><IconoDeEstado estado="rechazada" /></span> {tx('M-1779')}</li>
+        <li><Insignia abreviatura="" estado="pendiente" sugerencia /> {tx('M-1780')}</li>
+        <li><Insignia abreviatura="" bandera /> {tx('M-1781')}</li>
+        <li><Insignia abreviatura="" estado="pendiente" nueva /> {tx('M-1782')}</li>
       </ul>
     </section>
   );

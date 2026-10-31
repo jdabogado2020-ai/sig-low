@@ -34,18 +34,18 @@ export function AgregarReemplazo() {
     <Dialogo abierto={reemplazo !== null} titulo={t(ROTULOS.agregar_reemplazo)} onCerrar={cerrar}>
       {reemplazo !== null ? (
         <>
-          <p class="ayuda">{tx('M-1395', { n: largo })}</p>
+          <p class="ayuda">{tx('M-1795', { n: largo })}</p>
           <p class="dato-texto" data-prueba="reemplazo-texto" ref={atributosDeContenedor}>{parte?.text.slice(reemplazo.start, reemplazo.end) ?? ''}</p>
           {local !== null && error !== null ? <p class="error-campo" role="alert">{mensajeDeCodigo(error)}</p> : null}
           <Seleccion
-            etiqueta={tx('M-1396')}
+            etiqueta={tx('M-1796')}
             valor={tipo}
             opciones={TIPOS_ELEGIBLES.map((x): readonly [string, string] => [x, nombreDeTipo(x)])}
             onCambio={setTipo}
           />
           {tipo === 'PERSONA' ? (
             <Seleccion
-              etiqueta={tx('M-1397')}
+              etiqueta={tx('M-1797')}
               valor={rol}
               opciones={ROLES_PERSONA.map((r): readonly [string, string] => [r, etiqueta('rol', r)])}
               onCambio={setRol}

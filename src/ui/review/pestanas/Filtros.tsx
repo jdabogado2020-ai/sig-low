@@ -15,36 +15,36 @@ export function Filtros() {
   const f = useFiltros();
   return (
     <details class="filtros-revision" data-prueba="filtros">
-      <summary>{tp('M-1440')}</summary>
+      <summary>{tp('M-1840')}</summary>
       <div class="filtros-campos">
       <Seleccion
-        etiqueta={tp('M-1441')}
+        etiqueta={tp('M-1841')}
         valor={f.categoria}
-        opciones={[['', tp('M-1445')], ...CATEGORIAS.map((c): readonly [string, string] => [c.id, tx(c.nombre as 'M-1383')])]}
+        opciones={[['', tp('M-1845')], ...CATEGORIAS.map((c): readonly [string, string] => [c.id, tx(c.nombre as 'M-1783')])]}
         onCambio={(v) => { ponerFiltros({ categoria: v as Categoria | '' }); }}
       />
       <Seleccion
-        etiqueta={tp('M-1442')}
+        etiqueta={tp('M-1842')}
         valor={f.estado}
-        opciones={[['', tp('M-1446')], ...ESTADOS.map((e): readonly [string, string] => [e, etiqueta('estado', e)])]}
+        opciones={[['', tp('M-1846')], ...ESTADOS.map((e): readonly [string, string] => [e, etiqueta('estado', e)])]}
         onCambio={(v) => { ponerFiltros({ estado: v as DetectionStatus | '' }); }}
       />
       <Seleccion
-        etiqueta={tp('M-1443')}
+        etiqueta={tp('M-1843')}
         valor={f.confianza}
-        opciones={[['', tp('M-1445')], ...CONFIANZAS.map((c): readonly [string, string] => [c, etiqueta('confianza', c)])]}
+        opciones={[['', tp('M-1845')], ...CONFIANZAS.map((c): readonly [string, string] => [c, etiqueta('confianza', c)])]}
         onCambio={(v) => { ponerFiltros({ confianza: v as Confidence | '' }); }}
       />
       <Seleccion
-        etiqueta={tp('M-1444')}
+        etiqueta={tp('M-1844')}
         valor={f.fuente}
-        opciones={[['', tp('M-1445')], ...FUENTES.map((s): readonly [string, string] => [s, etiqueta('fuente', s)])]}
+        opciones={[['', tp('M-1845')], ...FUENTES.map((s): readonly [string, string] => [s, etiqueta('fuente', s)])]}
         onCambio={(v) => { ponerFiltros({ fuente: v as DetectionSource | '' }); }}
       />
-      <p class="ayuda">{tp('M-1447')}</p>
+      <p class="ayuda">{tp('M-1847')}</p>
       {hayFiltros(f) ? (
         <button type="button" class="secundario" onClick={() => { ponerFiltros({ categoria: '', estado: '', confianza: '', fuente: '' }); }}>
-          {tp('M-1448')}
+          {tp('M-1848')}
         </button>
       ) : null}
       </div>

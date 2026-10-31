@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
+import { copiarEnListo, crearYAnalizar, DOCUMENTO_REI, LISTA_REI, REALES_REI, SALIDA_REI, leerPortapapeles } from './ayudas-reinsercion';
 
 // T-IU-03 (atributos de privacidad, título neutro) y T-PV-09 («Acerca de»: versión, SHA-256 y dirección oficial), de PC-1.
 // PC-7 y las demás tareas agregan aquí los casos T-PV-01, T-PV-02, T-PV-11, T-PV-24 sobre el resto de las pantallas.
@@ -234,5 +235,181 @@ test.describe('T-PV-03 búsqueda propia en Revisión (V-29)', () => {
     // Los manejadores de la página corren antes que el de la prueba (captura vs. burbuja): ambos eventos ya llegaron prevenidos.
     expect(await page.evaluate(() => (globalThis as unknown as { __bf: boolean[] }).__bf)).toEqual([true, true]);
     expect(peticiones).toEqual([]);
+  });
+});
+
+// ===== PC-7 · superficie de privacidad de toda la interfaz integrada: T-IU-03 (resto de pantallas), T-PV-01, T-PV-02, T-PV-11, T-PV-24 =====
+test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
+  test.describe.configure({ timeout: 150_000 });
+  test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
+
+  /** Entrada con el texto dado hasta Revisión (sin decidir). */
+  async function hastaRevision(page: Page, documento: string, codigo: string): Promise<void> {
+    await abrirInicio(page);
+    await crearAsunto(page, codigo);
+    await page.getByRole('textbox', { name: 'Texto de la lista' }).fill(LISTA_REI);
+    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
+    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
+    await page.getByRole('button', { name: 'Continuar' }).click();
+    await expect(h1(page, 'Entrada')).toBeVisible();
+    await page.getByRole('textbox', { name: 'Texto del documento' }).fill(documento);
+    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 60_000 });
+  }
+  /** Decide cada mención pendiente con el teclado (A) y pasa a Listo. */
+  async function decidirYContinuar(page: Page): Promise<void> {
+    const marcas = page.getByRole('region', { name: 'Documento con detecciones' }).locator('[data-det]');
+    for (let i = 0, n = await marcas.count(); i < n; i++) {
+      if (/, pendiente, /.test((await marcas.nth(i).getAttribute('aria-label')) ?? '')) { await marcas.nth(i).focus(); await page.keyboard.press('a'); }
+    }
+    await page.locator('[data-prueba="continuar"]').click();
+    await expect(h1(page, 'Listo')).toBeVisible();
+  }
+  const eventoPrevenido = (page: Page, selector: string, tipo: 'contextmenu' | 'copy'): Promise<{ prevenido: boolean; datos: string }> =>
+    page.locator(selector).first().evaluate((el, t) => {
+      const dt = new DataTransfer();
+      const ev = t === 'copy' ? new ClipboardEvent('copy', { bubbles: true, cancelable: true, clipboardData: dt }) : new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+      el.dispatchEvent(ev);
+      return { prevenido: ev.defaultPrevented, datos: dt.getData('text/plain') };
+    }, tipo);
+
+  test('T-IU-03 cada pantalla del flujo (Entrada, Revisión con ficha, Listo, Reinserción) cumple 8.7: atributos, ids neutros, sin enlaces ni style', async ({ page }) => {
+    await page.addInitScript(() => {
+      (globalThis as unknown as { __csp: string[] }).__csp = [];
+      addEventListener('securitypolicyviolation', (e) => { (globalThis as unknown as { __csp: string[] }).__csp.push(e.violatedDirective); });
+    });
+    // La virtualización de Revisión fija alturas y posiciones con CSSOM (permitido por la CSP, que no admite atributos style escritos en el HTML):
+    // el atributo se refleja en el DOM, así que el criterio es 0 violaciones de la CSP, no 0 atributos style.
+    const auditarSinStyle = async (): Promise<string[]> => (await auditar(page)).filter((x) => x !== 'atributo style');
+    await hastaRevision(page, DOCUMENTO_REI, 'PRUEBA-PV-03');
+    expect(await auditarSinStyle(), 'Revisión').toEqual([]);
+    await page.getByRole('region', { name: 'Documento con detecciones' }).locator('[data-det]').first().click();
+    await expect(page.getByRole('region', { name: 'Ficha de la detección' })).toBeVisible();
+    expect(await auditarSinStyle(), 'Revisión con ficha').toEqual([]);
+    for (const el of await page.locator('.panel-texto, .ficha, .ficha-entidad, .cuadricula-borde').all()) {
+      await expect(el).toHaveAttribute('translate', 'no');
+      await expect(el).toHaveAttribute('spellcheck', 'false');
+    }
+    await decidirYContinuar(page);
+    expect(await auditarSinStyle(), 'Listo').toEqual([]);
+    await copiarEnListo(page);
+    for (const el of await page.locator('[data-prueba="vista-salida"]').all()) {
+      await expect(el).toHaveAttribute('translate', 'no');
+      await expect(el).toHaveAttribute('spellcheck', 'false');
+    }
+    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
+    await expect(h1(page, 'Reinserción')).toBeVisible();
+    expect(await auditar(page), 'Reinserción').toEqual([]);
+    await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(SALIDA_REI);
+    await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+    await expect(page.locator('[data-prueba="resultado-real"]')).toBeVisible();
+    await expect(page.locator('[data-prueba="resultado-real"]')).toHaveAttribute('translate', 'no');
+    expect(await auditarSinStyle(), 'Reinserción con resultado').toEqual([]);
+    expect(await page.evaluate(() => (globalThis as unknown as { __csp: string[] }).__csp), 'violaciones de la CSP').toEqual([]);
+  });
+
+  test('T-PV-01 sin enlaces, ventanas ni precarga: ninguna pantalla trae a[href], target, link externo ni form con envío, y window.open no abre nada', async ({ page, context }) => {
+    const ventanas: string[] = [];
+    context.on('page', (p) => ventanas.push(p.url()));
+    const sinEnlaces = async (donde: string): Promise<void> => {
+      const r = await page.evaluate(() => ({
+        enlaces: document.querySelectorAll('a[href]').length,
+        destinos: document.querySelectorAll('[target]').length,
+        links: [...document.querySelectorAll('link[rel]')].filter((l) => /dns-prefetch|preconnect|prefetch|prerender|preload/.test(l.getAttribute('rel') ?? '')).length,
+        formularios: [...document.querySelectorAll('form')].filter((f) => f.hasAttribute('action') || f.hasAttribute('method')).length,
+        externos: [...document.querySelectorAll('[src], [href], [action], [formaction]')].filter((e) => /^(https?:|\/\/|mailto:|tel:|javascript:)/i.test(e.getAttribute('src') ?? e.getAttribute('href') ?? e.getAttribute('action') ?? e.getAttribute('formaction') ?? '')).length,
+      }));
+      expect(r, donde).toEqual({ enlaces: 0, destinos: 0, links: 0, formularios: 0, externos: 0 });
+    };
+    await abrirInicio(page);
+    await sinEnlaces('Inicio');
+    await page.getByRole('button', { name: 'Acerca de' }).click();
+    await sinEnlaces('Acerca de');
+    await page.getByRole('dialog', { name: 'Acerca de Sig-Low' }).getByRole('button', { name: 'Créditos y licencias' }).click();
+    await sinEnlaces('Créditos y licencias');
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('Escape');
+    await crearYAnalizar(page, { codigo: 'PRUEBA-PV-01' });
+    await sinEnlaces('Listo');
+    await copiarEnListo(page);
+    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
+    await expect(h1(page, 'Reinserción')).toBeVisible();
+    await sinEnlaces('Reinserción');
+    // guard.ts neutraliza window.open: no devuelve ventana y no se abre ninguna.
+    const abierta = await page.evaluate(() => { try { return window.open('about:blank', '_blank') === null; } catch { return true; } });
+    expect(abierta).toBe(true);
+    expect(ventanas).toEqual([]);
+  });
+
+  test('T-PV-02 HTML y javascript: pegados quedan literales en Revisión, en la salida y en Reinserción: ningún nodo, ningún script', async ({ page }) => {
+    const HOSTIL = 'Señora Ana Ficticia Rojas, cédula 1.000.000.001. <img src=x onerror="window.__xss=1"> <script>window.__xss=2</script> <a href="javascript:window.__xss=3">enlace</a> javascript:window.__xss=4';
+    await hastaRevision(page, HOSTIL, 'PRUEBA-PV-02');
+    const peligrosos = () => page.evaluate(() => ({
+      nodos: document.querySelectorAll('main img, main iframe, main object, main embed, main a[href], main script, main svg script').length,
+      xss: (globalThis as unknown as { __xss?: number }).__xss ?? null,
+    }));
+    const panel = page.getByRole('region', { name: 'Documento con detecciones' });
+    await expect(panel).toContainText('<img src=x onerror="window.__xss=1">');
+    await expect(panel).toContainText('<script>window.__xss=2</script>');
+    await expect(panel).toContainText('javascript:window.__xss=4');
+    expect(await peligrosos(), 'Revisión').toEqual({ nodos: 0, xss: null });
+    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await expect(page.getByRole('region', { name: 'Documento con los marcadores como fichas' })).toContainText('<script>window.__xss=2</script>');
+    expect(await peligrosos(), 'Ver salida').toEqual({ nodos: 0, xss: null });
+    await page.getByRole('button', { name: 'Ver original' }).click();
+    await decidirYContinuar(page);
+    await expect(page.locator('[data-prueba="vista-salida"]')).toContainText('<img src=x onerror="window.__xss=1">');
+    expect(await peligrosos(), 'Listo').toEqual({ nodos: 0, xss: null });
+    await copiarEnListo(page);
+    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
+    await expect(h1(page, 'Reinserción')).toBeVisible();
+    const respuesta = '[DEMANDANTE_1] respondió: <img src=x onerror="window.__xss=5"> <iframe src="javascript:window.__xss=6"></iframe> javascript:window.__xss=7 [CC_1]';
+    await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(respuesta);
+    await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+    await expect(page.locator('[data-prueba="resultado-real"]')).toContainText('<iframe src="javascript:window.__xss=6"></iframe>');
+    expect(await peligrosos(), 'Reinserción').toEqual({ nodos: 0, xss: null });
+  });
+
+  test('T-PV-11 menú contextual bloqueado en los contenedores de solo lectura y no en los campos; con la puerta cerrada la salida no se selecciona ni se copia', async ({ page }) => {
+    await hastaRevision(page, DOCUMENTO_REI, 'PRUEBA-PV-11');
+    // Los campos de texto conservan su menú (la persona lo necesita para pegar); los contenedores del documento no.
+    expect((await eventoPrevenido(page, '[data-prueba="panel-texto"]', 'contextmenu')).prevenido, 'panel de texto').toBe(true);
+    expect((await eventoPrevenido(page, '[data-prueba="cuadricula"]', 'contextmenu')).prevenido, 'cuadrícula (contexto de menciones)').toBe(true);
+    await page.getByRole('region', { name: 'Documento con detecciones' }).locator('[data-det]').first().click();
+    expect((await eventoPrevenido(page, '[data-prueba="ficha"]', 'contextmenu')).prevenido, 'ficha').toBe(true);
+    await page.getByRole('button', { name: 'Ver salida' }).click();
+    expect((await eventoPrevenido(page, '[data-prueba="panel-texto"]', 'contextmenu')).prevenido, 'vista de salida de Revisión').toBe(true);
+    const copiaRevisionSalida = await eventoPrevenido(page, '[data-prueba="panel-texto"]', 'copy');
+    expect(copiaRevisionSalida.datos, 'la copia de la salida en Revisión no escribe originales').not.toMatch(/Ficticia|1\.000\.000|ejemplo\.test/);
+    await page.getByRole('button', { name: 'Ver original' }).click();
+    await decidirYContinuar(page);
+    // Listo con la puerta cerrada (recordatorio sin marcar): user-select none, copy prevenido y vacío, menú bloqueado.
+    const vista = page.locator('[data-prueba="vista-salida"]');
+    await expect(vista).toHaveAttribute('data-puerta', 'cerrada');
+    expect(await vista.evaluate((el) => getComputedStyle(el).userSelect)).toBe('none');
+    expect((await eventoPrevenido(page, '[data-prueba="vista-salida"]', 'contextmenu')).prevenido, 'vista de salida de Listo').toBe(true);
+    const copia = await eventoPrevenido(page, '[data-prueba="vista-salida"]', 'copy');
+    expect(copia.prevenido, 'copy con la puerta cerrada').toBe(true);
+    expect(copia.datos).toBe('');
+    await copiarEnListo(page);
+    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
+    await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(SALIDA_REI);
+    await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+    await expect(page.locator('[data-prueba="resultado-real"]')).toBeVisible();
+    expect((await eventoPrevenido(page, '[data-prueba="resultado-real"]', 'contextmenu')).prevenido, 'resultado de Reinserción').toBe(true);
+    // El campo de la respuesta no bloquea el menú contextual.
+    expect((await eventoPrevenido(page, 'textarea', 'contextmenu')).prevenido, 'campo de texto').toBe(false);
+  });
+
+  test('T-PV-24 ni Listo ni Reinserción (antes de pegar) muestran o copian la tabla en claro', async ({ page, context }) => {
+    await crearYAnalizar(page, { codigo: 'PRUEBA-PV-24' });
+    const cuerpo = async (): Promise<string> => page.evaluate(() => document.body.innerText + '\n' + [...document.querySelectorAll('[aria-label],[title]')].map((e) => `${e.getAttribute('aria-label') ?? ''} ${e.getAttribute('title') ?? ''}`).join('\n'));
+    for (const real of REALES_REI) expect(await cuerpo(), `Listo con «${real}»`).not.toContain(real);
+    await copiarEnListo(page);
+    const portapapeles = await leerPortapapeles(context);
+    for (const real of REALES_REI) expect(portapapeles.texto, `portapapeles con «${real}»`).not.toContain(real);
+    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
+    await expect(h1(page, 'Reinserción')).toBeVisible();
+    for (const real of REALES_REI) expect(await cuerpo(), `Reinserción con «${real}»`).not.toContain(real);
   });
 });

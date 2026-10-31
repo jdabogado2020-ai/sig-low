@@ -37,7 +37,7 @@ export function Insignia({ abreviatura, estado, bandera, confirmada, sugerencia,
       <Glifo g={g} />
       <span class="abr">{abreviatura}</span>
       {sugerencia ? <Glifo g="aprox" /> : null}
-      {nueva ? <span class="nueva">{tx('M-1337')}</span> : null}
+      {nueva ? <span class="nueva">{tx('M-1737')}</span> : null}
     </span>
   );
 }

@@ -83,12 +83,16 @@ const EXTRA = {
   'M-1208': 'Líneas con error',
   'M-1209': 'Líneas válidas',
   'M-1210': 'Todavía no hay variantes.',
-  'M-1211': 'Texto de la lista',} as const;
+  'M-1211': 'Texto de la lista',
+  // Actualización con varias pestañas (PD-1-r1, B-11)
+  'M-1212': 'Cierre las otras pestañas de Sig-Low para actualizar ahora.',
+  'M-1213': 'Sig-Low se actualizó desde otra pestaña. Esta pestaña sigue con la versión anterior y algunas funciones pueden fallar: guarde o exporte la tabla y después recárguela.',
+} as const;
 
 const TODO: Record<string, string> = { ...CATALOGO, ...EXTRA };
 
 /**
- * Cada pantalla de A2 registra aquí sus textos sin id en 8.5 (PC-2: rango M-13xx). Así viven en el catálogo único,
+ * Cada pantalla de A2 registra aquí sus textos sin id en 8.5 (cada módulo con sus ids propios, sin solapes: lo comprueba tests/unit/mensajes.test.ts). Así viven en el catálogo único,
  * y el barrido de textos prohibidos de PC-7 los ve. Un id repetido con otro texto es un defecto de programación.
  */
 export function registrarMensajes(extra: Readonly<Record<string, string>>): void {

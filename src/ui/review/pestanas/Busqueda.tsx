@@ -25,12 +25,12 @@ export function Busqueda() {
   const n = b.coincidencias.length;
   const actual = b.indice >= 0 ? b.coincidencias[b.indice] : undefined;
   const corta = b.consulta.trim().length > 0 && b.consulta.trim().length < MINIMO_BUSQUEDA;
-  const estado = n > 0 ? tp('M-1452', { i: b.indice + 1, n }) : b.consulta.trim().length >= MINIMO_BUSQUEDA ? tp('M-1453') : '';
+  const estado = n > 0 ? tp('M-1852', { i: b.indice + 1, n }) : b.consulta.trim().length >= MINIMO_BUSQUEDA ? tp('M-1853') : '';
 
   return (
-    <div class="busqueda-revision" role="search" aria-label={tp('M-1451')} data-prueba="busqueda">
+    <div class="busqueda-revision" role="search" aria-label={tp('M-1851')} data-prueba="busqueda">
       <div class="campo">
-        <label for={id}>{tp('M-1450')}</label>
+        <label for={id}>{tp('M-1850')}</label>
         <div class="fila">
           <input
             id={id}
@@ -45,17 +45,17 @@ export function Busqueda() {
               else if (e.key === 'Escape' && b.consulta !== '') { e.preventDefault(); e.stopPropagation(); limpiarBusqueda(); }
             }}
           />
-          <button type="button" class="secundario" disabled={n === 0} aria-label={tp('M-1455')} onClick={() => { moverBusqueda(-1); }}>‹</button>
-          <button type="button" class="secundario" disabled={n === 0} aria-label={tp('M-1454')} onClick={() => { moverBusqueda(1); }}>›</button>
+          <button type="button" class="secundario" disabled={n === 0} aria-label={tp('M-1855')} onClick={() => { moverBusqueda(-1); }}>‹</button>
+          <button type="button" class="secundario" disabled={n === 0} aria-label={tp('M-1854')} onClick={() => { moverBusqueda(1); }}>›</button>
           <span class="estado-busqueda" role="status" data-prueba="busqueda-estado">{estado}</span>
         </div>
         <p id={`${id}-a`} class="ayuda">{t('M-72')}</p>
-        {corta ? <p class="ayuda">{tp('M-1457')}</p> : null}
-        {b.truncada ? <p class="ayuda">{tp('M-1458', { n: MAXIMO_COINCIDENCIAS })}</p> : null}
+        {corta ? <p class="ayuda">{tp('M-1857')}</p> : null}
+        {b.truncada ? <p class="ayuda">{tp('M-1858', { n: MAXIMO_COINCIDENCIAS })}</p> : null}
       </div>
       {actual !== undefined ? (
         <button type="button" class="secundario" data-prueba="agregar-desde-busqueda" onClick={() => { solicitarReemplazo(actual); }}>
-          {tp('M-1456')}
+          {tp('M-1856')}
         </button>
       ) : null}
     </div>

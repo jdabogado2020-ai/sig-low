@@ -28,15 +28,15 @@ export const abreviaturaDe = (tipo: DataType): string => TABLA_TIPOS[tipo][1];
 /** Nombre visible del tipo (8.5.10: M-801 a M-837, en el orden de DATA_TYPES). */
 export const nombreDeTipo = (tipo: DataType): string => t(`M-${801 + DATA_TYPES.indexOf(tipo)}` as MessageId);
 
-export const CATEGORIAS: ReadonlyArray<{ id: Categoria; nombre: MessageId | 'M-1383' | 'M-1384' | 'M-1385' | 'M-1386' | 'M-1387' | 'M-1388' | 'M-1389' | 'M-1390'; tipos: readonly DataType[] }> = [
-  { id: 'per', nombre: 'M-1383', tipos: ['PERSONA'] },
-  { id: 'org', nombre: 'M-1384', tipos: ['EMPRESA', 'EPS', 'IPS', 'ENTIDAD', 'PROVEEDOR'] },
-  { id: 'ide', nombre: 'M-1385', tipos: ['CC', 'TI', 'CE', 'PPT', 'PEP', 'PASAPORTE', 'NIT', 'TP', 'DOCUMENTO'] },
-  { id: 'exp', nombre: 'M-1386', tipos: ['RADICADO', 'RADICADO_ADMIN', 'HC', 'AFILIACION'] },
-  { id: 'con', nombre: 'M-1387', tipos: ['TELEFONO', 'CORREO', 'DIRECCION', 'BARRIO', 'MUNICIPIO', 'DEPARTAMENTO', 'LUGAR'] },
-  { id: 'bie', nombre: 'M-1388', tipos: ['PLACA', 'MATRICULA', 'CUENTA', 'TARJETA', 'VALOR'] },
-  { id: 'fec', nombre: 'M-1389', tipos: ['FECHA'] },
-  { id: 'ban', nombre: 'M-1390', tipos: ['CARGO', 'DIAGNOSTICO', 'HECHO_LLAMATIVO', 'MENOR', 'CITA_JURISPRUDENCIAL'] },
+export const CATEGORIAS: ReadonlyArray<{ id: Categoria; nombre: MessageId | 'M-1783' | 'M-1784' | 'M-1785' | 'M-1786' | 'M-1787' | 'M-1788' | 'M-1789' | 'M-1790'; tipos: readonly DataType[] }> = [
+  { id: 'per', nombre: 'M-1783', tipos: ['PERSONA'] },
+  { id: 'org', nombre: 'M-1784', tipos: ['EMPRESA', 'EPS', 'IPS', 'ENTIDAD', 'PROVEEDOR'] },
+  { id: 'ide', nombre: 'M-1785', tipos: ['CC', 'TI', 'CE', 'PPT', 'PEP', 'PASAPORTE', 'NIT', 'TP', 'DOCUMENTO'] },
+  { id: 'exp', nombre: 'M-1786', tipos: ['RADICADO', 'RADICADO_ADMIN', 'HC', 'AFILIACION'] },
+  { id: 'con', nombre: 'M-1787', tipos: ['TELEFONO', 'CORREO', 'DIRECCION', 'BARRIO', 'MUNICIPIO', 'DEPARTAMENTO', 'LUGAR'] },
+  { id: 'bie', nombre: 'M-1788', tipos: ['PLACA', 'MATRICULA', 'CUENTA', 'TARJETA', 'VALOR'] },
+  { id: 'fec', nombre: 'M-1789', tipos: ['FECHA'] },
+  { id: 'ban', nombre: 'M-1790', tipos: ['CARGO', 'DIAGNOSTICO', 'HECHO_LLAMATIVO', 'MENOR', 'CITA_JURISPRUDENCIAL'] },
 ];
 
 /** Tipos que el abogado puede elegir para un reemplazo: todos menos las banderas (TIPO_NO_PERMITIDO). */
@@ -53,20 +53,20 @@ export function nombreDeResaltado(d: Detection, entidad: Entity | undefined): st
   const tipo = nombreDeTipo(d.type);
   const confianza = confianzaEnMinusculas(d);
   if (d.status === 'aceptada' && entidad?.marker !== undefined) {
-    return tx('M-1331', { tipo, marcador: entidad.marker, confianza, texto: d.text });
+    return tx('M-1731', { tipo, marcador: entidad.marker, confianza, texto: d.text });
   }
   if (d.status === 'editada' && d.replacement.edited !== undefined) {
-    return tx('M-1338', { tipo, texto: d.replacement.edited, confianza, original: d.text });
+    return tx('M-1738', { tipo, texto: d.replacement.edited, confianza, original: d.text });
   }
-  return tx('M-1330', { tipo, estado: estadoEnMinusculas(d), confianza, texto: d.text });
+  return tx('M-1730', { tipo, estado: estadoEnMinusculas(d), confianza, texto: d.text });
 }
 export function nombreDeBandera(f: Flag): string {
-  return tx('M-1332', { tipo: nombreDeTipo(f.type), estado: tx(f.acknowledged ? 'M-1333' : 'M-1334'), texto: f.text });
+  return tx('M-1732', { tipo: nombreDeTipo(f.type), estado: tx(f.acknowledged ? 'M-1733' : 'M-1734'), texto: f.text });
 }
 
 /** «{n} menciones» / «1 mención»; «{p} pendientes» / «1 pendiente». */
-export const textoDeMenciones = (n: number): string => (n === 1 ? tx('M-1312') : tx('M-1313', { n }));
-export const textoDePendientes = (n: number): string => (n === 1 ? tx('M-1314') : tx('M-1315', { n }));
+export const textoDeMenciones = (n: number): string => (n === 1 ? tx('M-1712') : tx('M-1713', { n }));
+export const textoDePendientes = (n: number): string => (n === 1 ? tx('M-1714') : tx('M-1715', { n }));
 
 export function pendientesDe(state: ReviewState, e: Entity): number {
   let n = 0;
@@ -81,7 +81,7 @@ export function pendientesTotales(state: ReviewState): number {
 
 /** Nombre de la fila de entidad (8.6.4): «{tipo}, {marcador o sin marcador}, {n} menciones, {p} pendientes». */
 export function nombreDeFilaEntidad(state: ReviewState, e: Entity): string {
-  return tx('M-1311', {
+  return tx('M-1711', {
     tipo: nombreDeTipo(e.type),
     marcador: e.marker ?? t('M-958'),
     menciones: textoDeMenciones(e.mentions.length),

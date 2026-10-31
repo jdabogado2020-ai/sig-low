@@ -59,9 +59,9 @@ export function RevisionBase() {
         class="salto salto-local"
         onClick={() => { aside.current?.querySelector<HTMLElement>('.cuadricula [tabindex="0"]')?.focus(); }}
       >
-        {tx('M-1303')}
+        {tx('M-1703')}
       </button>
-      <div class="barra-revision" role="toolbar" aria-label={tx('M-1302')}>
+      <div class="barra-revision" role="toolbar" aria-label={tx('M-1702')}>
         <button type="button" class="secundario" aria-pressed={vista === 'original'} onClick={() => { cambiarVista('original'); }}>{t(ROTULOS.ver_original)}</button>
         <button type="button" class="secundario" aria-pressed={vista === 'salida'} onClick={() => { cambiarVista('salida'); }}>{t(ROTULOS.ver_salida)}</button>
         <button
@@ -74,11 +74,11 @@ export function RevisionBase() {
         >
           {t(ROTULOS.leyenda)}
         </button>
-        <button type="button" class="secundario" onClick={() => { setAtajos(true); }}>{tx('M-1391')}</button>
+        <button type="button" class="secundario" onClick={() => { setAtajos(true); }}>{tx('M-1791')}</button>
         <button type="button" class="secundario" onClick={() => { setDescartar(true); }}>{t(ROTULOS.descartar_documento)}</button>
       </div>
       <Leyenda abierta={leyenda} />
-      <p class="solo-lectores" role="status" aria-label={tx('M-1307')} data-prueba="anuncio-revision">{anuncio}</p>
+      <p class="solo-lectores" role="status" aria-label={tx('M-1707')} data-prueba="anuncio-revision">{anuncio}</p>
       <RevisionBarra />
       {sinDetecciones ? <p class="aviso-vacio" data-prueba="sin-detecciones">{t('M-69')}</p> : null}
       <div class="revision-cuerpo">
@@ -99,10 +99,10 @@ export function RevisionBase() {
           <button type="button" class="secundario" onClick={() => { setDescartar(false); }}>{t(ROTULOS.cancelar)}</button>
         </div>
       </Dialogo>
-      <Dialogo abierto={atajos} titulo={tx('M-1391')} onCerrar={() => { setAtajos(false); }}>
-        <p>{tx('M-1393')}</p>
-        <p class="ayuda">{tx('M-1394')}</p>
-        <Casilla etiqueta={tx('M-1392')} marcada={shell.singleKeyShortcuts} onCambio={(v) => { actualizar({ singleKeyShortcuts: v }); }} />
+      <Dialogo abierto={atajos} titulo={tx('M-1791')} onCerrar={() => { setAtajos(false); }}>
+        <p>{tx('M-1793')}</p>
+        <p class="ayuda">{tx('M-1794')}</p>
+        <Casilla etiqueta={tx('M-1792')} marcada={shell.singleKeyShortcuts} onCambio={(v) => { actualizar({ singleKeyShortcuts: v }); }} />
         <div class="acciones">
           <button type="button" onClick={() => { setAtajos(false); }}>{t(X.cerrar)}</button>
         </div>

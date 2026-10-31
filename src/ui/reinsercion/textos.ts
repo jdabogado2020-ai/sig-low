@@ -1,5 +1,5 @@
-// Textos de la pantalla Reinserción (PC-6) que 8.2.8 pide sin darles id en 8.5: rango PROVISIONAL M-15xx (M-1501 a M-1539), pendiente
-// de id oficial (PC-7 los unifica). Se registran en el catálogo único con `registrarMensajes()`. Los mensajes solo reciben valores [P]:
+// Textos de la pantalla Reinserción (PC-6) que 8.2.8 pide sin darles id en 8.5: ids definitivos M-1501 a M-1537 (sin
+// solapes; PC-7 los unificó). Se registran en el catálogo único con `registrarMensajes()`. Los mensajes solo reciben valores [P]:
 // números, el marcador canónico, la etiqueta neutra del documento y el formato. El texto [M] (respuesta, valores reales) va en nodos de
 // datos aparte, nunca en un mensaje ni en un nombre accesible (INV-G03).
 import { registrarMensajes, type MessageId } from '../mensajes.ts';

@@ -2,6 +2,7 @@
 // Alto fijo (48 px entidad, 56 px mención), 10 filas de margen, `aria-rowcount` y `aria-rowindex`; las filas plegadas no se montan.
 import { useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Detection, DetectionId, Entity, EntityId, ReviewState } from '../../../core/types.ts';
+import { atributosDeContenedor } from '../../campos.tsx';
 import { etiqueta, ROTULOS, t } from '../../mensajes.ts';
 import { aceptar, aceptarEntidad, rechazar, rechazarEntidad, restablecer } from './acciones.ts';
 import {
@@ -48,7 +49,7 @@ const altoDe = (f: FilaG): number => (f.tipo === 'ent' ? ALTO_ENTIDAD : ALTO_MEN
 export function Cuadricula({ singleKey }: { singleKey: boolean }) {
   const rev = useRevisionUi();
   const { doc, state, expandidas, seleccion, entidadSeleccion, enfoque, nuevas } = rev;
-  const cont = useRef<HTMLDivElement>(null);
+  const cont = useRef<HTMLDivElement | null>(null);
   const rejilla = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ st: 0, vh: 480 });
   const [activa, setActiva] = useState<string | null>(null);
@@ -182,7 +183,7 @@ export function Cuadricula({ singleKey }: { singleKey: boolean }) {
   const montadas = filas.slice(desde, hasta + 1);
   return (
     <div class="cuadricula-envoltura">
-      <div class="cuadricula-borde" ref={cont} onScroll={alDesplazar} onKeyDown={alTeclear}>
+      <div class="cuadricula-borde" ref={(el) => { cont.current = el; atributosDeContenedor(el); }} onScroll={alDesplazar} onKeyDown={alTeclear} onContextMenu={(e) => { e.preventDefault(); }}>
         <div
           role="treegrid"
           aria-label={t('M-957')}
@@ -191,14 +192,14 @@ export function Cuadricula({ singleKey }: { singleKey: boolean }) {
           data-prueba="cuadricula"
         >
           <div role="row" aria-rowindex={1} class="fila-g encabezado-g">
-            <div role="columnheader">{tx('M-1319')}</div>
-            <div role="columnheader">{tx('M-1326')}</div>
-            <div role="columnheader">{tx('M-1320')}</div>
-            <div role="columnheader">{tx('M-1321')}</div>
-            <div role="columnheader">{tx('M-1322')}</div>
-            <div role="columnheader">{tx('M-1323')}</div>
-            <div role="columnheader">{tx('M-1324')}</div>
-            <div role="columnheader">{tx('M-1325')}</div>
+            <div role="columnheader">{tx('M-1719')}</div>
+            <div role="columnheader">{tx('M-1726')}</div>
+            <div role="columnheader">{tx('M-1720')}</div>
+            <div role="columnheader">{tx('M-1721')}</div>
+            <div role="columnheader">{tx('M-1722')}</div>
+            <div role="columnheader">{tx('M-1723')}</div>
+            <div role="columnheader">{tx('M-1724')}</div>
+            <div role="columnheader">{tx('M-1725')}</div>
           </div>
           <div role="rowgroup" ref={rejilla}>
           {montadas.map((f, k) => {
@@ -238,12 +239,12 @@ export function Cuadricula({ singleKey }: { singleKey: boolean }) {
                   <div role="gridcell" class="c-acciones">
                     <button
                       type="button" class="secundario" tabIndex={ti} disabled={pend === 0}
-                      aria-label={tx('M-1318', { visible: txtAceptar, tipo })}
+                      aria-label={tx('M-1718', { visible: txtAceptar, tipo })}
                       onClick={() => { aceptarEntidad(e.id); }}
                     >{txtAceptar}</button>
                     <button
                       type="button" class="secundario" tabIndex={ti} disabled={pend === 0}
-                      aria-label={tx('M-1318', { visible: txtRechazar, tipo })}
+                      aria-label={tx('M-1718', { visible: txtRechazar, tipo })}
                       onClick={() => { rechazarEntidad(e.id); }}
                     >{txtRechazar}</button>
                   </div>
@@ -260,10 +261,10 @@ export function Cuadricula({ singleKey }: { singleKey: boolean }) {
             const tipo = nombreDeTipo(d.type);
             const parte = partes.get(d.partId);
             const ctx = contextoDe(parte, d);
-            const final = d.status === 'rechazada' ? tx('M-1359')
+            const final = d.status === 'rechazada' ? tx('M-1759')
               : d.status === 'editada' ? (d.replacement.edited ?? '')
                 : (d.replacement.generalized?.template ?? d.replacement.proposedTemplate).split('{m}').join(f.e.marker ?? '');
-            const nombre = (accion: string): string => tx('M-1317', { accion, i: f.i, tipo });
+            const nombre = (accion: string): string => tx('M-1717', { accion, i: f.i, tipo });
             return (
               <div
                 key={f.clave}
@@ -271,7 +272,7 @@ export function Cuadricula({ singleKey }: { singleKey: boolean }) {
                 class={`fila-g fila-men cat-${categoriaDe(d.type)} est-${d.status}${seleccion === d.id ? ' sel' : ''}`}
                 aria-level={2}
                 aria-rowindex={indice + 2}
-                aria-label={tx('M-1316', {
+                aria-label={tx('M-1716', {
                   i: f.i, n: f.n, estado: etiqueta('estado', d.status).toLocaleLowerCase('es-CO'),
                   confianza: etiqueta('confianza', d.confidence).toLocaleLowerCase('es-CO'), parte: parte?.label ?? '',
                 })}
@@ -283,7 +284,7 @@ export function Cuadricula({ singleKey }: { singleKey: boolean }) {
                 }}
                 onFocus={(ev) => { if (ev.target === ev.currentTarget) setActiva(f.clave); }}
               >
-                <div role="gridcell" class="c-nombre">{tx('M-1329')} {f.i}</div>
+                <div role="gridcell" class="c-nombre">{tx('M-1729')} {f.i}</div>
                 <div role="gridcell" class="c-acciones">
                   <button type="button" class="secundario" tabIndex={ti} aria-label={nombre(t(ROTULOS.aceptar))} onClick={() => { aceptar(d.id); }}>{t(ROTULOS.aceptar)}</button>
                   <button type="button" class="secundario" tabIndex={ti} aria-label={nombre(t(ROTULOS.rechazar))} onClick={() => { rechazar(d.id); }}>{t(ROTULOS.rechazar)}</button>
@@ -292,7 +293,7 @@ export function Cuadricula({ singleKey }: { singleKey: boolean }) {
                 </div>
                 <div role="gridcell" class="c-estado">
                   <span class="ins" aria-hidden="true"><IconoDeEstado estado={d.status} /></span>
-                  <span>{etiqueta('estado', d.status)}{nuevas.has(d.id) ? ` · ${tx('M-1337')}` : ''}</span>
+                  <span>{etiqueta('estado', d.status)}{nuevas.has(d.id) ? ` · ${tx('M-1737')}` : ''}</span>
                 </div>
                 <div role="gridcell" class="c-ctx"><span class="ctx">{ctx.antes}<strong>{ctx.texto}</strong>{ctx.despues}</span></div>
                 <div role="gridcell" class="c-parte">{parte?.label ?? ''}</div>

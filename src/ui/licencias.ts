@@ -31,18 +31,29 @@ export const GRUPOS_LICENCIAS: GrupoLicencias[] = [
     titulo: 'Bibliotecas incluidas en Sig-Low (MIT)',
     intro: 'Licencia MIT. Cada aviso de derechos de autor se conserva junto al texto de la licencia.',
     avisos: [
-      { componente: 'Preact', version: '10.29.8', licencia: 'MIT', aviso: ['Copyright (c) 2015-present Jason Miller y los colaboradores de Preact.', ...TEXTO_MIT] },
-      { componente: 'fflate', version: '0.8.3', licencia: 'MIT', aviso: ['Copyright (c) Arjun Barrett y los colaboradores de fflate.', ...TEXTO_MIT] },
-      { componente: '@xmldom/xmldom', version: '0.9.12', licencia: 'MIT', aviso: ['Copyright (c) los autores y colaboradores de xmldom.', ...TEXTO_MIT] },
+      { componente: 'Preact', version: '10.29.8', licencia: 'MIT', aviso: ['Copyright (c) 2015-present Jason Miller.', ...TEXTO_MIT] },
+      { componente: 'fflate', version: '0.8.3', licencia: 'MIT', aviso: ['Copyright (c) 2026 Arjun Barrett.', ...TEXTO_MIT] },
+      {
+        componente: '@xmldom/xmldom', version: '0.9.12', licencia: 'MIT',
+        aviso: [
+          'Copyright 2019 - present Christopher J. Brody y otros colaboradores, según figuran en la lista de colaboradores de xmldom.',
+          'Copyright 2012 - 2017 @jindw y otros colaboradores, según figuran en la lista de colaboradores de jindw/xmldom.',
+          ...TEXTO_MIT,
+        ],
+      },
       { componente: 'onnxruntime-web (solo los archivos .wasm y .mjs de la versión de procesador)', version: '1.31.0-dev.20260914-8d85527a0', licencia: 'MIT', aviso: ['Copyright (c) Microsoft Corporation.', ...TEXTO_MIT] },
+      {
+        componente: 'core-js (dentro de pdf.js)', version: '3.50.0', licencia: 'MIT',
+        aviso: ['Copyright (c) 2013–2025 Denis Pushkarev (zloirock.ru), 2025–2026 CoreJS Company (core-js.io). pdf.js lo lleva empaquetado en su propio código.', ...TEXTO_MIT],
+      },
     ],
   },
   {
     titulo: 'Bibliotecas incluidas en Sig-Low (Apache-2.0)',
     intro: 'Licencia Apache-2.0. Se conservan la licencia y el archivo NOTICE de cada componente.',
     avisos: [
-      { componente: 'pdf.js (pdfjs-dist, versión legacy)', version: '6.4.299', licencia: 'Apache-2.0', aviso: ['Copyright Mozilla Foundation y los colaboradores de pdf.js.', ...TEXTO_APACHE] },
-      { componente: '@huggingface/tokenizers', licencia: 'Apache-2.0', aviso: ['Copyright Hugging Face, Inc. y los colaboradores.', ...TEXTO_APACHE] },
+      { componente: 'pdf.js (pdfjs-dist, versión legacy)', version: '6.4.299', licencia: 'Apache-2.0', aviso: ['Copyright 2024 Mozilla Foundation. No se incluyen los recursos opcionales de pdf.js (fuentes estándar, cmaps ni wasm), que tienen otras licencias.', ...TEXTO_APACHE] },
+      { componente: '@huggingface/tokenizers', version: '0.2.0', licencia: 'Apache-2.0', aviso: ['Autor: Hugging Face. El paquete trae el texto completo de la Licencia Apache 2.0 sin línea de derechos de autor propia.', ...TEXTO_APACHE] },
       { componente: 'TypeScript', version: '6.0.3', licencia: 'Apache-2.0', aviso: ['Copyright Microsoft Corporation. Herramienta de compilación; no se distribuye dentro de la aplicación.', ...TEXTO_APACHE] },
     ],
   },
@@ -54,7 +65,7 @@ export const GRUPOS_LICENCIAS: GrupoLicencias[] = [
         version: '0.3.0',
         licencia: 'MIT',
         aviso: [
-          'Copyright (c) los autores de @piighost/ner-web. Copiado a src/core/ner/gliner/ con su aviso de derechos de autor.',
+          'Copyright (c) 2025 Athroniaeth, titular de @piighost/ner-web. Copiado a src/core/ner/gliner/ con su aviso de derechos de autor.',
           'Modificación: parche para tokenizadores basados en mT5, anotado en el código.',
           ...TEXTO_MIT,
         ],
@@ -69,7 +80,7 @@ export const GRUPOS_LICENCIAS: GrupoLicencias[] = [
         componente: 'GLiNER-X large (knowledgator/gliner-x-large), versión cuantizada a 8 bits',
         licencia: 'Apache-2.0',
         aviso: [
-          'Autor del modelo: Knowledgator. Basado en GLiNER. Modelo base: mT5-large de Google, licencia Apache-2.0.',
+          'Autor del modelo: Knowledgator (commit 4a4437f4). Basado en GLiNER. Modelo base: mT5-large de Google, licencia Apache-2.0.',
           'La licencia de los datos de entrenamiento está pendiente de confirmación escrita con el autor del modelo.',
           ...TEXTO_APACHE,
         ],
@@ -77,7 +88,7 @@ export const GRUPOS_LICENCIAS: GrupoLicencias[] = [
       {
         componente: 'GLiNER-X base (knowledgator/gliner-x-base), versión cuantizada a 8 bits, usada como respaldo',
         licencia: 'Apache-2.0',
-        aviso: ['Autor del modelo: Knowledgator. La licencia de los datos de entrenamiento está pendiente de confirmación escrita.', ...TEXTO_APACHE],
+        aviso: ['Autor del modelo: Knowledgator (commit a6c7a8fb). Modelo base: mT5-base de Google, licencia Apache-2.0. La licencia de los datos de entrenamiento está pendiente de confirmación escrita.', ...TEXTO_APACHE],
       },
     ],
   },

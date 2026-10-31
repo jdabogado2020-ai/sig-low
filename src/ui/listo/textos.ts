@@ -1,4 +1,4 @@
-// Textos de la pantalla Listo (PC-5) que 8.2.7, 7.13.8 y 6.8 piden sin darles id en 8.5: rango M-14xx, reservado a PC-5.
+// Textos de la pantalla Listo (PC-5) que 8.2.7, 7.13.8 y 6.8 piden sin darles id en 8.5: ids definitivos M-1401 a M-1423 (PC-4 pasó a M-18xx).
 // Se registran en el catálogo único con `registrarMensajes()` (como hizo PC-2 con su rango). Los mensajes solo reciben valores [P]
 // (números, marcadores, nombres de tipo, etiquetas neutras de parte, nombres de archivo neutros); nunca texto del documento.
 import { registrarMensajes, type MessageId } from '../mensajes.ts';

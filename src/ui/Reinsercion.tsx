@@ -252,6 +252,7 @@ function VistaReal({ texto, reales, marcas }: { texto: string; reales: readonly 
       tabIndex={0}
       aria-label={t(R.regionResultado)}
       data-prueba="resultado-real"
+      onContextMenu={(e) => { e.preventDefault(); }}
       onCut={(e) => { e.preventDefault(); }}
       onDragStart={(e) => { e.preventDefault(); }}
     >
@@ -296,9 +297,9 @@ function CampoBusqueda(p: {
   const id = useIdNeutro();
   const corta = p.consulta.trim().length > 0 && p.consulta.trim().length < MINIMO_BUSQUEDA;
   return (
-    <div class="busqueda-reinsercion" role="search" aria-label={tp('M-1451')} data-prueba="busqueda">
+    <div class="busqueda-reinsercion" role="search" aria-label={tp('M-1851')} data-prueba="busqueda">
       <div class="campo">
-        <label for={id}>{tp('M-1450')}</label>
+        <label for={id}>{tp('M-1850')}</label>
         <div class="fila">
           <input
             id={id} name={id} type="text" value={p.consulta} aria-describedby={`${id}-a`}
@@ -309,15 +310,15 @@ function CampoBusqueda(p: {
               else if (e.key === 'Escape' && p.consulta !== '') { e.preventDefault(); e.stopPropagation(); p.alEscribir(''); }
             }}
           />
-          <button type="button" class="secundario" disabled={p.n === 0} aria-label={tp('M-1455')} onClick={() => { p.alMover(-1); }}>‹</button>
-          <button type="button" class="secundario" disabled={p.n === 0} aria-label={tp('M-1454')} onClick={() => { p.alMover(1); }}>›</button>
+          <button type="button" class="secundario" disabled={p.n === 0} aria-label={tp('M-1855')} onClick={() => { p.alMover(-1); }}>‹</button>
+          <button type="button" class="secundario" disabled={p.n === 0} aria-label={tp('M-1854')} onClick={() => { p.alMover(1); }}>›</button>
           <span class="estado-busqueda" role="status" data-prueba="busqueda-estado">
-            {p.n > 0 ? tp('M-1452', { i: p.indice + 1, n: p.n }) : p.consulta.trim().length >= MINIMO_BUSQUEDA ? tp('M-1453') : ''}
+            {p.n > 0 ? tp('M-1852', { i: p.indice + 1, n: p.n }) : p.consulta.trim().length >= MINIMO_BUSQUEDA ? tp('M-1853') : ''}
           </span>
         </div>
         <p id={`${id}-a`} class="ayuda">{t('M-72')}</p>
-        {corta ? <p class="ayuda">{tp('M-1457')}</p> : null}
-        {p.truncada ? <p class="ayuda">{tp('M-1458', { n: MAXIMO_COINCIDENCIAS })}</p> : null}
+        {corta ? <p class="ayuda">{tp('M-1857')}</p> : null}
+        {p.truncada ? <p class="ayuda">{tp('M-1858', { n: MAXIMO_COINCIDENCIAS })}</p> : null}
       </div>
     </div>
   );

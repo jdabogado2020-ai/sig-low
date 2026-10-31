@@ -326,12 +326,13 @@ export function PanelTexto({ singleKey }: { singleKey: boolean }) {
         ref={(el) => { panel.current = el; atributosDeContenedor(el); }}
         class={`panel-texto${vista === 'salida' ? ' solo-lectura' : ''}`}
         role="region"
-        aria-label={vista === 'salida' ? tx('M-1306') : tx('M-1301')}
+        aria-label={vista === 'salida' ? tx('M-1706') : tx('M-1701')}
         tabIndex={0}
         data-prueba="panel-texto"
         onScroll={alDesplazar}
         onKeyDown={alTeclear}
         onCopy={alCopiar}
+        onContextMenu={(e) => { e.preventDefault(); }}
         onCut={(e) => { e.preventDefault(); }}
         onDragStart={(e) => { e.preventDefault(); }}
         onMouseUp={() => { setTimeout(actualizarSeleccion, 0); }}
@@ -377,7 +378,7 @@ export function PanelTexto({ singleKey }: { singleKey: boolean }) {
           </button>
         ) : null}
       </div>
-      {vista === 'salida' ? <p class="ayuda" data-prueba="aviso-salida">{tx('M-1308')} {t('M-73')}</p> : null}
+      {vista === 'salida' ? <p class="ayuda" data-prueba="aviso-salida">{tx('M-1708')} {t('M-73')}</p> : null}
     </div>
   );
 }
@@ -432,7 +433,7 @@ function resaltado(el: Elemento, fu: Fuente, state: ReviewState, activo: Detecti
     );
   }
   return (
-    <span key={el.edit.id} class="res edicion" role="note" aria-label={tx('M-1336', { texto: el.edit.text })}>
+    <span key={el.edit.id} class="res edicion" role="note" aria-label={tx('M-1736', { texto: el.edit.text })}>
       <span class="ins" aria-hidden="true"><span class="abr">≈ TXT</span></span>
       {trocear(fu.texto, el.start, el.end, marcas, 'e')}
     </span>
@@ -452,7 +453,7 @@ function contenidoSalida(fu: Fuente, f: Fila, state: ReviewState, segmentos: rea
     // Solo el marcador va en el nombre accesible; un texto editado o generalizado se lee como texto (8.6.4).
     nodos.push(
       MARCADOR.test(texto)
-        ? <span key={`m${s.outStart}`} class={`ficha-marcador ${clase}`} aria-label={tx('M-1335', { marcador: texto })} role="img">{texto}</span>
+        ? <span key={`m${s.outStart}`} class={`ficha-marcador ${clase}`} aria-label={tx('M-1735', { marcador: texto })} role="img">{texto}</span>
         : <span key={`m${s.outStart}`} class={`ficha-marcador ${clase}`}>{texto}</span>,
     );
     cursor = s.outEnd;

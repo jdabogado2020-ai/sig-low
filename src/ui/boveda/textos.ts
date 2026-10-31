@@ -1,5 +1,5 @@
-// Textos de la pantalla Bóveda (PC-6) que 8.2.9 pide sin darles id en 8.5: rango PROVISIONAL M-15xx (M-1551 a M-1579), pendiente de id
-// oficial (PC-7 los unifica). Se registran en el catálogo único con `registrarMensajes()`. Los mensajes solo reciben valores [P]: el código
+// Textos de la pantalla Bóveda (PC-6) que 8.2.9 pide sin darles id en 8.5: ids definitivos M-1551 a M-1574 (sin solapes;
+// PC-7 los unificó). Se registran en el catálogo único con `registrarMensajes()`. Los mensajes solo reciben valores [P]: el código
 // del asunto, fechas, nombres de archivo neutros y números; nunca el contenido de una tabla (INV-V01).
 import { registrarMensajes, type MessageId } from '../mensajes.ts';
 

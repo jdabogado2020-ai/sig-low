@@ -40,7 +40,7 @@ export function RevisionPestanas() {
 
   return (
     <section class="pestanas-laterales" data-prueba="pestanas-laterales">
-      <div role="tablist" aria-label={tp('M-1401')} onKeyDown={alTeclear}>
+      <div role="tablist" aria-label={tp('M-1801')} onKeyDown={alTeclear}>
         {ORDEN.map((p) => (
           <button
             key={p}

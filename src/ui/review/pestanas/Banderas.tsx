@@ -45,7 +45,7 @@ function Tarjeta({ f, i, n, doc, state }: { f: Flag; i: number; n: number; doc: 
     const r = despachar({ kind: 'resolver_bandera', flagId: f.id as FlagId, resolution, ...extra });
     if (!r.ok) { setError(mensajeDeCodigo(r.code)); limpiarError(); return; }
     setAbierto(false);
-    anunciar(tp('M-1415', { m: sinConfirmar(r.state) }));
+    anunciar(tp('M-1815', { m: sinConfirmar(r.state) }));
   };
   const confirmarReemplazo = (): void => {
     const libre = texto.trim();
@@ -60,17 +60,17 @@ function Tarjeta({ f, i, n, doc, state }: { f: Flag; i: number; n: number; doc: 
       class={`tarjeta tarjeta-ban ${f.acknowledged ? 'confirmada' : 'sin-confirmar'}`}
       tabIndex={-1}
       data-bandera={f.id}
-      aria-label={tp('M-1412', { i, n, tipo })}
+      aria-label={tp('M-1812', { i, n, tipo })}
     >
       <h4>
         {tipo}
-        <span class="etiqueta-tarjeta etiqueta-estado" data-prueba="estado-bandera">{f.acknowledged ? tp('M-1409') : tp('M-1408')}</span>
+        <span class="etiqueta-tarjeta etiqueta-estado" data-prueba="estado-bandera">{f.acknowledged ? tp('M-1809') : tp('M-1808')}</span>
       </h4>
       <p class="motivo-tarjeta">{etiqueta('bandera', f.reason)}</p>
       {AYUDA[f.type] !== undefined ? <p class="ayuda">{t(AYUDA[f.type] as 'M-117')}</p> : null}
       <Contexto part={parte} span={f.span} />
       {f.acknowledged && f.resolution !== undefined ? (
-        <p class="ayuda">{f.resolution === 'mantener' ? tp('M-1420') : tp('M-1421')}</p>
+        <p class="ayuda">{f.resolution === 'mantener' ? tp('M-1820') : tp('M-1821')}</p>
       ) : null}
       {error !== null ? <p class="error-campo" role="alert">{error}</p> : null}
       <div class="acciones">
@@ -99,18 +99,18 @@ function Tarjeta({ f, i, n, doc, state }: { f: Flag; i: number; n: number; doc: 
         <div class="reemplazo-bandera">
           {propias.length > 0 ? (
             <fieldset class="grupo">
-              <legend>{tp('M-1417')}</legend>
+              <legend>{tp('M-1817')}</legend>
               {propias.map((o) => (
                 <Radio key={o.id} grupo={nombre} valor={o.id} marcado={opcion === o.id && texto === ''} onCambio={() => { setOpcion(o.id); setTexto(''); }}>{o.template}</Radio>
               ))}
             </fieldset>
           ) : null}
           <div class="campo">
-            <label for={campo}>{tp('M-1410')}</label>
+            <label for={campo}>{tp('M-1810')}</label>
             <input id={campo} name={campo} type="text" value={texto} ref={atributosDeContenido} onInput={(e) => { setTexto((e.currentTarget as HTMLInputElement).value); }} />
           </div>
           <div class="acciones">
-            <button type="button" onClick={confirmarReemplazo}>{tp('M-1419')}</button>
+            <button type="button" onClick={confirmarReemplazo}>{tp('M-1819')}</button>
           </div>
         </div>
       ) : null}
@@ -125,7 +125,7 @@ export function Banderas() {
   return (
     <div class="lista-pestana" data-prueba="pestana-banderas">
       <p class="contador-pestana" role="status" data-prueba="sin-confirmar">{t('M-502', { n: sinConfirmar(state) })}</p>
-      {lista.length === 0 ? <p class="aviso-vacio">{tp('M-1404')}</p> : (
+      {lista.length === 0 ? <p class="aviso-vacio">{tp('M-1804')}</p> : (
         <ol class="tarjetas">
           {lista.map((f, k) => <Tarjeta key={f.id} f={f} i={k + 1} n={lista.length} doc={doc} state={state} />)}
         </ol>

@@ -35,14 +35,14 @@ export function Banda() {
 
   if (m.kind === 'terminado') {
     return (
-      <section class="banda banda-plegada" data-prueba="banda-modelo" data-estado="terminado" aria-label={tp('M-1425')}>
+      <section class="banda banda-plegada" data-prueba="banda-modelo" data-estado="terminado" aria-label={tp('M-1825')}>
         <p role="status">{t('M-167')}{m.respaldo ? ` ${t('M-170')}` : ''}</p>
       </section>
     );
   }
   if (m.kind === 'plan_b') {
     return (
-      <section class="banda banda-plan-b" data-prueba="banda-modelo" data-estado="plan_b" aria-label={tp('M-1425')}>
+      <section class="banda banda-plan-b" data-prueba="banda-modelo" data-estado="plan_b" aria-label={tp('M-1825')}>
         <div role="status">
           {banda.agotado ? <p data-prueba="banda-agotado">{t('M-64')}</p> : null}
           <p data-prueba="banda-plan-b">{textoDePlanB(m)}</p>
@@ -53,11 +53,11 @@ export function Banda() {
 
   const total = m.ventanasTotales;
   const k = Math.min(m.ventanas + 1, Math.max(1, total));
-  const avance = total > 0 ? t('M-165', { k, n: total }) : tp('M-1430');
+  const avance = total > 0 ? t('M-165', { k, n: total }) : tp('M-1830');
   const calentamiento = obtenerVistaAnalisis().modelo?.calentamientoMs ?? analisis.modelo?.calentamientoMs ?? 0;
   const unHilo = typeof crossOriginIsolated !== 'undefined' && !crossOriginIsolated;
   return (
-    <section class="banda banda-en-curso" data-prueba="banda-modelo" data-estado="en_curso" aria-label={tp('M-1425')}>
+    <section class="banda banda-en-curso" data-prueba="banda-modelo" data-estado="en_curso" aria-label={tp('M-1825')}>
       <h2 class="banda-titulo">{t('M-180')}</h2>
       <div role="status">
         <p data-prueba="banda-avance">{avance}</p>
@@ -67,8 +67,8 @@ export function Banda() {
         {banda.lenta ? <p data-prueba="banda-lenta">{t('M-63')}</p> : null}
       </div>
       {total > 0
-        ? <progress value={m.ventanas} max={total} aria-label={tp('M-1428')} aria-valuetext={avance} />
-        : <progress aria-label={tp('M-1428')} aria-valuetext={avance} />}
+        ? <progress value={m.ventanas} max={total} aria-label={tp('M-1828')} aria-valuetext={avance} />
+        : <progress aria-label={tp('M-1828')} aria-valuetext={avance} />}
       <div class="acciones">
         <button type="button" class="secundario" data-prueba="seguir-sin-modelo" onClick={() => { setConfirmar(true); }}>{t(ROTULOS.seguir_sin_el_modelo)}</button>
       </div>
@@ -76,7 +76,7 @@ export function Banda() {
         <p>{t('M-173')}</p>
         <div class="acciones">
           <button type="button" onClick={() => { setConfirmar(false); seguirSinModelo(); }}>{t(ROTULOS.seguir_sin_el_modelo)}</button>
-          <button type="button" class="secundario" onClick={() => { setConfirmar(false); }}>{tp('M-1426')}</button>
+          <button type="button" class="secundario" onClick={() => { setConfirmar(false); }}>{tp('M-1826')}</button>
         </div>
       </Dialogo>
     </section>

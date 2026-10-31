@@ -58,13 +58,13 @@ function Tarjeta({ s, i, n, doc, state }: { s: Suggestion; i: number; n: number;
     }
     const r = despachar({ kind: 'aplicar_sugerencia', suggestionId: s.id as SuggestionId, optionId: opcion });
     if (!r.ok) { setError(mensajeDeCodigo(r.code)); limpiarError(); return; }
-    anunciar(tp('M-1413', { n: sinDecidir(r.state) }));
+    anunciar(tp('M-1813', { n: sinDecidir(r.state) }));
   };
   const descartar = (): void => {
     setError(null);
     const r = despachar({ kind: 'descartar_sugerencia', suggestionId: s.id as SuggestionId });
     if (!r.ok) { setError(mensajeDeCodigo(r.code)); limpiarError(); return; }
-    anunciar(tp('M-1414', { n: sinDecidir(r.state) }));
+    anunciar(tp('M-1814', { n: sinDecidir(r.state) }));
   };
 
   return (
@@ -74,13 +74,13 @@ function Tarjeta({ s, i, n, doc, state }: { s: Suggestion; i: number; n: number;
       tabIndex={-1}
       data-sugerencia={s.id}
       data-clase={s.kind}
-      aria-label={tp('M-1411', { i, n, clase })}
+      aria-label={tp('M-1811', { i, n, clase })}
     >
       <h4>
         {clase}
         {s.prioridad !== undefined ? <span class="etiqueta-tarjeta etiqueta-prioridad" data-prueba="prioridad">{etiqueta('prioridad', s.prioridad)}</span> : null}
         {s.status === 'aplicada' ? <span class="etiqueta-tarjeta etiqueta-estado" data-prueba="estado-sugerencia">{t(ROTULOS.aplicada)}</span> : null}
-        {s.status === 'descartada' ? <span class="etiqueta-tarjeta etiqueta-estado" data-prueba="estado-sugerencia">{tp('M-1405')}</span> : null}
+        {s.status === 'descartada' ? <span class="etiqueta-tarjeta etiqueta-estado" data-prueba="estado-sugerencia">{tp('M-1805')}</span> : null}
       </h4>
       {tramo !== null ? <Contexto part={parte} span={tramo} /> : null}
       {s.kind === 'ROTULO_DOCUMENTO_A_GENERICO' && s.status === 'aplicada' ? <p class="ayuda">{t('M-128')}</p> : null}
@@ -93,7 +93,7 @@ function Tarjeta({ s, i, n, doc, state }: { s: Suggestion; i: number; n: number;
         </fieldset>
       ) : null}
       <fieldset class="grupo">
-        <legend>{tp('M-1406')}</legend>
+        <legend>{tp('M-1806')}</legend>
         {s.options.map((o) => (
           <Radio key={o.id} grupo={`${nombre}o`} valor={o.id} marcado={elegida === o.id} onCambio={() => { setOpcion(o.id); }}>
             {verOpcion(o.template)}{o.depCode !== undefined ? ` (${nombreDeDepartamento(o.depCode)})` : ''}
@@ -121,8 +121,8 @@ export function Sugerencias() {
   return (
     <div class="lista-pestana" data-prueba="pestana-sugerencias">
       <p class="ayuda">{t('M-115')}</p>
-      <p class="contador-pestana" role="status" data-prueba="sin-decidir">{tp('M-1402', { n: sinDecidir(state) })}</p>
-      {lista.length === 0 ? <p class="aviso-vacio">{tp('M-1403')}</p> : (
+      <p class="contador-pestana" role="status" data-prueba="sin-decidir">{tp('M-1802', { n: sinDecidir(state) })}</p>
+      {lista.length === 0 ? <p class="aviso-vacio">{tp('M-1803')}</p> : (
         <ol class="tarjetas">
           {lista.map((s, k) => <Tarjeta key={s.id} s={s} i={k + 1} n={lista.length} doc={doc} state={state} />)}
         </ol>

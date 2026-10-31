@@ -1,5 +1,5 @@
 // Textos de Entrada y Procesando (PC-2) que 8.5 no numera: etiquetas de campos, unidades y plantillas de accesibilidad.
-// Rango M-13xx reservado a PC-2. Se registran en el catálogo único para que el barrido de textos prohibidos (PC-7) los vea.
+// Ids M-1301 a M-1325 (PC-2). Se registran en el catálogo único para que el barrido de textos prohibidos (PC-7) los vea.
 import { registrarMensajes, type MessageId } from './mensajes.ts';
 
 registrarMensajes({

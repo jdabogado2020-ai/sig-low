@@ -23,11 +23,11 @@ export function Progreso() {
   return (
     <div class="progreso-revision">
       <div class="fila-progreso">
-        <p class="contador-revision" role="status" aria-label={tp('M-1435')} data-prueba="contador-revision">
+        <p class="contador-revision" role="status" aria-label={tp('M-1835')} data-prueba="contador-revision">
           <span data-prueba="contador-texto">{contador}</span>
           {enCurso ? <span data-prueba="contador-modelo">{` ${t('M-181')}`}</span> : null}
         </p>
-        <div class="acciones" role="group" aria-label={tp('M-1436')}>
+        <div class="acciones" role="group" aria-label={tp('M-1836')}>
           <button type="button" class="secundario" disabled={pend + ban === 0} onClick={() => { irAlPendiente(-1); }}>{t(ROTULOS.anterior_pendiente)}</button>
           <button type="button" class="secundario" disabled={pend + ban === 0} onClick={() => { irAlPendiente(1); }}>{t(ROTULOS.siguiente_pendiente)}</button>
           <button

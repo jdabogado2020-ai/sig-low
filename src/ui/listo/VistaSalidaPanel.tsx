@@ -137,6 +137,7 @@ export function VistaSalidaPanel({ out, state, abierta }: { out: RenderedOutput;
       tabIndex={0}
       data-prueba="vista-salida"
       data-puerta={abierta ? 'abierta' : 'cerrada'}
+      onContextMenu={(e) => { e.preventDefault(); }}
       onCut={(e) => { e.preventDefault(); }}
       onDragStart={(e) => { e.preventDefault(); }}
     >
