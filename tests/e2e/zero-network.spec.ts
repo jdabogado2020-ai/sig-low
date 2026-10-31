@@ -1,5 +1,6 @@
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { createServer } from 'node:net';
 import { join } from 'node:path';
 
 import { test, expect } from '@playwright/test';
@@ -164,6 +165,91 @@ test('@cero-red fase docx: cargar .docx → Procesando → Revisión sin peticio
   }
 });
 
+// T-PV-12 (V-01; PD-2): un WebSocket al propio origen. El SW no intercepta WebSocket, y `connect-src 'self'` admite ws: y
+// wss: al mismo host: la petición llegaría al alojamiento con su query aunque la subida falle. La segunda política de la CSP
+// (`connect-src https: http:`) lo bloquea en la ventana, en un realm `about:blank` (que hereda la CSP y no la guardia) y en
+// un worker. La verdad es el registro de server.mjs; el control, con solo la política canónica, muestra que sí llegaría.
+test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y no llega al servidor; con solo la política canónica, sí (control)', async ({ browser }) => {
+  const raiz = join(process.cwd(), 'test-results', `tpv12-${Date.now()}`);
+  const soloCanonica = join(raiz, 'solo-canonica');
+  cpSync('dist', soloCanonica, { recursive: true });
+  // Control: la CSP de 3.6 sin la segunda política, en la cabecera y en el <meta> (el SW queda bloqueado en el control).
+  writeFileSync(join(soloCanonica, '_headers'), readFileSync(join(soloCanonica, '_headers'), 'utf8').replace(/^(\s*Content-Security-Policy:[^,\n]*),[^\n]*$/m, '$1'));
+  writeFileSync(join(soloCanonica, 'index.html'), readFileSync(join(soloCanonica, 'index.html'), 'utf8').replace(/\s*<meta http-equiv="Content-Security-Policy" content="script-src[^"]*"\s*\/?>/, ''));
+  expect(readFileSync(join(soloCanonica, 'index.html'), 'utf8').match(/http-equiv="Content-Security-Policy"/g)).toHaveLength(1);
+  const servir = async (dir: string, puerto: number): Promise<{ registro: () => string[]; parar: () => void }> => {
+    const archivo = join(raiz, `peticiones-${puerto}.jsonl`);
+    writeFileSync(archivo, '');
+    const hijo = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', dir, '--port', String(puerto)], {
+      env: { ...process.env, SIGLOW_REGISTRO_PETICIONES: archivo }, stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    await new Promise<void>((ok) => { hijo.stdout?.on('data', (b: Buffer) => { if (b.toString().includes('listo')) ok(); }); });
+    return { registro: () => readFileSync(archivo, 'utf8').split('\n').filter(Boolean).map((l) => (JSON.parse(l) as { u: string }).u), parar: () => { hijo.kill(); } };
+  };
+  const intentar = (page: import('@playwright/test').Page): Promise<{ ventana: string; marco: string; violacion: string[] }> => page.evaluate(async () => {
+    const W = (globalThis as unknown as Record<string, typeof WebSocket>)['WebSocket']!;
+    let ventana: string;
+    try { new W(`ws://${location.host}/tpv12-ventana?d=x`); ventana = 'creado'; } catch (e) { ventana = `lanza ${(e as Error).name}`; }
+    const f = document.createElement('iframe');
+    document.body.append(f);
+    const violacion: string[] = [];
+    (f.contentWindow as Window).addEventListener('securitypolicyviolation', (e) => { violacion.push((e as SecurityPolicyViolationEvent).effectiveDirective); });
+    const M = (f.contentWindow as unknown as Record<string, typeof WebSocket>)['WebSocket']!;
+    const marco = await new Promise<string>((ok) => {
+      const s = new M(`ws://${location.host}/tpv12-marco?d=x`);
+      s.onerror = () => { ok('error'); };
+      s.onopen = () => { ok('abierto'); };
+      setTimeout(() => { ok('sin evento'); }, 3000);
+    });
+    await new Promise((ok) => { setTimeout(ok, 300); });
+    return { ventana, marco, violacion };
+  });
+  // Puertos libres del sistema (otros carriles dejan servidores abiertos en puertos fijos).
+  const libre = (): Promise<number> => new Promise((ok) => {
+    const s = createServer();
+    s.listen(0, '127.0.0.1', () => { const d = s.address() as { port: number }; s.close(() => { ok(d.port); }); });
+  });
+  const puerto = await libre();
+  const puertoControl = await libre();
+  const con = await servir('dist', puerto);
+  const sin = await servir(soloCanonica, puertoControl);
+  try {
+    // Con la CSP de PD-2 y el SW activo.
+    const ctx = await browser.newContext({ baseURL: `http://127.0.0.1:${puerto}` });
+    const page = await ctx.newPage();
+    await page.goto('/');
+    await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
+    const r = await intentar(page);
+    expect(r.ventana).toBe('lanza SiglowError'); // la guardia, antes de la CSP
+    expect(r.marco).toBe('error');
+    expect(r.violacion).toContain('connect-src');
+    const detect = (JSON.parse(readFileSync('dist/precache.json', 'utf8')) as { archivos: { ruta: string }[] }).archivos.map((a) => a.ruta).find((x) => /detect\.worker/.test(x))!;
+    const [worker] = await Promise.all([page.waitForEvent('worker'), page.evaluate((u) => { (globalThis as unknown as { w: Worker }).w = new Worker(u, { type: 'module' }); }, detect)]);
+    expect(await worker.evaluate(async () => {
+      const v: string[] = [];
+      self.addEventListener('securitypolicyviolation', (e) => { v.push((e as SecurityPolicyViolationEvent).effectiveDirective); });
+      const res = await new Promise<string>((ok) => { const s = new WebSocket(`ws://${self.location.host}/tpv12-worker?d=x`); s.onerror = () => { ok('error'); }; s.onopen = () => { ok('abierto'); }; setTimeout(() => { ok('sin evento'); }, 3000); });
+      await new Promise((ok) => { setTimeout(ok, 300); });
+      return { res, v };
+    })).toEqual({ res: 'error', v: ['connect-src'] });
+    await page.waitForTimeout(500);
+    expect(con.registro().filter((u) => u.startsWith('/tpv12'))).toEqual([]);
+    await ctx.close();
+    // Control: solo la política canónica (`connect-src 'self'`). El WebSocket del realm sin guardia llega al servidor, query incluida.
+    const ctx2 = await browser.newContext({ baseURL: `http://127.0.0.1:${puertoControl}`, serviceWorkers: 'block' });
+    const page2 = await ctx2.newPage();
+    await page2.goto('/');
+    const r2 = await intentar(page2);
+    expect(r2.violacion).toEqual([]);
+    await expect.poll(() => sin.registro().filter((u) => u.startsWith('/tpv12'))).toEqual(['/tpv12-marco?d=x']);
+    await ctx2.close();
+  } finally {
+    con.parar();
+    sin.parar();
+    rmSync(raiz, { recursive: true, force: true });
+  }
+});
+
 // Fase del service worker (PD-1, 3.2 y V-15): con conexión el SW instala el precache verificado; sin conexión la app
 // sale de la caché con las cabeceras de 3.6 (las de dist/_headers, inyectadas en sw.js al construir).
 const TRANSPORTE = new Set(['date', 'connection', 'keep-alive', 'content-length', 'transfer-encoding']);
@@ -257,7 +343,11 @@ test.describe('fase pdf', () => {
     mkdirSync(join(CARPETA, 'fixtures'), { recursive: true });
     // Solo en la copia del arnés: las violaciones de CSP, también las de workers, se reportan a /csp-report y el servidor las registra.
     const cabeceras = join(CARPETA, '_headers');
-    writeFileSync(cabeceras, readFileSync(cabeceras, 'utf8').replace(/^(\s*Content-Security-Policy:.*)$/m, '$1; report-uri /csp-report'));
+    // La cabecera lleva dos políticas separadas por coma (PD-2): cada una reporta sus propias violaciones.
+    const conReporte = readFileSync(cabeceras, 'utf8').replace(/^(\s*Content-Security-Policy:\s*)(.*)$/m,
+      (_, nombre: string, valor: string) => nombre + valor.split(/\s*,\s*/).map((p) => `${p}; report-uri /csp-report`).join(', '));
+    expect(conReporte.match(/report-uri \/csp-report/g)).toHaveLength(2);
+    writeFileSync(cabeceras, conReporte);
     // Canario: un worker del mismo origen que intenta salir a la red; la CSP (connect-src 'self') lo bloquea y lo reporta.
     writeFileSync(join(CARPETA, 'assets', 'canario-worker.js'), "fetch('https://ejemplo.test/canario').catch(() => undefined);");
     for (const f of readdirSync(join(RAIZ, 'tests/fixtures')).filter((n) => n.endsWith('.pdf'))) cpSync(join(RAIZ, 'tests/fixtures', f), join(CARPETA, 'fixtures', f));
