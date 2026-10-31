@@ -636,7 +636,7 @@ describe('T-MO-09 · INV-W06 sin duplicados entre ventanas', () => {
 
 describe('T-MO-09 · NullNerEngine (plan B, 6.11.3)', () => {
   const motor = new NullNerEngine();
-  it('T-MO-09 load() resuelve sin descargar; planWindows() devuelve 0; detect() devuelve []', async () => {
+  it('T-MO-09 INV-W03 load() resuelve sin descargar; planWindows() devuelve 0; detect() devuelve []', async () => {
     const r = await motor.load(() => undefined);
     expect(r).toMatchObject({ engineId: 'nulo', modelId: null, sha256: null, threads: 0, decoder: 'ninguno' });
     expect(motor.planWindows('Ana Prueba', OPTIONS)).toBe(0);

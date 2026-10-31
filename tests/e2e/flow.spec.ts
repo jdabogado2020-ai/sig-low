@@ -475,7 +475,7 @@ test.describe('T-IU-05 Entrada: pegar, cargar y estados', () => {
     await expect(page.locator('[contenteditable]')).toHaveCount(0);
   });
 
-  test('T-IU-05 un .txt se lee en el worker `io` y no deja el nombre en ninguna parte (V-37, INV-D05, F-08)', async ({ page }) => {
+  test('T-IU-05 INV-D05 INV-G11 un .txt se lee en el worker `io` y no deja el nombre en ninguna parte (V-37, F-08)', async ({ page }) => {
     await instalarSimulador(page);
     await irAEntrada(page);
     await cargarArchivo(page, 'Ana Ficticia Rojas.txt', TEXTO_PRUEBA, 'text/plain');

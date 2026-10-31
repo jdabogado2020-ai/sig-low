@@ -78,7 +78,7 @@ function leerZip(b: Uint8Array): { locales: { nombre: string; fechaDos: number; 
 
 // --- nombres --------------------------------------------------------------------------------------------------------------
 describe('T-LE-10 nombres de descarga neutros (6.9; V-36)', () => {
-  it('construye sig-low-<clase>-AAAAMMDD-HHMM.<ext> con la hora local', () => {
+  it('INV-G11 construye sig-low-<clase>-AAAAMMDD-HHMM.<ext> con la hora local', () => {
     expect(nombreDescarga('anonimizado', 'txt', ahora)).toBe('sig-low-anonimizado-20261022-1540.txt');
     expect(nombreDescarga('reinsertado', 'docx', ahora)).toBe('sig-low-reinsertado-20261022-1540.docx');
     expect(nombreDescarga('informe', 'json', ahora)).toBe('sig-low-informe-20261022-1540.json');

@@ -458,7 +458,7 @@ describe('informe de anonimización (6.8)', () => {
     for (const palabra of ['Pedro', 'Ficticia', 'ejemplo.test', 'Luisa', 'Medellín']) { expect(json).not.toContain(palabra); expect(txt).not.toContain(palabra); }
   });
 
-  it('INV-I02 y INV-G04 toda cadena del JSON pertenece a una lista permitida; sin la casilla, asunto no existe', async () => {
+  it('INV-I02 INV-G04 INV-G11 toda cadena del JSON pertenece a una lista permitida; sin la casilla, asunto no existe', async () => {
     const e = await revisado('terminado');
     const permitidas = new Set<string>([
       'sig-low/informe', 'usado', 'respaldo_base', 'no_descargado', 'desactivado', 'fallo_carga', 'memoria_insuficiente', 'cancelado', 'sin_tiempo',

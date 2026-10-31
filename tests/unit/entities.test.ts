@@ -215,7 +215,7 @@ describe('T-MO-06 · tabla del asunto y consolidación (6.6.3, 6.6.4)', () => {
     return { s1, s2, table1: table, table2: r2.table, s2c: r2.state, d2 };
   }
 
-  it('INV-T01 INV-T04 dos documentos del mismo asunto reutilizan marcadores y una entidad nueva continúa la numeración', () => {
+  it('INV-T01 INV-T04 INV-G07 dos documentos del mismo asunto reutilizan marcadores y una entidad nueva continúa la numeración', () => {
     const { s2, table1, table2 } = twoDocuments();
     expect(markers(s2)).toEqual([['ANA FICTICIA ROJAS', '[DEMANDANTE_1]'], ['300-000-0001', '[TELÉFONO_1]'], ['310 000 0002', '[TELÉFONO_2]']]);
     expect(entOf(s2, '300-000-0001').markerState).toBe('heredado');
@@ -256,7 +256,7 @@ describe('T-MO-06 · tabla del asunto y consolidación (6.6.3, 6.6.4)', () => {
     expect(Object.values(s2c.entities).every((e) => e.markerState === 'definitivo' || e.markerState === 'heredado')).toBe(true);
   });
 
-  it('INV-T04 una clave de la tabla no cambia de marcador: cambiar_rol da ROL_FIJADO_EN_ASUNTO', () => {
+  it('INV-T04 INV-G07 una clave de la tabla no cambia de marcador: cambiar_rol da ROL_FIJADO_EN_ASUNTO', () => {
     const { s2, table1, d2 } = twoDocuments();
     const r = applyReviewAction(s2, { kind: 'cambiar_rol', entityId: entOf(s2, 'ANA FICTICIA ROJAS').id, role: 'TESTIGO' }, ctxOf(d2, tableIndexOf(table1)));
     expect(r).toEqual({ ok: false, code: 'ROL_FIJADO_EN_ASUNTO' });

@@ -60,7 +60,7 @@ test('@humo Inicio muestra la promesa literal y el título neutro', async ({ pag
 
 // T-RD-01 (A1–A5): primera carga con conexión. El SW se activa y controla la página; pedidos de A4–A5 desde fuera del SW; todo
 // lo que llega al servidor son GET sin query ni cuerpo a la lista blanca (precache, /precache.json, /sw.js y el manifiesto del modelo).
-test('T-RD-01 @cero-red primera carga (A1–A5): solo GET sin query a la lista blanca; SW activado y controlando', async ({ arnes }) => {
+test('T-RD-01 @cero-red INV-G01 primera carga (A1–A5): solo GET sin query a la lista blanca; SW activado y controlando', async ({ arnes }) => {
   const a = await arnes({ reporteCsp: false });
   const s = await a.sesion();
   const page = await s.nuevaPagina();
@@ -115,7 +115,7 @@ test('T-RD-02 @cero-red cabeceras de 3.6 y Content-Type por extensión en cada r
 
 // Fase «pegar» (PC-2, 10.5.1; T-RD-03): crear asunto, pegar un texto con datos ficticios, analizar y llegar a Revisión, sin
 // conexión desde el corte (B1). 0 peticiones fuera del origen, 0 violaciones de CSP, 0 mensajes de consola y el texto pegado no viaja en ninguna URL ni cuerpo.
-test('T-RD-03 @cero-red fase pegar: pegar → Procesando → Revisión sin peticiones ajenas, sin violaciones de CSP ni texto en la red', async ({ arnes }) => {
+test('T-RD-03 @cero-red INV-G01 INV-W03 fase pegar (sin modelo descargado): pegar → Procesando → Revisión sin peticiones ajenas, sin violaciones de CSP ni texto en la red', async ({ arnes }) => {
   const a = await arnes();
   const s = await a.sesion();
   const page = await s.nuevaPagina();
