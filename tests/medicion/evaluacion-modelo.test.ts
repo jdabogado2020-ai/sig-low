@@ -22,6 +22,7 @@ import {
   filasDe, filasDeCierre, FILAS_T_AB_04, GRUPOS_T_AB_01, huellaTextoDeCache, matrizConfusion, posibleSobreajuste, reutilizarNatural, tablaRespaldo,
   TOLERANCIA_PUNTAJE, verificarCache, vistaDeTexto,
   cajaDe, completarSufijo, entradaModelo, indiceDeEntradas, restaurarMayusculas, resumirExperimento, segmentosFrase, segmentosLinea, segmentosParrafo, tablaExperimento, VERSION_RESTAURAR,
+  huellaMayusculas, PREPROCESO_PRODUCTO,
 } from '../../scripts/evaluar-modelo.ts';
 import type { ArchivoVistas, CacheVista, ComparacionRespaldo, EvaluacionModelo, FilasPorConjunto } from '../../scripts/evaluar-modelo.ts';
 import type { EntradaDocumento, GoldAnnotation, GoldDocument, MetricsRow } from '../../scripts/metrics.ts';
@@ -197,7 +198,10 @@ describe('T-AB-03 · calibración con las salidas guardadas de x-large (vista na
     const cambiados = DESARROLLO.filter((id) => (textos[id] ?? []).some((p) => pf3.documentos[id]?.partes[p.clave]?.sha256 !== shaTexto(p.texto)));
     expect(cambiados).toEqual(['C02', 'C06', 'C17', 'C27', 'C28']);
     const procedencia = (cache as CacheVista).procedencia ?? {};
-    expect(DESARROLLO.filter((id) => !(id in procedencia))).toEqual(cambiados);
+    // PF-3-r1b: la vista natural también se pasó de nuevo donde la restauración por párrafos cambia el texto que llega al modelo.
+    const restaurados = DESARROLLO.filter((id) => (textos[id] ?? []).some((p) => entradaModelo(p.texto, 'natural', PREPROCESO_PRODUCTO) !== p.texto));
+    expect(restaurados.length).toBeGreaterThan(0);
+    expect(DESARROLLO.filter((id) => !(id in procedencia))).toEqual(DESARROLLO.filter((id) => cambiados.includes(id) || restaurados.includes(id)));
   });
 
   it('T-AB-03 (a) con el texto final, el piso registrado sigue saliendo de la caché en los 19 de desarrollo: mayor F2 de PER y ORG con precisión global >= 0,70', () => {
@@ -744,6 +748,61 @@ describe('T-AB-01 · filas por vista de 10.4.1 (personas 0,85 y 0,75; organizaci
   });
 });
 
+// PF-3-r1b · (b′) en el producto: la caché única se pasa con el mismo código que usa el worker `ner`
+// =================================================================================================================================
+describe('T-AB-01 · PF-3-r1b la restauración (b′) del producto, el preproceso de la caché y su huella (funciones puras)', () => {
+  const textos: Record<string, ParteTexto[]> = {
+    T01: [{ clave: 'cuerpo:1', texto: 'ANA FICTICIA', kind: 'cuerpo', index: 1 }, { clave: 'cuerpo:2', texto: 'Ana Ficticia Rojas', kind: 'cuerpo', index: 2 }],
+  };
+  const sha = (t: string): string => createHash('sha256').update(t).digest('hex');
+  const ventanas = [{ windowIndex: 0, windowTotal: 1, spans: [{ start: 0, end: 12, label: 'PER' as const, score: 0.9 }] }];
+  const cacheDe = (preproceso?: CacheVista['preproceso']): CacheVista => ({
+    ...CACHE, vista: 'natural', huella: { texto: 'a', vista: 'b', onnx: 'o', codigo: 'c' },
+    documentos: { T01: { partes: { 'cuerpo:1': { sha256: sha('ANA FICTICIA'), ventanas }, 'cuerpo:2': { sha256: sha('Ana Ficticia Rojas'), ventanas } } } },
+    ...(preproceso === undefined ? {} : { preproceso }),
+  });
+
+  it('T-AB-01 INV-W04 la restauración por párrafos del script es la del producto, y el preproceso por defecto de la caché única es el del producto', async () => {
+    const producto = (await import('../../src/core/ner/mayusculas.ts')).restaurarMayusculas;
+    for (const t of ['HECHOS\n\nEl señor ANA FICTICIA ROJAS presentó.\n\nojo que blanca ejemplo vino', 'ANA FICTICIA', 'ana ficticia', 'Ana FICTICIA', 'STRAßE İSTANBUL']) {
+      expect(restaurarMayusculas(t, 'parrafos'), t).toBe(producto(t));
+      expect(entradaModelo(t, 'natural', PREPROCESO_PRODUCTO), t).toBe(producto(t));
+      expect(entradaModelo(t, 'mayusculas', PREPROCESO_PRODUCTO), t).toBe(producto(vistaDeTexto(t, 'mayusculas')));
+    }
+    expect(PREPROCESO_PRODUCTO).toBe('restaurar-parrafos');
+  });
+
+  it('T-AB-01 la huella de mayusculas.ts es el sha256 del archivo con los saltos normalizados y cambia con cualquier cambio del código', () => {
+    const h = huellaMayusculas(RAIZ);
+    expect(h).toMatch(/^[0-9a-f]{64}$/);
+    expect(h).toBe(createHash('sha256').update(readFileSync(ruta('src/core/ner/mayusculas.ts'), 'utf8').replace(/\r\n/g, '\n')).digest('hex'));
+  });
+
+  it('T-AB-01 el índice acepta la caché del experimento (sin huella) y la del producto con la huella vigente, y rechaza una huella de otro mayusculas.ts', () => {
+    const exp = cacheDe({ id: 'restaurar-parrafos', version: VERSION_RESTAURAR });
+    const vigente = cacheDe({ id: 'restaurar-parrafos', version: VERSION_RESTAURAR, huella: 'h1' });
+    const otra = cacheDe({ id: 'restaurar-parrafos', version: VERSION_RESTAURAR, huella: 'h0' });
+    expect(indiceDeEntradas([exp], textos, 'o', 'c', 'h1').size).toBe(2);
+    expect(indiceDeEntradas([vigente], textos, 'o', 'c', 'h1').size).toBe(2);
+    expect(indiceDeEntradas([otra], textos, 'o', 'c', 'h1').size).toBe(0);
+    expect(indiceDeEntradas([otra], textos, 'o', 'c').size).toBe(2); // sin huella pedida (el experimento) no se compara
+    const claves = [...indiceDeEntradas([vigente], textos, 'o', 'c', 'h1').keys()].sort();
+    expect(claves).toEqual([`estandar|${sha('Ana Ficticia')}`, `estandar|${sha('Ana Ficticia Rojas')}`].sort());
+  });
+
+  it('T-AB-01 reutilizarNatural con un preproceso copia de PF-3 solo los documentos cuyas partes llegan al modelo sin cambio', () => {
+    const base: CacheModelo = { ...CACHE, etiquetas: 'estandar', piso: 0.1, huella: { texto: 't', vista: 'v', onnx: 'ox', codigo: 'cd' }, documentos: {
+      D1: { partes: { 'cuerpo:1': { sha256: sha('Ana Ficticia Rojas'), ventanas: [] } } },
+      D2: { partes: { 'cuerpo:1': { sha256: sha('ANA FICTICIA'), ventanas: [] } } },
+    } };
+    const t = (x: string): ParteTexto[] => [{ clave: 'cuerpo:1', texto: x, kind: 'cuerpo', index: 1 }];
+    const tx = { D1: t('Ana Ficticia Rojas'), D2: t('ANA FICTICIA') };
+    expect(reutilizarNatural(base, tx, ['D1', 'D2'], 'ox', 'cd', 'x-large').reutilizados).toEqual(['D1', 'D2']);
+    const sinCambio = (texto: string): boolean => entradaModelo(texto, 'natural', PREPROCESO_PRODUCTO) === texto;
+    expect(reutilizarNatural(base, tx, ['D1', 'D2'], 'ox', 'cd', 'x-large', sinCambio).reutilizados).toEqual(['D1']);
+  });
+});
+
 // ---------------------------------------------------------------------------------------------------------------- archivo real
 // El archivo `metricas/modelo-x-large-vistas.json` lo deja `node scripts/evaluar-modelo.ts pasada | verificar | evaluar` (PF-4a). Estas
 // pruebas leen el archivo guardado. Contra el gold final de los 29 documentos las cifras se recalculan completas cuando ese corpus está
@@ -767,6 +826,13 @@ describe.skipIf(!HAY_VISTAS)('T-AB-01 · la caché de salidas de x-large en las 
       expect(c?.huella.codigo, `${v}: huella del código del motor`).toBe(codigo);
       expect(c?.huella.onnx, `${v}: ONNX`).toBe(archivo.vistas.natural?.huella.onnx);
       expect(c?.huella.vista).toBe(createHash('sha256').update(v).digest('hex'));
+    }
+  });
+
+  it('T-AB-01 INV-W04 PF-3-r1b las tres vistas se pasaron con la restauración por párrafos del producto, en su versión y con la huella del mayusculas.ts vigente (si no, la caché es inválida)', () => {
+    const huella = huellaMayusculas(RAIZ);
+    for (const v of VISTAS_ESPERADAS) {
+      expect(archivo.vistas[v as 'natural']?.preproceso, v).toEqual({ id: PREPROCESO_PRODUCTO, version: VERSION_RESTAURAR, huella });
     }
   });
 
@@ -941,7 +1007,17 @@ describe.skipIf(!HAY_VISTAS)('T-AB-06 · la caché guardada reproduce una pasada
     expect(ver?.tolerancia).toBe(1e-4);
     expect(ver?.huellaMotorCoincide).toBe(true);
     expect(ver?.huellaOnnxCoincide).toBe(true);
+    expect(ver?.huellaPreprocesoCoincide).toBe(true); // PF-3-r1b: el mayusculas.ts vigente es el de la pasada
     expect(ver?.ok).toBe(true);
+  });
+
+  it('T-AB-06 PF-3-r1b las tres vistas se verificaron con el preproceso del producto: una pasada nueva de C22, C10 y C13 reproduce la caché', () => {
+    expect((ver?.resultados ?? []).map((r) => r.vista).sort()).toEqual(['mayusculas', 'minusculas', 'natural']);
+    for (const r of ver?.resultados ?? []) {
+      expect(r.documentos, r.vista).toEqual(['C22', 'C10', 'C13']);
+      expect(r.ok, r.vista).toBe(true);
+      expect(r.maxDiferenciaPuntaje, r.vista).toBeLessThanOrEqual(1e-4);
+    }
   });
 
   it('T-AB-06 la vista natural, con los mismos tres documentos y todas sus ventanas (9.5 estima 12; con el texto final son 13), reproduce tramos y puntajes a ±1e-4', () => {
