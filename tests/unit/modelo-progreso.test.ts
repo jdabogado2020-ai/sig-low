@@ -882,6 +882,21 @@ describe('T-MO-12 · D-11: el expediente propio nunca queda a la vista (A-1, M-5
     expect([A1.length, M50.length, BIEN.length]).toEqual([11, 9, 14]);
   });
 
+  it('A-1 y M-50 · también cortados donde la revisión pone «…» (el resto de la oración no se conoce)', async () => {
+    for (const T of [
+      'IV. PRECEDENTE APLICABLE\nLa accionante interpuso tutela en el expediente T-9.000.001',
+      'En la sentencia T-123 de 2026, expediente T-9.000.001, la Corte me amparó',
+      'Tal como se ordenó en la sentencia T-123 de 2026 (expediente T-9.000.001)',
+      'Esta tutela no es temeraria: la anterior, expediente T-9.000.001,',
+      'La accionante invoca como precedente su propia tutela, expediente T-9.000.001',
+      'Como precedente invoco la Sentencia T-074 de 2020, M.P. Ana Ejemplo R. La accionante actuó en el expediente T-9.000.001',
+    ]) {
+      const { doc, set } = await detectarCon(T);
+      expect(set.detections.filter((d) => d.text === 'T-9.000.001').map((d) => d.type), T).toEqual(['RADICADO_ADMIN']);
+      expect(salida(doc, set).includes('9.000.001'), T).toBe(false);
+    }
+  });
+
   it.each(casos)('%s, contexto %i: el expediente propio se toma y no queda a la vista', async (_h, _n, T) => {
     const { doc, set } = await detectarCon(T);
     const exps = set.detections.filter((d) => d.text === 'T-9.000.001');

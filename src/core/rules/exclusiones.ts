@@ -477,6 +477,28 @@ interface IndiceDeCita {
   providencia: readonly number[];
   /** `PROPIO_ORACION` (D-11, PB-2-r8). */
   propioOracion: readonly number[];
+  /** B-72 (PB-2-r8): las posiciones de «.», «;», «!», «?» y «\n» (candidatos a fin de oración) y las de «\n». */
+  fines: readonly number[];
+  saltos: readonly number[];
+}
+/**
+ * Posiciones de los candidatos a fin de oración y de los saltos de línea, en una pasada. El punto pegado a lo que sigue («9.000.001»,
+ * «S.A») nunca corta (`cortaEn`), así que no se guarda.
+ */
+function finesYSaltos(texto: string): { fines: number[]; saltos: number[] } {
+  const fines: number[] = [];
+  const saltos: number[] = [];
+  for (let p = 0; p < texto.length; p++) {
+    const c = texto.charCodeAt(p);
+    if (!esCandidatoDeFin(c)) continue;
+    if (c === 46 && p + 1 < texto.length) {
+      const sig = texto.charAt(p + 1);
+      if (!esBlanco(sig) && sig !== '\n' && !CIERRE.test(sig)) continue;
+    }
+    fines.push(p);
+    if (c === 10) saltos.push(p);
+  }
+  return { fines, saltos };
 }
 const RAPIDA_CITA = new RegExp(`${LEX('Corte')}|${SENAL_CORE}`, 'giu');
 const RAPIDA_PROPIO = new RegExp(PROPIO_CORE, 'giu');
@@ -499,6 +521,7 @@ function indiceDeCita(view: SearchView): IndiceDeCita {
     ix = {
       cita: inicios(RAPIDA_CITA, view.text), propio: inicios(RAPIDA_PROPIO, view.text),
       providencia: inicios(RAPIDA_PROVIDENCIA, view.text), propioOracion: inicios(RAPIDA_PROPIO_ORACION, view.text),
+      ...finesYSaltos(view.text),
     };
     indices.set(view, ix);
   }
@@ -659,14 +682,26 @@ function cortaEn(texto: string, p: number, ini: number, start: number, sinMinusc
 }
 
 /** Los bordes de la oración del expediente en [start, end), dentro de la ventana [a, b): [ini, start) y [end, fin). */
-function oracionDelExpediente(texto: string, start: number, end: number, a: number, b: number): { ini: number; fin: number } {
+function oracionDelExpediente(texto: string, start: number, end: number, a: number, b: number, ix: IndiceDeCita | undefined): { ini: number; fin: number } {
   const sinMinusculas = !MINUSCULA.test(texto.slice(a, b));
-  // Desde el expediente hacia afuera, hasta el primer corte de cada lado, sin salir de la ventana (B-62).
+  // Desde el expediente hacia afuera, hasta el primer corte de cada lado, sin salir de la ventana (B-62). Con índice (B-72), solo se
+  // miran los candidatos; sin él, cada carácter. Lo mismo en los dos casos.
   let ini = a;
+  let fin = b;
+  if (ix !== undefined) {
+    for (let i = primero(ix.fines, start) - 1; i >= 0 && (ix.fines[i] as number) >= a; i--) {
+      const p = ix.fines[i] as number;
+      if (cortaEn(texto, p, a, start, sinMinusculas)) { ini = p + 1; break; }
+    }
+    for (let i = primero(ix.fines, end); i < ix.fines.length && (ix.fines[i] as number) < b; i++) {
+      const p = ix.fines[i] as number;
+      if (cortaEn(texto, p, a, start, sinMinusculas)) { fin = p; break; }
+    }
+    return { ini, fin };
+  }
   for (let p = start - 1; p >= a; p--) {
     if (esCandidatoDeFin(texto.charCodeAt(p)) && cortaEn(texto, p, a, start, sinMinusculas)) { ini = p + 1; break; }
   }
-  let fin = b;
   for (let p = end; p < b; p++) {
     if (esCandidatoDeFin(texto.charCodeAt(p)) && cortaEn(texto, p, a, start, sinMinusculas)) { fin = p; break; }
   }
@@ -675,23 +710,31 @@ function oracionDelExpediente(texto: string, start: number, end: number, a: numb
 
 /**
  * Inicio del renglón que contiene la posición `p` (el carácter tras el salto anterior), o -1 si está a más de `RENGLON_MAX`. El salto
- * se busca solo en la ventana (B-62): un `lastIndexOf` sobre todo el texto sería cuadrático en un renglón largo.
+ * se busca solo en la ventana (B-62): un `lastIndexOf` sobre todo el texto sería cuadrático en un renglón largo. Con índice, por
+ * búsqueda binaria en los saltos de la vista.
  */
-function inicioDeRenglon(texto: string, p: number): number {
+function inicioDeRenglon(texto: string, p: number, ix: IndiceDeCita | undefined): number {
   const desde = Math.max(0, p - RENGLON_MAX);
-  const nl = texto.slice(desde, p).lastIndexOf('\n');
-  if (nl >= 0) return desde + nl + 1;
+  let nl = -1;
+  if (ix !== undefined) {
+    const i = primero(ix.saltos, p) - 1;
+    if (i >= 0 && (ix.saltos[i] as number) >= desde) nl = ix.saltos[i] as number;
+  } else {
+    const k = texto.slice(desde, p).lastIndexOf('\n');
+    if (k >= 0) nl = desde + k;
+  }
+  if (nl >= 0) return nl + 1;
   return desde === 0 ? 0 : -1;
 }
 
 /** ¿Un rótulo del propio caso al inicio del renglón del expediente, antes de él, o al inicio del renglón anterior que no está en blanco? */
-function rotuloPropio(texto: string, start: number): boolean {
-  const linea = inicioDeRenglon(texto, start);
+function rotuloPropio(texto: string, start: number, ix: IndiceDeCita | undefined): boolean {
+  const linea = inicioDeRenglon(texto, start, ix);
   if (linea < 0) return false;
   if (ROTULO_LINEA.test(texto.slice(linea, start))) return true;
   let finPrevio = linea - 1;
   while (finPrevio >= 0 && start - finPrevio <= 2 * RENGLON_MAX) {
-    const ini = inicioDeRenglon(texto, finPrevio);
+    const ini = inicioDeRenglon(texto, finPrevio, ix);
     if (ini < 0) return false;
     const renglon = texto.slice(ini, finPrevio);
     if (renglon.trim() !== '') return ROTULO_LINEA.test(renglon);
@@ -733,8 +776,8 @@ export function contextoDelExpediente(texto: string, start: number, end: number,
   // Las señales del propio caso anulan las dos (D-11 y B-70). Con `cita`, `citaConLexico` ya vio que no hay `CITA_PROPIO` ni `OWN_CASE`.
   if (!cita && (OWN_CASE.test(antes)
     || (posible(ix?.propio, start - VENTANA_ANTES, start, end, end + VENTANA_TRAS) && CITA_PROPIO.test(ventanaDeCita(texto, start, end))))) return null;
-  if (rotuloPropio(texto, start)) return null;
-  const o = providencia || posible(ix?.propioOracion, a, start, end, b) ? oracionDelExpediente(texto, start, end, a, b) : null;
+  if (rotuloPropio(texto, start, ix)) return null;
+  const o = providencia || posible(ix?.propioOracion, a, start, end, b) ? oracionDelExpediente(texto, start, end, a, b, ix) : null;
   if (o === null) return cita ? 'cita' : null;
   if (casaEn(PROPIO_ORACION_Y, texto, o.ini, start, ix?.propioOracion) || casaEn(PROPIO_ORACION_Y, texto, end, o.fin, ix?.propioOracion)) return null;
   if (providencia && (casaEn(PROVIDENCIA_Y, texto, o.ini, start, ix?.providencia) || casaEn(PROVIDENCIA_Y, texto, end, o.fin, ix?.providencia))) return 'precedente';
