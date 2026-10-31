@@ -42,9 +42,9 @@ test.describe('T-IU-05 estados globales y de Inicio', () => {
     await expect(page.getByRole('radio', { name: /^No guardar la tabla/ })).not.toBeChecked();
     const crear = page.getByRole('button', { name: 'Crear asunto' });
     await expect(crear).toBeDisabled();
-    // Sin conexión de bóveda conectada, «Guardar» queda deshabilitado con M-208 (8.2.2, 8.3).
-    await expect(page.getByRole('radio', { name: /^Guardar tabla cifrada/ })).toBeDisabled();
-    await expect(page.locator('[data-prueba="guardar-no-disponible"]')).toContainText('Este navegador no permite guardar datos de Sig-Low');
+    // Con la bóveda conectada (PD-4), «Guardar» está disponible y sin M-208; el caso sin IndexedDB (M-208) está en boveda.spec.ts.
+    await expect(page.getByRole('radio', { name: /^Guardar tabla cifrada/ })).toBeEnabled();
+    await expect(page.locator('[data-prueba="guardar-no-disponible"]')).toHaveCount(0);
     await page.getByLabel('Código del asunto').fill('---');
     await expect(page.getByText('El código admite de 1 a 40 caracteres: letras sin tilde, números, espacio, punto, guion, guion bajo y barra.')).toBeVisible();
     await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();

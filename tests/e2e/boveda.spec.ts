@@ -450,6 +450,15 @@ test.describe('bóveda en la app', () => {
     await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
   });
 
+  test('T-BO-01 @humo app: sin IndexedDB «Guardar» queda deshabilitado con M-208 y «No guardar» sigue disponible', async ({ page }) => {
+    await page.addInitScript(() => { Object.defineProperty(globalThis, 'indexedDB', { value: undefined, configurable: true }); });
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await expect(page.getByRole('radio', { name: /^Guardar tabla cifrada/ })).toBeDisabled();
+    await expect(page.locator('[data-prueba="guardar-no-disponible"]')).toContainText('Este navegador no permite guardar datos de Sig-Low');
+    await expect(page.getByRole('radio', { name: /^No guardar la tabla/ })).toBeEnabled();
+  });
+
   test('T-BO-01 @humo app: «No guardar» (M-14) no escribe nada en IndexedDB, ni una base vacía', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
