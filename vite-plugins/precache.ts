@@ -2,7 +2,7 @@
 // archivos ya escritos (los mismos bytes que se publican), emite dist/precache.json y escribe en dist/sw.js, en lugar
 // del marcador `__SIGLOW_SW__`, el texto exacto de esa lista, las cabeceras de public/_headers (una sola fuente) y los
 // tipos MIME. Todo archivo de dist/ debe estar clasificado: uno no previsto detiene el build (nada entra ni queda
-// fuera del precache sin decidirlo aquí). PF-2 agrega en `clasificar` los manifiestos del modelo.
+// fuera del precache sin decidirlo aquí). PF-2: `clasificar` admite los manifiestos del modelo (precache) y sus trozos (fuera).
 import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
@@ -40,11 +40,19 @@ export function clasificar(rel: string): 'precache' | 'fuera' | null {
   if (rel === 'index.html' || rel === 'tt-policy.js' || rel.startsWith('assets/')) return 'precache';
   if (rel === 'ort/ort-wasm-simd-threaded.mjs' || rel === 'ort/ort-wasm-simd-threaded.wasm') return 'precache';
   if (rel === 'sw.js' || rel === '_headers' || rel === 'precache.json') return 'fuera';
+  // Modelo (PF-2, 3.2): solo los dos manifiestos entran al precache (con ellos el SW arma la lista blanca del modelo y la
+  // tarjeta muestra el tamaño real sin red). Los trozos y los auxiliares se descargan a pedido a siglow-modelo-<sha>: fuera.
+  if (/^models\/(gliner-x-large|gliner-x-base)\/manifest\.json$/.test(rel)) return 'precache';
+  if (rel === 'models/.gitignore') return 'fuera'; // reglas de git de public/models/ (los artefactos no se versionan)
+  if (/^models\/(gliner-x-large|gliner-x-base)\/(onnx\/model_quantized\.onnx\.part\d{3}|tokenizer\.json|tokenizer_config\.json)$/.test(rel)) return 'fuera';
   return null;
 }
 
 /** Entradas que todo build debe tener (3.2): sin ellas la app no funcionaría sin conexión. */
-const OBLIGATORIAS = ['/', '/tt-policy.js', '/ort/ort-wasm-simd-threaded.mjs', '/ort/ort-wasm-simd-threaded.wasm'];
+const OBLIGATORIAS = [
+  '/', '/tt-policy.js', '/ort/ort-wasm-simd-threaded.mjs', '/ort/ort-wasm-simd-threaded.wasm',
+  '/models/gliner-x-large/manifest.json', '/models/gliner-x-base/manifest.json',
+];
 // Solo caracteres que el navegador no codifica en `URL.pathname`: el SW compara la ruta pedida tal cual.
 const RUTA_SEGURA = /^\/(?:[A-Za-z0-9_-][A-Za-z0-9._-]*(?:\/[A-Za-z0-9_-][A-Za-z0-9._-]*)*)?$/;
 

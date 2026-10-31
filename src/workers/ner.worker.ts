@@ -10,7 +10,7 @@ import type { Fetcher } from '../core/ner/model-fetch';
 import { SiglowError, type ModelManifest } from '../core/types';
 
 // Política `default` de Trusted Types (3.6): ORT crea sus workers de hilos con una URL de cadena. Solo se admite
-// el mismo origen y las rutas /assets/ y /ort/ (la misma regla que public/tt-policy.js).
+// el mismo protocolo y origen y las rutas /assets/ y /ort/ (la misma expresión que public/tt-policy.js, sin /sw.js; B-9).
 try {
   const tt = (self as unknown as {
     trustedTypes?: { createPolicy(nombre: string, reglas: { createScriptURL(s: string): string }): unknown };
@@ -18,7 +18,7 @@ try {
   tt?.createPolicy('default', {
     createScriptURL(s: string): string {
       const u = new URL(s, self.location.href);
-      if (u.origin === self.location.origin && /^\/(assets|ort)\//.test(u.pathname)) return u.href;
+      if (u.protocol === self.location.protocol && u.origin === self.location.origin && /^\/(assets|ort)\//.test(u.pathname)) return u.href;
       throw new TypeError('URL_NO_PERMITIDA');
     },
   });
@@ -29,8 +29,13 @@ try {
 /** Descarga de una ruta del modelo en un búfer preasignado (sin `Blob` encadenados, que duplican la memoria). */
 function fetcherDe(manifest: ModelManifest): Fetcher {
   return async (ruta, tamano, onBytes) => {
+    // B-8: la URL normalizada debe seguir bajo /models/<id>/ del mismo origen (la ruta ya sale de una lista de rutas del
+    // manifiesto validadas), sin query, y una redirección es un error: nunca se sigue a otra ruta.
     const url = new URL(`/models/${manifest.id}/${ruta}`, self.location.href);
-    const res = await fetch(url);
+    if (url.origin !== self.location.origin || url.search !== '' || !url.pathname.startsWith(`/models/${manifest.id}/`)) {
+      throw new SiglowError('ENTRADA_INVALIDA');
+    }
+    const res = await fetch(url, { method: 'GET', redirect: 'error', credentials: 'omit', referrerPolicy: 'no-referrer' });
     if (!res.ok || !res.body) throw new SiglowError('MODELO_NO_DESCARGADO');
     const bytes = new Uint8Array(tamano);
     const lector = res.body.getReader();
@@ -58,6 +63,9 @@ const cargarOrt = async (): Promise<OrtModule> => {
 
 const manejar = crearManejadorNer({
   post: (msg) => self.postMessage(msg),
+  // Sin WebAssembly (Edge con seguridad mejorada estricta, --jitless; T-ED-02) no hay motor: BACKEND_NO_DISPONIBLE antes de
+  // pedir un solo byte del modelo, y la Revisión sigue con reglas y lista del caso.
+  backendDisponible: () => typeof WebAssembly !== 'undefined',
   crearMotor: (manifest) => {
     const deps: GlinerEngineDeps = {
       loadOrt: cargarOrt,

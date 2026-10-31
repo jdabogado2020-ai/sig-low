@@ -10,6 +10,7 @@
  */
 
 import { codigoDeError } from './gliner/errors';
+import { esManifiesto } from './manifest';
 import {
   SiglowError,
   type ErrorCode,
@@ -25,6 +26,12 @@ import {
 export interface NerHandlerDeps {
   post(msg: NerResponse): void;
   crearMotor(manifest: ModelManifest): NerEngine;
+  /**
+   * ¿Puede este entorno ejecutar WebAssembly? Lo decide `ner.worker.ts` (`typeof WebAssembly !== 'undefined'`). Si es `false`,
+   * `cargar` termina con `BACKEND_NO_DISPONIBLE` antes de pedir un solo byte del modelo (Edge con seguridad mejorada
+   * estricta, `--jitless`; T-ED-02). Sin esta dependencia se asume que sí.
+   */
+  backendDisponible?: () => boolean;
   now?: () => number;
 }
 
@@ -32,21 +39,6 @@ const INTERVALO_PROGRESO_MS = 100; // máximo 10 mensajes de progreso por segund
 
 const esObjeto = (x: unknown): x is Record<string, unknown> => typeof x === 'object' && x !== null && !Array.isArray(x);
 const esEntero = (x: unknown, min = 0): x is number => typeof x === 'number' && Number.isInteger(x) && x >= min;
-
-const esManifiesto = (x: unknown): x is ModelManifest =>
-  esObjeto(x) &&
-  x['formato'] === 'sig-low/modelo' &&
-  x['v'] === 1 &&
-  (x['id'] === 'gliner-x-large' || x['id'] === 'gliner-x-base') &&
-  x['archivo'] === 'onnx/model_quantized.onnx' &&
-  esEntero(x['tamano'], 1) &&
-  typeof x['sha256'] === 'string' &&
-  Array.isArray(x['auxiliares']) &&
-  esObjeto(x['tokenizador']) &&
-  esEntero(x['ventanaTokens'], 1) &&
-  esEntero(x['solapePalabras']) &&
-  typeof x['umbral'] === 'number' &&
-  Array.isArray(x['etiquetas']);
 
 const esOpciones = (x: unknown): x is NerOptions =>
   esObjeto(x) &&
@@ -90,6 +82,7 @@ export function crearManejadorNer(deps: NerHandlerDeps): (data: unknown) => void
 
   const cargar = (reqId: RequestId, manifest: ModelManifest): void =>
     encolar(reqId, async () => {
+      if (deps.backendDisponible && !deps.backendDisponible()) throw new SiglowError('BACKEND_NO_DISPONIBLE');
       if (motor) {
         await motor.dispose(); // nunca hay dos sesiones grandes a la vez
         motor = null;
