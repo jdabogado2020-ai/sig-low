@@ -85,7 +85,19 @@ const EXTRA = {
   'M-1210': 'Todavía no hay variantes.',
   'M-1211': 'Texto de la lista',} as const;
 
-const TODO: Readonly<Record<string, string>> = { ...CATALOGO, ...EXTRA };
+const TODO: Record<string, string> = { ...CATALOGO, ...EXTRA };
+
+/**
+ * Cada pantalla de A2 registra aquí sus textos sin id en 8.5 (PC-2: rango M-13xx). Así viven en el catálogo único,
+ * y el barrido de textos prohibidos de PC-7 los ve. Un id repetido con otro texto es un defecto de programación.
+ */
+export function registrarMensajes(extra: Readonly<Record<string, string>>): void {
+  for (const [id, texto] of Object.entries(extra)) {
+    const previo = TODO[id];
+    if (previo !== undefined && previo !== texto) throw new Error('MENSAJE_DUPLICADO');
+    TODO[id] = texto;
+  }
+}
 
 function sustituir(plantilla: string, params?: Readonly<Record<string, MsgParam>>): string {
   if (!params) return plantilla;

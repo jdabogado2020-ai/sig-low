@@ -3,7 +3,9 @@
 // instalarPuertos() al fusionar su tarea. Mientras un puerto no esté conectado falla cerrado: "No guardar" funciona,
 // «Guardar» queda deshabilitado con M-208 (IDB_NO_DISPONIBLE) y el SW se observa con la API nativa.
 import { SiglowError } from '../core/types.ts';
-import type { AsuntoId, CaseEntity, ErrorCode, IsoDateTime, MappingTable } from '../core/types.ts';
+import type {
+  AsuntoId, CaseEntity, DocumentModel, ErrorCode, IsoDateTime, MappingTable, NerSpan, PartId, PlanBCause, ReadPdfFn,
+} from '../core/types.ts';
 import type { ModelUiState, ModelVariant } from './estado.ts';
 
 export interface AsuntoListado { asuntoId: AsuntoId; codigo: string; actualizado: IsoDateTime }
@@ -45,6 +47,22 @@ export interface SwPuerto {
   aplicarActualizacion(): void;
 }
 
+/** Lo que el análisis le pide al modelo de apoyo (6.11.2 y 6.11.3). Lo conecta PF-2 al fusionarse; sin él, plan B (`no_descargado`). */
+export interface NerHooks {
+  /** `ner` informó el total de bloques y la duración de la ventana de calentamiento (M-164). */
+  alTotal(ventanasTotales: number, calentamientoMs: number): void;
+  /** Una ventana lista: tramos por parte en posiciones canónicas (INV-R01). `ventana` cuenta de 1 a `ventanasTotales`. */
+  alVentana(v: { ventana: number; ventanasTotales: number; ner: Record<PartId, NerSpan[]>; engineId: string }): void;
+  /** Todas las ventanas fueron entregadas; `respaldo` si las hizo la versión reducida. */
+  alTerminar(r: { respaldo: boolean }): void;
+  /** El modelo no terminó (carga, memoria, tiempo): se sigue con reglas y lista del caso. */
+  alFallar(causa: PlanBCause): void;
+}
+export interface NerPuerto {
+  /** Carga el modelo y lo ejecuta por ventanas sobre las partes incluidas. Devuelve la cancelación cooperativa. */
+  iniciar(doc: DocumentModel, hooks: NerHooks): { cancelar(): void };
+}
+
 const sinBoveda: BovedaPuerto = {
   disponible: () => false,
   listar: () => Promise.resolve([]),
@@ -71,10 +89,15 @@ const swNativo: SwPuerto = {
   },
 };
 
-export const puertos: { boveda: BovedaPuerto; modelo: ModeloPuerto; sw: SwPuerto } = {
+/** Lector de PDF (PE-4). Mientras el integrador no lo conecte (`instalarPuertos({ pdf: readPdf })`) responde formato no disponible. */
+const sinPdf: ReadPdfFn = () => Promise.reject(new SiglowError('FORMATO_NO_ADMITIDO'));
+
+export const puertos: { boveda: BovedaPuerto; modelo: ModeloPuerto; sw: SwPuerto; pdf: ReadPdfFn; ner: NerPuerto | null } = {
   boveda: sinBoveda,
   modelo: sinModelo,
   sw: swNativo,
+  pdf: sinPdf,
+  ner: null,
 };
 
 export function instalarPuertos(parcial: Partial<typeof puertos>): void {

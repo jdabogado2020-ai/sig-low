@@ -153,6 +153,23 @@ button[aria-pressed='true'].secundario { border-color: var(--sl-primario); borde
 .dialogo-cuerpo { padding: 1rem 1.25rem; }
 .aviso-licencia { border-top: 1px solid var(--sl-borde-suave); padding-top: 0.4rem; }
 
+/* Entrada y Procesando (PC-2) */
+.pestanas { display: flex; gap: 0.25rem; margin: 0.75rem 0 0; border-bottom: 2px solid var(--sl-borde-suave); }
+.pestanas [role='tab'] { color: var(--sl-texto); background: transparent; border: 2px solid transparent; border-bottom: 0; border-radius: 0.375rem 0.375rem 0 0; }
+.pestanas [role='tab'][aria-selected='true'] { border-color: var(--sl-borde); background: var(--sl-fondo-2); font-weight: 700; }
+.panel-entrada { padding: 0.75rem 0; }
+.texto-documento { min-height: 14rem; font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; }
+.zona-soltar { border: 2px dashed var(--sl-borde); border-radius: 0.5rem; padding: 1rem; text-align: center; background: var(--sl-fondo-2); }
+.aviso-original { border: 1px solid var(--sl-aviso-borde); background: var(--sl-aviso-fondo); border-radius: 0.375rem; padding: 0.25rem 0.75rem; margin: 0.6rem 0; }
+.avisos-lectura { margin: 0.4rem 0; }
+.etapas { list-style: none; padding: 0; max-width: 40rem; }
+.etapas li { margin: 0.6rem 0; }
+.etapas progress { display: block; width: 100%; height: 0.9rem; margin-top: 0.25rem; }
+@media (prefers-reduced-motion: reduce) {
+  .etapas progress:not([value]) { animation: none; appearance: none; background: var(--sl-borde-suave); border: 1px solid var(--sl-borde); border-radius: 0.2rem; }
+  .etapas progress:not([value])::-webkit-progress-bar, .etapas progress:not([value])::-moz-progress-bar { animation: none; background: var(--sl-borde-suave); }
+}
+
 /* Impresión (8.7): se oculta todo salvo el párrafo con M-126, creado fuera de #app. */
 .solo-impresion { display: none; }
 @media print {

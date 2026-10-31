@@ -1,4 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
+import {
+  configurarSimulador, DOCUMENTO_DE_TRES_PARTES, instalarSimulador, leerSimulador, soltarRetenidos,
+} from './ayudas-entrada';
 
 // Casos de PC-1 (10.0): T-IU-05 a T-IU-09 (estados, avisos, sin aprobación masiva, créditos) y T-IU-11 a T-IU-14
 // (soltar fuera, impresión y guardado, bloqueo tras suspender el equipo y bloqueo entre pestañas).
@@ -374,5 +377,333 @@ test.describe('T-IU-14 bloqueo-pestanas', () => {
     await b.clock.setSystemTime(new Date('2026-10-30T10:25:30'));
     await b.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
     await expect(h1(b, 'Inicio')).toBeVisible();
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------------------
+// PC-2 · Entrada y Procesando
+// ---------------------------------------------------------------------------------------------------------------------------
+
+const TEXTO_PRUEBA = 'Ana Ficticia Rojas, C.C. 1.000.000.017, vive en la Calle 00 n.º 00-00 de Ciudad Ejemplo. Correo: ana.ficticia@ejemplo.test.';
+
+async function irAEntrada(page: Page, codigo = 'PRUEBA-002'): Promise<void> {
+  await abrirInicio(page);
+  await crearAsunto(page, codigo);
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(h1(page, 'Entrada')).toBeVisible();
+}
+const areaTexto = (page: Page) => page.getByRole('textbox', { name: 'Texto del documento' });
+const analizar = (page: Page) => page.getByRole('button', { name: 'Analizar', exact: true });
+const alertaEntrada = (page: Page) => page.locator('[data-prueba="error-entrada"]');
+
+async function cargarArchivo(page: Page, nombre: string, contenido: Buffer | string, mimeType = 'application/octet-stream'): Promise<void> {
+  await page.getByRole('tab', { name: 'Cargar archivo' }).click();
+  await page.locator('input[type="file"]').setInputFiles({ name: nombre, mimeType, buffer: typeof contenido === 'string' ? Buffer.from(contenido, 'utf8') : contenido });
+}
+const ZIP_MINIMO = Buffer.from([0x50, 0x4b, 0x03, 0x04, 0, 0, 0, 0, 0, 0]);
+
+test.describe('T-IU-05 Entrada: pegar, cargar y estados', () => {
+  test('T-IU-05 @humo pegar → Procesando → Revisión: reglas y lista, con el modelo en plan B (no descargado)', async ({ page }) => {
+    await instalarSimulador(page);
+    await irAEntrada(page);
+    await expect(page.getByRole('navigation', { name: 'Pasos del asunto' }).locator('[aria-current="step"]')).toHaveText('Entrada');
+    await areaTexto(page).fill(TEXTO_PRUEBA);
+    await configurarSimulador(page, { retener: 'resultado' });
+    await analizar(page).click();
+    await expect(h1(page, 'Procesando')).toBeFocused();
+    await expect(page.getByRole('heading', { level: 2, name: 'Analizando el documento en su equipo' })).toBeVisible();
+    await configurarSimulador(page, { retener: null });
+    await soltarRetenidos(page);
+    await expect(h1(page, 'Revisión')).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Pasos del asunto' }).locator('[aria-current="step"]')).toHaveText('Revisión');
+    const sim = await leerSimulador(page);
+    expect(sim.creados).toContain('detect');
+    expect(sim.enviados.find((e) => e.kind === 'detectar')?.incluidas).toEqual([true]);
+    expect(await page.title()).toBe('Sig-Low');
+  });
+
+  test('T-IU-05 Entrada vacía: «Analizar» deshabilitado con su ayuda, modelo sin descargar con M-51 y «Editar lista del caso» conserva el texto', async ({ page }) => {
+    await irAEntrada(page);
+    await expect(analizar(page)).toBeDisabled();
+    await expect(page.getByText('Pegue texto o cargue un archivo con texto para poder analizar.')).toBeVisible();
+    await expect(page.getByText('Pegue aquí el texto del documento. Se analiza en su equipo.')).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: 'Usar el modelo de apoyo' })).toBeDisabled();
+    await expect(page.getByText('El análisis usará reglas y lista del caso: el modelo de apoyo no está descargado.')).toBeVisible();
+    await areaTexto(page).fill('   \n  ');
+    await expect(analizar(page)).toBeDisabled();
+    await areaTexto(page).fill(TEXTO_PRUEBA);
+    await expect(analizar(page)).toBeEnabled();
+    await page.getByRole('button', { name: 'Editar lista del caso' }).click();
+    await expect(h1(page, 'Lista del caso')).toBeVisible();
+    await page.getByRole('button', { name: 'Continuar' }).click();
+    await expect(h1(page, 'Entrada')).toBeVisible();
+    await expect(areaTexto(page)).toHaveValue(TEXTO_PRUEBA);
+  });
+
+  test('T-IU-05 el contador de caracteres se actualiza con una demora de 300 ms', async ({ page }) => {
+    await irAEntrada(page);
+    const contador = page.locator('[data-prueba="contador-caracteres"]');
+    await expect(contador).toHaveText('0 caracteres');
+    await areaTexto(page).fill('Texto de Prueba');
+    await expect(contador).toHaveText('0 caracteres');
+    await expect(contador).toHaveText('15 caracteres');
+  });
+
+  test('T-IU-05 F-08 los campos de Entrada llevan los atributos de 8.7 y ids neutros; el input de archivo está oculto', async ({ page }) => {
+    await irAEntrada(page);
+    const area = areaTexto(page);
+    for (const [atributo, valor] of [
+      ['spellcheck', 'false'], ['autocomplete', 'off'], ['autocorrect', 'off'], ['autocapitalize', 'off'], ['translate', 'no'],
+      ['data-gramm', 'false'], ['data-gramm_editor', 'false'], ['data-enable-grammarly', 'false'], ['data-lt-active', 'false'],
+    ] as const) {
+      await expect(area).toHaveAttribute(atributo, valor);
+    }
+    expect(await area.getAttribute('id')).toMatch(/^c\d+$/);
+    expect(await area.getAttribute('name')).toMatch(/^c\d+$/);
+    await page.getByRole('tab', { name: 'Cargar archivo' }).click();
+    const archivo = page.locator('input[type="file"]');
+    await expect(archivo).toBeHidden();
+    await expect(archivo).toHaveAttribute('accept', '.txt,.docx,.pdf');
+    expect(await archivo.getAttribute('id')).toMatch(/^c\d+$/);
+    // Ningún campo de Entrada usa contenteditable (8.7).
+    await expect(page.locator('[contenteditable]')).toHaveCount(0);
+  });
+
+  test('T-IU-05 un .txt se lee en el worker `io` y no deja el nombre en ninguna parte (V-37, INV-D05, F-08)', async ({ page }) => {
+    await instalarSimulador(page);
+    await irAEntrada(page);
+    await cargarArchivo(page, 'Ana Ficticia Rojas.txt', TEXTO_PRUEBA, 'text/plain');
+    const cargado = page.locator('[data-prueba="archivo-cargado"]');
+    await expect(cargado).toContainText('Archivo cargado: .txt, ');
+    await expect(cargado).toContainText('Sig-Low no muestra ni guarda el nombre del archivo.');
+    await expect(page.locator('body')).not.toContainText('Ficticia Rojas.txt');
+    expect(await page.title()).toBe('Sig-Low');
+    expect(page.url()).not.toContain('Ficticia');
+    expect(await page.locator('input[type="file"]').inputValue()).toBe('');
+    const sim = await leerSimulador(page);
+    expect(sim.creados).toContain('io');
+    expect(sim.terminados).toContain('io');          // un worker por archivo, terminado al responder (6.11.4)
+    await expect(analizar(page)).toBeEnabled();
+    await analizar(page).click();
+    await expect(h1(page, 'Revisión')).toBeVisible();
+    expect((await leerSimulador(page)).creados).toContain('detect');
+  });
+
+  test('T-IU-05 un archivo soltado dentro de la zona se lee igual que uno elegido', async ({ page }) => {
+    await irAEntrada(page);
+    await page.getByRole('tab', { name: 'Cargar archivo' }).click();
+    await page.evaluate((texto) => {
+      const dt = new DataTransfer();
+      dt.items.add(new File([texto], 'Oficio de Prueba.txt', { type: 'text/plain' }));
+      document.querySelector('[data-zona-soltar]')!.dispatchEvent(new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true }));
+    }, TEXTO_PRUEBA);
+    await expect(page.locator('[data-prueba="archivo-cargado"]')).toContainText('Archivo cargado: .txt, ');
+    await expect(page.locator('body')).not.toContainText('Oficio de Prueba');
+  });
+
+  test('T-IU-05 cada formato que no se puede leer muestra su mensaje de 8.5.2 con role="alert" y sin nombres de archivo', async ({ page }) => {
+    await irAEntrada(page);
+    const CFB = Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1, 0, 0, 0, 0]);
+    await cargarArchivo(page, 'Oficio de Prueba.doc', CFB);
+    await expect(alertaEntrada(page)).toHaveText(/^Este archivo es un \.doc antiguo o un \.docx protegido con contraseña\./);
+    await cargarArchivo(page, 'Hoja de Prueba.xlsx', Buffer.from([0x50, 0x4b, 0x03, 0x04, 0, 0, 0, 0]));
+    await expect(alertaEntrada(page)).toHaveText('Sig-Low lee archivos .txt, .docx y PDF con texto. Para otros formatos, pegue el texto.');
+    await cargarArchivo(page, 'Vacio de Prueba.txt', Buffer.alloc(0));
+    await expect(alertaEntrada(page)).toHaveText('El archivo está vacío o no tiene texto.');
+    await cargarArchivo(page, 'Imagen de Prueba.png', Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a]));
+    await expect(alertaEntrada(page)).toHaveText(/^Sig-Low lee archivos \.txt, \.docx y PDF/);
+    await cargarArchivo(page, 'Grande de Prueba.txt', Buffer.alloc(26_214_401, 0x61));
+    await expect(alertaEntrada(page)).toHaveText('El archivo supera el límite de 25 MB. Divídalo o pegue el texto.');
+    await expect(alertaEntrada(page)).toHaveAttribute('role', 'alert');
+    await expect(page.locator('body')).not.toContainText('de Prueba.');
+    await expect(analizar(page)).toBeDisabled();
+  });
+
+  test('T-IU-05 .docx y .pdf están cableados: sin lector conectado responden formato no disponible o el error propio del lector', async ({ page }) => {
+    await irAEntrada(page);
+    await cargarArchivo(page, 'Contrato de Prueba.docx', ZIP_MINIMO);
+    await expect(alertaEntrada(page)).toHaveText(/^(Sig-Low lee archivos \.txt, \.docx y PDF con texto|El archivo \.docx está dañado)/);
+    await cargarArchivo(page, 'Sentencia de Prueba.pdf', Buffer.from('%PDF-1.7\n%âãÏÓ\n', 'latin1'));
+    await expect(alertaEntrada(page)).toHaveText(/^(Sig-Low lee archivos \.txt, \.docx y PDF con texto|El PDF está dañado)/);
+    await expect(page.locator('body')).not.toContainText('de Prueba.');
+  });
+
+  test('T-IU-05 un archivo que excede el tiempo límite termina en TIEMPO_AGOTADO y el worker `io` se termina (6.11.6)', async ({ page }) => {
+    test.setTimeout(45_000);
+    await instalarSimulador(page);
+    await irAEntrada(page);
+    await configurarSimulador(page, { io: 'mudo' });
+    await cargarArchivo(page, 'Lento de Prueba.txt', TEXTO_PRUEBA, 'text/plain');
+    await expect(page.locator('[data-prueba="lectura-en-curso"]')).toContainText('Leyendo el archivo en su equipo');
+    await expect(alertaEntrada(page)).toHaveText('La operación tardó demasiado y se detuvo. Intente con un documento más corto o divídalo.', { timeout: 25_000 });
+    const sim = await leerSimulador(page);
+    expect(sim.terminados).toContain('io');
+    await expect(analizar(page)).toBeDisabled();
+    await expect(page.locator('[data-prueba="lectura-en-curso"]')).toHaveCount(0);
+  });
+
+  test('T-IU-05 «Cancelar lectura» termina el worker `io` de inmediato y no deja error', async ({ page }) => {
+    await instalarSimulador(page);
+    await irAEntrada(page);
+    await configurarSimulador(page, { io: 'mudo' });
+    await cargarArchivo(page, 'Lento de Prueba.txt', TEXTO_PRUEBA, 'text/plain');
+    await page.getByRole('button', { name: 'Cancelar lectura' }).click();
+    await expect(page.locator('[data-prueba="lectura-cancelada"]')).toHaveText('Lectura cancelada.');
+    await expect(alertaEntrada(page)).toHaveCount(0);
+    expect((await leerSimulador(page)).terminados).toContain('io');
+    await expect(analizar(page)).toBeDisabled();
+  });
+
+  test('T-IU-05 INV-D04 partes con casillas, aviso de metadatos solo por categorías y un renglón por advertencia', async ({ page }) => {
+    await instalarSimulador(page);
+    await irAEntrada(page);
+    await configurarSimulador(page, { io: 'documento', docIo: DOCUMENTO_DE_TRES_PARTES });
+    await cargarArchivo(page, 'Contrato de Prueba.docx', ZIP_MINIMO);
+    const cargado = page.locator('[data-prueba="archivo-cargado"]');
+    await expect(cargado).toContainText('Archivo cargado: .docx, ');
+    // Partes: etiqueta neutra y número de caracteres; todas marcadas.
+    await expect(page.getByRole('group', { name: 'Partes encontradas' })).toBeVisible();
+    for (const [etiqueta, n] of [['Cuerpo del documento', 69], ['Encabezado 1', 20], ['Comentario 1', 27]] as const) {
+      await expect(page.getByRole('checkbox', { name: `${etiqueta} · ${n} caracteres` })).toBeChecked();
+    }
+    await expect(page.getByText('Estas son las partes del documento. Desmarque solo lo que no quiera en la salida: lo desmarcado no se analiza ni se copia.')).toBeVisible();
+    // Metadatos: solo categorías (M-401 y M-406), sin ningún valor.
+    await expect(page.locator('[data-prueba="aviso-metadatos"]')).toHaveText(
+      'El archivo original contiene información adicional que Sig-Low no copia a la salida: Propiedades del documento (autor, título, fechas); Autores y fechas de revisiones y comentarios. Si envía o comparte el archivo original, esa información va con él.',
+    );
+    // Advertencias: una por código (M-50 y M-307).
+    const avisos = page.locator('[data-prueba="avisos-lectura"] li');
+    await expect(avisos).toHaveCount(2);
+    await expect(avisos.nth(0)).toContainText('El archivo conserva texto eliminado con control de cambios (2 fragmentos).');
+    await expect(avisos.nth(1)).toContainText('El documento tiene una marca de agua o texto artístico (1).');
+    // Lo desmarcado no se analiza (S-09): el worker `detect` recibe `included: false` en esa parte.
+    await page.getByRole('checkbox', { name: 'Comentario 1 · 27 caracteres' }).uncheck();
+    await analizar(page).click();
+    await expect(h1(page, 'Revisión')).toBeVisible();
+    const enviado = (await leerSimulador(page)).enviados.find((e) => e.kind === 'detectar');
+    expect(enviado?.incluidas).toEqual([true, true, false]);
+  });
+
+  test('T-IU-05 si todas las partes están desmarcadas no se puede analizar', async ({ page }) => {
+    await instalarSimulador(page);
+    await irAEntrada(page);
+    await configurarSimulador(page, { io: 'documento', docIo: DOCUMENTO_DE_TRES_PARTES });
+    await cargarArchivo(page, 'Contrato de Prueba.docx', ZIP_MINIMO);
+    await expect(analizar(page)).toBeEnabled();
+    for (const n of ['Cuerpo del documento · 69', 'Encabezado 1 · 20', 'Comentario 1 · 27']) {
+      await page.getByRole('checkbox', { name: `${n} caracteres` }).uncheck();
+    }
+    await expect(analizar(page)).toBeDisabled();
+  });
+
+  test('T-IU-05 INV-G09 «Bloquear» borra el texto pegado de la pantalla y de la memoria', async ({ page }) => {
+    await irAEntrada(page);
+    await areaTexto(page).fill(TEXTO_PRUEBA);
+    await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(page.locator('body')).not.toContainText('Ana Ficticia Rojas');
+    await crearAsunto(page, 'PRUEBA-003');
+    await page.getByRole('button', { name: 'Continuar' }).click();
+    await expect(areaTexto(page)).toHaveValue('');
+  });
+});
+
+test.describe('T-IU-05 Procesando: progreso por etapa, cancelar y errores', () => {
+  test('T-IU-05 Procesando muestra las etapas con su estado, una barra por etapa y «Cancelar análisis»', async ({ page }) => {
+    await instalarSimulador(page);
+    await irAEntrada(page);
+    await areaTexto(page).fill(TEXTO_PRUEBA);
+    await configurarSimulador(page, { retener: 'resultado' });
+    await analizar(page).click();
+    await expect(h1(page, 'Procesando')).toBeVisible();
+    const etapas = page.locator('[data-prueba="etapas"]');
+    await expect(etapas.locator('li')).toHaveCount(7);
+    await expect(etapas.locator('[data-prueba="etapa-lectura"]')).toContainText('Lectura del documento · Terminada');
+    await expect(etapas.locator('[data-prueba="etapa-reglas"]')).toContainText('Reglas de formatos colombianos');
+    await expect(etapas.locator('[data-prueba="etapa-lista"]')).toContainText('Lista del caso');
+    await expect(etapas.locator('[data-prueba="etapa-modelo"]')).toContainText('Modelo de apoyo · Omitida');
+    // Sin el modelo, sus dos etapas no cuentan; las demás tienen su <progress> con nombre.
+    await expect(etapas.getByRole('progressbar', { name: 'Reglas de formatos colombianos' })).toBeVisible();
+    await expect(etapas.getByRole('progressbar', { name: 'Modelo de apoyo' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Cancelar análisis' })).toBeVisible();
+    await expect(page.locator('[data-prueba="anuncio-progreso"]')).toHaveAttribute('role', 'status');
+    await configurarSimulador(page, { retener: null });
+    await soltarRetenidos(page);
+    await expect(h1(page, 'Revisión')).toBeVisible();
+  });
+
+  test('T-IU-05 «Cancelar análisis» vuelve a Entrada con M-61, conserva el texto y termina el worker `detect` sin respuesta en 2 s', async ({ page }) => {
+    await instalarSimulador(page);
+    await irAEntrada(page);
+    await areaTexto(page).fill(TEXTO_PRUEBA);
+    await configurarSimulador(page, { retener: 'todo' });
+    await analizar(page).click();
+    await expect(h1(page, 'Procesando')).toBeVisible();
+    await page.getByRole('button', { name: 'Cancelar análisis' }).click();
+    await expect(page.getByRole('button', { name: 'Cancelando…' })).toBeDisabled();
+    await expect(h1(page, 'Entrada')).toBeVisible({ timeout: 4000 });
+    await expect(page.locator('[data-prueba="analisis-cancelado"]')).toHaveText('Análisis cancelado. El texto sigue en la pantalla de entrada.');
+    await expect(areaTexto(page)).toHaveValue(TEXTO_PRUEBA);
+    expect((await leerSimulador(page)).terminados).toContain('detect');
+    // Se puede analizar de nuevo con un worker nuevo.
+    await configurarSimulador(page, { retener: null });
+    await analizar(page).click();
+    await expect(h1(page, 'Revisión')).toBeVisible();
+    expect((await leerSimulador(page)).creados.filter((n) => n === 'detect')).toHaveLength(2);
+  });
+
+  test('T-IU-05 si `detect` confirma la cancelación, vuelve a Entrada sin esperar los 2 s', async ({ page }) => {
+    await instalarSimulador(page);
+    await irAEntrada(page);
+    await areaTexto(page).fill(TEXTO_PRUEBA);
+    await configurarSimulador(page, { retener: 'resultado' });
+    await analizar(page).click();
+    await expect(h1(page, 'Procesando')).toBeVisible();
+    const t0 = Date.now();
+    await page.getByRole('button', { name: 'Cancelar análisis' }).click();
+    await expect(h1(page, 'Entrada')).toBeVisible({ timeout: 1500 });
+    expect(Date.now() - t0).toBeLessThan(1800);
+    await expect(page.locator('[data-prueba="analisis-cancelado"]')).toBeVisible();
+    await expect(areaTexto(page)).toHaveValue(TEXTO_PRUEBA);
+  });
+
+  for (const [codigo, mensaje] of [
+    ['TIEMPO_AGOTADO', 'La operación tardó demasiado y se detuvo. Intente con un documento más corto o divídalo.'],
+    ['MEMORIA', 'El navegador se quedó sin memoria para esta operación. Cierre otras pestañas o divida el documento.'],
+    ['ERROR_INTERNO', 'Ocurrió un error interno. Intente de nuevo; si se repite, recargue la página.'],
+  ] as const) {
+    test(`T-IU-05 un error ${codigo} de \`detect\` vuelve a Entrada con su mensaje de 8.5.2 y conserva el texto`, async ({ page }) => {
+      await instalarSimulador(page);
+      await irAEntrada(page);
+      await areaTexto(page).fill(TEXTO_PRUEBA);
+      await configurarSimulador(page, { errorDetect: codigo });
+      await analizar(page).click();
+      await expect(h1(page, 'Entrada')).toBeVisible();
+      await expect(alertaEntrada(page)).toHaveText(mensaje);
+      await expect(alertaEntrada(page)).toHaveAttribute('role', 'alert');
+      await expect(areaTexto(page)).toHaveValue(TEXTO_PRUEBA);
+      expect((await leerSimulador(page)).terminados).toContain('detect');
+    });
+  }
+
+  test('T-IU-05 INV-G09 «Bloquear» durante Procesando termina el worker `detect` y vuelve a Inicio', async ({ page }) => {
+    await instalarSimulador(page);
+    await irAEntrada(page);
+    await areaTexto(page).fill(TEXTO_PRUEBA);
+    await configurarSimulador(page, { retener: 'todo' });
+    await analizar(page).click();
+    await expect(h1(page, 'Procesando')).toBeVisible();
+    await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+    await expect(h1(page, 'Inicio')).toBeVisible();
+    expect((await leerSimulador(page)).terminados).toContain('detect');
+    await expect(page.locator('body')).not.toContainText('Ana Ficticia Rojas');
+  });
+
+  test('T-IU-05 el análisis real (sin simulador) termina en segundos y pasa a Revisión', async ({ page }) => {
+    await irAEntrada(page);
+    await areaTexto(page).fill(TEXTO_PRUEBA);
+    await analizar(page).click();
+    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { level: 1, name: 'Procesando' })).toHaveCount(0);
   });
 });
