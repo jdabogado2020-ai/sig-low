@@ -16,23 +16,37 @@ interface Replacement1 {
   spanEditId?: SpanEditId;
 }
 
-/** 7.13.1.2 · Texto de un reemplazo: editada → edited; si no → plantilla con `{m}` = marcador vigente. */
-function detectionText(d: Detection, entity: Entity | undefined): string {
+/**
+ * PB-4-r1 · El tramo termina en el punto de una abreviatura («Ficticia S.A.», «A. E. O.») y ese punto también cierra la oración:
+ * después vienen el fin de la parte, un salto de línea o un blanco y una mayúscula (con comillas o paréntesis de cierre en medio).
+ */
+const RE_FIN_DE_ORACION = /^(?:$|[ \t]*\r?\n|[ \t]+["»”’)\]]*[ \t]*\p{Lu})/u;
+export function cierraOracion(text: string, start: number, end: number): boolean {
+  return end > start && text.charAt(end - 1) === '.' && RE_FIN_DE_ORACION.test(text.slice(end, end + 8));
+}
+
+/**
+ * 7.13.1.2 · Texto de un reemplazo: editada → edited; si no → plantilla con `{m}` = marcador vigente. Si el tramo se llevó el punto
+ * que cierra la oración (el de «S.A.», PB-2-r6), la salida lo repone tras el marcador: «contra [EMPRESA_1]. El juez».
+ */
+function detectionText(d: Detection, entity: Entity | undefined, text: string): string {
   if (d.status === 'editada' && d.replacement.edited !== undefined) return d.replacement.edited;
   const template = d.replacement.generalized?.template ?? d.replacement.proposedTemplate;
-  return template.split(TEMPLATE_M).join(entity?.marker ?? '');
+  const out = template.split(TEMPLATE_M).join(entity?.marker ?? '');
+  return cierraOracion(text, d.start, d.end) && !out.endsWith('.') ? `${out}.` : out;
 }
 
 /** 7.13.1.1 · Detecciones aceptadas o editadas sin `coveredBy` (y las pendientes, como vista previa) y todas las ediciones de tramo. */
-function collectReplacements(state: ReviewState, partId: PartId, textLength: number): Replacement1[] {
+function collectReplacements(state: ReviewState, partId: PartId, text: string): Replacement1[] {
   const out: Replacement1[] = [];
+  const textLength = text.length;
   for (const d of Object.values(state.detections)) {
     if (d.partId !== partId) continue;
     if (d.status === 'rechazada') continue;
     // Una detección solo queda cubierta si su edición de tramo existe: si no, se reemplaza (nunca se deja pasar el original).
     if (d.coveredBy !== undefined && state.spanEdits[d.coveredBy] !== undefined) continue;
     if (!(d.start >= 0 && d.end > d.start && d.end <= textLength)) continue;
-    out.push({ start: d.start, end: d.end, text: detectionText(d, state.entities[d.entityId]), detectionId: d.id });
+    out.push({ start: d.start, end: d.end, text: detectionText(d, state.entities[d.entityId], text), detectionId: d.id });
   }
   for (const e of Object.values(state.spanEdits) as SpanEdit[]) {
     if (e.span.partId !== partId) continue;
@@ -60,7 +74,7 @@ export const render: RenderFn = (doc: DocumentModel, state: ReviewState): Render
   const parts: Part[] = doc.parts.filter((p) => p.included).sort((a, b) => a.order - b.order);
   const sections: OutputSection[] = parts.map((part) => {
     const text = part.text;
-    const reps = collectReplacements(state, part.id, text.length);
+    const reps = collectReplacements(state, part.id, text);
     const segments: OutputSegment[] = [];
     let out = '';
     let cursor = 0;

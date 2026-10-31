@@ -9,8 +9,8 @@ import {
 } from '../../src/core/entities.ts';
 import { mergeCandidates } from '../../src/core/merge.ts';
 import { buildSearchView } from '../../src/core/normalize.ts';
-import { joinOutput, render } from '../../src/core/render.ts';
-import { runResidueCheck, type ResidueCtxExtra } from '../../src/core/residue.ts';
+import { cierraOracion, joinOutput, render } from '../../src/core/render.ts';
+import { continuation, nameRuns, runResidueCheck, type ResidueCtxExtra } from '../../src/core/residue.ts';
 import { runRules } from '../../src/core/rules/catalog.ts';
 import { rules as rContacto } from '../../src/core/rules/contacto.ts';
 import { rules as rDireccion } from '../../src/core/rules/direccion.ts';
@@ -393,7 +393,9 @@ describe('R-RES-01 y R-RES-02 · tablas de 7.13.3 y 7.13.4', () => {
   async function probe(target: Mark, row: string, caseList: readonly CaseEntity[] = []): Promise<string[]> {
     const s = scenario([['cuerpo', `Dato ${target.sub} consta.`, 'Cuerpo del documento'], ['pie', row, 'Pie 1']], [{ ...target, p: 0 }], caseList);
     const out = render(s.doc, s.state);
-    const run = await runResidueCheck(s.doc, s.state, out, { table: EMPTY, caseList, rules: registry, detect: () => Promise.resolve({ detections: [], entities: [], flags: [], suggestions: [] }) });
+    // Las tablas miden las pasadas 1 y 2 a solas: sin la pasada 3 (`detect` vacío) y sin las formas derivadas de PB-4-r1.
+    const run = await runResidueCheck(s.doc, s.state, out, { table: EMPTY, caseList, rules: registry, formasDerivadas: false,
+      detect: () => Promise.resolve({ detections: [], entities: [], flags: [], suggestions: [] }) } as Parameters<typeof runResidueCheck>[3] & ResidueCtxExtra);
     return run.result.hits.filter((h) => h.sectionIndex === 1).map((h) => out.sections[1]?.text.slice(h.start, h.end) ?? '');
   }
   const CC: Mark = { p: 0, sub: '41.000.001', type: 'CC', key: 'CC:41000001' };
@@ -509,7 +511,9 @@ describe('INV-G08 · ningún original de una detección aceptada queda en la sal
       [{ p: 0, sub: 'Carlos Ejemplo', type: 'PERSONA', key: 'PER:carlos ejemplo', src: 'modelo' }]);
     const out = render(s.doc, s.state);
     const base = { table: EMPTY, caseList: [], rules: registry, detect: makeDetect([]) };
-    expect((await runResidueCheck(s.doc, s.state, out, base)).result.hits).toEqual([]);
+    // Sin los originales del asunto solo queda el apellido, forma derivada de «Carlos Ejemplo» (PB-4-r1): «Carlitos» no se conoce.
+    const sin = await runResidueCheck(s.doc, s.state, out, base);
+    expect(sin.result.hits.map((h) => [h.mode, out.sections[h.sectionIndex]?.text.slice(h.start, h.end)])).toEqual([['variante', 'Ejemplo']]);
     const conOriginales: typeof base & ResidueCtxExtra = { ...base, originals: { 'PER:carlos ejemplo': ['Carlitos Ejemplo'] } };
     const withOriginals = await runResidueCheck(s.doc, s.state, out, conOriginales);
     expect(withOriginals.result.hits.map((h) => [h.mode, out.sections[h.sectionIndex]?.text.slice(h.start, h.end)])).toEqual([['literal', 'Carlitos Ejemplo']]);
@@ -680,5 +684,143 @@ describe('7.13.5 · pasada 3: recorte a la parte copiada y texto reemplazado', (
     const r = await check(s);
     expect(r.out.sections).toEqual([]);
     expect(r.run.result.hits).toEqual([]);
+  });
+});
+
+// =============================================================================================================
+// PB-4-r1 · Una prueba por cada causa de residuo de T-RS-19 que es del motor (tabla de causas de la bitácora). Datos ficticios.
+describe('PB-4-r1 · lo que el motor conoce y la salida dejaba a la vista (T-RS-19)', () => {
+  const C = (t: string): PartSpec => ['cuerpo', t, 'Cuerpo'];
+  const PIE = (t: string): PartSpec => ['pie', t, 'Pie 1'];
+  const per = (sub: string, key: string, extra: Partial<Mark> = {}): Mark => ({ p: 0, sub, type: 'PERSONA', key, src: 'modelo', ...extra });
+
+  it('INV-G08 forma derivada de varias palabras: «Ficticio Londoño» de «Óscar Javier Ficticio Londoño» (modelo)', async () => {
+    const s = scenario([C('Declaró Óscar Javier Ficticio Londoño ante el juez.'), PIE('El propietario es Ficticio Londoño, no yo.')],
+      [per('Óscar Javier Ficticio Londoño', 'PER:oscar javier ficticio londono')]);
+    const r = await check(s);
+    // Con el código anterior: 0 impactos (7.13.2 solo buscaba variantes de la lista).
+    expect(hitsOf(r)).toEqual(['Pie 1|variante|Ficticio Londoño']);
+    expect(r.run.nuevas.map((c) => c.canonicalKey)).toEqual(['PER:oscar javier ficticio londono']);
+  });
+
+  it('INV-G08 forma derivada de una palabra con mayúscula inicial: «el especialista Ficticio»; «prueba ficticia» en minúscula no', async () => {
+    const s = scenario([C('Declaró Ricardo Ficticio Ortiz.'), PIE('El especialista Ficticio prescribió reposo; una prueba ficticia no cuenta.')],
+      [per('Ricardo Ficticio Ortiz', 'PER:ricardo ficticio ortiz')]);
+    expect(hitsOf(await check(s))).toEqual(['Pie 1|variante|Ficticio']);
+  });
+
+  it('INV-G08 original escrito en minúsculas (chat): «sergio prueba giraldo» deja conocer «Sergio»', async () => {
+    const s = scenario([C('ayer hablé con sergio prueba giraldo del tema.'), PIE('Me dijo que consulte con Sergio primero.')],
+      [per('sergio prueba giraldo', 'PER:sergio prueba giraldo')]);
+    expect(hitsOf(await check(s))).toEqual(['Pie 1|variante|Sergio']);
+  });
+
+  it('INV-G08 iniciales derivadas: «A. E. O.» de «Alejandro Ejemplo Orozco»', async () => {
+    const s = scenario([C('Declaró Alejandro Ejemplo Orozco.'), PIE('Nada fue discutido por A. E. O. en su momento.')],
+      [per('Alejandro Ejemplo Orozco', 'PER:alejandro ejemplo orozco')]);
+    const got = hitsOf(await check(s));
+    expect(got).toHaveLength(1);
+    expect(got[0]).toMatch(/^Pie 1\|variante\|A\. E\. O\.?$/u);
+  });
+
+  it('INV-G08 razón social sin el sufijo: «Suministros Ficticios» de «Suministros Ficticios S.A.S.»', async () => {
+    const s = scenario([C('Pagó Suministros Ficticios S.A.S. la cuenta.'), PIE('La ambulancia de Suministros Ficticios no llegó.')],
+      [{ p: 0, sub: 'Suministros Ficticios S.A.S.', type: 'EMPRESA', key: 'ORG:suministros ficticios', src: 'modelo' }]);
+    expect(hitsOf(await check(s))).toEqual(['Pie 1|variante|Suministros Ficticios']);
+  });
+
+  it('INV-G08 forma conocida partida por el marcador de otro dato: «del Banco [PERSONA_1]» es residuo del banco', async () => {
+    const s = scenario([C('Consignó en el Banco Ejemplo ayer.'), PIE('La cuenta del Banco Ejemplo sigue abierta.')], [
+      { p: 0, sub: 'Banco Ejemplo', type: 'EMPRESA', key: 'ORG:banco ejemplo', src: 'modelo' },
+      { p: 1, sub: 'Ejemplo', type: 'PERSONA', key: 'PER:ejemplo', src: 'modelo' },
+    ]);
+    const r = await check(s);
+    expect(r.out.sections[1]?.text).toBe('La cuenta del Banco [PERSONA_1] sigue abierta.');
+    expect(hitsOf(r)).toEqual(['Pie 1|variante|Banco']);
+    expect(r.run.result.hits[0]?.entityId).toBe(detOf(s, 0, 'Banco Ejemplo').entityId);
+  });
+
+  it('INV-G08 R-RES-03 continuación de un reemplazo con límites cortos: «de Ejemplo [PERSONA_1]» y «[PERSONA_2] Del Río»', async () => {
+    const s = scenario([C('Por error, el NIT de Ejemplo Pérez quedó mal. Firmó Ficticio Del Río.')],
+      [per('Pérez', 'PER:perez'), per('Ficticio', 'PER:ficticio')]);
+    const r = await check(s);
+    expect(r.out.sections[0]?.text).toBe('Por error, el NIT de Ejemplo [PERSONA_1] quedó mal. Firmó [PERSONA_2] Del Río.');
+    // «Firmó» empieza oración: su mayúscula no dice nada y no se toma.
+    expect(hitsOf(r)).toEqual(['Cuerpo|variante|Ejemplo', 'Cuerpo|variante|Del Río']);
+    expect(r.run.result.hits.map((h) => h.entityId)).toEqual([detOf(s, 0, 'Pérez').entityId, detOf(s, 0, 'Ficticio').entityId]);
+  });
+
+  it('R-RES-03 · no continúa: inicio de oración, «y» pegada, otra caja, función o tratamiento, salto de línea', () => {
+    const at = (t: string, side: 'izquierda' | 'derecha', upper = false): string | null => {
+      const i = t.indexOf('[P]');
+      const r = continuation(t, side === 'izquierda' ? i : i + 3, side, upper);
+      return r === null ? null : t.slice(r.start, r.end);
+    };
+    expect(at('el NIT de Ejemplo [P] quedó', 'izquierda')).toBe('Ejemplo');
+    expect(at('la ambulancia de Aseo y Mantenimiento [P] llegó', 'izquierda')).toBe('Aseo y Mantenimiento');
+    expect(at('firmó [P] De la Hoz ayer', 'derecha')).toBe('De la Hoz');
+    // En MAYÚSCULAS no hay caja que distinga: se toman hasta dos palabras (se prefiere reemplazar de más; el revisor decide).
+    expect(at('LA EMPRESA CONSTRUCTORA [P] S.A.', 'izquierda', true)).toBe('EMPRESA CONSTRUCTORA');
+    expect(at('la empresa CONSTRUCTORA [P] S.A.', 'izquierda', false)).toBeNull();
+    expect(at('Ejemplo [P] dijo', 'izquierda')).toBeNull();
+    expect(at('Firmó. Ejemplo [P] dijo', 'izquierda')).toBeNull();
+    expect(at('lo dijeron Pedro y [P] ayer', 'izquierda')).toBeNull();
+    expect(at('lo dijeron [P] y Pedro ayer', 'derecha')).toBeNull();
+    expect(at('la TUTELA [P] sigue', 'izquierda')).toBeNull();
+    expect(at('lo dijo la señora [P]', 'izquierda')).toBeNull();
+    expect(at('lo dijo Doña [P]', 'izquierda')).toBeNull();
+    expect(at('firmó [P]\nGómez', 'derecha')).toBeNull();
+    expect(at('firmó [P], Gómez', 'derecha')).toBeNull();
+  });
+
+  it('nameRuns · tramos de nombre de un original observado', () => {
+    expect(nameRuns('la ambulancia de Suministros Ficticios')).toEqual(['Suministros Ficticios']);
+    expect(nameRuns('CATALINA PRUEBA DEL VALLE')).toEqual(['CATALINA PRUEBA DEL VALLE']);
+    expect(nameRuns('sergio prueba giraldo')).toEqual(['sergio prueba giraldo']);
+    expect(nameRuns('Banco Ejemplo S.A. No')).toEqual(['Banco Ejemplo S.A. No']);
+    expect(nameRuns('Dr. Pérez')).toEqual(['Pérez']);
+  });
+
+  it('7.13.6 S-7.12 un rechazo con palabras de más no excluye el nombre que contiene; uno que es todo nombre de la entidad sí', async () => {
+    const extra = scenario([C('Declaró Sergio el lunes. Consulte con Sergio primero.')],
+      [per('Sergio', 'PER:sergio'), per('Sergio primero', 'PER:sergio', { decide: { rechazar: 'FALSO_POSITIVO' } })]);
+    // Con el código anterior el rechazo de «Sergio primero» (límites de más) también excluía «Sergio» y el nombre quedaba a la vista.
+    expect(hitsOf(await check(extra))).toEqual(['Cuerpo|literal|Sergio']);
+    const todo = scenario([C('Declaró Ana Ficticia Rojas. Luego Ana Ficticia Rojas firmó.')],
+      [per('Ana Ficticia Rojas', 'PER:ana ficticia rojas'), per('Ana Ficticia Rojas', 'PER:ana ficticia rojas', { occ: 1, decide: { rechazar: 'FALSO_POSITIVO' } })]);
+    expect(hitsOf(await check(todo))).toEqual([]);
+  });
+
+  it('render · el punto de «S.A.» que también cierra la oración se repone tras el marcador; dentro de la oración no', async () => {
+    const t = 'Demandó a Comercial Ejemplo S.A. El juez admitió. Pagó Comercial Ejemplo S.A. con cheque. Lo firmó Comercial Ejemplo S.A.\n'
+      + 'Fin: Comercial Ejemplo S.A.';
+    const marks: Mark[] = [0, 1, 2, 3].map((occ) => ({ p: 0, sub: 'Comercial Ejemplo S.A.', occ, type: 'EMPRESA', key: 'ORG:comercial ejemplo', src: 'modelo' }));
+    const s = scenario([C(t)], marks);
+    const r = await check(s);
+    // Con el código anterior: «Demandó a [EMPRESA_1] El juez», sin el punto de la oración.
+    expect(r.out.sections[0]?.text).toBe('Demandó a [EMPRESA_1]. El juez admitió. Pagó [EMPRESA_1] con cheque. Lo firmó [EMPRESA_1].\nFin: [EMPRESA_1].');
+    const segs = r.out.sections[0]?.segments ?? [];
+    for (let i = 1; i < segs.length; i++) expect(segs[i]?.outStart).toBe(segs[i - 1]?.outEnd);   // INV-X01
+    expect(r.run.result.hits).toEqual([]);
+    expect(cierraOracion('S.A. «Ella»', 0, 4)).toBe(false);
+    expect(cierraOracion('S.A.» Ella', 0, 4)).toBe(false);
+    expect(cierraOracion('S.A. ) Ella', 0, 4)).toBe(true);
+    expect(cierraOracion('S.A., Ella', 0, 4)).toBe(false);
+    expect(cierraOracion('S.A', 0, 3)).toBe(false);
+  });
+
+  it('las búsquedas nuevas no son cuadráticas: 40.000 blancos alrededor de un marcador y de los nombres', async () => {
+    const blancos = ' '.repeat(40_000);
+    const t = `Declaró Ana Ficticia Rojas.${blancos}de Ejemplo Pérez${blancos}Ficticia${blancos}fin`;
+    const s = scenario([C(t)], [per('Ana Ficticia Rojas', 'PER:ana ficticia rojas'), per('Pérez', 'PER:perez')]);
+    const t0 = performance.now();
+    const r = await check(s);
+    expect(performance.now() - t0).toBeLessThan(3_000);
+    expect(hitsOf(r).map((x) => x.split('|').slice(1).join('|'))).toEqual(['variante|Ejemplo', 'variante|Ficticia']);
+    const u = `[P]${blancos}`;
+    const t1 = performance.now();
+    for (let i = 0; i < 200; i++) continuation(u, 3, 'derecha', false);
+    expect(continuation(`${blancos}de Ejemplo [P]`, 40_011, 'izquierda', false)).toEqual({ start: 40_003, end: 40_010 });
+    expect(performance.now() - t1).toBeLessThan(200);
   });
 });

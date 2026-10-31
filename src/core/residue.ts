@@ -1,19 +1,27 @@
 // Búsqueda de residuos sobre la salida (plan 7.13, 6.9): tres pasadas (literal y plegada, dígitos tolerantes a separadores,
 // reglas y lista sobre la salida). PB-4. Código puro de core/: sin DOM ni red. Los valores buscados son [M]: nada de aquí
 // va a la consola, al informe (solo se cuenta `valuesSearched`), al título ni a la URL (F-02, F-03).
-import { LST, searchCaseList } from './caselist.ts';
+import { LST, newCaseEntity, parseOrg, refreshVariants, searchCaseList } from './caselist.ts';
 import { nitCheckDigit } from './entities.ts';
-import { resolveRemainder } from './merge.ts';
+import { PALABRAS_DE_FUNCION, resolveRemainder, trimFunctionWords } from './merge.ts';
 import { buildSearchView, toCanonicalSpan } from './normalize.ts';
 import { sameHolderAs, type TitularEntrada } from './rules/ids.ts';
+import { ORG_CLASSES } from './types.ts';
 import type {
-  CaseEntity, Confidence, DataType, Detection, DetectionCandidate, DetectionSet, DocumentModel, Entity, EntityId,
-  OutputSection, OutputSegment, Part, PartId, PartKind, RenderedOutput, ResidueHit, ResidueMode, ResidueRun,
-  ReviewState, RunResidueCheckFn, VariantClass,
+  CaseEntity, CaseEntityId, Confidence, DataType, Detection, DetectionCandidate, DetectionSet, DocumentModel, Entity, EntityId,
+  IdSource, OutputSection, OutputSegment, Part, PartId, PartKind, RenderedOutput, ResidueHit, ResidueMode, ResidueRun,
+  ReviewState, Role, RunResidueCheckFn, VariantClass,
 } from './types.ts';
 
 /** Extensión opcional del contexto: `MappingEntry.originals` por clave canónica, para las entidades heredadas del asunto (7.13.2). */
-export interface ResidueCtxExtra { originals?: Readonly<Record<string, readonly string[]>> }
+export interface ResidueCtxExtra {
+  originals?: Readonly<Record<string, readonly string[]>>;
+  /**
+   * PB-4-r1 · false apaga las formas derivadas, la forma conocida partida y R-RES-03 (por defecto, encendidas). Solo para las
+   * tablas de R-RES-01 y R-RES-02, que miden las pasadas 1 y 2 a solas, como el `detect` vacío apaga la pasada 3.
+   */
+  formasDerivadas?: boolean;
+}
 
 type Ctx = Parameters<RunResidueCheckFn>[3];
 
@@ -51,6 +59,115 @@ function insideLongerNumber(text: string, i: number, j: number): boolean {
 function capitalized(slice: string): boolean {
   const words = slice.split(/[\s-]+/u).filter((w) => /\p{L}/u.test(w));
   return words.length > 0 && words.every((w) => /^\p{Lu}/u.test(w.replace(/^[^\p{L}]+/u, '')));
+}
+
+// ---------------------------------------------------------------------------------------------
+// PB-4-r1 · Formas que el motor ya conoce y que la búsqueda de 7.13.2 no cubría
+// ---------------------------------------------------------------------------------------------
+
+const ORG_SET: ReadonlySet<string> = new Set(ORG_CLASSES);
+/** Tipos de nombre: de sus originales se derivan formas (tramos de nombre y variantes de 7.9) y su reemplazo admite continuación. */
+const isNameType = (t: string): boolean => t === 'PERSONA' || ORG_SET.has(t);
+const foldWord = (w: string): string => foldList(w).trim();
+/** Palabra de nombre: empieza con mayúscula, 2 letras o más, sin dígitos («Prueba», «Ejemplo-Acosta», «D'Ficticia»). */
+const RE_NAME_WORD = /^\p{Lu}[\p{L}\p{M}'’-]*\p{L}$/u;
+const isFunctionWord = (w: string): boolean => PALABRAS_DE_FUNCION.has(foldWord(w.replace(/[^\p{L}\p{M}]/gu, '')));
+const isUpperWord = (w: string): boolean => { const l = w.replace(/[^\p{L}]/gu, ''); return l.length > 0 && l === l.toUpperCase(); };
+
+/**
+ * Tramos de nombre de un original observado: palabras con mayúscula inicial seguidas, con a lo sumo dos palabras de función entre
+ * ellas («la ambulancia de Suministros Ficticios» → «Suministros Ficticios»; «Catalina Prueba Del Valle» entero). Un original
+ * escrito todo en minúsculas («sergio prueba giraldo», en un chat) no tiene mayúsculas que separen: cuenta cada palabra que no es de
+ * función. Recorrido lineal.
+ */
+export function nameRuns(original: string): string[] {
+  const toks = original.split(/\s+/u).filter((t) => t !== '');
+  const sinMayusculas = !/\p{Lu}/u.test(original);
+  const nombre = (t: string): boolean => (sinMayusculas ? /\p{L}/u.test(t) : /^[^\p{L}]*\p{Lu}/u.test(t)) && !isFunctionWord(t);
+  const runs: string[] = [];
+  let i = 0;
+  while (i < toks.length) {
+    const t = toks[i] as string;
+    if (!nombre(t)) { i++; continue; }
+    const run: string[] = [t];
+    let j = i + 1;
+    for (;;) {
+      let k = j;
+      while (k < toks.length && k - j < 2 && isFunctionWord(toks[k] as string)) k++;
+      const n = toks[k];
+      if (n === undefined || !nombre(n)) break;
+      for (let x = j; x <= k; x++) run.push(toks[x] as string);
+      j = k + 1;
+    }
+    runs.push(run.join(' ').replace(/[,;:]+$/u, ''));
+    i = j;
+  }
+  return runs;
+}
+
+/** IdSource local para las entidades temporales de la lista derivada: sus ids nunca salen de este módulo. */
+function localIds(): IdSource {
+  let n = 0;
+  return { next: (p) => `${p}_${'f'.repeat(16)}${(++n).toString(16).padStart(16, '0')}` };
+}
+
+const RE_WORD_CHAR = /[\p{L}\p{M}'’]/u;
+/** Antes de una palabra que empieza oración o línea, la mayúscula no dice nada: inicio, salto o signo de cierre o de apertura. */
+const RE_SENTENCE_START = /[\n.!?:;(«"“\-–—•]/u;
+
+/** Partículas de apellido y de razón social que unen palabras de nombre («Del Río», «de la Hoz», «Aseo y Mantenimiento»). */
+const PARTICULAS: ReadonlySet<string> = new Set(['de', 'del', 'la', 'las', 'los', 'y']);
+
+/**
+ * R-RES-03 · Hasta dos palabras de nombre pegadas a la posición `pos` (borde de un marcador) por un solo blanco o guion, en la misma
+ * línea: con mayúscula inicial y 2 letras o más, que no son palabras de función ni tratamientos (R-MOD-03), en MAYÚSCULAS solo si el
+ * original lo está (y al revés). Entre ellas, o entre el marcador y la primera, caben hasta dos partículas («[PERSONA_1] Del Río»).
+ * A la izquierda, la primera no puede empezar oración. Recorrido acotado: a lo sumo dos palabras y dos partículas.
+ */
+export function continuation(text: string, pos: number, side: 'izquierda' | 'derecha', upper: boolean): { start: number; end: number } | null {
+  const ok = (w: string): boolean => RE_NAME_WORD.test(w) && !isFunctionWord(w) && isUpperWord(w) === upper;
+  let start = pos;
+  let end = pos;
+  let cur = pos;
+  let nombres = 0;
+  let particulas = 0;
+  while (nombres < 2 && particulas <= 2) {
+    let w0: number; let w1: number;
+    if (side === 'izquierda') {
+      const gap = cur - 1;
+      if (gap < 1 || (text[gap] !== ' ' && text[gap] !== '-')) break;
+      w1 = gap; w0 = gap;
+      while (w0 > 0 && RE_WORD_CHAR.test(text.charAt(w0 - 1))) w0--;
+    } else {
+      if (cur >= text.length || (text[cur] !== ' ' && text[cur] !== '-')) break;
+      w0 = cur + 1; w1 = w0;
+      while (w1 < text.length && RE_WORD_CHAR.test(text.charAt(w1))) w1++;
+    }
+    const w = text.slice(w0, w1);
+    if (ok(w)) { nombres++; if (side === 'izquierda') start = w0; else end = w1; }
+    // «y» solo une dos palabras de nombre: pegada al marcador separa a dos personas («Pedro y [PERSONA_1]»).
+    else if (PARTICULAS.has(foldWord(w)) && !(nombres === 0 && foldWord(w) === 'y')) particulas++;
+    else break;
+    cur = side === 'izquierda' ? w0 : w1;
+  }
+  if (side === 'izquierda') {
+    if (start === pos) return null;
+    let k = start - 1;
+    while (k >= 0 && text[k] === ' ') k--;
+    if (k < 0 || RE_SENTENCE_START.test(text.charAt(k))) return null;
+    return { start, end: pos - 1 };
+  }
+  return end === pos ? null : { start: pos + 1, end };
+}
+
+/** Lo que queda de un trozo copiado tras quitar blancos, signos y palabras de función en los bordes (R-MOD-03): null si no lleva dato. */
+function dataSpan(text: string, start: number, end: number, kind: PartKind): { start: number; end: number } | null {
+  const t = trimFunctionWords(text.slice(start, end), kind);
+  if (t === null) return null;
+  const sub = text.slice(start + t.start, start + t.end);
+  const hasWord = sub.split(/[^\p{L}\p{M}]+/u).some((w) => w.length >= 2 && !isFunctionWord(w));
+  if (!hasWord && sub.replace(/[^0-9]/gu, '').length < 3) return null;
+  return { start: start + t.start, end: start + t.end };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -99,7 +216,7 @@ function locate(sec: Sec, s: number, e: number): Loc {
 
 interface Target { entity: Entity; primary: boolean }
 interface LiteralTarget { text: string; target: Target }
-interface FoldedTarget { folded: string; re: RegExp; single: boolean; target: Target; mode: 'normalizado' | 'variante'; conf?: Confidence; cls?: VariantClass }
+interface FoldedTarget { folded: string; re: RegExp; single: boolean; target: Target; mode: 'normalizado' | 'variante'; conf?: Confidence; cls?: VariantClass; derived?: true }
 interface NumTarget { digits: string; alnum: boolean; tel: boolean; dv: string | null; target: Target; re: RegExp }
 
 /** «del municipio de Cartago» → «Cartago» (7.13.2). */
@@ -147,6 +264,7 @@ interface RawHit {
   target: Target; mode: ResidueMode; loc: Loc;
   conf?: Confidence; cls?: VariantClass;
   p3?: true;                                    // acierto de la pasada 3 (ya filtrado por las decisiones del revisor)
+  derived?: true;                               // PB-4-r1: de una forma derivada o de R-RES-03
   order: number;
 }
 interface Survivor { si: number; start: number; end: number; cand: DetectionCandidate; loc: Loc }
@@ -245,7 +363,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     valuesSearched++;
     if (/\p{L}/u.test(text)) addFolded(text, target, 'normalizado', false);
   };
-  const addFolded = (text: string, target: Target, mode: 'normalizado' | 'variante', count: boolean, conf?: Confidence, cls?: VariantClass): void => {
+  const addFolded = (text: string, target: Target, mode: 'normalizado' | 'variante', count: boolean, conf?: Confidence, cls?: VariantClass, derived?: true): void => {
     const f = foldList(text).trim();
     const k = `${mode}\u0000${f}`;
     if (f === '' || seenFolded.has(k)) return;
@@ -253,6 +371,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     const ft: FoldedTarget = { folded: f, re: foldedRegex(f), single: f.split(/[ -]+/u).filter((x) => x !== '').length === 1, target, mode };
     if (conf !== undefined) ft.conf = conf;
     if (cls !== undefined) ft.cls = cls;
+    if (derived === true) ft.derived = true;
     folded.push(ft);
     if (count) valuesSearched++;
   };
@@ -291,6 +410,48 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     }
   }
 
+  // ---- PB-4-r1 · Formas derivadas (7.13.2 ampliado). De cada original observado de una entidad objetivo de nombre (persona u
+  // organización, venga de la lista, del modelo o de una regla) se toman sus tramos de nombre y, con el generador de la lista (7.9),
+  // sus variantes: apellidos, razón social sin sufijo, apellido y nombre sueltos, iniciales y sigla. El motor ya conoce esas formas:
+  // «Ficticio Londoño» de «Óscar Javier Ficticio Londoño», «Ortiz» de «Martha Cecilia Ejemplo-Acosta Ortiz». Se buscan como
+  // `variante` (las de una palabra, con mayúscula inicial como en 7.13.3; iniciales y sigla, con el filtro de forma de la lista).
+  const derivadas = ctx.formasDerivadas !== false;
+  const ids = localIds();
+  const initialsOwner = new Map<CaseEntityId, Target>();
+  const initialsList: CaseEntity[] = [];
+  for (const t of derivadas ? targetList : []) {
+    if (!t.primary || !isNameType(t.entity.type)) continue;
+    const e = t.entity;
+    const originals = [...(mentionsOf.get(e.id) ?? []).map((d) => d.text), ...(ctx.originals?.[e.canonicalKey] ?? [])];
+    const seenRun = new Set<string>();
+    for (const o of originals) {
+      const fo = foldList(o).trim();
+      for (const r of nameRuns(o)) {
+        const fr = foldList(r).trim();
+        if (fr === '' || seenRun.has(fr)) continue;
+        seenRun.add(fr);
+        const words = r.split(/\s+/u).length;
+        if (words < 2) { if (fr !== fo) addFolded(r, t, 'variante', true, 'baja', undefined, true); continue; }
+        const role: Role = e.type === 'PERSONA' ? (e.role !== undefined && !ORG_SET.has(e.role) ? e.role : 'OTRA_PERSONA') : (e.type as Role);
+        const ce = newCaseEntity(r, e.type === 'PERSONA' ? 'persona' : 'organizacion', role, ids);
+        if (ce === null) continue;
+        // La razón social sin el sufijo («Suministros Ficticios» de «Suministros Ficticios S.A.S.»): la variante exacta de la lista
+        // la toma con su sufijo opcional (7.9.4); aquí, como forma plegada propia.
+        if (ce.kind === 'organizacion') {
+          const base = parseOrg(r).baseText;
+          if (foldList(base).trim() !== fo && foldList(base).trim() !== fr) addFolded(base, t, 'variante', true, 'media', 'razon_social_sin_sufijo', true);
+        }
+        const [gen] = refreshVariants([ce]);
+        const ini = (gen?.variants ?? []).filter((v) => v.enabled && (v.class === 'iniciales' || v.class === 'sigla'));
+        for (const v of gen?.variants ?? []) {
+          if (!v.enabled || v.class === 'iniciales' || v.class === 'sigla') continue;
+          if (foldList(v.text).trim() !== fo) addFolded(v.text, t, 'variante', true, v.confidence, v.class, true);
+        }
+        if (ini.length > 0 && gen !== undefined) { initialsList.push({ ...gen, variants: ini } as CaseEntity); initialsOwner.set(gen.id, t); }
+      }
+    }
+  }
+
   const raw: RawHit[] = [];
   let order = 0;
   const push = (h: Omit<RawHit, 'order'>): void => { raw.push({ ...h, order: order++ }); };
@@ -319,6 +480,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
         const h: Omit<RawHit, 'order'> = { si: sec.index, start: c.start, end: c.end, target: ft.target, mode: ft.mode, loc: locate(sec, c.start, c.end) };
         if (ft.conf !== undefined) h.conf = ft.conf;
         if (ft.cls !== undefined) h.cls = ft.cls;
+        if (ft.derived === true) h.derived = true;
         push(h);
       }
     }
@@ -392,14 +554,36 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
   /** El tramo del acierto es el de la detección rechazada o está dentro de él (las variantes de un nombre rechazado caen dentro). */
   const insideRejected = (r: Detection, partId: PartId, ps: number, pe: number): boolean => r.partId === partId && r.start <= ps && pe <= r.end;
   const keyOfEntity = (r: Detection): string => state.entities[r.entityId]?.canonicalKey ?? r.canonicalKey;
+  // PB-4-r1 · Un rechazo que contiene el acierto solo lo excluye si todo lo que rechazó es nombre de esa entidad: rechazar
+  // «Ana Ficticia Rojas» decide también sobre «Ana Ficticia»; rechazar «Sergio primero» (límites de más) no dice nada de «Sergio».
+  // El tramo igual siempre excluye (S-7.12).
+  const nameWords = new Map<EntityId, Set<string>>();
+  const wordsOf = (s: string): string[] => foldList(s).split(/[^\p{L}\p{M}]+/u).filter((w) => w.length >= 2 && !PALABRAS_DE_FUNCION.has(w));
+  const namesOf = (e: Entity): Set<string> => {
+    let w = nameWords.get(e.id);
+    if (w !== undefined) return w;
+    w = new Set<string>();
+    for (const d of mentionsOf.get(e.id) ?? []) for (const x of wordsOf(d.text)) w.add(x);
+    for (const o of ctx.originals?.[e.canonicalKey] ?? []) for (const x of wordsOf(o)) w.add(x);
+    const ce = e.caseEntityId === undefined ? undefined : caseById.get(e.caseEntityId);
+    if (ce !== undefined) for (const x of wordsOf(ce.name)) w.add(x);
+    nameWords.set(e.id, w);
+    return w;
+  };
+  const rejectionCovers = (r: Detection, e: Entity, partId: PartId, ps: number, pe: number): boolean => {
+    if (r.entityId !== e.id || !insideRejected(r, partId, ps, pe)) return false;
+    if (r.start === ps && r.end === pe) return true;
+    const names = namesOf(e);
+    return wordsOf(r.text).every((x) => names.has(x));
+  };
 
   const kept: Survivor[] = [];
   /** Aplica la decisión del revisor a un superviviente; devuelve false si queda excluido. */
   const decidir = (sv: Survivor): boolean => {
     const loc = sv.loc as Extract<Loc, { kind: 'copy' }>;
     const t = targetFor(sv.cand);
-    const excluded = rejected.some((r) => insideRejected(r, sv.cand.partId, loc.partStart, loc.partEnd)
-      && (t !== undefined ? r.entityId === t.entity.id : keyOfEntity(r) === sv.cand.canonicalKey || r.canonicalKey === sv.cand.canonicalKey));
+    const excluded = rejected.some((r) => (t !== undefined ? rejectionCovers(r, t.entity, sv.cand.partId, loc.partStart, loc.partEnd)
+      : insideRejected(r, sv.cand.partId, loc.partStart, loc.partEnd) && (keyOfEntity(r) === sv.cand.canonicalKey || r.canonicalKey === sv.cand.canonicalKey)));
     if (excluded) return false;
     kept.push(sv);
     if (t !== undefined) {
@@ -416,6 +600,65 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
   // propio (y pasa por la misma decisión del revisor), así que sale como residuo o como detección nueva de la lista, pendiente.
   for (const sv of listaDentroDeExcluidas(reglasExcluidas, survivors, secs, tmpById, ctx.caseList)) decidir(sv);
 
+  // ---- PB-4-r1 · Lo que el motor conoce y la salida deja a la vista sin que las pasadas 1 a 3 lo vean (10.3.4: «el motor conocía
+  // el dato y aun así quedó»). Tres búsquedas más; sus aciertos pasan por la misma decisión del revisor de la pasada 3 (un rechazo
+  // de la misma entidad sobre el mismo tramo, o uno que lo contiene, excluye) y salen como `variante` de la entidad (mismo marcador).
+  const pushDecided = (si: number, s: number, e: number, t: Target, loc: Loc, conf: Confidence, cls?: VariantClass): void => {
+    if (loc.kind === 'marker') return;
+    const partId = (secs[si] as Sec).section.partId;
+    if (loc.kind === 'copy' && rejected.some((r) => rejectionCovers(r, t.entity, partId, loc.partStart, loc.partEnd))) return;
+    push({ si, start: s, end: e, target: t, mode: 'variante', loc, conf, p3: true, derived: true, ...(cls !== undefined ? { cls } : {}) });
+  };
+  for (const sec of derivadas ? secs : []) {
+    const part = partById.get(sec.section.partId);
+    // (a) Iniciales y sigla derivadas («A. E. O.» de «Alejandro Ejemplo Orozco»), con el filtro de forma de la lista (7.9.5).
+    if (initialsList.length > 0) {
+      const p: Part = { id: sec.section.partId, docId: doc.id, kind: sec.kind, label: sec.section.label, order: sec.index, index: 1,
+        text: sec.section.text, included: true };
+      for (const c of searchCaseList(p, initialsList)) {
+        const t = c.caseEntityId === undefined ? undefined : initialsOwner.get(c.caseEntityId);
+        if (t !== undefined) pushDecided(sec.index, c.start, c.end, t, locate(sec, c.start, c.end), 'baja', c.variantClass);
+      }
+    }
+    if (part === undefined) continue;
+    // (b) Una forma conocida de varias palabras partida en `Part.text` por el reemplazo de otro dato («Banco Ejemplo» con «Ejemplo»
+    // reemplazado como apellido de otra persona): en la salida no aparece entera, pero lo copiado con dato sigue siendo suyo.
+    const multi = folded.filter((f) => !f.single);
+    const copies = sec.segs.filter((g) => g.type === 'copy');
+    if (multi.length > 0 && copies.length < sec.segs.length) {
+      const view = buildSearchView(part.text, 'lista', part.kind);
+      for (const ft of multi) {
+        for (const m of view.text.matchAll(ft.re)) {
+          const c = toCanonicalSpan(view, m.index, m.index + m[0].length);
+          if (c.end <= c.start) continue;
+          const pieces = copies.filter((g) => g.partEnd > c.start && g.partStart < c.end);
+          const p0 = pieces[0];
+          if (p0 === undefined || (pieces.length === 1 && p0.partStart <= c.start && c.end <= p0.partEnd)) continue;   // entera: pasada 1
+          for (const g of pieces) {
+            const ds = dataSpan(part.text, Math.max(g.partStart, c.start), Math.min(g.partEnd, c.end), part.kind);
+            if (ds === null) continue;
+            const os = g.outStart + (ds.start - g.partStart);
+            pushDecided(sec.index, os, os + (ds.end - ds.start), ft.target, { kind: 'copy', partStart: ds.start, partEnd: ds.end }, ft.conf ?? 'media', ft.cls);
+          }
+        }
+      }
+    }
+    // (c) R-RES-03 · Continuación de un nombre reemplazado con límites cortos: hasta dos palabras de nombre pegadas al marcador de una
+    // persona u organización por un blanco o un guion, en la misma línea, con la caja del original («de Ejemplo [PERSONA_5]»,
+    // «[DEMANDANTE_1] Gómez»). Es la regla de remanentes del modelo (7.11.2) aplicada a lo que el tramo dejó fuera.
+    for (const g of sec.segs) {
+      if (g.type !== 'marker' || g.detectionId === undefined) continue;
+      const d = state.detections[g.detectionId];
+      const t = d === undefined || !isNameType(d.type) ? undefined : targets.get(d.entityId);
+      if (t === undefined) continue;
+      const upper = isUpperWord(part.text.slice(g.partStart, g.partEnd));
+      for (const side of ['izquierda', 'derecha'] as const) {
+        const run = continuation(sec.section.text, side === 'izquierda' ? g.outStart : g.outEnd, side, upper);
+        if (run !== null) pushDecided(sec.index, run.start, run.end, t, locate(sec, run.start, run.end), 'baja');
+      }
+    }
+  }
+
   // ---- Pasadas 1 y 2: un rechazo explícito (motivo distinto de SIN_MOTIVO) de la misma entidad y el mismo tramo también excluye.
   // El rechazo por defecto no: es el caso de «rechazada por error» (T-RS-02, T-RS-10, T-RS-13). La pasada 3 ya se filtró arriba.
   const live: RawHit[] = [];
@@ -424,7 +667,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     if (h.loc.kind === 'copy' && h.p3 !== true) {
       const loc = h.loc;
       const partId = (secs[h.si] as Sec).section.partId;
-      if (rejected.some((r) => insideRejected(r, partId, loc.partStart, loc.partEnd) && r.entityId === h.target.entity.id
+      if (rejected.some((r) => rejectionCovers(r, h.target.entity, partId, loc.partStart, loc.partEnd)
         && r.rejectReason !== undefined && r.rejectReason !== 'SIN_MOTIVO')) continue;
     }
     live.push(h);
@@ -439,7 +682,8 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
       || (RANK[h.mode] === RANK[cur.mode] && h.target.primary && !cur.target.primary)) best.set(k, h);
   }
   const uniq = [...best.values()];
-  const hitsRaw = uniq.filter((h) => !uniq.some((o) => o !== h && o.si === h.si && o.target.entity.id === h.target.entity.id
+  // PB-4-r1: el acierto de una forma derivada o de R-RES-03 dentro del de otra entidad no agrega nada («ANA» dentro del correo).
+  const hitsRaw = uniq.filter((h) => !uniq.some((o) => o !== h && o.si === h.si && (o.target.entity.id === h.target.entity.id || h.derived === true)
     && o.start <= h.start && h.end <= o.end && (o.start < h.start || h.end < o.end)))
     .sort((a, b) => a.si - b.si || a.start - b.start || a.end - b.end);
 
