@@ -1,5 +1,5 @@
 // T-LE-02 a T-LE-05 (parte I, PE-2): lector .docx: partes por relaciones, límites, XML hostil y etiquetas neutras.
-// La parte II (PE-3) añade inventario de metadatos, campos, Strict, marcas de agua y avisos restantes. Solo datos ficticios.
+// La parte II (PE-3) añade el inventario de metadatos, el texto oculto, altChunk, marcas de agua, gráficos y OOXML Strict. Solo datos ficticios.
 import { strToU8, zipSync } from 'fflate';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SiglowError } from '../../src/core/types';
@@ -7,7 +7,7 @@ import type { DocId, DocumentModel, ErrorCode, IdSource, IoLimits } from '../../
 import { readDocx } from '../../src/io/docx-read';
 import { handleIoMessage } from '../../src/io/io-handler';
 import { IO_LIMITS_POR_DEFECTO } from '../../src/io/io-client';
-import { construirDocx, decl, documento, p, parchearCentral, pt, r, raiz, tipoRel, utf16 } from '../fixtures/docx/docx-builder';
+import { W, construirDocx, decl, documento, p, parchearCentral, pt, r, raiz, tipoRel, utf16 } from '../fixtures/docx/docx-builder';
 import type { ParteExtra } from '../fixtures/docx/docx-builder';
 
 const DOC = 'doc_00112233445566778899aabbccddeeff' as DocId;
@@ -348,7 +348,7 @@ describe('T-LE-04 .docx: XML hostil (V-20, V-41)', () => {
   });
 });
 
-describe('T-LE-05 .docx: metadatos y autores no entran al modelo (INV-D03, INV-D04; el inventario es de PE-3)', () => {
+describe('T-LE-05 .docx: metadatos y autores no entran al modelo (INV-D03, INV-D04)', () => {
   const PROHIBIDOS = ['Autora Ejemplo', 'Autor Ficticio', 'Revisor Ficticio', 'ejemplo.test', 'Programa de Prueba'];
   function docConMetadatos(): Uint8Array {
     const core = `${decl}<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:creator>Autora Ejemplo</dc:creator><cp:lastModifiedBy>Revisor Ficticio</cp:lastModifiedBy></cp:coreProperties>`;
@@ -376,7 +376,7 @@ describe('T-LE-05 .docx: metadatos y autores no entran al modelo (INV-D03, INV-D
     const d = leer(docConMetadatos());
     const json = JSON.stringify({ metadata: d.metadata, warnings: d.warnings });
     for (const s of PROHIBIDOS) expect(json).not.toContain(s);
-    expect(d.metadata).toEqual({ categories: {} }); // PE-3 los inventaría solo por presencia
+    expect(Object.keys(d.metadata.categories).sort()).toEqual(['autores_revisiones', 'propiedades_aplicacion', 'propiedades_documento', 'personas', 'texto_eliminado'].sort());
     for (const w of d.warnings) expect(Object.keys(w).sort()).toEqual(['code', 'count', 'partId']);
     expect(d.parts.map((x) => x.text).join('\n')).not.toMatch(/Autora Ejemplo|Revisor Ficticio|oculto|Programa de Prueba/);
   });
@@ -387,6 +387,179 @@ describe('T-LE-05 .docx: metadatos y autores no entran al modelo (INV-D03, INV-D
     const a2 = readDocx(b, { docId: DOC, label: 'Documento 1' }, LIM);
     expect(a1.parts[0]?.id).not.toBe(a2.parts[0]?.id);
     expect(a1.parts[0]?.id).toMatch(/^prt_[0-9a-f]{32}$/);
+  });
+});
+
+describe('PE-3 · T-LE-02 parte II: texto oculto, contenido importado, marcas de agua, gráficos y notas', () => {
+  const avisos = (d: DocumentModel): Array<{ code: string; count: number; con: boolean }> =>
+    d.warnings.map((w) => ({ code: w.code, count: w.count, con: w.partId !== undefined }));
+
+  it('w:vanish se incluye en el texto y se marca: TEXTO_OCULTO_INCLUIDO cuenta corridas, no fragmentos; val=0 y val=false no cuentan', () => {
+    const cuerpo = p(r('Visible '), '<w:r><w:rPr><w:vanish/></w:rPr><w:t>oculto uno</w:t><w:t> oculto dos</w:t></w:r>',
+      '<w:r><w:rPr><w:vanish w:val="0"/></w:rPr><w:t> visible dos</w:t></w:r>', '<w:r><w:rPr><w:vanish w:val="false"/></w:rPr><w:t> tres</w:t></w:r>');
+    const extras = [extra('c.xml', 'header', hdr(p('<w:r><w:rPr><w:vanish/></w:rPr><w:t>Encabezado oculto de prueba</w:t></w:r>')))];
+    const d = leer(construirDocx({ cuerpo, extras }));
+    expect(textos(d)).toEqual(['Encabezado oculto de prueba', 'Visible oculto uno oculto dos visible dos tres']);
+    expect(d.warnings).toEqual([
+      { code: 'TEXTO_OCULTO_INCLUIDO', partId: d.parts[0]?.id, count: 1 },
+      { code: 'TEXTO_OCULTO_INCLUIDO', partId: d.parts[1]?.id, count: 1 },
+    ]);
+  });
+
+  it('w:altChunk → CONTENIDO_IMPORTADO_NO_LEIDO; el contenido importado no entra en el texto', () => {
+    const d = leer(construirDocx({ cuerpo: pt('Antes') + '<w:altChunk r:id="rId5"/>' + pt('Después') + '<w:altChunk r:id="rId6"/>' }));
+    expect(textos(d)).toEqual(['Antes\nDespués']);
+    expect(d.warnings).toEqual([{ code: 'CONTENIDO_IMPORTADO_NO_LEIDO', partId: d.parts[0]?.id, count: 2 }]);
+  });
+
+  it('marca de agua VML (v:textpath) en un encabezado sin más texto → MARCA_DE_AGUA sin partId; el texto de la marca no se copia', () => {
+    const marca = '<w:r><w:pict><v:shapetype id="_x0000_t136"/><v:shape id="PowerPlusWaterMarkObject1" type="#_x0000_t136"><v:textpath string="CONFIDENCIAL Ejemplo"/></v:shape></w:pict></w:r>';
+    const d = leer(construirDocx({ cuerpo: pt('Cuerpo de prueba'), extras: [extra('m.xml', 'header', hdr(p(marca)))] }));
+    expect(d.parts.map((x) => x.kind)).toEqual(['cuerpo']);
+    expect(d.warnings).toEqual([{ code: 'MARCA_DE_AGUA', count: 1 }]);
+    expect(JSON.stringify(d)).not.toContain('CONFIDENCIAL');
+  });
+
+  it('WordArt: Choice (a:prstTxWarp) + Fallback (v:textpath) cuenta una sola vez; textNoShape no es marca', () => {
+    const ac = '<mc:AlternateContent><mc:Choice Requires="wps"><w:drawing><wps:wsp><wps:bodyPr><a:prstTxWarp prst="textPlain"/></wps:bodyPr></wps:wsp></w:drawing></mc:Choice>' +
+      '<mc:Fallback><w:pict><v:shape><v:textpath string="X"/></v:shape></w:pict></mc:Fallback></mc:AlternateContent>';
+    const normal = '<w:drawing><wps:wsp><wps:bodyPr><a:prstTxWarp prst="textNoShape"/></wps:bodyPr></wps:wsp></w:drawing>';
+    const d = leer(construirDocx({ cuerpo: p(r('Texto de prueba'), `<w:r>${ac}</w:r>`, `<w:r>${normal}</w:r>`) }));
+    expect(avisos(d)).toEqual([{ code: 'MARCA_DE_AGUA', count: 1, con: true }]);
+  });
+
+  it('gráficos y diagramas (graphicData chart/diagram) → SMARTART_O_GRAFICO_NO_LEIDO; una imagen no', () => {
+    const g = (uri: string): string => `<w:r><w:drawing><wp:inline><a:graphic><a:graphicData uri="${uri}"/></a:graphic></wp:inline></w:drawing></w:r>`;
+    const cuerpo = p(r('Texto de prueba'), g('http://schemas.openxmlformats.org/drawingml/2006/chart'), g('http://schemas.openxmlformats.org/drawingml/2006/diagram'),
+      g('http://schemas.openxmlformats.org/drawingml/2006/picture'));
+    expect(avisos(leer(construirDocx({ cuerpo })))).toEqual([{ code: 'SMARTART_O_GRAFICO_NO_LEIDO', count: 2, con: true }]);
+  });
+
+  it('comentario con varios párrafos y referencias; notas que solo tienen separadores no crean partes', () => {
+    const comentario = '<w:comment w:id="0" w:author="Autor Ficticio" w:initials="AF"><w:p><w:pPr><w:pStyle w:val="CommentText"/></w:pPr>' +
+      '<w:r><w:rPr><w:rStyle w:val="CommentReference"/></w:rPr><w:annotationRef/></w:r><w:r><w:t>Primera línea</w:t></w:r></w:p>' + pt('Segunda línea') + '</w:comment>';
+    const sep = '<w:footnote w:type="separator" w:id="-1">' + pt('') + '</w:footnote><w:footnote w:type="continuationSeparator" w:id="0">' + pt('') + '</w:footnote>';
+    const extras = [extra('c.xml', 'comments', raiz('comments', comentario)), extra('n.xml', 'footnotes', raiz('footnotes', sep))];
+    const d = leer(construirDocx({ cuerpo: pt('Cuerpo de prueba'), extras }));
+    expect(d.parts.map((x) => [x.kind, x.text])).toEqual([['cuerpo', 'Cuerpo de prueba'], ['comentario', 'Primera línea\nSegunda línea']]);
+  });
+});
+
+describe('PE-3 · T-LE-02 parte II: OOXML Strict', () => {
+  const WS = 'http://purl.oclc.org/ooxml/wordprocessingml/main';
+  const RS = 'http://purl.oclc.org/ooxml/officeDocument/relationships';
+  function strict(cuerpo: string, cabecera?: string): Uint8Array {
+    const rels = cabecera === undefined ? '' : `<Relationship Id="rId2" Type="${RS}/header" Target="cab.xml"/>`;
+    const archivos: Record<string, Uint8Array> = {
+      '_rels/.rels': strToU8(`${decl}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RS}/officeDocument" Target="word/document.xml"/></Relationships>`),
+      'word/document.xml': strToU8(documento(cuerpo).replace(W, WS)),
+      'word/_rels/document.xml.rels': strToU8(`${decl}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${rels}</Relationships>`),
+    };
+    if (cabecera !== undefined) archivos['word/cab.xml'] = strToU8(hdr(pt(cabecera)).replace(W, WS));
+    return zipSync(archivos);
+  }
+
+  it('Strict se acepta y se lee igual que el normal, con el aviso OOXML_STRICT (una vez por parte Strict)', () => {
+    const d = leer(strict(pt('Cuerpo estricto de prueba'), 'Encabezado estricto'));
+    expect(textos(d)).toEqual(['Encabezado estricto', 'Cuerpo estricto de prueba']);
+    expect(d.warnings).toEqual([{ code: 'OOXML_STRICT', count: 2 }]);
+    expect(leer(construirDocx({ cuerpo: pt('Normal') })).warnings).toEqual([]);
+  });
+
+  it('un vocabulario Strict que no es WordprocessingML → OOXML_STRICT_NO_ADMITIDO', () => {
+    const raro = zipSync({
+      '_rels/.rels': strToU8(`${decl}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RS}/officeDocument" Target="word/document.xml"/></Relationships>`),
+      'word/document.xml': strToU8(`${decl}<d:document xmlns:d="http://purl.oclc.org/ooxml/drawingml/main"/>`),
+    });
+    expect(codigo(() => leer(raro))).toBe('OOXML_STRICT_NO_ADMITIDO');
+  });
+});
+
+describe('PE-3 · T-LE-05 parte II: inventario de metadatos solo de presencia (6.3.3, INV-D03, INV-D04)', () => {
+  function docCompleto(): Uint8Array {
+    const cuerpo =
+      p(r('Texto de prueba'),
+        '<w:del w:id="1" w:author="Revisor Ficticio" w:date="2020-01-01T00:00:00Z"><w:r><w:delText>borrado</w:delText></w:r></w:del>',
+        '<w:ins w:id="2" w:author="Autor Ficticio"><w:r><w:t> insertado</w:t></w:r></w:ins>') +
+      p('<w:r><w:instrText> HYPERLINK "x" </w:instrText></w:r>', r('campo')) +
+      p('<w:fldSimple w:instr=" PAGE "><w:r><w:t>1</w:t></w:r></w:fldSimple>') +
+      p('<w:permStart w:id="9" w:ed="Autora Ejemplo"/>', r('permiso')) +
+      '<w:sdt><w:sdtPr><w:alias w:val="Alias Prueba"/></w:sdtPr><w:sdtContent>' + pt('control') + '</w:sdtContent></w:sdt>' +
+      p('<w:hyperlink r:id="rId99" w:tooltip="Vínculo Ejemplo"><w:r><w:t>enlace</w:t></w:r></w:hyperlink>') +
+      p('<w:r><w:drawing><wp:inline><wp:docPr id="1" name="Imagen 1" descr="Foto de Autor Ficticio"/></wp:inline></w:drawing></w:r>');
+    const tipo = (u: string): string => `http://schemas.openxmlformats.org/package/2006/relationships/metadata/${u}`;
+    return construirDocx({
+      cuerpo,
+      extras: [
+        extra('comentarios.xml', 'comments', raiz('comments', `<w:comment w:id="0" w:author="Autor Ficticio" w:initials="AF" w:date="2020-01-01T00:00:00Z">${pt('Comentario de prueba')}</w:comment>`)),
+        extra('settings.xml', 'settings', raiz('settings', '')),
+        extra('people.xml', 'people', `${decl}<w15:people xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"><w15:person w15:author="Autor Ficticio"/></w15:people>`),
+        extra('media/image1.png', 'image', Uint8Array.from([0x89, 0x50, 0x4e, 0x47])),
+      ],
+      relacionesDocumento: `<Relationship Id="rId99" Type="${tipoRel('hyperlink')}" Target="https://ejemplo.test/x" TargetMode="External"/>`,
+      relacionesPaquete: `<Relationship Id="rId7" Type="${tipo('core-properties')}" Target="docProps/core.xml"/>`,
+      entradas: {
+        'docProps/core.xml': `${decl}<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:creator>Autora Ejemplo</dc:creator></cp:coreProperties>`,
+        'docProps/app.xml': `${decl}<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Company>Empresa Ejemplo</Company></Properties>`,
+        'docProps/custom.xml': `${decl}<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties"/>`,
+        'customXml/item1.xml': `${decl}<datos>Dato Ficticio</datos>`,
+      },
+    });
+  }
+
+  it('cuenta apariciones por categoría y recursos distintos; ningún valor aparece', () => {
+    const d = leer(docCompleto());
+    expect(d.metadata.categories).toEqual({
+      propiedades_documento: { count: 1 }, propiedades_aplicacion: { count: 1 }, propiedades_personalizadas: { count: 1 },
+      xml_personalizado: { count: 1 }, personas: { count: 1 }, configuracion: { count: 1 }, imagenes_y_miniatura: { count: 1 },
+      autores_revisiones: { count: 3 }, texto_eliminado: { count: 1 }, codigos_campo: { count: 2 }, vinculos_externos: { count: 2 },
+      permisos_edicion: { count: 1 }, texto_alternativo: { count: 1 }, propiedades_controles: { count: 1 },
+    });
+    expect(textos(d).join('\n')).not.toMatch(/borrado|HYPERLINK|Alias Prueba|Foto de/);
+  });
+
+  it('INV-D04 · metadata y warnings solo tienen claves fijas, códigos, ids y dígitos; ningún valor del archivo', () => {
+    const d = leer(docCompleto());
+    const json = JSON.stringify(d.metadata);
+    expect(json).toMatch(/^[a-z0-9_{}":,]+$/);
+    for (const s of ['Autora Ejemplo', 'Autor Ficticio', 'Revisor Ficticio', 'Empresa Ejemplo', 'Dato Ficticio', 'ejemplo.test', 'Vínculo']) {
+      expect(JSON.stringify({ m: d.metadata, w: d.warnings, l: d.parts.map((x) => x.label) })).not.toContain(s);
+    }
+    for (const w of d.warnings) expect(Object.keys(w).every((k) => ['code', 'count', 'partId'].includes(k))).toBe(true);
+  });
+
+  it('las partes se localizan por tipo de relación aunque el nombre sea libre; sin ellas, por la ruta habitual y [Content_Types].xml', () => {
+    const libre = construirDocx({
+      cuerpo: pt('Cuerpo de prueba'),
+      extras: [extra('raro/configuracion-x.xml', 'settings', raiz('settings', '')), extra('raro/glosario.xml', 'glossaryDocument', raiz('glossaryDocument', ''))],
+    });
+    expect(leer(libre).metadata.categories).toEqual({ configuracion: { count: 1 }, glosario: { count: 1 } });
+    const porTipo = construirDocx({
+      cuerpo: pt('Cuerpo de prueba'),
+      entradas: {
+        'docProps/otra.xml': `${decl}<Properties/>`,
+        'word/vbaProject.bin': Uint8Array.from([1, 2, 3]),
+        '[Content_Types].xml': `${decl}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Override PartName="/docProps/otra.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,
+      },
+    });
+    expect(leer(porTipo).metadata.categories).toEqual({ propiedades_documento: { count: 1 }, objetos_y_macros: { count: 1 } });
+  });
+
+  it('un archivo sin metadatos tiene el inventario vacío; un [Content_Types].xml hostil no impide leer ni se interpreta', () => {
+    expect(leer(construirDocx({ cuerpo: pt('Cuerpo de prueba') })).metadata).toEqual({ categories: {} });
+    const hostil = construirDocx({ cuerpo: pt('Cuerpo de prueba'), entradas: { '[Content_Types].xml': `${decl}<!DOCTYPE t [<!ENTITY a "b">]><Types/>` } });
+    expect(textos(leer(hostil))).toEqual(['Cuerpo de prueba']);
+  });
+
+  it('vínculos externos de un encabezado y metadatos de partes secundarias también se cuentan', () => {
+    const d = construirDocx({
+      cuerpo: pt('Cuerpo de prueba'),
+      extras: [extra('cab.xml', 'header', hdr(pt('Encabezado de prueba')))],
+      entradas: {
+        'word/_rels/cab.xml.rels': `${decl}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${tipoRel('hyperlink')}" Target="https://ejemplo.test/z" TargetMode="External"/><Relationship Id="rId2" Type="${tipoRel('image')}" Target="media/logo.png"/></Relationships>`,
+      },
+    });
+    expect(leer(d).metadata.categories).toEqual({ vinculos_externos: { count: 1 }, imagenes_y_miniatura: { count: 1 } });
   });
 });
 

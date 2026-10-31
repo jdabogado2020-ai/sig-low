@@ -9,7 +9,7 @@ import { Inflate } from 'fflate';
 import { DOMParser } from '@xmldom/xmldom';
 import type { Element, Node } from '@xmldom/xmldom';
 import { SiglowError } from '../core/types';
-import type { DocumentModel, IoLimits, ParseWarning, Part, PartId, PartKind } from '../core/types';
+import type { DocumentModel, IoLimits, MetadataCategory, MetadataInventory, ParseWarning, ParseWarningCode, Part, PartId, PartKind } from '../core/types';
 import { randomIds } from './txt-read';
 import type { ReadCtx } from './txt-read';
 
@@ -240,7 +240,7 @@ function xmlDe(bytes: Uint8Array): Element {
 // Relaciones y localización de partes
 // ---------------------------------------------------------------------------------------------------------------------
 
-interface Relacion { id: string; tipo: string; destino: string; }
+interface Relacion { id: string; tipo: string; destino: string; externa: boolean; }
 
 const clave = (nombre: string): string => nombre.replace(/\\/g, '/').replace(/^\/+/, '').toLowerCase();
 
@@ -285,10 +285,10 @@ function leerRelaciones(raiz: Element): Relacion[] {
     const n = hijos.item(i);
     if (n === null || n.nodeType !== 1 || n.localName !== 'Relationship') continue;
     const el = n as Element;
-    if ((el.getAttribute('TargetMode') ?? '').toLowerCase() === 'external') continue;
+    const externa = (el.getAttribute('TargetMode') ?? '').toLowerCase() === 'external';
     const destino = el.getAttribute('Target');
     if (destino === null || destino === '') continue;
-    out.push({ id: el.getAttribute('Id') ?? '', tipo: el.getAttribute('Type') ?? '', destino });
+    out.push({ id: el.getAttribute('Id') ?? '', tipo: el.getAttribute('Type') ?? '', destino, externa });
   }
   return out;
 }
@@ -301,7 +301,30 @@ const W_NS: ReadonlySet<string> = new Set([
   'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
   'http://purl.oclc.org/ooxml/wordprocessingml/main', // OOXML Strict: se lee igual; el aviso es de PE-3
 ]);
+const W_NS_STRICT = 'http://purl.oclc.org/ooxml/wordprocessingml/main';
 const MC_NS = 'http://schemas.openxmlformats.org/markup-compatibility/2006';
+const VML_NS = 'urn:schemas-microsoft-com:vml';
+
+/** Hallazgos de una parte que se avisan sin texto (6.3.4). */
+interface Contadores { eliminados: number; ocultos: number; importados: number; graficos: number; marcas: number; }
+const contadoresVacios = (): Contadores => ({ eliminados: 0, ocultos: 0, importados: 0, graficos: 0, marcas: 0 });
+
+/** ¿La corrida lleva w:rPr/w:vanish (o w:specVanish) activo? */
+function corridaOculta(r: Element): boolean {
+  for (let i = 0; i < r.childNodes.length; i++) {
+    const rpr = r.childNodes.item(i);
+    if (rpr === null || nombreW(rpr) !== 'rPr') continue;
+    for (let j = 0; j < rpr.childNodes.length; j++) {
+      const c = rpr.childNodes.item(j);
+      const nombre = c === null ? null : nombreW(c);
+      if (c !== null && (nombre === 'vanish' || nombre === 'specVanish')) {
+        const v = atributoW(c as Element, 'val');
+        return !(v === '0' || v === 'false' || v === 'off');
+      }
+    }
+  }
+  return false;
+}
 
 /** Subárboles sin texto del documento (propiedades) o excluidos (cambios eliminados, códigos de campo). */
 const SIN_TEXTO: ReadonlySet<string> = new Set([
@@ -335,11 +358,12 @@ function simbolo(el: Element): string {
  * Excluye `w:del`/`w:moveFrom` (se cuentan), `w:instrText` y las propiedades. Un cuadro de texto anidado corta el
  * párrafo en su anclaje y aporta sus líneas. `mc:AlternateContent` lee solo `mc:Choice` (Fallback si no hay), sin duplicar.
  */
-function extraerTexto(raiz: Element): { texto: string; eliminados: number } {
+function extraerTexto(raiz: Element): { texto: string } & Contadores {
   const lineas: string[] = [];
   const parrafos: Array<{ buf: string; anidado: boolean }> = [];
   let suelto = '';
-  let eliminados = 0;
+  const cont = contadoresVacios();
+  let corrida: { oculto: boolean; contada: boolean } | null = null;
   const anadir = (s: string): void => {
     const p = parrafos[parrafos.length - 1];
     if (p !== undefined) p.buf += s; else suelto += s;
@@ -367,10 +391,14 @@ function extraerTexto(raiz: Element): { texto: string; eliminados: number } {
         if (uno !== null) pila.push({ nodos: { length: 1, item: () => uno }, i: 0, cierra: null });
         continue;
       }
+      const local = n.localName;
+      if (local === 'textpath' && n.namespaceURI === VML_NS) cont.marcas++; // marca de agua / WordArt VML
+      else if (local === 'prstTxWarp') { const prst = el.getAttribute('prst'); if (prst !== null && prst !== 'textNoShape') cont.marcas++; } // WordArt de DrawingML
+      else if (local === 'graphicData') { const uri = el.getAttribute('uri') ?? ''; if (/\/(chart|diagram)$/.test(uri)) cont.graficos++; }
       pila.push({ nodos: n.childNodes, i: 0, cierra: null });
       continue;
     }
-    if (ELIMINADOS.has(w)) { if ((el.textContent ?? '') !== '') eliminados++; continue; }
+    if (ELIMINADOS.has(w)) { if ((el.textContent ?? '') !== '') cont.eliminados++; continue; }
     if (SIN_TEXTO.has(w)) continue;
     switch (w) {
       case 'p': {
@@ -387,7 +415,19 @@ function extraerTexto(raiz: Element): { texto: string; eliminados: number } {
         });
         break;
       }
-      case 't': anadir(el.textContent ?? ''); break;
+      case 'r': {
+        const previa = corrida;
+        corrida = { oculto: corridaOculta(el), contada: false };
+        pila.push({ nodos: n.childNodes, i: 0, cierra: () => { corrida = previa; } });
+        break;
+      }
+      case 'altChunk': cont.importados++; break; // contenido importado de otro archivo: no se lee
+      case 't': {
+        const t = el.textContent ?? '';
+        anadir(t);
+        if (corrida !== null && corrida.oculto && !corrida.contada && t !== '') { corrida.contada = true; cont.ocultos++; }
+        break;
+      }
       case 'tab': case 'ptab': anadir('\t'); break;
       case 'br': case 'cr': anadir('\n'); break;
       case 'noBreakHyphen': anadir('‑'); break;
@@ -398,7 +438,61 @@ function extraerTexto(raiz: Element): { texto: string; eliminados: number } {
   }
   vaciarSuelto();
   while (lineas.length > 0 && lineas[lineas.length - 1] === '') lineas.pop();
-  return { texto: lineas.join('\n'), eliminados };
+  return { texto: lineas.join('\n'), ...cont };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Inventario de metadatos (6.3.3): solo presencia y número de apariciones por categoría; nunca un valor
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** Tipo de relación (último segmento) → categoría. Las partes se localizan por relación, no por nombre. */
+const CATEGORIA_RELACION: ReadonlyMap<string, MetadataCategory> = new Map<string, MetadataCategory>([
+  ['core-properties', 'propiedades_documento'], ['extended-properties', 'propiedades_aplicacion'],
+  ['custom-properties', 'propiedades_personalizadas'], ['customXml', 'xml_personalizado'], ['people', 'personas'],
+  ['settings', 'configuracion'], ['glossaryDocument', 'glosario'], ['image', 'imagenes_y_miniatura'],
+  ['thumbnail', 'imagenes_y_miniatura'], ['oleObject', 'objetos_y_macros'], ['package', 'objetos_y_macros'],
+  ['vbaProject', 'objetos_y_macros'],
+]);
+/** Respaldo por la ruta habitual. */
+const CATEGORIA_RUTA: ReadonlyArray<readonly [RegExp, MetadataCategory]> = [
+  [/^docprops\/core\.xml$/, 'propiedades_documento'], [/^docprops\/app\.xml$/, 'propiedades_aplicacion'],
+  [/^docprops\/custom\.xml$/, 'propiedades_personalizadas'], [/^customxml\/item[^/]*\.xml$/, 'xml_personalizado'],
+  [/^word\/people\.xml$/, 'personas'], [/^word\/settings\.xml$/, 'configuracion'],
+  [/^word\/glossary\/document\.xml$/, 'glosario'], [/^word\/media\//, 'imagenes_y_miniatura'],
+  [/^docprops\/thumbnail\./, 'imagenes_y_miniatura'], [/^word\/embeddings\//, 'objetos_y_macros'],
+  [/^word\/vbaproject\.bin$/, 'objetos_y_macros'],
+];
+/** Respaldo por `[Content_Types].xml`. */
+const CATEGORIA_TIPO_CONTENIDO: ReadonlyArray<readonly [string, MetadataCategory]> = [
+  ['core-properties+xml', 'propiedades_documento'], ['extended-properties+xml', 'propiedades_aplicacion'],
+  ['custom-properties+xml', 'propiedades_personalizadas'], ['wordprocessingml.people+xml', 'personas'],
+  ['wordprocessingml.settings+xml', 'configuracion'], ['wordprocessingml.document.glossary+xml', 'glosario'],
+  ['vbaProject', 'objetos_y_macros'],
+];
+
+const noVacio = (v: string | null): boolean => v !== null && v.trim() !== '';
+
+/** Cuenta, en todo el árbol de una parte (también lo que el texto excluye), lo que pide el inventario. */
+function inventariar(raiz: Element, contar: (c: MetadataCategory) => void): void {
+  recorrer(raiz, (el) => {
+    const w = nombreW(el);
+    if (w !== null) {
+      if (atributoW(el, 'author') !== null || atributoW(el, 'date') !== null || atributoW(el, 'initials') !== null) contar('autores_revisiones');
+      switch (w) {
+        case 'delText': case 'delInstrText': contar('texto_eliminado'); break;
+        case 'instrText': contar('codigos_campo'); break;
+        case 'fldSimple': if (atributoW(el, 'instr') !== null) contar('codigos_campo'); break;
+        case 'permStart': if (atributoW(el, 'ed') !== null) contar('permisos_edicion'); break;
+        case 'sdtPr': contar('propiedades_controles'); break;
+        case 'hyperlink': if (atributoW(el, 'tooltip') !== null) contar('vinculos_externos'); break;
+        default: break;
+      }
+      return;
+    }
+    const local = el.localName;
+    if ((local === 'docPr' || local === 'cNvPr') && (noVacio(el.getAttribute('descr')) || noVacio(el.getAttribute('title')))) contar('texto_alternativo');
+    else if (local === 'shape' && el.namespaceURI === VML_NS && noVacio(el.getAttribute('alt'))) contar('texto_alternativo');
+  });
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -416,7 +510,7 @@ const ETIQUETA: Partial<Record<PartKind, string>> = {
 /** Canónico (6.1.1): CRLF y CR a LF, y NFC. Nada más. */
 const canonico = (t: string): string => t.replace(/\r\n?/g, '\n').normalize('NFC');
 
-interface Hallazgo { kind: PartKind; texto: string; eliminados: number; }
+interface Hallazgo extends Contadores { kind: PartKind; texto: string; }
 
 export type ProgresoLectura = (done: number, total: number) => void;
 
@@ -449,10 +543,36 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
     return raiz === null ? [] : leerRelaciones(raiz);
   };
 
+  // Inventario: categorías por conteo (apariciones) y por recurso (partes o relaciones distintas, sin repetir).
+  const sumas = new Map<MetadataCategory, number>();
+  const recursos = new Map<MetadataCategory, Set<string>>();
+  const contar = (c: MetadataCategory): void => { sumas.set(c, (sumas.get(c) ?? 0) + 1); };
+  const recurso = (c: MetadataCategory, ruta: string): void => {
+    const conjunto = recursos.get(c) ?? new Set<string>();
+    conjunto.add(clave(ruta));
+    recursos.set(c, conjunto);
+  };
+  const procesarRels = (rs: Relacion[], origen: string): void => {
+    for (const r of rs) {
+      if (r.externa) { contar('vinculos_externos'); continue; }
+      const c = CATEGORIA_RELACION.get(ultimoSegmento(r.tipo));
+      if (c !== undefined) recurso(c, resolver(origen, r.destino));
+    }
+  };
+  let estrictas = 0;
+  /** Parte ya abierta: su inventario, sus relaciones (vínculos externos, imágenes) y si es OOXML Strict. */
+  const registrar = (ruta: string, raiz: Element, conRelaciones: boolean): void => {
+    inventariar(raiz, contar);
+    if (raiz.namespaceURI === W_NS_STRICT) estrictas++;
+    if (conRelaciones) procesarRels(relacionesDe(ruta), ruta);
+  };
+
   // 1. Parte principal: relación `officeDocument`; respaldo [Content_Types].xml; último respaldo word/document.xml.
   let principal: string | null = null;
-  for (const r of relacionesDe('')) {
-    if (ultimoSegmento(r.tipo) === 'officeDocument' && entradas.has(clave(resolver('', r.destino)))) { principal = resolver('', r.destino); break; }
+  const relsPaquete = relacionesDe('');
+  procesarRels(relsPaquete, '');
+  for (const r of relsPaquete) {
+    if (!r.externa && ultimoSegmento(r.tipo) === 'officeDocument' && entradas.has(clave(resolver('', r.destino)))) { principal = resolver('', r.destino); break; }
   }
   if (principal === null) {
     const ct = abrir('[Content_Types].xml');
@@ -472,7 +592,11 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
 
   // 2. Cuerpo.
   const raizDoc = abrir(principal);
-  if (raizDoc === null || nombreW(raizDoc) !== 'document') throw new SiglowError('SIN_DOCUMENTO_PRINCIPAL');
+  if (raizDoc === null) throw new SiglowError('SIN_DOCUMENTO_PRINCIPAL');
+  const nsRaiz = raizDoc.namespaceURI ?? '';
+  // Variante Strict de otro vocabulario (no WordprocessingML Strict): no se lee.
+  if (nsRaiz.startsWith('http://purl.oclc.org/ooxml/') && nsRaiz !== W_NS_STRICT) throw new SiglowError('OOXML_STRICT_NO_ADMITIDO');
+  if (nombreW(raizDoc) !== 'document') throw new SiglowError('SIN_DOCUMENTO_PRINCIPAL');
   let cuerpo: Element | null = null;
   for (let i = 0; i < raizDoc.childNodes.length && cuerpo === null; i++) {
     const n = raizDoc.childNodes.item(i);
@@ -496,16 +620,18 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
 
   const hallazgos: Hallazgo[] = [];
   const unaParte = (kind: PartKind, raiz: Element): void => {
-    const { texto, eliminados } = extraerTexto(raiz);
-    hallazgos.push({ kind, texto, eliminados });
+    const { texto, ...cont } = extraerTexto(raiz);
+    hallazgos.push({ kind, texto, ...cont });
   };
   unaParte('cuerpo', cuerpo);
+  registrar(principal, raizDoc, false);
 
   // 3. Partes por tipo de relación (último segmento); los nombres de las partes son libres.
   const rels = relacionesDe(principal);
+  procesarRels(rels, principal);
   const vistos = new Set<string>();
   const porTipo = (tipo: string): Relacion[] => rels.filter((r) => {
-    if (ultimoSegmento(r.tipo) !== tipo) return false;
+    if (r.externa || ultimoSegmento(r.tipo) !== tipo) return false;
     const destino = resolver(principal, r.destino);
     if (vistos.has(destino) || !entradas.has(clave(destino))) return false;
     vistos.add(destino);
@@ -514,8 +640,11 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
   const orden = (a: Relacion, b: Relacion): number => (aparicion.get(a.id) ?? Infinity) - (aparicion.get(b.id) ?? Infinity);
   for (const [tipo, kind] of [['header', 'encabezado'], ['footer', 'pie']] as const) {
     for (const r of porTipo(tipo).sort(orden)) {
-      const raiz = abrir(resolver(principal, r.destino));
-      if (raiz !== null) unaParte(kind, raiz);
+      const ruta = resolver(principal, r.destino);
+      const raiz = abrir(ruta);
+      if (raiz === null) continue;
+      registrar(ruta, raiz, true);
+      unaParte(kind, raiz);
     }
   }
   const hijosDe = (raiz: Element, nombre: string, vistaPrevia?: (el: Element) => boolean): Element[] => {
@@ -536,32 +665,63 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
     ['comments', 'comment', 'comentario', undefined],
   ] as const) {
     for (const r of porTipo(tipo)) {
-      const raiz = abrir(resolver(principal, r.destino));
+      const ruta = resolver(principal, r.destino);
+      const raiz = abrir(ruta);
       if (raiz === null) continue;
+      registrar(ruta, raiz, true);
       for (const nota of hijosDe(raiz, hijo, filtro)) unaParte(kind, nota);
     }
   }
 
-  // 4. Partes en orden de lectura canónico (6.3.1): rango y, dentro del rango, orden de hallazgo. Sin partes vacías.
+  // 4. Respaldos del inventario: ruta habitual y [Content_Types].xml (las partes no se descomprimen: solo presencia).
+  for (const k of entradas.keys()) for (const [re, c] of CATEGORIA_RUTA) if (re.test(k)) recurso(c, k);
+  try {
+    const ct = abrir('[Content_Types].xml');
+    for (let i = 0; ct !== null && i < ct.childNodes.length; i++) {
+      const n = ct.childNodes.item(i);
+      if (n === null || n.nodeType !== 1 || n.localName !== 'Override') continue;
+      const tipo = (n as Element).getAttribute('ContentType') ?? '';
+      const nombre = (n as Element).getAttribute('PartName') ?? '';
+      if (!entradas.has(clave(nombre))) continue;
+      for (const [parte, c] of CATEGORIA_TIPO_CONTENIDO) if (tipo.includes(parte)) recurso(c, nombre);
+    }
+  } catch (e) {
+    // Un [Content_Types].xml ilegible no impide leer: solo era respaldo y nunca se interpreta su contenido.
+    if (!(e instanceof SiglowError) || (e.code !== 'XML_INVALIDO' && e.code !== 'DTD_NO_PERMITIDA')) throw e;
+  }
+  const categories: MetadataInventory['categories'] = {};
+  for (const [c, n] of sumas) categories[c] = { count: n };
+  for (const [c, r] of recursos) categories[c] = { count: (categories[c]?.count ?? 0) + r.size };
+
+  // 5. Partes en orden de lectura canónico (6.3.1): rango y, dentro del rango, orden de hallazgo. Sin partes vacías.
   const ordenadas = hallazgos
     .map((h, i) => ({ h, i, texto: canonico(h.texto) }))
-    .filter((x) => x.texto.trim() !== '')
     .sort((a, b) => (RANGO[a.h.kind] - RANGO[b.h.kind]) || (a.i - b.i));
-  if (ordenadas.length === 0) throw new SiglowError('ARCHIVO_VACIO');
+  if (!ordenadas.some((x) => x.texto.trim() !== '')) throw new SiglowError('ARCHIVO_VACIO');
   const ids = ctx.ids ?? randomIds();
   const indice: Partial<Record<PartKind, number>> = {};
   const warnings: ParseWarning[] = [];
-  const parts: Part[] = ordenadas.map((x, order) => {
-    const kind = x.h.kind;
-    const index = (indice[kind] ?? 0) + 1;
-    indice[kind] = index;
-    const id = ids.next('prt') as PartId;
-    if (x.h.eliminados > 0) warnings.push({ code: 'TEXTO_ELIMINADO_EXCLUIDO', partId: id, count: x.h.eliminados });
-    return {
-      id, docId: ctx.docId, kind, order, index, included: true, text: x.texto,
-      label: ETIQUETA[kind] === undefined ? 'Cuerpo del documento' : `${ETIQUETA[kind]} ${index}`,
-    };
-  });
+  const parts: Part[] = [];
+  for (const x of ordenadas) {
+    let id: PartId | undefined;
+    if (x.texto.trim() !== '') {
+      const kind = x.h.kind;
+      const index = (indice[kind] ?? 0) + 1;
+      indice[kind] = index;
+      id = ids.next('prt') as PartId;
+      parts.push({
+        id, docId: ctx.docId, kind, order: parts.length, index, included: true, text: x.texto,
+        label: ETIQUETA[kind] === undefined ? 'Cuerpo del documento' : `${ETIQUETA[kind]} ${index}`,
+      });
+    }
+    // Un aviso de una parte sin texto (p. ej. un encabezado que solo tiene la marca de agua) se conserva, sin partId.
+    const avisos: Array<[ParseWarningCode, number]> = [
+      ['TEXTO_ELIMINADO_EXCLUIDO', x.h.eliminados], ['TEXTO_OCULTO_INCLUIDO', x.h.ocultos],
+      ['CONTENIDO_IMPORTADO_NO_LEIDO', x.h.importados], ['SMARTART_O_GRAFICO_NO_LEIDO', x.h.graficos], ['MARCA_DE_AGUA', x.h.marcas],
+    ];
+    for (const [code, count] of avisos) if (count > 0) warnings.push(id === undefined ? { code, count } : { code, partId: id, count });
+  }
+  if (estrictas > 0) warnings.push({ code: 'OOXML_STRICT', count: estrictas });
   progress?.(d.length, d.length);
-  return { id: ctx.docId, label: ctx.label, source: 'docx', parts, metadata: { categories: {} }, warnings };
+  return { id: ctx.docId, label: ctx.label, source: 'docx', parts, metadata: { categories }, warnings };
 }

@@ -6,7 +6,7 @@ export const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 export const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 export const MC = 'http://schemas.openxmlformats.org/markup-compatibility/2006';
 const REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
-const NS = `xmlns:w="${W}" xmlns:r="${R}" xmlns:mc="${MC}" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"`;
+const NS = `xmlns:w="${W}" xmlns:r="${R}" xmlns:mc="${MC}" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"`;
 
 export const esc = (s: string): string => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 /** Un párrafo con corridas de texto. */
@@ -29,6 +29,10 @@ export interface OpcionesDocx {
   entradas?: Record<string, string | Uint8Array>;
   /** Reemplaza el XML de la parte principal (p. ej. para probar codificaciones). */
   documentoXml?: string | Uint8Array;
+  /** Elementos `<Relationship .../>` en bruto que se añaden a las relaciones del documento (p. ej. un vínculo externo). */
+  relacionesDocumento?: string;
+  /** Elementos `<Relationship .../>` en bruto que se añaden a `_rels/.rels` (p. ej. core-properties). */
+  relacionesPaquete?: string;
 }
 
 export const tipoRel = (ultimo: string): string => `${REL}/${ultimo}`;
@@ -41,9 +45,9 @@ export function construirDocx(o: OpcionesDocx): Uint8Array {
     .join('');
   const archivos: Record<string, Uint8Array> = {
     '[Content_Types].xml': strToU8(`${decl}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`),
-    '_rels/.rels': strToU8(`${decl}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${tipoRel('officeDocument')}" Target="word/document.xml"/></Relationships>`),
+    '_rels/.rels': strToU8(`${decl}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${tipoRel('officeDocument')}" Target="word/document.xml"/>${o.relacionesPaquete ?? ''}</Relationships>`),
     'word/document.xml': typeof o.documentoXml === 'string' ? strToU8(o.documentoXml) : (o.documentoXml ?? strToU8(documento(o.cuerpo))),
-    'word/_rels/document.xml.rels': strToU8(`${decl}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${rels}</Relationships>`),
+    'word/_rels/document.xml.rels': strToU8(`${decl}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${rels}${o.relacionesDocumento ?? ''}</Relationships>`),
   };
   for (const e of extras) archivos[`word/${e.nombre}`] = typeof e.xml === 'string' ? strToU8(e.xml) : e.xml;
   for (const [k, v] of Object.entries(o.entradas ?? {})) archivos[k] = typeof v === 'string' ? strToU8(v) : v;
