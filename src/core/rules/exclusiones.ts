@@ -269,7 +269,11 @@ export function aplicarExclusiones(view: SearchView, candidatos: readonly Detect
  * coincidencia: «Ley 1122 de 2007», «Sentencia T-074 de 2020», «CIIU 8610». `inicio`: el tramo del modelo debe empezar justo en
  * `start` (el objeto de una cita de artículo, más abajo).
  */
-export interface ContextoDelModelo { exclusionId: string; modo: ModoExclusion; start: number; end: number; inicio?: true }
+export interface ContextoDelModelo {
+  exclusionId: string; modo: ModoExclusion; start: number; end: number; inicio?: true;
+  /** B-71 (PB-2-r8): con `inicio`, el fin del nombre de la norma sin los complementos ambiguos del final. */
+  finSeguro?: number;
+}
 
 /**
  * Objeto de una cita de artículo (E-ART-01): «artículo 49 de la Constitución Política», «artículo 1546 del Código Civil». Tras la
@@ -296,28 +300,44 @@ const COMPLEMENTO_NORMA: ReadonlySet<string> = new Set([
 ]);
 const CONECTOR_NORMA: ReadonlySet<string> = new Set(['de', 'del', 'la', 'las', 'los', 'el', 'lo', 'y', 'e', 'sobre', 'al', 'a', 'para']);
 const CABEZA_NORMA: ReadonlySet<string> = new Set(['constitucion', 'codigo', 'estatuto', 'convencion', 'pacto', 'carta']);
+/**
+ * B-71 (PB-2-r8) · Complementos de la lista que también forman parte de nombres de personas u organizaciones («Protección S.A.»,
+ * «Colombiana de …», «Tránsito Ejemplo», «Nacional de …», «Seguridad Ejemplo Ltda.», «Familia …»). Son de la norma cuando les sigue
+ * otro complemento que no lo es («Código Nacional de Tránsito Terrestre», «Código General del Proceso»); al final del nombre, si el
+ * tramo del modelo sigue más allá, van con el resto (`finSeguro`), que pasa por 7.11.2: así no quedan a la vista.
+ */
+const COMPLEMENTO_AMBIGUO: ReadonlySet<string> = new Set([
+  'proteccion', 'colombiana', 'colombiano', 'nacional', 'transito', 'seguridad', 'familia', 'internacional', 'americana', 'general',
+]);
 const OBJETO_VENTANA = 160;
 const OBJETO_MAX_PALABRAS = 10;
 const RE_PALABRA_NORMA = /\p{L}+|\p{N}+|[^\p{L}\p{N}\s]/gu;
 const plegar = (w: string): string => w.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 
-/** Fin (relativo a `t`) del nombre de la norma que empieza en `t[0]` con una cabeza de la lista: cabeza + complemento + año. */
-function finDelNombreDeNorma(t: string): number {
+/**
+ * Fin (relativo a `t`) del nombre de la norma que empieza en `t[0]` con una cabeza de la lista: cabeza + complemento + año. `seguro`
+ * es el fin sin los complementos ambiguos del final (B-71): el de la cabeza, de un complemento que no es ambiguo o de un año.
+ */
+function finDelNombreDeNorma(t: string): { fin: number; seguro: number } {
   let fin = 0;
+  let seguro = 0;
   let palabras = 0;
   let previa = '';
   for (const m of t.matchAll(RE_PALABRA_NORMA)) {
     const w = plegar(m[0]);
     const finW = m.index + m[0].length;
     if (palabras === 0) {
-      if (!CABEZA_NORMA.has(w)) return 0;
+      if (!CABEZA_NORMA.has(w)) return { fin: 0, seguro: 0 };
       fin = finW;
-    } else if (COMPLEMENTO_NORMA.has(w) || (/^(?:19|20)\d{2}$/u.test(w) && previa === 'de')) fin = finW;
-    else if (!CONECTOR_NORMA.has(w)) break;
+      seguro = finW;
+    } else if (COMPLEMENTO_NORMA.has(w) || COMPLEMENTO_AMBIGUO.has(w) || (/^(?:19|20)\d{2}$/u.test(w) && previa === 'de')) {
+      fin = finW;
+      if (!COMPLEMENTO_AMBIGUO.has(w)) seguro = finW;
+    } else if (!CONECTOR_NORMA.has(w)) break;
     previa = w;
     if (++palabras >= OBJETO_MAX_PALABRAS) break;
   }
-  return fin;
+  return { fin, seguro };
 }
 
 /**
@@ -351,8 +371,9 @@ export function contextosDelModelo(view: SearchView, options: OpcionesExclusion 
             // M-40 y B-62 (PB-2-r7): el objeto es el nombre de la norma, en una ventana fija; ya no va hasta el final del renglón.
             const ini = fin + o[0].length;
             const largo = finDelNombreDeNorma(texto.slice(ini, ini + OBJETO_VENTANA));
-            const d = toCanonicalSpan(view, ini, ini + largo);
-            if (largo > 0 && d.end > d.start) out.push({ exclusionId: e.id, modo, start: d.start, end: d.end, inicio: true });
+            const d = toCanonicalSpan(view, ini, ini + largo.fin);
+            const finSeguro = toCanonicalSpan(view, ini, ini + largo.seguro).end;
+            if (largo.fin > 0 && d.end > d.start) out.push({ exclusionId: e.id, modo, start: d.start, end: d.end, inicio: true, finSeguro });
           }
         }
       }
@@ -380,11 +401,16 @@ export function exclusionDelModelo(contextos: readonly ContextoDelModelo[], star
 /**
  * M-40 (PB-2-r7) · Si el tramo [start, end) del modelo empieza en el nombre de una norma citada (el objeto de una cita de artículo)
  * y sigue más allá, devuelve el fin de ese nombre: lo que sigue («… de Clínica Ejemplo S.A.S.») no se descarta con la norma, sino
- * que pasa por 7.11.2. Si no, null.
+ * que pasa por 7.11.2. Si no, null. B-71 (PB-2-r8): ese fin no incluye los complementos ambiguos del final (`finSeguro`), que
+ * pueden ser parte del nombre («Código Civil Tránsito Ejemplo Gómez» → «Tránsito Ejemplo Gómez»).
  */
 export function finDeNormaAlInicio(contextos: readonly ContextoDelModelo[], start: number, end: number): number | null {
   let fin: number | null = null;
-  for (const c of contextos) if (c.inicio === true && c.start === start && c.end < end && (fin === null || c.end > fin)) fin = c.end;
+  for (const c of contextos) {
+    if (c.inicio !== true || c.start !== start || c.end >= end) continue;
+    const f = c.finSeguro ?? c.end;
+    if (fin === null || f > fin) fin = f;
+  }
   return fin;
 }
 
@@ -447,8 +473,10 @@ interface IndiceDeCita {
   cita: readonly number[];
   /** `CITA_PROPIO`. */
   propio: readonly number[];
-  /** `PRECEDENTE`, «citado» y «reiterado». */
-  precedente: readonly number[];
+  /** `PROVIDENCIA` (D-11, PB-2-r8). */
+  providencia: readonly number[];
+  /** `PROPIO_ORACION` (D-11, PB-2-r8). */
+  propioOracion: readonly number[];
 }
 const RAPIDA_CITA = new RegExp(`${LEX('Corte')}|${SENAL_CORE}`, 'giu');
 const RAPIDA_PROPIO = new RegExp(PROPIO_CORE, 'giu');
@@ -468,13 +496,16 @@ function inicios(re: RegExp, texto: string): number[] {
 function indiceDeCita(view: SearchView): IndiceDeCita {
   let ix = indices.get(view);
   if (ix === undefined) {
-    ix = { cita: inicios(RAPIDA_CITA, view.text), propio: inicios(RAPIDA_PROPIO, view.text), precedente: inicios(RAPIDA_PRECEDENTE, view.text) };
+    ix = {
+      cita: inicios(RAPIDA_CITA, view.text), propio: inicios(RAPIDA_PROPIO, view.text),
+      providencia: inicios(RAPIDA_PROVIDENCIA, view.text), propioOracion: inicios(RAPIDA_PROPIO_ORACION, view.text),
+    };
     indices.set(view, ix);
   }
   return ix;
 }
-/** ¿Algún inicio en [a, b)? Búsqueda binaria. */
-function hay(xs: readonly number[], a: number, b: number): boolean {
+/** El primer índice de `xs` (ordenado) con un inicio ≥ a. Búsqueda binaria. */
+function primero(xs: readonly number[], a: number): number {
   let lo = 0;
   let hi = xs.length;
   while (lo < hi) {
@@ -482,6 +513,11 @@ function hay(xs: readonly number[], a: number, b: number): boolean {
     if ((xs[mid] as number) < a) lo = mid + 1;
     else hi = mid;
   }
+  return lo;
+}
+/** ¿Algún inicio en [a, b)? */
+function hay(xs: readonly number[], a: number, b: number): boolean {
+  const lo = primero(xs, a);
   return lo < xs.length && (xs[lo] as number) < b;
 }
 /** Sin índice, siempre es posible; con índice, solo si algún inicio cae en [a, b) o en [c, d). */
@@ -502,85 +538,205 @@ function ventanaDeCita(texto: string, start: number, end: number): string {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// A-1 (PB-2-r7) · Expediente de la Corte citado como precedente (R-RAD_ADMIN-03, 7.2.4)
+// A-1 y M-50 (PB-2-r7 y PB-2-r8; D-11) · El expediente de la Corte citado (R-RAD_ADMIN-03, 7.2.4)
 // ---------------------------------------------------------------------------------------------------------------------
 /**
- * Ventana de la oración: las de `CITE_LEX` (150 caracteres antes del expediente y 60 después). `CITE_LEX` contiene todas las
- * señales de precedente salvo «caso análogo» (`ANALOGO`), así que si no casa en ninguna de las dos ventanas no hay precedente.
+ * Ventana de la oración (PB-2-r8): la de 7.3.3, 250 caracteres antes del expediente y 120 después, y dentro de ella la oración. En
+ * -r7 eran las de `CITE_LEX` (150 y 60): una providencia al final de la misma oración («…, como lo dijo la Sentencia T-074 de 2020.»)
+ * quedaba fuera.
  */
-const PREC_ANTES = CITE_ANTES;
-const PREC_TRAS = CITE_TRAS;
-const ANALOGO = /an[áa]log/iu;
-/** Señales explícitas de precedente en la oración. «Corte», «Tribunal», «Sala», «Sección» o «sentencia» solos no lo son. */
-const PRECEDENTE_CORE = String.raw`(?:precedentes?|cfr\.|v[ée]ase|casos?[ ]+an[áa]logos?|en[ ]+la[ ]+sentencia[ ]+(?:SU|T|C|A)[ ]?-[ ]?\d)`;
-const PRECEDENTE = entreLetras(PRECEDENTE_CORE);
-const RAPIDA_PRECEDENTE = new RegExp(`${PRECEDENTE_CORE}|citad|reiterad`, 'giu');
-/** «citado» y «reiterado» solo pegados al expediente: «T-8.100.002 citado como ejemplo», «el citado expediente T-…». */
-const CITADO_TRAS = /^[ ]*,?[ ]*(?:citad|reiterad)[oa]s?(?![\p{L}])/iu;
-const CITADO_ANTES = /(?<![\p{L}])(?:citad|reiterad)[oa]s?[ ]+(?:en[ ]+)?(?:(?:el|los|del)[ ]+)?(?:expedientes?|exp\.)[ ]*(?::[ ]*)?$/iu;
-/** Lo más largo que puede casar `CITADO_ANTES` («reiteradas en los expedientes : ») con holgura: se prueba sobre la cola. */
-const CITADO_ANTES_MAX = 48;
-const citadoAntes = (antes: string): boolean => CITADO_ANTES.test(antes.slice(-CITADO_ANTES_MAX));
+const PREC_ANTES = VENTANA_ANTES;
+const PREC_TRAS = VENTANA_TRAS;
 /**
- * Señales del propio caso en la misma oración, que anulan la de precedente: los trámites del expediente propio ante la Corte
- * (selección, insistencia, nulidad, poder, remisión, pruebas, la providencia proferida en él).
+ * D-11, condición 1 · Otra providencia identificada con su número y su año: «T-074 de 2020», «SU-123 de 2020», «C-313/14»,
+ * «SC1234-2019», «Sentencia 123 de 2019», «Auto No. 95 de 2021». Sin `i`: el prefijo va en mayúscula y las palabras en minúscula,
+ * con inicial o en MAYÚSCULAS (la vista de MAYÚSCULAS). «Precedente», «cfr.», «véase», «citado» o «caso análogo» solos ya no bastan
+ * para descartar (PB-2-r7): son señales de cita, que dan la bandera. El expediente mismo no casa: lleva puntos o más de 4 cifras.
  */
-const PROPIO_ORACION = entreLetras(String.raw`(?:seleccion\p{L}*|insist\p{L}*|nulidad(?:es)?|apoderad[oa]s?|(?:otorg|confier|confer)\p{L}*[ ]+(?:el[ ]+)?poder|poder[ ]+(?:especial|amplio|general)|remit\p{L}*|remite|escog\p{L}*|decret\p{L}*|proferid[oa]s?|dentro[ ]+del[ ]+(?:presente[ ]+)?expediente)`);
-/** Rótulo del propio caso al inicio del renglón, antes del expediente en el mismo renglón: «Referencia: Acción de tutela. Expediente …». */
-const ROTULO_EN_LINEA = /^[ \t]*(?:(?:Referencia|Asunto|Radicad[oa]|Radicaci[oó]n|Proceso|Expediente)[ \t]*:|Ref\.|Exp\.)/iu;
+const DE_ANIO = R`[ ]+[Dd][Ee][Ll]?[ ]+(?:19|20)\d{2}`;
+const PROVIDENCIA_CORE = R`(?:(?:SU|T|C|A)[ ]?-[ ]?\d{1,4}[A-Z]?(?:${DE_ANIO}|[ ]*\/[ ]*(?:(?:19|20)\d{2}|\d{2}))|(?:SC|SL|SP|STC|STL|STP|AC|AL|AP|ATC|ATL|ATP|AHP|SU)\d{1,5}-(?:19|20)\d{2}|(?:[Ss]entencia|SENTENCIA|[Aa]uto|AUTO|[Pp]rovidencia|PROVIDENCIA|[Ff]allo|FALLO)[ ]+(?:(?:[Nn][ÚúUu](?:mero|MERO)|[Nn][Oo]\.?|[Nn][Rr][Oo]\.?)[ ]*)?\d{1,5}${DE_ANIO})`;
+/** Con `y`: se prueba en una posición, sobre todo el texto (las fronteras ven el carácter de al lado). */
+const PROVIDENCIA_Y = new RegExp(R`(?<![\p{L}\p{N}])${PROVIDENCIA_CORE}(?!\d)`, 'uy');
+const RAPIDA_PROVIDENCIA = new RegExp(PROVIDENCIA_CORE, 'gu');
 /**
- * Fin de oración: «.», «;», «!» o «?» seguido de un salto de línea o de blancos y algo que no es minúscula, o una línea en blanco.
- * Un salto de línea solo no corta (los PDF parten las oraciones). El punto de una abreviatura no corta.
+ * D-11, condición 2 · Señales del propio caso en la oración del expediente: los trámites del expediente propio (selección,
+ * insistencia, nulidad, desacato, temeridad, cumplimiento, poder, remisión, pruebas, «folio … del expediente», «al decidir el
+ * expediente», la providencia «proferida en» él) y el escrito propio («su propia tutela», «mi tutela», «a mi favor», «la Corte me
+ * amparó», «esta tutela», «se ordenó»). Anulan la de precedente y la de cita (B-70). Ante la duda se toma: detectar de más cuesta
+ * una decisión del revisor; de menos, un dato a la vista (D-11). La cola de letras va acotada (`L20`): cada intento mira un largo
+ * fijo, también en el índice, que reanuda en cada inicio.
  */
-const FIN_DE_ORACION = /[.;!?](?=[ \t]*\n|[ \t]+[^\p{Ll}\s])|\n[ \t]*\n/gu;
-const ABREVIATURA = /(?<![\p{L}])(?:\p{L}|cfr|vid|vr|sr|sra|srta|dr|dra|no|nro|n[úu]m|art|arts|inc|lit|num|par|exp|rad|ref|p[áa]g|pp|fl|fls|cap|ss|ltda|c[íi]a|corp|ib[íi]d|op|cit)$/iu;
+const L20 = R`\p{L}{0,20}`;
+const PROPIO_ORACION_CORE = R`(?:selecci[óo]n${L20}|insist${L20}|nulidad(?:es)?|desacatos?|temer${L20}|(?:in)?cumpl${L20}|apoderad[oa]s?|(?:otorg|confier|confer)${L20}[ ]+(?:el[ ]+)?poder|poder[ ]+(?:especial|amplio|general)|remit${L20}|remite|remisi[óo]n|escog${L20}|decret${L20}|pruebas|proferid[oa]s?|dentro[ ]+del[ ]+(?:presente[ ]+)?expediente|folios?|fls?\.|cuadernos?|cdno\.|(?:fall|decid|resolv)${L20}[ ]+(?:(?:el|este|dicho|del|al|su)[ ]+)?(?:expedientes?|exp\.)|propi[oa]s?[ ]+(?:tutela|acci[óo]n|demanda|solicitud|expediente|caso|proceso)|mis?[ ]+(?:tutela|acci[óo]n|demanda|solicitud|expediente|caso|proceso|favor)|(?:me|nos)[ ]+(?:ampar|conced|concedi|neg|tutel|proteg|reconoc|orden|otorg|favorec)${L20}|orden(?:[óo]|ad[oa]s?|aron)|las?[ ]+[óo]rden(?:es)?|esta[ ]+(?:tutela|acci[óo]n|demanda|solicitud))`;
+const PROPIO_ORACION_Y = new RegExp(R`(?<![\p{L}])${PROPIO_ORACION_CORE}(?![\p{L}])`, 'iuy');
+const RAPIDA_PROPIO_ORACION = new RegExp(PROPIO_ORACION_CORE, 'giu');
 
-function finesDeOracion(t: string): number[] {
-  const out: number[] = [];
-  for (const m of t.matchAll(FIN_DE_ORACION)) {
-    if (m[0] === '.' && ABREVIATURA.test(t.slice(Math.max(0, m.index - 6), m.index))) continue;
-    out.push(m.index + m[0].length);
+/**
+ * ¿Casa `re` (con `y`, sobre todo el texto) en alguna posición de [desde, hasta) y acaba antes de `hasta`? Con el índice de la vista
+ * (`xs`, los inicios de la versión sin fronteras), solo se prueba en esos inicios: si la completa casa en p, la rápida casa en p. Sin
+ * índice, en cada posición (las pruebas). Lo mismo en los dos casos, y cada intento mira un largo acotado.
+ */
+function casaEn(re: RegExp, texto: string, desde: number, hasta: number, xs: readonly number[] | undefined): boolean {
+  const aqui = (p: number): boolean => {
+    re.lastIndex = p;
+    const m = re.exec(texto);
+    return m !== null && re.lastIndex <= hasta;
+  };
+  if (xs === undefined) {
+    for (let p = desde; p < hasta; p++) if (aqui(p)) return true;
+    return false;
   }
-  return out;
+  for (let i = primero(xs, desde); i < xs.length && (xs[i] as number) < hasta; i++) if (aqui(xs[i] as number)) return true;
+  return false;
+}
+/**
+ * D-11, condición 2 · Rótulo del propio caso al inicio del renglón del expediente (antes de él) o del renglón anterior que no está
+ * en blanco: «Referencia: Acción de tutela. Expediente …», «Ref.:⏎T-9.000.001», «Expediente⏎T-…», «REF.: EXPEDIENTE⏎T-…». El
+ * rótulo con dos puntos, con punto («Ref.», «Exp.») o solo en su renglón.
+ */
+const ROTULO_LINEA = /^[ \t]*(?:(?:Referencia|Asunto|Radicad[oa]|Radicaci[oó]n|Proceso|Expediente)[ \t]*(?::|$)|Ref\.|Ref[ \t]*:|Exp\.)/iu;
+/** Hasta dónde se busca el inicio de un renglón (la ventana de 7.3.3): más allá, el rótulo no se ve y no cuenta. */
+const RENGLON_MAX = VENTANA_ANTES;
+
+/**
+ * A-1 (PB-2-r8) · Fin de oración. Ante la duda se corta, porque cortar de más solo hace que se tome de más.
+ * - «;», «!» y «?» cortan siempre.
+ * - «.» seguido de blancos (o de una comilla o un paréntesis que cierra) corta, salvo tras una abreviatura: ante una minúscula no
+ *   corta ninguna («Cfr. folio», «S.A. y la»), y ante una mayúscula, una cifra o un signo solo las que siempre llevan algo detrás
+ *   (`ABREV_FUERTE`: «Dr. Ejemplo», «No. 12», «M.P. Ana»). Una inicial, «S.A.» o «Ltda.» seguidos de mayúscula cortan.
+ * - Un salto de línea corta salvo que el renglón anterior acabe en una palabra o en coma y el siguiente empiece en minúscula o en
+ *   el expediente mismo (el PDF que parte la oración, C03). Un renglón sin minúsculas en un texto que sí las tiene es un título
+ *   («IV. PRECEDENTE APLICABLE») y corta. En un texto sin minúsculas (la vista de MAYÚSCULAS) la mayúscula cuenta como minúscula.
+ * - Una línea en blanco corta.
+ */
+const ABREV_FUERTE = /(?<![\p{L}])(?:cfr|vid|vr|sr|sra|srta|dr|dra|no|nro|n[úu]m|art|arts|inc|lit|num|par|p[áa]g|pp|fl|fls|cap|ss|exp|rad|ref|op|ib|ib[íi]d|m\.[ ]?p|c\.[ ]?p)$/iu;
+const ABREV_DEBIL = /(?<![\p{L}])(?:\p{L}|ltda|c[íi]a|corp|cit|etc)$/iu;
+/** «.», «;», «!», «?» o «\n». */
+const esCandidatoDeFin = (c: number): boolean => c === 46 || c === 59 || c === 33 || c === 63 || c === 10;
+const CIERRE = /[»"”’')\]]/u;
+const LETRA = /\p{L}/u;
+const MINUSCULA = /\p{Ll}/u;
+const esBlanco = (c: string): boolean => c === ' ' || c === '\t';
+
+/** ¿Corta la oración el carácter de `texto` en `p` («.», «;», «!», «?» o «\n»)? `ini`: inicio de la ventana; `start`: el expediente. */
+function cortaEn(texto: string, p: number, ini: number, start: number, sinMinusculas: boolean): boolean {
+  const ch = texto.charAt(p);
+  if (ch === ';' || ch === '!' || ch === '?') return true;
+  if (ch === '.') {
+    let q = p + 1;
+    while (q < texto.length && q < p + 4 && CIERRE.test(texto.charAt(q))) q++;
+    let k = q;
+    while (k < texto.length && k < q + 8 && esBlanco(texto.charAt(k))) k++;
+    // «S.A», «1.000», «www.x»: el punto pegado a lo que sigue no cierra nada.
+    if (k < texto.length && k === p + 1 && texto.charAt(k) !== '\n') return false;
+    if (k >= texto.length) return true;
+    const previo = texto.slice(Math.max(0, p - 6), p);
+    const fuerte = ABREV_FUERTE.test(previo);
+    const abreviatura = fuerte || ABREV_DEBIL.test(previo);
+    const sig = texto.charAt(k);
+    if (sig === '\n') return !abreviatura;   // tras una abreviatura decide el salto de línea
+    if (MINUSCULA.test(sig) && !sinMinusculas) return !abreviatura;
+    return !fuerte;
+  }
+  // Salto de línea.
+  let q = p + 1;
+  while (q < texto.length && q < p + 16 && esBlanco(texto.charAt(q))) q++;
+  if (q >= texto.length || texto.charAt(q) === '\n') return true;
+  const sig = texto.charAt(q);
+  const siguienteSigue = q === start || (LETRA.test(sig) && (MINUSCULA.test(sig) || sinMinusculas));
+  if (!siguienteSigue) return true;
+  let r = p - 1;
+  while (r >= ini && r > p - 16 && esBlanco(texto.charAt(r))) r--;
+  if (r < ini) return true;
+  const fin = texto.charAt(r);
+  if (fin === ',') return false;
+  if (!LETRA.test(fin)) return true;
+  if (sinMinusculas) return false;
+  // El renglón anterior, dentro de la ventana (B-62: nunca se recorre el texto fuera de ella).
+  const enVentana = texto.slice(ini, r + 1);
+  const renglon = enVentana.slice(enVentana.lastIndexOf('\n') + 1);
+  return !MINUSCULA.test(renglon);   // un renglón sin minúsculas es un título
+}
+
+/** Los bordes de la oración del expediente en [start, end), dentro de la ventana [a, b): [ini, start) y [end, fin). */
+function oracionDelExpediente(texto: string, start: number, end: number, a: number, b: number): { ini: number; fin: number } {
+  const sinMinusculas = !MINUSCULA.test(texto.slice(a, b));
+  // Desde el expediente hacia afuera, hasta el primer corte de cada lado, sin salir de la ventana (B-62).
+  let ini = a;
+  for (let p = start - 1; p >= a; p--) {
+    if (esCandidatoDeFin(texto.charCodeAt(p)) && cortaEn(texto, p, a, start, sinMinusculas)) { ini = p + 1; break; }
+  }
+  let fin = b;
+  for (let p = end; p < b; p++) {
+    if (esCandidatoDeFin(texto.charCodeAt(p)) && cortaEn(texto, p, a, start, sinMinusculas)) { fin = p; break; }
+  }
+  return { ini, fin };
 }
 
 /**
- * A-1 (PB-2-r7) · ¿El expediente en [start, end) de la vista `reglas` se cita como precedente? Solo con una señal explícita de
- * precedente en la misma oración y en una ventana acotada (`PRECEDENTE`, o «citado»/«reiterado» pegados al expediente), y sin
- * ninguna señal del propio caso: la de 7.3.3 (`CITA_PROPIO`), el rótulo justo antes (`OWN_CASE`), un rótulo al inicio del
- * renglón (`ROTULO_EN_LINEA`) o un trámite del propio expediente en la oración (`PROPIO_ORACION`). En cualquier otro caso el
- * expediente es del caso: R-RAD_ADMIN-03 lo toma, y si además hay contexto de cita (`esContextoDeCita`), con la bandera.
- * Ventanas fijas: tiempo lineal en el número de expedientes, también en un renglón largo.
+ * Inicio del renglón que contiene la posición `p` (el carácter tras el salto anterior), o -1 si está a más de `RENGLON_MAX`. El salto
+ * se busca solo en la ventana (B-62): un `lastIndexOf` sobre todo el texto sería cuadrático en un renglón largo.
+ */
+function inicioDeRenglon(texto: string, p: number): number {
+  const desde = Math.max(0, p - RENGLON_MAX);
+  const nl = texto.slice(desde, p).lastIndexOf('\n');
+  if (nl >= 0) return desde + nl + 1;
+  return desde === 0 ? 0 : -1;
+}
+
+/** ¿Un rótulo del propio caso al inicio del renglón del expediente, antes de él, o al inicio del renglón anterior que no está en blanco? */
+function rotuloPropio(texto: string, start: number): boolean {
+  const linea = inicioDeRenglon(texto, start);
+  if (linea < 0) return false;
+  if (ROTULO_LINEA.test(texto.slice(linea, start))) return true;
+  let finPrevio = linea - 1;
+  while (finPrevio >= 0 && start - finPrevio <= 2 * RENGLON_MAX) {
+    const ini = inicioDeRenglon(texto, finPrevio);
+    if (ini < 0) return false;
+    const renglon = texto.slice(ini, finPrevio);
+    if (renglon.trim() !== '') return ROTULO_LINEA.test(renglon);
+    finPrevio = ini - 1;
+  }
+  return false;
+}
+/**
+ * A-1 (PB-2-r7 y PB-2-r8) · ¿El expediente en [start, end) de la vista `reglas` se cita como otra providencia? Es la regla de D-11
+ * sin su tercera condición (la misma clave en otra mención sin cita, que necesita todo el documento: la aplica la tubería).
  */
 export function esPrecedenteCitado(texto: string, start: number, end: number): boolean {
   return contextoDelExpediente(texto, start, end) === 'precedente';
 }
 
 /**
- * R-RAD_ADMIN-03 (A-1 y B-62, PB-2-r7) · `precedente` si el expediente se cita como precedente (`esPrecedenteCitado`: no se toma),
- * `cita` si no y está en contexto de cita (`esContextoDeCita`: se toma con la bandera) y `null` en otro caso. Prueba `CITE_LEX`
- * una sola vez para las dos preguntas. Con `view`, usa el índice de la vista (`indiceDeCita`): la regla lo pide en cada expediente.
+ * R-RAD_ADMIN-03 (D-11; PB-2-r8: A-1, M-50 y B-70) · El contexto del expediente en [start, end) de la vista `reglas`:
+ * - `precedente` (no se toma) solo si, en la misma oración, va con **otra providencia identificada con su número y su año**
+ *   (`PROVIDENCIA`) y no hay **ninguna señal del propio caso**: la de 7.3.3 (`CITA_PROPIO`), el rótulo justo antes (`OWN_CASE`),
+ *   un rótulo al inicio de su renglón o del anterior (`rotuloPropio`), o un trámite o el escrito propio en la oración
+ *   (`PROPIO_ORACION`). La tercera condición de D-11 (la misma clave sin cita en otra mención del documento) la aplica la tubería.
+ * - `cita` (se toma, con la bandera) si está en contexto de cita (`esContextoDeCita`) y no hay ninguna señal del propio caso (B-70).
+ * - `null` (se toma) en otro caso.
+ * Ventanas fijas e índice de la vista (B-62 y B-72): solo se arma la oración si en la ventana empieza una providencia o una señal
+ * del propio caso. Tiempo lineal en el número de expedientes, también en un renglón largo. Sin `view` da lo mismo, sin el índice.
  */
 export function contextoDelExpediente(texto: string, start: number, end: number, view?: SearchView): 'precedente' | 'cita' | null {
   const ix = view === undefined || view.text !== texto ? undefined : indiceDeCita(view);
-  const antes = texto.slice(Math.max(0, start - PREC_ANTES), start);
-  const tras = texto.slice(end, end + PREC_TRAS);
-  const lexico = (posible(ix?.cita, start - PREC_ANTES, start, 0, 0) && CITE_LEX.test(antes))
-    || (posible(ix?.cita, end, end + PREC_TRAS, 0, 0) && CITE_LEX.test(tras));
-  const quizaPrecedente = ix === undefined ? lexico || ANALOGO.test(antes) || ANALOGO.test(tras)
-    : posible(ix.precedente, start - PREC_ANTES, start, end, end + PREC_TRAS);
-  if (quizaPrecedente && precedenteEnLaOracion(texto, start, end, antes, tras, ix)) return 'precedente';
-  return citaConLexico(texto, start, end, antes, lexico, ix) ? 'cita' : null;
-}
-
-function precedenteEnLaOracion(texto: string, start: number, end: number, antesV: string, trasV: string, ix: IndiceDeCita | undefined): boolean {
-  const fa = finesDeOracion(antesV);
-  const antes = antesV.slice(fa.length > 0 ? (fa[fa.length - 1] as number) : 0);
-  const ft = finesDeOracion(trasV);
-  const tras = trasV.slice(0, ft.length > 0 ? (ft[0] as number) : trasV.length);
-  const oracion = antes + ' ' + tras;
-  if (!PRECEDENTE.test(oracion) && !CITADO_TRAS.test(tras) && !citadoAntes(antes)) return false;
-  if (PROPIO_ORACION.test(oracion) || ROTULO_EN_LINEA.test(antesV.slice(antesV.lastIndexOf('\n') + 1))) return false;
-  if (posible(ix?.propio, start - VENTANA_ANTES, start, end, end + VENTANA_TRAS) && CITA_PROPIO.test(ventanaDeCita(texto, start, end))) return false;
-  return !OWN_CASE.test(antesV);
+  // R-CIT-01: `CITE_LEX` y `OWN_CASE` en 150 caracteres antes y 60 después.
+  const antes = texto.slice(Math.max(0, start - CITE_ANTES), start);
+  const lexico = (posible(ix?.cita, start - CITE_ANTES, start, 0, 0) && CITE_LEX.test(antes))
+    || (posible(ix?.cita, end, end + CITE_TRAS, 0, 0) && CITE_LEX.test(texto.slice(end, end + CITE_TRAS)));
+  // D-11: la oración, dentro de la ventana de 7.3.3 (250 caracteres antes y 120 después).
+  const a = Math.max(0, start - PREC_ANTES);
+  const b = Math.min(texto.length, end + PREC_TRAS);
+  const providencia = casaEn(PROVIDENCIA_Y, texto, a, start, ix?.providencia) || casaEn(PROVIDENCIA_Y, texto, end, b, ix?.providencia);
+  const cita = citaConLexico(texto, start, end, antes, lexico, ix);
+  if (!providencia && !cita) return null;
+  // Las señales del propio caso anulan las dos (D-11 y B-70). Con `cita`, `citaConLexico` ya vio que no hay `CITA_PROPIO` ni `OWN_CASE`.
+  if (!cita && (OWN_CASE.test(antes)
+    || (posible(ix?.propio, start - VENTANA_ANTES, start, end, end + VENTANA_TRAS) && CITA_PROPIO.test(ventanaDeCita(texto, start, end))))) return null;
+  if (rotuloPropio(texto, start)) return null;
+  const o = providencia || posible(ix?.propioOracion, a, start, end, b) ? oracionDelExpediente(texto, start, end, a, b) : null;
+  if (o === null) return cita ? 'cita' : null;
+  if (casaEn(PROPIO_ORACION_Y, texto, o.ini, start, ix?.propioOracion) || casaEn(PROPIO_ORACION_Y, texto, end, o.fin, ix?.propioOracion)) return null;
+  if (providencia && (casaEn(PROVIDENCIA_Y, texto, o.ini, start, ix?.providencia) || casaEn(PROVIDENCIA_Y, texto, end, o.fin, ix?.providencia))) return 'precedente';
+  return cita ? 'cita' : null;
 }

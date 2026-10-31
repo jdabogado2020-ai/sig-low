@@ -17,7 +17,7 @@ import { aplicarExclusiones, contextosDelModelo, exclusionDelModelo, finDeNormaA
 import type { ContextoDelModelo } from './rules/exclusiones.ts';
 import { rules as rFechas, consolidarFechasSinAnio } from './rules/fechas.ts';
 import { rules as rIds } from './rules/ids.ts';
-import { rules as rRadicado } from './rules/radicado.ts';
+import { expedienteCitadoConClave, rules as rRadicado } from './rules/radicado.ts';
 import { rules as rRotulados } from './rules/rotulados.ts';
 import { rules as rValores } from './rules/valores.ts';
 import { configurarDivipola, divipolaCodes } from './validators/radicado.ts';
@@ -461,14 +461,25 @@ function sugerenciasDelModelo(s: Session, p: Part, deGeneralize: readonly Sugges
 }
 
 /**
+ * D-11, condición 3, y B-70 (PB-2-r8; 7.3.3, la regla de la misma clave) · Las claves de los expedientes y radicados administrativos
+ * que alguna mención del documento trae: todas (`sinCita` false) o solo las que van sin contexto de cita (true), que son del caso.
+ */
+function clavesDeRadicadoAdmin(cands: readonly DetectionCandidate[], sinCita: boolean): Set<string> {
+  const out = new Set<string>();
+  for (const c of cands) if (c.type === 'RADICADO_ADMIN' && c.canonicalKey !== '' && !(sinCita && c.context === 'cita')) out.add(c.canonicalKey);
+  return out;
+}
+
+/**
  * A-1 (PB-2-r7; 7.3.3, alcance `RADICADO_ADMIN`) · El expediente de la Corte que R-RAD_ADMIN-03 toma en contexto de cita
  * (`context: 'cita'`) lleva la bandera `CITA_JURISPRUDENCIAL` vinculada, como el radicado citado (G-13 de generalize.ts, que solo
- * mira `RADICADO`): queda pendiente y el revisor decide si es una cita o el expediente del caso.
+ * mira `RADICADO`): queda pendiente y el revisor decide si es una cita o el expediente del caso. B-70 (PB-2-r8): si la misma clave
+ * aparece en otra mención del documento sin contexto de cita (`sinCita`), no hay bandera: es el expediente del caso (7.3.3).
  */
-function citasDeExpediente(p: Part, gens: readonly GenDetection[], ids: IdSource): Flag[] {
+function citasDeExpediente(p: Part, gens: readonly GenDetection[], ids: IdSource, sinCita: ReadonlySet<string>): Flag[] {
   const out: Flag[] = [];
   for (const g of gens) {
-    if (g.type !== 'RADICADO_ADMIN' || g.context !== 'cita' || g.id === undefined) continue;
+    if (g.type !== 'RADICADO_ADMIN' || g.context !== 'cita' || g.id === undefined || sinCita.has(g.canonicalKey)) continue;
     out.push({ id: ids.next('flg') as FlagId, type: 'CITA_JURISPRUDENCIAL', span: { partId: p.id, start: g.start, end: g.end },
       text: p.text.slice(g.start, g.end), reason: 'RADICADO_EN_CITA', detectionId: g.id, options: [], acknowledged: false });
   }
@@ -491,6 +502,7 @@ function construir(s: Session, cambiadas: ReadonlySet<PartId>): FullSet {
   const porTramo = new Map(pasada1.detections.map((d) => [spanKey(d), d]));
   const sugerencias: Suggestion[] = [];
   const banderas: Flag[] = [...s.modelFlags];
+  const sinCita = clavesDeRadicadoAdmin(todos, true);
   for (const p of s.parts) {
     const view = buildSearchView(p.text, 'reglas', p.kind);
     const gens: GenDetection[] = [];
@@ -507,7 +519,7 @@ function construir(s: Session, cambiadas: ReadonlySet<PartId>): FullSet {
     const r: GeneralizeResult = generalize({ part: p, view, detections: gens, options: { referenceDate: s.options.referenceDate as IsoDate },
       docDepCodes: s.docDeps.get(p.id) ?? [], ids: s.ids });
     sugerencias.push(...r.suggestions, ...sugerenciasDelModelo(s, p, r.suggestions));
-    banderas.push(...r.flags, ...citasDeExpediente(p, gens, s.ids));
+    banderas.push(...r.flags, ...citasDeExpediente(p, gens, s.ids, sinCita));
   }
   const pasada2 = buildDetectionSet(doc, todos, { ...ctx, ids: replayIds(rec.log, s.ids), suggestions: sugerencias, flags: banderas });
   return pasada2;
@@ -610,13 +622,27 @@ export function createDetectHandler(deps: DetectDeps = {}): DetectHandler {
 
       // Catálogo A y lugares (notas 2 y 3)
       const reglas: DetectionCandidate[][] = [];
+      const vistas: SearchView[] = [];
       for (let i = 0; i < parts.length; i++) {
         const part = parts[i] as Part;
         const view: SearchView = buildSearchView(part.text, 'reglas', part.kind);
+        vistas.push(view);
         // PA-7: las exclusiones corren después de las reglas, sobre la misma vista, y solo tocan candidatos de regla.
         reglas.push(aplicarExclusiones(view, runRules(view, part.id, ALL_RULES, refYear, maxMs === undefined ? {} : { maxMsPerRule: maxMs })));
         progreso('reglas', i + 1, parts.length);
         if (await cooperar()) { post({ v: 1, reqId, kind: 'cancelado' }); return; }
+      }
+      // D-11, condición 3 (PB-2-r8; 7.3.3): el expediente citado con otra providencia sí se toma si su clave aparece en otra mención
+      // del documento, en cualquier parte. D-11 dice «sin cita»; aquí basta que la otra mención se tome, también con contexto de cita
+      // (una sola clave no puede quedar a la vista en una mención y reemplazada en otra: la búsqueda de residuos lo bloquearía).
+      const tomadas = clavesDeRadicadoAdmin(reglas.flat(), false);
+      if (tomadas.size > 0) {
+        const regla = expedienteCitadoConClave(tomadas);
+        for (let i = 0; i < parts.length; i++) {
+          const view = vistas[i] as SearchView;
+          const extra = aplicarExclusiones(view, runRules(view, (parts[i] as Part).id, [regla], refYear, maxMs === undefined ? {} : { maxMsPerRule: maxMs }));
+          if (extra.length > 0) reglas[i] = [...(reglas[i] as DetectionCandidate[]), ...extra];
+        }
       }
       // PA-6: una fecha sin año toma la clave de la única fecha completa del mismo día y mes en todo el documento.
       const planas = consolidarFechasSinAnio(reglas.flat());

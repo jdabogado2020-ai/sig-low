@@ -644,23 +644,246 @@
     {
       "texto": "CLÁUSULA QUINTA. CONFIDENCIALIDAD. El contratista guardará reserva sobre la información de sus clientes, incluido el expediente T-8.100.002 citado como ejemplo.",
       "reglas": ["R-RAD_ADMIN-03"],
-      "negativo": true,
-      "esperado": [],
-      "nota": "PB-2-r7 (A-1): negativa del desarrollo con «citado» pegado (forma de C18)"
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-8.100.002", "ruleId": "R-RAD_ADMIN-03", "confidence": "media", "canonicalKey": "RAD:T8100002" }],
+      "nota": "PB-2-r8 (D-11): la décima negativa del desarrollo (forma de C18) no cita otra providencia con número y año: se toma, con la bandera (en -r7, negativo)"
     },
     {
       "texto": "Cfr. expediente T-9.000.003.",
       "reglas": ["R-RAD_ADMIN-03"],
-      "negativo": true,
-      "esperado": [],
-      "nota": "PB-2-r7 (A-1): «cfr.»"
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.003", "confidence": "media" }],
+      "nota": "PB-2-r8 (D-11): «cfr.» sin otra providencia se toma, con la bandera (en -r7, negativo)"
     },
     {
       "texto": "Así lo dijo la Corte en la sentencia T-074 de 2020, expediente T-9.000.004.",
       "reglas": ["R-RAD_ADMIN-03"],
       "negativo": true,
       "esperado": [],
-      "nota": "PB-2-r7 (A-1): «en la sentencia T-…» que remite a otra"
+      "nota": "PB-2-r7 (A-1) y D-11: otra providencia con número y año en la misma oración"
+    },
+    {
+      "texto": "El mismo criterio se aplicó en el expediente T-9.000.004, que dio lugar a la T-456 de 2020.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r8 (D-11): «que dio lugar a la T-456 de 2020», la providencia después"
+    },
+    {
+      "texto": "Ver la Sentencia SU-508/20 (expediente T-9.000.004), sobre la integralidad.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r8 (D-11): providencia con el año tras la barra"
+    },
+    {
+      "texto": "COMO PRECEDENTE INVOCO LA SENTENCIA T-074 DE 2020 Y, EN PARTICULAR, EL EXPEDIENTE\nT-9.000.004, DONDE SE AMPARÓ UN CASO ANÁLOGO.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r8 (D-11): la forma de C03 en MAYÚSCULAS; sin minúsculas, el salto tras una palabra no corta"
+    },
+    {
+      "texto": "Ref.:\nT-9.000.001\nAsunto: desconocimiento del precedente",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "baja" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7): el rótulo en el renglón anterior"
+    },
+    {
+      "texto": "Referencia:\nT-9.000.001\nAsunto: Desconocimiento del precedente constitucional",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "baja" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7)"
+    },
+    {
+      "texto": "Expediente\nT-9.000.001\nTema: precedente sobre la cobertura de tratamientos",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7): el rótulo solo en su renglón"
+    },
+    {
+      "texto": "REF.:\nEXPEDIENTE:\nT-9.000.001\nASUNTO: DESCONOCIMIENTO DEL PRECEDENTE",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7): en MAYÚSCULAS"
+    },
+    {
+      "texto": "Ref.: Expediente\nT-9.000.001 · desconocimiento del precedente",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7)"
+    },
+    {
+      "texto": "V. DESCONOCIMIENTO DEL PRECEDENTE\nLa Sala Novena, al fallar el expediente T-9.000.001, negó el amparo.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7): un título sin punto"
+    },
+    {
+      "texto": "IV. PRECEDENTE APLICABLE\nLa accionante interpuso tutela en el expediente T-9.000.001 contra Ejemplo EPS.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7): un título, cada párrafo de un .docx en su renglón"
+    },
+    {
+      "texto": "Como precedente invoco la Sentencia T-074 de 2020 contra Comercial Ejemplo S.A. La accionante actuó en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7): «S.A.» ante mayúscula cierra la oración"
+    },
+    {
+      "texto": "Como precedente invoco la Sentencia T-074 de 2020, con ponencia del Dr. Ejemplo\nLa accionante actuó en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7): el salto sin signo ante mayúscula"
+    },
+    {
+      "texto": "Como precedente invoco la Sentencia T-074 de 2020, M.P. Ana Ejemplo R. La accionante actuó en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7): una inicial ante mayúscula cierra la oración"
+    },
+    {
+      "texto": "Como precedente invoco la Sentencia T-074 de 2020. el expediente T-9.000.001 corresponde a mi tutela.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (A-1, S2 de -r7): el punto ante minúscula"
+    },
+    {
+      "texto": "En la sentencia T-123 de 2026, expediente T-9.000.001, la Corte me amparó el derecho a la salud.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (M-50, S2 de -r7): desacato o cumplimiento; «me amparó»"
+    },
+    {
+      "texto": "Tal como se ordenó en la sentencia T-123 de 2026 (expediente T-9.000.001), la EPS debe autorizar el procedimiento.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (M-50, S2 de -r7): cumplimiento; «se ordenó»"
+    },
+    {
+      "texto": "La Sala Novena desconoció el precedente de la Sentencia SU-123 de 2020 al decidir el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (M-50, S2 de -r7): nulidad; «al decidir el expediente»"
+    },
+    {
+      "texto": "LA SALA NOVENA DESCONOCIÓ EL PRECEDENTE DE LA SENTENCIA SU-123 DE 2020 AL DECIDIR EL EXPEDIENTE T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (M-50, S2 de -r7): en MAYÚSCULAS"
+    },
+    {
+      "texto": "Esta tutela no es temeraria: la anterior, expediente T-9.000.001, como lo reconoce el precedente de la Corte, se fundó en otros hechos.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (M-50, S2 de -r7): temeridad"
+    },
+    {
+      "texto": "Cfr. folio 12 del cuaderno principal del expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (M-50, S2 de -r7): nota de la sentencia del caso"
+    },
+    {
+      "texto": "Véase el escrito de tutela, expediente T-9.000.001, folio 2.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (M-50, S2 de -r7)"
+    },
+    {
+      "texto": "La accionante invoca como precedente su propia tutela, expediente T-9.000.001, que fue amparada.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (M-50, S2 de -r7): «su propia tutela»"
+    },
+    {
+      "texto": "Como precedente invoco la Sentencia T-074 de 2020; la accionante actuó en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (M-50, S2 de -r7): «;» cierra la oración"
+    },
+    {
+      "texto": "Solicito abrir incidente de desacato por el incumplimiento de la sentencia T-123 de 2026, proferida dentro del expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba): desacato"
+    },
+    {
+      "texto": "La EPS no ha cumplido la orden dada en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba): cumplimiento"
+    },
+    {
+      "texto": "En el expediente T-9.000.001 la Corte amparó a la accionante; la EPS incumplió y por eso promuevo el desacato.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba)"
+    },
+    {
+      "texto": "Pido el cumplimiento del fallo dictado en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba)"
+    },
+    {
+      "texto": "Por desconocimiento del precedente, la accionante insiste en la selección del expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba): insistencia"
+    },
+    {
+      "texto": "Por desconocimiento del precedente constitucional, insisto en que se revise el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba)"
+    },
+    {
+      "texto": "POR DESCONOCIMIENTO DEL PRECEDENTE, LA ACCIONANTE INSISTE EN LA SELECCIÓN DEL EXPEDIENTE T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba): en MAYÚSCULAS"
+    },
+    {
+      "texto": "Ref.\nExpediente T-9.000.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba)"
+    },
+    {
+      "texto": "Expediente: T-9.000.001\nAsunto: desconocimiento del precedente",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba)"
+    },
+    {
+      "texto": "SEÑORES\nCORTE CONSTITUCIONAL\nREFERENCIA: EXPEDIENTE T-9.000.001\nASUNTO: INSISTENCIA",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba): encabezado en MAYÚSCULAS"
+    },
+    {
+      "texto": "HONORABLES MAGISTRADOS\nREF.: EXPEDIENTE T-9.000.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba)"
+    },
+    {
+      "texto": "Como precedente invoco la Sentencia T-074 de 2020. La accionante actuó en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba): la providencia en la oración anterior"
+    },
+    {
+      "texto": "La accionante actuó en el expediente T-9.000.001. Como precedente invoco la Sentencia T-074 de 2020.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba): la providencia en la oración siguiente"
+    },
+    {
+      "texto": "¡Como precedente invoco la Sentencia T-074 de 2020! La accionante actuó en el expediente T-9.000.001.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r8 (S2 de -r7, ya se tomaba): «!»"
     },
     {
       "texto": "Expediente D-99.001",

@@ -751,16 +751,20 @@ describe('T-MO-12 · A-1 y M-40 de la P0-6a de PB-2-r6: el expediente propio y l
     expect(render(doc, estadoDe(doc, set)).sections[0]!.text.includes('9.000.001')).toBe(false);
   });
 
-  it('A-1 el expediente propio junto a la Corte lleva la bandera (contexto de cita sin señal de precedente); el rótulo justo antes no', async () => {
-    const { set } = await detectarCon(PROPIOS[0] as string);
+  it('A-1 el expediente junto a la Corte, sin señal del propio caso, lleva la bandera; con el rótulo del renglón (B-70, PB-2-r8) o justo antes, no', async () => {
+    const { set } = await detectarCon('Honorables Magistrados de la Corte Constitucional: en el expediente T-9.000.001 se discute la cobertura.');
     const d = set.detections.find((x) => x.text === 'T-9.000.001');
     expect(set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL').map((f) => f.detectionId)).toEqual([d?.id]);
+    // B-70 (PB-2-r8): el encabezado propio («Referencia: Expediente …» tras la Corte) ya no lleva la bandera; en -r7 la llevaba.
+    const encabezado = await detectarCon(PROPIOS[0] as string);
+    expect(encabezado.set.detections.map((x) => x.type)).toEqual(['RADICADO_ADMIN']);
+    expect(encabezado.set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL')).toEqual([]);
     const solo = await detectarCon('Expediente: T-9.000.001');
     expect(solo.set.detections.map((x) => x.type)).toEqual(['RADICADO_ADMIN']);
     expect(solo.set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL')).toEqual([]);
   });
 
-  it('A-1 las 10 negativas del desarrollo (expediente citado como precedente) no se toman; con un trámite del propio caso en la oración, sí', async () => {
+  it('A-1 las 9 negativas del desarrollo con otra providencia de número y año (D-11) no se toman; con un trámite del propio caso en la oración, sí', async () => {
     const previa = 'El artículo 49 de la Constitución Política y la Ley 1751 de 2015 garantizan el acceso oportuno; además, la Ley 1122 de 2007 regula el trámite de las peticiones.';
     const citas: Array<[string, string]> = [
       ['C-313 de 2014', 'T-9.000.001'], ['T-259 de 2019', 'T-9.000.001'], ['T-074 de 2020', 'T-9.000.004'], ['C-089 de 2011', 'T-9.000.004'],
@@ -771,7 +775,7 @@ describe('T-MO-12 · A-1 y M-40 de la P0-6a de PB-2-r6: el expediente propio y l
       // C03: el PDF parte la oración antes del expediente.
       `${previa}\nComo precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente\nT-9.000.004, donde se amparó un caso análogo.\nPRETENSIONES`,
       `${previa}\n\nComo precedente invoco la Sentencia T-121 de 2015 y, en particular, el expediente\nT-9.000.004, donde se amparó un caso análogo.\n\nPRETENSIONES`,
-      'CLÁUSULA QUINTA. CONFIDENCIALIDAD. El contratista guardará reserva sobre la información de sus clientes, incluido el expediente T-8.100.002 citado como ejemplo.',
+      // La décima (C18, «incluido el expediente T-8.100.002 citado como ejemplo») no cita otra providencia: con D-11 se toma (PB-2-r8).
     ];
     for (const T of negativos) {
       const { set } = await detectarCon(T);
@@ -814,6 +818,174 @@ describe('T-MO-12 · A-1 y M-40 de la P0-6a de PB-2-r6: el expediente propio y l
     // La norma sola sigue fuera (negativos del desarrollo): «Constitución Política», «Código Civil», «Código General del Proceso».
     const tn = 'el artículo 49 de la Constitución Política, el artículo 1546 del Código Civil y el artículo 90 del Código General del Proceso.';
     const neg = candidatesFromNer(['Constitución Política', 'Código Civil', 'Código General del Proceso'].map((x) => tramo(tn, x, 'ORG', 0.95)),
+      { part: documento([tn]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    expect(neg.candidates).toEqual([]);
+  });
+});
+
+describe('T-MO-12 · D-11: el expediente propio nunca queda a la vista (A-1, M-50, B-70 y B-71 de la P0-6a de PB-2-r7; PB-2-r8)', () => {
+  async function detectarCon(...textos: string[]) {
+    const doc = documento(textos);
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await banco().enviar('detectar', { sessionId: 'ses_1', doc, caseList: [], table: TABLA, options: OPCIONES }));
+    return { doc, set: det.set };
+  }
+  const salida = (doc: DocumentModel, set: DetectionSet): string => render(doc, estadoDe(doc, set)).sections.map((s) => s.text).join('\n');
+  const citas = (set: DetectionSet): DetectionSet['flags'] => set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL');
+
+  /** A-1 · Los 11 contextos de S2 con la oración mal cortada o el rótulo en el renglón anterior (en -r7, sin detección ni bandera). */
+  const A1: readonly string[] = [
+    'Ref.:\nT-9.000.001\nAsunto: desconocimiento del precedente',
+    'Referencia:\nT-9.000.001\nAsunto: Desconocimiento del precedente constitucional',
+    'Expediente\nT-9.000.001\nTema: precedente sobre la cobertura de tratamientos',
+    'REF.:\nEXPEDIENTE:\nT-9.000.001\nASUNTO: DESCONOCIMIENTO DEL PRECEDENTE',
+    'Ref.: Expediente\nT-9.000.001 · desconocimiento del precedente',
+    'V. DESCONOCIMIENTO DEL PRECEDENTE\nLa Sala Novena, al fallar el expediente T-9.000.001, negó el amparo.',
+    'IV. PRECEDENTE APLICABLE\nLa accionante interpuso tutela en el expediente T-9.000.001 contra Ejemplo EPS.',
+    'Como precedente invoco la Sentencia T-074 de 2020 contra Comercial Ejemplo S.A. La accionante actuó en el expediente T-9.000.001.',
+    'Como precedente invoco la Sentencia T-074 de 2020, con ponencia del Dr. Ejemplo\nLa accionante actuó en el expediente T-9.000.001.',
+    'Como precedente invoco la Sentencia T-074 de 2020, M.P. Ana Ejemplo R. La accionante actuó en el expediente T-9.000.001.',
+    'Como precedente invoco la Sentencia T-074 de 2020. el expediente T-9.000.001 corresponde a mi tutela.',
+  ];
+  /** M-50 · Los 9 contextos de S2 con la señal en la misma oración (en -r7, sin detección ni bandera). */
+  const M50: readonly string[] = [
+    'En la sentencia T-123 de 2026, expediente T-9.000.001, la Corte me amparó el derecho a la salud.',
+    'Tal como se ordenó en la sentencia T-123 de 2026 (expediente T-9.000.001), la EPS debe autorizar el procedimiento.',
+    'La Sala Novena desconoció el precedente de la Sentencia SU-123 de 2020 al decidir el expediente T-9.000.001.',
+    'LA SALA NOVENA DESCONOCIÓ EL PRECEDENTE DE LA SENTENCIA SU-123 DE 2020 AL DECIDIR EL EXPEDIENTE T-9.000.001.',
+    'Esta tutela no es temeraria: la anterior, expediente T-9.000.001, como lo reconoce el precedente de la Corte, se fundó en otros hechos.',
+    'Cfr. folio 12 del cuaderno principal del expediente T-9.000.001.',
+    'Véase el escrito de tutela, expediente T-9.000.001, folio 2.',
+    'La accionante invoca como precedente su propia tutela, expediente T-9.000.001, que fue amparada.',
+    'Como precedente invoco la Sentencia T-074 de 2020; la accionante actuó en el expediente T-9.000.001.',
+  ];
+  /** Los 14 contextos de S2 que -r7 ya tomaba: siguen tomándose. */
+  const BIEN: readonly string[] = [
+    'Solicito abrir incidente de desacato por el incumplimiento de la sentencia T-123 de 2026, proferida dentro del expediente T-9.000.001.',
+    'La EPS no ha cumplido la orden dada en el expediente T-9.000.001.',
+    'En el expediente T-9.000.001 la Corte amparó a la accionante; la EPS incumplió y por eso promuevo el desacato.',
+    'Pido el cumplimiento del fallo dictado en el expediente T-9.000.001.',
+    'Por desconocimiento del precedente, la accionante insiste en la selección del expediente T-9.000.001.',
+    'Por desconocimiento del precedente constitucional, insisto en que se revise el expediente T-9.000.001.',
+    'POR DESCONOCIMIENTO DEL PRECEDENTE, LA ACCIONANTE INSISTE EN LA SELECCIÓN DEL EXPEDIENTE T-9.000.001.',
+    'Ref.\nExpediente T-9.000.001',
+    'Expediente: T-9.000.001\nAsunto: desconocimiento del precedente',
+    'SEÑORES\nCORTE CONSTITUCIONAL\nREFERENCIA: EXPEDIENTE T-9.000.001\nASUNTO: INSISTENCIA',
+    'HONORABLES MAGISTRADOS\nREF.: EXPEDIENTE T-9.000.001',
+    'Como precedente invoco la Sentencia T-074 de 2020. La accionante actuó en el expediente T-9.000.001.',
+    'La accionante actuó en el expediente T-9.000.001. Como precedente invoco la Sentencia T-074 de 2020.',
+    '¡Como precedente invoco la Sentencia T-074 de 2020! La accionante actuó en el expediente T-9.000.001.',
+  ];
+  const casos = [...A1.map((t, i) => ['A-1', i + 1, t] as const), ...M50.map((t, i) => ['M-50', i + 1, t] as const),
+    ...BIEN.map((t, i) => ['S2 tomado en -r7', i + 1, t] as const)];
+
+  it('los 34 contextos de S2: 11 de A-1, 9 de M-50 y 14 que ya se tomaban', () => {
+    expect([A1.length, M50.length, BIEN.length]).toEqual([11, 9, 14]);
+  });
+
+  it.each(casos)('%s, contexto %i: el expediente propio se toma y no queda a la vista', async (_h, _n, T) => {
+    const { doc, set } = await detectarCon(T);
+    const exps = set.detections.filter((d) => d.text === 'T-9.000.001');
+    // Con el código de -r7, A-1 y M-50 quedaban sin detección ni bandera, con el número en la salida.
+    expect(exps.length).toBe(1);
+    expect(exps[0]).toMatchObject({ type: 'RADICADO_ADMIN', status: 'pendiente' });
+    expect(salida(doc, set).includes('9.000.001')).toBe(false);
+    expect(citas(set).length).toBeLessThanOrEqual(1);
+  });
+
+  it('D-11 · las negativas con otra providencia de número y año en la oración no se toman (las 2 del desarrollo, C03 partida y los ejemplos de D-11), también en MAYÚSCULAS', async () => {
+    for (const T of [
+      'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004, donde se amparó un caso análogo.',
+      'Como precedente invoco la Sentencia C-313 de 2014 y, en particular, el expediente T-9.000.004, donde se amparó un caso análogo.',
+      'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente\nT-9.000.004, donde se amparó un caso análogo.',
+      'COMO PRECEDENTE INVOCO LA SENTENCIA T-074 DE 2020 Y, EN PARTICULAR, EL EXPEDIENTE\nT-9.000.004, DONDE SE AMPARÓ UN CASO ANÁLOGO.',
+      'Así lo resolvió la Corte en la sentencia T-123 de 2019, expediente T-9.000.004.',
+      'El mismo criterio se aplicó en el expediente T-9.000.004, que dio lugar a la T-456 de 2020.',
+      'Cfr. Corte Constitucional, Sentencia T-760 de 2008, M.P. Ana Ficticia Rojas, expediente T-9.000.004.',
+      'Ver la Sentencia SU-508/20 (expediente T-9.000.004), sobre la integralidad.',
+    ]) {
+      const { set } = await detectarCon(T);
+      expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text), T).toEqual([]);
+    }
+  });
+
+  it('D-11 · sin otra providencia de número y año, el expediente citado se toma, con la bandera si hay señal de cita: «citado como ejemplo» (C18), «Cfr.», «véase», «caso análogo»', async () => {
+    for (const [T, bandera] of [
+      ['CLÁUSULA QUINTA. CONFIDENCIALIDAD. El contratista guardará reserva sobre la información de sus clientes, incluido el expediente T-8.100.002 citado como ejemplo.', true],
+      ['Cfr. expediente T-8.100.002.', true],
+      ['Véase también el expediente T-8.100.002.', true],
+      ['Como precedente, véase la sentencia T-1 y el expediente T-8.100.002.', true],
+      // «caso análogo» no es una señal de cita de 7.3.3: se toma sin bandera.
+      ['En el expediente T-8.100.002 se resolvió un caso análogo.', false],
+    ] as const) {
+      const { set } = await detectarCon(T);
+      const d = set.detections.find((x) => x.text === 'T-8.100.002');
+      // Con el código de -r7 no se tomaban.
+      expect(d?.type, T).toBe('RADICADO_ADMIN');
+      expect(citas(set).map((f) => f.detectionId), T).toEqual(bandera ? [d?.id] : []);
+    }
+  });
+
+  it('D-11 condición 3 · la misma clave en otra mención que se toma (en la misma parte o en otra): el expediente citado se toma; sin bandera si la otra va sin cita (B-70)', async () => {
+    const cita = 'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.';
+    // Con un renglón de por medio, para que el rótulo no sea el del renglón anterior (otra señal del propio caso).
+    for (const [textos, banderas] of [
+      [[`Expediente: T-9.000.001\nI. HECHOS\n${cita}`], 0],
+      [['Referencia: Expediente T-9.000.001', cita], 0],
+      [[cita, 'Expediente: T-9.000.001'], 0],
+      // La otra mención va en contexto de cita («T-074» en los 150 caracteres de antes, R-CIT-01): las dos se toman, con su bandera.
+      [[`${cita}\nII. PRETENSIONES\nSe ampare el derecho en el expediente T-9.000.001.`], 2],
+    ] as const) {
+      const { doc, set } = await detectarCon(...textos);
+      const exps = set.detections.filter((d) => d.text === 'T-9.000.001');
+      // Con el código de -r7, la mención citada quedaba sin detección.
+      expect(exps.length, textos.join(' | ')).toBe(2);
+      expect(new Set(exps.map((d) => d.entityId)).size).toBe(1);
+      expect(citas(set).length, textos.join(' | ')).toBe(banderas);
+      expect(salida(doc, set).includes('9.000.001')).toBe(false);
+    }
+    // Control: otra clave en la otra mención no la rescata.
+    for (const textos of [[`Expediente: T-9.000.002\nI. HECHOS\n${cita}`], ['Referencia: Expediente T-9.000.002', cita]]) {
+      const { set } = await detectarCon(...textos);
+      expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text)).toEqual(['T-9.000.002']);
+    }
+  });
+
+  it('B-70 · la bandera no cae sobre el expediente con una señal del propio caso: rótulo del renglón o del anterior, trámite o la misma clave sin cita', async () => {
+    for (const T of [
+      'Señores\nCORTE CONSTITUCIONAL\nReferencia: Expediente T-9.000.001',
+      'Honorables Magistrados\nCORTE CONSTITUCIONAL\nRef.: expediente T-9.000.001',
+      'Señores\nCORTE CONSTITUCIONAL\nReferencia:\nT-9.000.001',
+      'SOLICITO A LA CORTE CONSTITUCIONAL SELECCIONAR PARA REVISIÓN EL EXPEDIENTE T-9.000.001.',
+      'El Tribunal Superior de Ejemplo remitió a la Corte el expediente T-9.000.001 para su eventual revisión.',
+      'Expediente: T-9.000.001\nSeñores Magistrados de la Corte Constitucional: en el expediente T-9.000.001 se discute la cobertura.',
+    ]) {
+      const { set } = await detectarCon(T);
+      const exps = set.detections.filter((d) => d.text === 'T-9.000.001');
+      expect(exps.length, T).toBe((T.match(/T-9\.000\.001/gu) ?? []).length);
+      // Con el código de -r7, cada uno llevaba CITA_JURISPRUDENCIAL; con «mantener», el número quedaba a la vista.
+      expect(citas(set), T).toEqual([]);
+    }
+  });
+
+  it('B-71 · las palabras de la lista de complementos que también son nombres van con el resto del tramo: no quedan a la vista; la norma sola se sigue descartando', () => {
+    const casos: Array<[string, string, string, 'ORG' | 'PER']> = [
+      ['el artículo 12 del Código de Ética de Protección Ejemplo S.A.S. dispone', 'Código de Ética de Protección Ejemplo S.A.S.', 'EMPRESA:Protección Ejemplo S.A.S.', 'ORG'],
+      ['el artículo 8 de la Convención Colectiva de Colombiana de Ejemplo S.A. dispone', 'Convención Colectiva de Colombiana de Ejemplo S.A.', 'EMPRESA:Colombiana de Ejemplo S.A.', 'ORG'],
+      ['según el artículo 1546 del Código Civil Tránsito Ejemplo Gómez reclamó', 'Código Civil Tránsito Ejemplo Gómez', 'PERSONA:Tránsito Ejemplo Gómez', 'PER'],
+      ['el artículo 64 del Código Sustantivo del Trabajo Seguridad Ejemplo Ltda. dispone', 'Código Sustantivo del Trabajo Seguridad Ejemplo Ltda.', 'EMPRESA:Seguridad Ejemplo Ltda.', 'ORG'],
+      ['el artículo 5 del Código de la Infancia y la Adolescencia Familia Ejemplo S.A.S. dispone', 'Código de la Infancia y la Adolescencia Familia Ejemplo S.A.S.', 'EMPRESA:Familia Ejemplo S.A.S.', 'ORG'],
+      ['EL ARTÍCULO 3 DEL ESTATUTO NACIONAL DE EJEMPLO S.A. DISPONE', 'ESTATUTO NACIONAL DE EJEMPLO S.A.', 'EMPRESA:NACIONAL DE EJEMPLO S.A.', 'ORG'],
+      ['el artículo 7 del Código de Ética de Nacional Ejemplo S.A. dispone', 'Código de Ética de Nacional Ejemplo S.A.', 'EMPRESA:Nacional Ejemplo S.A.', 'ORG'],
+      ['según el artículo 131 del Código Nacional de Tránsito Terrestre Pedro Ejemplo Gómez pagó', 'Código Nacional de Tránsito Terrestre Pedro Ejemplo Gómez', 'PERSONA:Pedro Ejemplo Gómez', 'PER'],
+    ];
+    for (const [t, sub, esperado, label] of casos) {
+      const conv = candidatesFromNer([tramo(t, sub, label, 0.95)], { part: documento([t]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+      // Con el código de -r7, «Protección», «Colombiana de», «Tránsito», «Seguridad», «Familia», «NACIONAL DE» y «Nacional» quedaban fuera.
+      expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}`), t).toEqual([esperado]);
+    }
+    // La norma sola, con sus complementos ambiguos dentro, sigue fuera.
+    const tn = 'según el artículo 131 del Código Nacional de Tránsito Terrestre, el artículo 90 del Código General del Proceso y el artículo 2 del Estatuto Nacional.';
+    const neg = candidatesFromNer(['Código Nacional de Tránsito Terrestre', 'Código General del Proceso', 'Estatuto Nacional'].map((x) => tramo(tn, x, 'ORG', 0.95)),
       { part: documento([tn]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
     expect(neg.candidates).toEqual([]);
   });

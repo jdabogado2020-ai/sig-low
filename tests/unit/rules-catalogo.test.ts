@@ -572,31 +572,78 @@ describe('T-MO-01 · M-40 (PB-2-r7): el objeto de la cita de artículo es el nom
   });
 });
 
-describe('T-MO-01 · A-1 (PB-2-r7): R-RAD_ADMIN-03 solo descarta el expediente con una señal explícita de precedente en la oración', () => {
+describe('T-MO-01 · A-1 (PB-2-r7 y PB-2-r8, D-11): R-RAD_ADMIN-03 solo descarta el expediente citado con otra providencia en la oración y sin señal del propio caso', () => {
   const ctx = (t: string, sub = 'T-9.000.001'): ReturnType<typeof contextoDelExpediente> => {
     const v = buildSearchView(t, 'reglas', 'cuerpo');
     const s = v.text.indexOf(sub);
     return contextoDelExpediente(v.text, s, s + sub.length, v);
   };
-  it('señales de precedente en la misma oración: «precedente», «cfr.», «véase», «caso análogo», «en la sentencia T-…» y «citado» pegado', () => {
+  it('D-11 (PB-2-r8): precedente solo con otra providencia de número y año en la misma oración, antes o después', () => {
     for (const t of [
       'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.',
-      'Cfr. expediente T-9.000.001.',
-      'Véase también el expediente T-9.000.001.',
-      'En el expediente T-9.000.001 se resolvió un caso análogo.',
       'Así lo dijo la Corte en la sentencia T-074 de 2020, expediente T-9.000.001.',
-      'El contratista guardará reserva, incluido el expediente T-9.000.001 citado como ejemplo.',
-      'Se examinó el citado expediente T-9.000.001.',
+      'El mismo criterio se aplicó en el expediente T-9.000.001, que dio lugar a la T-456 de 2020.',
+      'Ver la Sentencia SU-508/20 (expediente T-9.000.001), sobre la integralidad.',
+      'Así lo sostuvo la Sala de Casación Civil en la STC1234-2019, expediente T-9.000.001.',
+      'Cfr. Corte Constitucional, Sentencia T-760 de 2008, M.P. Ana Ficticia Rojas, expediente T-9.000.001.',
+      'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente\nT-9.000.001, donde se amparó un caso análogo.',
+      'COMO PRECEDENTE INVOCO LA SENTENCIA T-074 DE 2020 Y, EN PARTICULAR, EL EXPEDIENTE\nT-9.000.001, DONDE SE AMPARÓ UN CASO ANÁLOGO.',
     ]) expect(ctx(t), t).toBe('precedente');
   });
-  it('«Corte», «Tribunal», «Sala», «Sección» o «sentencia» solos no bastan: se toma, con contexto de cita', () => {
+  it('D-11 (PB-2-r8): «precedente», «cfr.», «véase», «caso análogo» o «citado» sin otra providencia de número y año no bastan: se toma (en -r7, precedente)', () => {
+    for (const [t, esperado] of [
+      ['Cfr. expediente T-9.000.001.', 'cita'],
+      ['Véase también el expediente T-9.000.001.', 'cita'],
+      ['El contratista guardará reserva, incluido el expediente T-9.000.001 citado como ejemplo.', 'cita'],
+      ['Se examinó el citado expediente T-9.000.001.', 'cita'],
+      ['En la sentencia T-1, expediente T-9.000.001, se habló de otro tema.', 'cita'],
+      ['En el expediente T-9.000.001 se resolvió un caso análogo.', null],
+    ] as const) expect(ctx(t), t).toBe(esperado);
+  });
+  it('«Corte», «Tribunal», «Sala», «Sección» o «sentencia» solos no bastan: se toma, con contexto de cita; B-70: sin él si hay señal del propio caso', () => {
     for (const t of [
-      'Señores\nCORTE CONSTITUCIONAL\nReferencia: Expediente T-9.000.001',
-      'El Tribunal Superior de Ejemplo remitió a la Corte el expediente T-9.000.001.',
-      'La Sala de Selección escogió el expediente T-9.000.001.',
+      'Honorables Magistrados de la Corte Constitucional: en el expediente T-9.000.001 se discute la cobertura.',
       'La Sección Segunda revisó la sentencia del expediente T-9.000.001.',
     ]) expect(ctx(t), t).toBe('cita');
+    // B-70 (PB-2-r8): el rótulo del renglón o un trámite del propio caso anulan el contexto de cita (en -r7, 'cita').
+    for (const t of [
+      'Señores\nCORTE CONSTITUCIONAL\nReferencia: Expediente T-9.000.001',
+      'Señores\nCORTE CONSTITUCIONAL\nReferencia:\nT-9.000.001',
+      'El Tribunal Superior de Ejemplo remitió a la Corte el expediente T-9.000.001.',
+      'La Sala de Selección escogió el expediente T-9.000.001.',
+    ]) expect(ctx(t), t).toBeNull();
     expect(ctx('Expediente: T-9.000.001')).toBeNull();
+  });
+  it('A-1 (PB-2-r8): la oración se corta en el salto de línea sin signo, en un título, tras «S.A.» o una inicial ante mayúscula y ante una minúscula tras un punto que no es de abreviatura', () => {
+    for (const t of [
+      'Como precedente invoco la Sentencia T-074 de 2020, con ponencia del Dr. Ejemplo\nLa accionante actuó en el expediente T-9.000.001.',
+      'IV. PRECEDENTE: SENTENCIA T-074 DE 2020\nla accionante actuó en el expediente T-9.000.001.',
+      'Como precedente invoco la Sentencia T-074 de 2020 contra Comercial Ejemplo S.A. La accionante actuó en el expediente T-9.000.001.',
+      'Como precedente invoco la Sentencia T-074 de 2020, M.P. Ana Ejemplo R. La accionante actuó en el expediente T-9.000.001.',
+      'Como precedente invoco la Sentencia T-074 de 2020. el expediente T-9.000.001 es otro.',
+      'Como precedente invoco la Sentencia T-074 de 2020; la accionante actuó en el expediente T-9.000.001.',
+      'La accionante actuó en el expediente T-9.000.001. Como precedente invoco la Sentencia T-074 de 2020.',
+    ]) expect(ctx(t), t).not.toBe('precedente');
+    // No cortan: «S.A.» ante minúscula, «M.P.», «No.» ni el PDF que parte la oración tras una palabra o una coma.
+    for (const t of [
+      'Como precedente invoco la Sentencia T-074 de 2020 contra Comercial Ejemplo S.A. y, en particular, el expediente T-9.000.001.',
+      'Como precedente invoco la Sentencia T-074 de 2020, M.P. Ana Ficticia Rojas, y el expediente T-9.000.001.',
+      'Como precedente invoco la Sentencia No. 74 de 2020 y el expediente T-9.000.001.',
+      'Como precedente invoco la Sentencia T-074 de 2020 y, en particular,\nel expediente T-9.000.001, donde se amparó un caso análogo.',
+    ]) expect(ctx(t), t).toBe('precedente');
+  });
+  it('A-1 y M-50 (PB-2-r8): una señal del propio caso en la oración o un rótulo en el renglón anterior anulan la providencia', () => {
+    for (const t of [
+      'En la sentencia T-123 de 2026, expediente T-9.000.001, la Corte me amparó el derecho a la salud.',
+      'Tal como se ordenó en la sentencia T-123 de 2026 (expediente T-9.000.001), la EPS debe autorizar el procedimiento.',
+      'La Sala Novena desconoció el precedente de la Sentencia SU-123 de 2020 al decidir el expediente T-9.000.001.',
+      'Solicito abrir incidente de desacato por el incumplimiento de la sentencia T-123 de 2026, expediente T-9.000.001.',
+      'Esta tutela no es temeraria: la sentencia T-123 de 2025 negó la anterior, expediente T-9.000.001.',
+      'Cfr. Sentencia T-123 de 2026, folio 12 del expediente T-9.000.001.',
+      'La accionante invoca la sentencia T-123 de 2026 dictada en su propia tutela, expediente T-9.000.001.',
+      'Referencia:\nSentencia T-123 de 2026, expediente T-9.000.001',
+      'Ref.: Sentencia T-123 de 2026\nExpediente T-9.000.001',
+    ]) expect(ctx(t), t).toBeNull();
   });
   it('la señal de precedente está en otra oración, o hay un trámite o un rótulo del propio caso: se toma', () => {
     for (const t of [
@@ -607,19 +654,41 @@ describe('T-MO-01 · A-1 (PB-2-r7): R-RAD_ADMIN-03 solo descarta el expediente c
       'Como precedente, la Corte decretó pruebas en el expediente T-9.000.001 de la referencia.',
     ]) expect(ctx(t), t).not.toBe('precedente');
   });
-  it('B-62 sin el índice de la vista da lo mismo (la consulta de generalize.ts y de las pruebas)', () => {
+  it('B-62 sin el índice de la vista da lo mismo (la consulta de generalize.ts y de las pruebas); `cita` implica el contexto de cita de E-CITA-01', () => {
     for (const t of [
       'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.',
       'Señores\nCORTE CONSTITUCIONAL\nReferencia: Expediente T-9.000.001',
+      'Honorables Magistrados de la Corte Constitucional: en el expediente T-9.000.001 se discute la cobertura.',
       'Expediente: T-9.000.001',
       'Conforme a la norma citada, otorgo poder especial para actuar en el expediente T-9.000.001.',
+      'En la sentencia T-123 de 2026, expediente T-9.000.001, la Corte me amparó el derecho a la salud.',
+      'Como precedente invoco la Sentencia T-074 de 2020, M.P. Ana Ejemplo R. La accionante actuó en el expediente T-9.000.001.',
     ]) {
       const v = buildSearchView(t, 'reglas', 'cuerpo');
       const s = v.text.indexOf('T-9.000.001');
       expect(contextoDelExpediente(v.text, s, s + 11)).toBe(ctx(t));
       expect(esPrecedenteCitado(v.text, s, s + 11)).toBe(ctx(t) === 'precedente');
-      if (ctx(t) !== 'precedente') expect(esContextoDeCita(v.text, s, s + 11)).toBe(ctx(t) === 'cita');
+      // B-70 (PB-2-r8): una señal del propio caso anula el contexto de cita del expediente, no el de E-CITA-01 (el de generalize.ts).
+      if (ctx(t) === 'cita') expect(esContextoDeCita(v.text, s, s + 11)).toBe(true);
     }
+  });
+  it('B-62 con índice da lo mismo que sin él en textos aleatorios con saltos, títulos, abreviaturas, providencias y señales del propio caso', () => {
+    const trozos = ['Como precedente invoco la Sentencia T-074 de 2020', ' y, en particular,', ' el expediente T-9.000.001', '.', ' ', '\n', '\n\n',
+      'IV. PRECEDENTE APLICABLE', ' S.A.', ' R.', ' M.P. Ana', ' Dr. Ejemplo', ';', ' la Corte', ' me amparó', ' desacato', ' folio 12', 'Referencia:',
+      'Ref.:', ' que dio lugar a la T-456 de 2020', ' SU-508/20', ' de la referencia', ' Expediente: T-9.000.002', ' la accionante', ' citado'];
+    let semilla = 7;
+    const azar = (n: number): number => { semilla = (semilla * 48271) % 2147483647; return semilla % n; };
+    let comparados = 0;
+    for (let k = 0; k < 400; k++) {
+      let t = '';
+      for (let j = 0; j < 14; j++) t += trozos[azar(trozos.length)] as string;
+      const v = buildSearchView(t, 'reglas', 'cuerpo');
+      for (const m of v.text.matchAll(/T-9\.000\.00[12]/gu)) {
+        expect(contextoDelExpediente(v.text, m.index, m.index + 11, v), t).toBe(contextoDelExpediente(v.text, m.index, m.index + 11));
+        comparados++;
+      }
+    }
+    expect(comparados).toBeGreaterThan(300);
   });
 });
 
@@ -810,29 +879,64 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     }
   }, 120_000);
 
-  // B-62 (PB-2-r7): R-RAD_ADMIN-03 consulta el contexto de cita y de precedente en cada expediente con ventanas fijas y el índice de
-  // la vista. En un solo renglón de 200.000 y 1.000.000 de caracteres no corta en el tope de 250 ms y toma todos los expedientes
-  // (-r6 cortaba: 4.441 de 7.407 y 1.602 de 37.037). La primera corrida calienta el motor; cuenta la mejor de tres.
+  // B-62 (PB-2-r7) y B-72 (PB-2-r8): R-RAD_ADMIN-03 consulta el contexto en cada expediente con ventanas fijas y el índice de la vista.
+  // En un solo renglón de 200.000 y 1.000.000 de caracteres toma lo que debe tomar: sin el tope de la regla, para que la cuenta no
+  // dependa de la carga del equipo (en -r7 se pedía una corrida sin corte, y con 35 trabajadores en paralelo las tres cortaban). El
+  // tiempo se mide aparte y con la función sola, como las demás pruebas de tiempo: el contexto de todos los expedientes, con una vista
+  // nueva en cada corrida (el índice que arma la primera consulta entra en la medida), el mejor de 3, por debajo del tope de la
+  // regla (RULE_TIME_LIMIT_MS, 250 ms: no se relaja).
   it.each([
-    ['«el expediente T-9.000.001, »', 200_000, 'el expediente T-9.000.001, ', null],
-    ['«el expediente T-9.000.001, »', 1_000_000, 'el expediente T-9.000.001, ', null],
-    ['«la Corte y el expediente T-9.000.001, »', 200_000, 'la Corte y el expediente T-9.000.001, ', 'cita'],
-    ['«la Corte y el expediente T-9.000.001, »', 1_000_000, 'la Corte y el expediente T-9.000.001, ', 'cita'],
-  ] as const)('B-62 R-RAD_ADMIN-03 en un renglón con %s hasta %i caracteres: no corta en el tope y toma todos los expedientes', async (_n, largo, unidad, contexto) => {
+    ['«el expediente T-9.000.001, »', 200_000, 'el expediente T-9.000.001, ', null, true],
+    ['«el expediente T-9.000.001, »', 1_000_000, 'el expediente T-9.000.001, ', null, true],
+    ['«la Corte y el expediente T-9.000.001, »', 200_000, 'la Corte y el expediente T-9.000.001, ', 'cita', true],
+    ['«la Corte y el expediente T-9.000.001, »', 1_000_000, 'la Corte y el expediente T-9.000.001, ', 'cita', true],
+    // PB-2-r8: el camino de la providencia y la oración (todos citados: ninguno se toma) y el del propio caso con puntos y abreviaturas.
+    ['«la Sentencia T-1 de 2020 y el expediente T-9.000.001, »', 1_000_000, 'la Sentencia T-1 de 2020 y el expediente T-9.000.001, ', null, false],
+    ['«S.A. La Corte, en la T-1 de 2020, Cfr. el expediente T-9.000.001 me amparó. »', 1_000_000, 'S.A. La Corte, en la T-1 de 2020, Cfr. el expediente T-9.000.001 me amparó. ', null, true],
+  ] as const)('B-62 y B-72 R-RAD_ADMIN-03 en un renglón con %s hasta %i caracteres: toma lo que debe y el contexto va por debajo del tope', async (_n, largo, unidad, contexto, toma) => {
     const reglas = (await reglasDeModulos(['radicado'])).filter((r) => r.id === 'R-RAD_ADMIN-03');
     const texto = unidad.repeat(Math.ceil(largo / unidad.length));
     const total = Math.ceil(largo / unidad.length);
-    const view = buildSearchView(texto, 'reglas', 'cuerpo');
-    runRules(view, PART, reglas, 2026);
-    const corridas = [0, 1, 2].map(() => {
-      let cortes = 0;
-      const c = runRules(buildSearchView(texto, 'reglas', 'cuerpo'), PART, reglas, 2026, { onTimeout: () => { cortes++; } });
-      return { cortes, c };
-    });
-    const mejor = corridas.find((x) => x.cortes === 0);
-    expect(mejor).toBeDefined();
-    expect(mejor?.c.length).toBe(total);
-    expect(mejor?.c.every((x) => (x.context ?? null) === contexto)).toBe(true);
+    const c = runRules(buildSearchView(texto, 'reglas', 'cuerpo'), PART, reglas, 2026, { maxMsPerRule: Number.POSITIVE_INFINITY });
+    expect(c.length).toBe(toma ? total : 0);
+    expect(c.every((x) => (x.context ?? null) === contexto)).toBe(true);
+    const inicios = [...texto.matchAll(/T-9\.000\.001/gu)].map((m) => m.index);
+    expect(inicios.length).toBe(total);
+    const mejor = Math.min(...[0, 1, 2].map(() => {
+      const v = buildSearchView(texto, 'reglas', 'cuerpo');
+      const t0 = performance.now();
+      for (const s of inicios) contextoDelExpediente(v.text, s, s + 11, v);
+      return performance.now() - t0;
+    }));
+    expect(mejor).toBeLessThan(RULE_TIME_LIMIT_MS);
+  }, 120_000);
+
+  // PB-2-r8: las expresiones nuevas del expediente (la providencia con número y año, las señales del propio caso con su cola de letras
+  // acotada, el rótulo del renglón anterior y los fines de oración) con 40.000 blancos, letras o signos: el contexto de cada expediente
+  // con el índice de la vista, el mejor de 3, por debajo de 50 ms.
+  it.each([
+    ['la providencia con tabuladores antes del año', 'la Sentencia T-1' + TB + 'de 2020 y el expediente T-9.000.001'],
+    ['la providencia con espacios antes del año, fuera de la vista', 'la Sentencia T-1' + SP + 'de 2020 y el expediente T-9.000.001'],
+    ['«otorgo», tabuladores y «poder»', 'otorgo' + TB + 'poder en el expediente T-9.000.001'],
+    ['una racha de letras con «remit» repetido', 'remit'.repeat(K / 5) + ' el expediente T-9.000.001'],
+    ['una racha de «cumpl» y «temer» sin blancos', 'cumpltemer'.repeat(K / 10) + ' el expediente T-9.000.001'],
+    ['el rótulo tras 40.000 tabuladores en el renglón anterior', TB + 'Referencia:\nT-9.000.001'],
+    ['puntos y espacios antes del expediente', '. '.repeat(K / 2) + 'el expediente T-9.000.001'],
+    ['saltos de línea antes del expediente', 'a\n'.repeat(K / 2) + 'T-9.000.001'],
+    ['abreviaturas encadenadas', 'S.A. M.P. Dr. No. '.repeat(K / 18) + 'T-9.000.001'],
+  ])('PB-2-r8 contextoDelExpediente, %s: 40.000 caracteres por debajo de 50 ms', (_n, texto) => {
+    const inicios = [...texto.matchAll(/T-9\.000\.001/gu)].map((m) => m.index);
+    const mejor = Math.min(...[0, 1, 2].map(() => {
+      const v = buildSearchView(texto, 'reglas', 'cuerpo');
+      const t0 = performance.now();
+      for (const s of inicios) {
+        const i = v.text === texto ? s : v.text.indexOf('T-9.000.001');
+        contextoDelExpediente(v.text, i, i + 11, v);
+        contextoDelExpediente(texto, s, s + 11);
+      }
+      return performance.now() - t0;
+    }));
+    expect(mejor).toBeLessThan(50);
   }, 120_000);
 
   it('B-62 contextosDelModelo en un renglón de 200.000 caracteres con citas de artículo encadenadas: el objeto mira una ventana fija y no corta', () => {

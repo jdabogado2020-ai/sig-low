@@ -180,24 +180,53 @@ function assessRadAdmin02(m: RegExpExecArray, ctx: RuleContext): RuleVerdict | n
 }
 
 /**
- * R-RAD_ADMIN-03 · El expediente de la Corte («T-9.000.001»). PB-2-r6 (D-06) y PB-2-r7 (A-1): solo el expediente citado como
- * precedente no se toma, y solo con una señal explícita de precedente en la misma oración («Como precedente invoco la Sentencia
- * T-074 de 2020 y, en particular, el expediente T-9.000.004», «el expediente T-8.100.002 citado como ejemplo»): `esPrecedenteCitado`.
- * «Corte», «Tribunal», «Sala» o «sentencia» solos no bastan, porque el expediente T **es** de la Corte y aparece así en los escritos
- * del propio caso (el memorial, la insistencia, la nulidad, el poder). Todo otro expediente se toma como antes de -r6; si además
- * está en contexto de cita (E-CITA-01 y R-CIT-01, `esContextoDeCita`), con `context: 'cita'`, que lleva la bandera
- * `CITA_JURISPRUDENCIAL` (7.3.3): nunca queda sin detección.
+ * R-RAD_ADMIN-03 · El expediente de la Corte («T-9.000.001»). D-11 (PB-2-r8): solo no se toma el expediente que, en la misma
+ * oración, va con otra providencia identificada con su número y su año («Como precedente invoco la Sentencia T-074 de 2020 y, en
+ * particular, el expediente T-9.000.004») y sin ninguna señal del propio caso (`contextoDelExpediente`). La tercera condición (la
+ * misma clave en otra mención del documento sin cita) la aplica la tubería con `expedienteCitadoConClave`. Todo otro expediente se
+ * toma; si además está en contexto de cita (E-CITA-01 y R-CIT-01) y sin señal del propio caso, con `context: 'cita'`, que lleva la
+ * bandera `CITA_JURISPRUDENCIAL` (7.3.3).
  */
 function assessRadAdmin03(m: RegExpExecArray, ctx: RuleContext): RuleVerdict | null {
   const cap = capturas(m, ctx);
   if (cap === null) return null;
-  // Las dos preguntas (`esPrecedenteCitado` y `esContextoDeCita`) en una, con ventanas fijas y el índice de la vista (B-62).
+  // Las dos preguntas en una, con ventanas fijas y el índice de la vista (B-62).
   const contexto = contextoDelExpediente(ctx.view.text, cap.ns, cap.ne, ctx.view);
   if (contexto === 'precedente') return null;
-  const verdict: RuleVerdict = { confidence: cap.l !== undefined ? 'media' : 'baja', canonicalKey: `RAD:${alfanum(cap.v)}` };
+  return veredictoDeExpediente(cap, contexto === 'cita');
+}
+
+function veredictoDeExpediente(cap: Capturas, cita: boolean): RuleVerdict {
+  const verdict: RuleVerdict = { confidence: cap.l !== undefined ? 'media' : 'baja', canonicalKey: claveDeExpediente(cap.v) };
   if (cap.l !== undefined) verdict.labelId = 'ROT-EXP';
-  if (contexto === 'cita') verdict.context = 'cita';
+  if (cita) verdict.context = 'cita';
   return verdict;
+}
+const claveDeExpediente = (v: string): string => `RAD:${alfanum(v)}`;
+
+const R_RAD_ADMIN_03: RuleSpec = {
+  id: 'R-RAD_ADMIN-03',
+  type: 'RADICADO_ADMIN',
+  flags: 'dgu',
+  source: R`${BL}(?:(?<l>${L_EXP})${GAP_CS})?(?<v>(?:T|D|OG|ICC|LAT|CJU|RE|RDL|PE|AC)[ ]?-[ ]?(?:\d{1,3}(?:\.\d{3}){1,2}|\d{5,8}))${NR}`,
+  assess: assessRadAdmin03,
+};
+
+/**
+ * D-11, condición 3 (PB-2-r8; 7.3.3, la regla de la misma clave) · R-RAD_ADMIN-03 solo para los expedientes que la regla no tomó por
+ * ir citados con otra providencia y cuya clave está en `claves`: las de las otras menciones del documento que sí se tomaron, que la
+ * tubería reúne de todas las partes. Ese expediente se toma, con `context: 'cita'`; la bandera no cae si alguna otra mención va sin
+ * contexto de cita (es el expediente del caso, 7.3.3). Los demás expedientes no salen: ya los dio la regla.
+ */
+export function expedienteCitadoConClave(claves: ReadonlySet<string>): RuleSpec {
+  return {
+    ...R_RAD_ADMIN_03,
+    assess: (m, ctx) => {
+      const cap = capturas(m, ctx);
+      if (cap === null || !claves.has(claveDeExpediente(cap.v))) return null;
+      return contextoDelExpediente(ctx.view.text, cap.ns, cap.ne, ctx.view) === 'precedente' ? veredictoDeExpediente(cap, true) : null;
+    },
+  };
 }
 
 export const rules: RuleSpec[] = [
@@ -231,11 +260,5 @@ export const rules: RuleSpec[] = [
     source: R`${BL}(?<l>${L_NI})${GAP_CS}(?<v>${V_NI})${NR}`,
     assess: assessRadAdmin02,
   },
-  {
-    id: 'R-RAD_ADMIN-03',
-    type: 'RADICADO_ADMIN',
-    flags: 'dgu',
-    source: R`${BL}(?:(?<l>${L_EXP})${GAP_CS})?(?<v>(?:T|D|OG|ICC|LAT|CJU|RE|RDL|PE|AC)[ ]?-[ ]?(?:\d{1,3}(?:\.\d{3}){1,2}|\d{5,8}))${NR}`,
-    assess: assessRadAdmin03,
-  },
+  R_RAD_ADMIN_03,
 ];
