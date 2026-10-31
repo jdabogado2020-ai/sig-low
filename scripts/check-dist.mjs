@@ -42,7 +42,9 @@ const PROHIBIDOS = [
   ['gancho-medicion', /__SIGLOW_GANCHO_MEDICION__/g],
   ['blob:', /\bblob:/g],
   ['data-url-script', /data:(text|application)\/(javascript|ecmascript)/g],
-  ['http-externo', /https?:\/\/(?!127\.0\.0\.1|localhost|www\.w3\.org\/(1998|1999|2000)\/)[a-z0-9.-]+\.[a-z]{2,}/gi],
+  // Identificadores de espacio de nombres de XML (W3C, OOXML y su variante Strict): se comparan como cadenas en el
+  // lector .docx y en Preact; nunca se piden por red (la CSP y el interruptor del SW lo impedirían igual).
+  ['http-externo', /https?:\/\/(?!127\.0\.0\.1|localhost|www\.w3\.org\/(1998|1999|2000|XML\/1998)\/|schemas\.openxmlformats\.org\/(wordprocessingml|markup-compatibility|officeDocument|package|drawingml|spreadsheetml|presentationml)\/|purl\.oclc\.org\/ooxml\/)[a-z0-9.-]+\.[a-z]{2,}/gi],
 ];
 // Preact 10.29.8 contiene el sumidero innerHTML para dangerouslySetInnerHTML. El código propio no lo usa (lint F-05)
 // y Trusted Types lo rechaza en ejecución: se admite solo en el fragmento de Preact y con tope de apariciones.
