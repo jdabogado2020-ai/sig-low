@@ -7,7 +7,7 @@ import type {
 } from './types.ts';
 import { FLAG_TYPES, ORG_CLASSES } from './types.ts';
 import { buildSearchView, toCanonicalSpan } from './normalize.ts';
-import { esVarianteDebil, orgKey, personKey, precedenceOf } from './entities.ts';
+import { esVarianteDebil, marcaOtroTitular, orgKey, personKey, precedenceOf } from './entities.ts';
 import { LST } from './caselist.ts';
 
 export { precedenceOf };
@@ -461,7 +461,31 @@ function planDelModelo(M: MergedCandidate, over: readonly MergedCandidate[], par
   const want: NerLabel | undefined = base.type === 'PERSONA' ? 'PER' : ORG_SET.has(base.type) ? 'ORG' : undefined;
   if (want !== label || propias.some((p) => p.caseEntityId !== base.caseEntityId || p.type !== base.type)) return null;
   for (const [s, e] of uncovered(M, propias)) if (!agregaSoloNombre(text.slice(s, e), part.kind)) return null;
+  // D-14 (A-2): el nombre completo es de otra persona. La lista no lo toma: cede, como la variante débil de B, y M entra entero
+  // con su propia entidad (un solo tramo protege el nombre; partirlo dejaba el marcador de la lista dentro del nombre de otro).
+  const primera = [...propias].sort(byStart)[0] as MergedCandidate;
+  if (otroTitularEnLaExtension(M, primera, part, esVariante)) return { kind: 'ceder', ceden: [...ceden, ...propias] };
   return { kind: 'extender', ceden, propias };
+}
+
+/**
+ * D-14 (A-2) · La correferencia de la regla E nunca une a dos titulares bajo el marcador de una persona de la lista. El nombre
+ * largo del modelo es de otra persona, y la lista no lo extiende:
+ * - si el texto lo marca como otra persona de la familia («su hijo Pedro Ejemplo Prueba», «Pedro Ejemplo Junior», «…, hijo
+ *   de…»; `marcaOtroTitular` de entities.ts);
+ * - si el modelo agrega delante un nombre de pila que no es del nombre de esa persona: «Wilson Ejemplo Muñoz» no es «Carmen
+ *   Rosa Ejemplo Muñoz» aunque contenga su variante `apellidos` (C29: los hermanos quedaban con el marcador de la demandada).
+ *   Lo que agrega detrás («Pedro Ejemplo» + «Prueba», «CATALINA PRUEBA» + «DEL VALLE») sigue extendiendo, como en D-03 E.
+ * En `planDelModelo` la mención de la lista cede y M entra entero (el reductor lo acepta con `cedeAnteModelo`); en el paso 2 de
+ * una sola vez, `extendWithModel` no extiende.
+ */
+function otroTitularEnLaExtension(M: MergedCandidate, L: MergedCandidate, part: Part, esVariante: EsVarianteDe): boolean {
+  if (L.type !== 'PERSONA') return false;
+  if (marcaOtroTitular(part.text, M.start, M.end, part.kind)) return true;
+  const antes = part.text.slice(M.start, Math.max(M.start, L.start));
+  if (!/\p{L}/u.test(antes)) return false;
+  const id = L.caseEntityId;
+  return id === undefined || !(esVariante(id, antes) || esVariante(id, part.text.slice(M.start, M.end)));
 }
 
 /** E · La entidad de la lista toma el tramo de M (paso 2): confianza media, `extended`. Hereda del trozo de mayor prioridad. */
@@ -489,7 +513,7 @@ function cederVariantesDebiles(work: MergedCandidate[], part: Part, esVariante: 
 }
 
 /** Paso 2 · Lista extendida por el modelo. */
-function extendWithModel(work: MergedCandidate[], part: Part): MergedCandidate[] {
+function extendWithModel(work: MergedCandidate[], part: Part, esVariante: EsVarianteDe): MergedCandidate[] {
   const text = part.text;
   let out = work;
   const listas = out.filter((c) => c.source === 'lista').sort(byPosition);
@@ -502,6 +526,7 @@ function extendWithModel(work: MergedCandidate[], part: Part): MergedCandidate[]
       .sort(byPriority);
     for (const M of options) {
       if (!onlyNameWords(text.slice(M.start, L.start), part.kind) || !onlyNameWords(text.slice(L.end, M.end), part.kind)) continue;
+      if (otroTitularEnLaExtension(M, L, part, esVariante)) continue;
       // Lo agregado no puede pisar otro candidato que no sea del modelo: sería otra entidad u otro dato.
       const blocked = out.some((X) => X !== L && X !== M && X.source !== 'modelo'
         && (overlaps(X, M.start, L.start) || overlaps(X, L.end, M.end)));
@@ -586,7 +611,7 @@ export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[]
   const { resto, tras } = apartarAbsorbibles(work, part);
   // 2. Extender la lista con el modelo, después de que la variante débil de otra entidad ceda (D-03 B).
   work = cederVariantesDebiles(resto, part, esVariante);
-  work = extendWithModel(work, part);
+  work = extendWithModel(work, part, esVariante);
   // 3. Ordenar.
   work.sort(byPriority);
   work = detrasDeSuRegla(work, tras);

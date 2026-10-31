@@ -1,12 +1,15 @@
 // T-MO-06 · Claves, agrupación, numeración, tabla por asunto y reductor (plan 6.4.4, 6.6, 7.12). Solo datos ficticios.
 import { describe, expect, it } from 'vitest';
+import { newCaseEntity, refreshVariants } from '../../src/core/caselist.ts';
 import {
-  applyReviewAction, buildReviewState, canonicalKeyFor, consolidate, cryptoIds, emptyTable, esSiglaSilabica, nitCheckDigit, nitKey, orgKey,
-  palabrasDeNombre, personKey, phoneKey, precedenceOf, tableIndexOf, type ReviewContext,
+  applyReviewAction, buildReviewState, canonicalKeyFor, consolidate, cryptoIds, emptyTable, esSiglaSilabica, marcaOtroTitular, nitCheckDigit,
+  nitKey, orgKey, palabrasDeNombre, personKey, phoneKey, precedenceOf, tableIndexOf, type ReviewContext,
 } from '../../src/core/entities.ts';
+import { createDetectHandler } from '../../src/core/pipeline.ts';
+import { incorporarModelo, modeloInicial } from '../../src/core/review/modelo.ts';
 import type {
   AsuntoId, CaseEntity, CaseEntityId, DataType, Detection, DetectionSet, DocId, DocumentModel, Entity, Flag, FlagId, IdSource, MappingTable,
-  MergedCandidate, PartId, PartKind, ReviewAction, ReviewState, SpanEdit, SpanEditId, Suggestion, SuggestionId, TableIndex,
+  MergedCandidate, NerSpan, PartId, PartKind, ReviewAction, ReviewState, Role, SpanEdit, SpanEditId, Suggestion, SuggestionId, TableIndex,
 } from '../../src/core/types.ts';
 
 const MARKER_RE = /^\[(DEMANDANTE|DEMANDADO|TESTIGO|PACIENTE|CLIENTE|CONTACTO|PERSONA|EMPRESA|EPS|IPS|ENTIDAD|PROVEEDOR|CC|TI|CE|PPT|PEP|PASAPORTE|NIT|TP|DOCUMENTO|DIRECCIÓN|TELÉFONO|CORREO|RADICADO|HC|AFILIACIÓN|PLACA|MATRÍCULA|CUENTA|FECHA|VALOR|DEPARTAMENTO)_([1-9][0-9]{0,3})\]$/u;
@@ -507,7 +510,7 @@ describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1
     expect(entOf(s, 'Ana Lucía Prueba Navarro').canonicalKey).toBe('PER:ana lucia prueba navarro');
   });
 
-  it('C2 sigla silábica de una organización de la lista: «FESA» es Ferretería Ejemplo S.A.S.; las iniciales solas no, y con dos candidatas tampoco', () => {
+  it('C2 sigla silábica de una organización de la lista, solo si el texto la define (D-14): «FESA» es Ferretería Ejemplo S.A.S.; las iniciales solas no, y con dos candidatas tampoco', () => {
     expect(esSiglaSilabica('fesa', ['ferreteria', 'ejemplo'], 'sas')).toBe(true);
     expect(esSiglaSilabica('copsa', ['constructora', 'prueba'], 'sa')).toBe(true);
     expect(esSiglaSilabica('dipru', ['distribuidora', 'prueba'], 'yciasenc')).toBe(true);
@@ -515,24 +518,39 @@ describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1
     expect(esSiglaSilabica('agex', ['agroindustrias', 'ejemplo'], 'sa')).toBe(false);   // «EX» no sale del nombre
     expect(esSiglaSilabica('eps', ['ejemplo', 'prueba', 'salud'], '')).toBe(false);     // iniciales: la sigla de 7.9.4
     expect(esSiglaSilabica('fesa', ['ferreteria'], '')).toBe(false);
-    const doc = mkDoc([['cuerpo', 'Ferretería Ejemplo S.A.S. contrató. FESA pagó y FESA firmó.']]);
-    const cands = [mc(doc, 0, 'Ferretería Ejemplo S.A.S.', { type: 'EMPRESA', source: 'lista', caseEntityId: CAS_F, variantClass: 'exacta', canonicalKey: `LISTA:${CAS_F}` }),
-      org(doc, 'FESA'), org(doc, 'FESA', 1)];
-    let s = con(doc, cands, [empresa(CAS_F, 'Ferretería Ejemplo S.A.S.')]);
-    expect(grupos(s)).toEqual([['Ferretería Ejemplo S.A.S.', 'FESA', 'FESA']]);
-    expect(entOf(s, 'FESA').marker).toBe('[EMPRESA_1]');
-    s = con(doc, cands, [empresa(CAS_F, 'Ferretería Ejemplo S.A.S.'), empresa(CAS_X, 'Fábrica Ejemplo S.A.')]);
-    expect(grupos(s)).toEqual([['Ferretería Ejemplo S.A.S.'], ['FESA', 'FESA']]);
+    const ferreteria = (doc: DocumentModel) => mc(doc, 0, 'Ferretería Ejemplo S.A.S.', { type: 'EMPRESA', source: 'lista', caseEntityId: CAS_F,
+      variantClass: 'exacta', canonicalKey: `LISTA:${CAS_F}` });
+    // El texto define la sigla junto al nombre: entre paréntesis, con «en adelante» o al revés.
+    for (const texto of ['Ferretería Ejemplo S.A.S. (en adelante, «FESA») contrató. FESA pagó y FESA firmó.',
+      'Ferretería Ejemplo S.A.S. (FESA) contrató. FESA pagó y FESA firmó.',
+      'La sociedad Ferretería Ejemplo S.A.S., en adelante FESA, contrató. FESA pagó y FESA firmó.',
+      'Contrato con FESA (Ferretería Ejemplo S.A.S.). FESA pagó y FESA firmó.']) {
+      const doc = mkDoc([['cuerpo', texto]]);
+      const s = con(doc, [ferreteria(doc), org(doc, 'FESA'), org(doc, 'FESA', 1), org(doc, 'FESA', 2)], [empresa(CAS_F, 'Ferretería Ejemplo S.A.S.')]);
+      expect(grupos(s), texto).toEqual([texto.startsWith('Contrato') ? ['FESA', 'Ferretería Ejemplo S.A.S.', 'FESA', 'FESA'] : ['Ferretería Ejemplo S.A.S.', 'FESA', 'FESA', 'FESA']]);
+      expect(entOf(s, 'FESA').marker).toBe('[EMPRESA_1]');
+    }
+    // Sin definirla, o solo junto al nombre, o con dos organizaciones de la lista que la explican: se queda aparte.
+    for (const texto of ['Ferretería Ejemplo S.A.S. contrató. FESA pagó y FESA firmó. FESA calló.',
+      'Firmó Ferretería Ejemplo S.A.S. FESA pagó y FESA firmó. FESA calló.']) {
+      const doc = mkDoc([['cuerpo', texto]]);
+      const s = con(doc, [ferreteria(doc), org(doc, 'FESA'), org(doc, 'FESA', 1), org(doc, 'FESA', 2)], [empresa(CAS_F, 'Ferretería Ejemplo S.A.S.')]);
+      expect(grupos(s), texto).toEqual([['Ferretería Ejemplo S.A.S.'], ['FESA', 'FESA', 'FESA']]);
+    }
+    const doc = mkDoc([['cuerpo', 'Ferretería Ejemplo S.A.S. (FESA) contrató. FESA pagó y FESA firmó.']]);
+    const s = con(doc, [ferreteria(doc), org(doc, 'FESA'), org(doc, 'FESA', 1), org(doc, 'FESA', 2)],
+      [empresa(CAS_F, 'Ferretería Ejemplo S.A.S.'), empresa(CAS_X, 'Fábrica Ejemplo S.A.')]);
+    expect(grupos(s)).toEqual([['Ferretería Ejemplo S.A.S.'], ['FESA', 'FESA', 'FESA']]);
   });
 
-  it('C3 mismo núcleo con otra etiqueta o con una palabra común delante: una sola entidad; EPS e IPS siguen aparte (C-12)', () => {
+  it('C3 mismo núcleo con una palabra común delante, dentro del mismo tipo; entre persona, organización y lugar nunca (D-14); EPS e IPS siguen aparte (C-12)', () => {
     let doc = mkDoc([['cuerpo', 'la ambulancia de Papelería Ficticia no llegó; Papelería Ficticia Ltda. cotizó y la Papelería Ficticia respondió.']]);
     let s = con(doc, [org(doc, 'Papelería Ficticia'), org(doc, 'Papelería Ficticia Ltda.'), per(doc, 'Papelería Ficticia', 2)]);
-    expect(grupos(s)).toEqual([['Papelería Ficticia', 'Papelería Ficticia Ltda.', 'Papelería Ficticia']]);
-    expect(dets(s).map((d) => d.type)).toEqual(['EMPRESA', 'EMPRESA', 'EMPRESA']);
+    expect(grupos(s)).toEqual([['Papelería Ficticia', 'Papelería Ficticia Ltda.'], ['Papelería Ficticia']]);
+    expect(dets(s).map((d) => d.type)).toEqual(['EMPRESA', 'EMPRESA', 'PERSONA']);
     doc = mkDoc([['cuerpo', 'cuando Ficticio negó la atención y luego Ficticio volvió a negarla']]);
     s = con(doc, [loc(doc, 'Ficticio'), org(doc, 'Ficticio', 1)]);
-    expect(grupos(s)).toEqual([['Ficticio', 'Ficticio']]);
+    expect(grupos(s)).toEqual([['Ficticio'], ['Ficticio']]);
     doc = mkDoc([['cuerpo', 'El taller Laboratorio Clínico Prueba Ltda. certificó. La póliza de Laboratorio Clínico Prueba Ltda. ampara.']]);
     s = con(doc, [org(doc, 'taller Laboratorio Clínico Prueba Ltda.'), org(doc, 'Laboratorio Clínico Prueba Ltda.')]);
     expect(grupos(s)).toEqual([['taller Laboratorio Clínico Prueba Ltda.', 'Laboratorio Clínico Prueba Ltda.']]);
@@ -548,8 +566,9 @@ describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1
     const s = con(doc, [lst(doc, 'Santiago Prueba Rojas', CAS_S, 'exacta', 0, { extended: true, confidence: 'media' }), per(doc, 'Prueba Rojas'),
       mc(doc, 0, 'Prueba Rojas', { type: 'EMPRESA', source: 'modelo', nerLabel: 'ORG', canonicalKey: orgKey('Prueba Rojas') }, 1)],
     [persona(CAS_S, 'Santiago Prueba')]);
-    expect(grupos(s)).toEqual([['Santiago Prueba Rojas', 'Prueba Rojas', 'Prueba Rojas']]);
-    expect(dets(s).map((d) => `${d.type}:${d.confidence}`)).toEqual(['PERSONA:media', 'PERSONA:baja', 'PERSONA:baja']);
+    // La misma forma que el modelo etiquetó ORG se queda aparte (D-14: nunca entre tipos distintos).
+    expect(grupos(s)).toEqual([['Santiago Prueba Rojas', 'Prueba Rojas'], ['Prueba Rojas']]);
+    expect(dets(s).map((d) => `${d.type}:${d.confidence}`)).toEqual(['PERSONA:media', 'PERSONA:baja', 'EMPRESA:media']);
     // Una forma hecha solo de palabras del nombre de la lista es una variante: la busca la lista, no la correferencia.
     const d2 = mkDoc([['cuerpo', 'Ana Ficticia Rojas declaró. Rojas (otra persona) no vino.']]);
     const s2 = con(d2, [mc(d2, 0, 'Ana Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'exacta', canonicalKey: `LISTA:${CAS_A}` }),
@@ -557,10 +576,11 @@ describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1
     expect(grupos(s2)).toEqual([['Ana Ficticia Rojas'], ['Rojas']]);
   });
 
-  it('C4 S-7.11 entre etiquetas: una ORG de nombre contenida en una sola persona es esa persona; con sufijo, con palabra común o dentro de otra organización, no', () => {
+  it('C4 S-7.11 entre etiquetas (D-14): una ORG del modelo nunca se une a una persona, ni sin sufijo, ni con sufijo, ni con palabra común ni dentro de otra organización', () => {
     let doc = mkDoc([['cuerpo', 'Elizabeth Ficticia Valencia firmó. Revisar la T.P. de Ficticia Valencia.']]);
     let s = con(doc, [per(doc, 'Elizabeth Ficticia Valencia'), org(doc, 'Ficticia Valencia')]);
-    expect(grupos(s)).toEqual([['Elizabeth Ficticia Valencia', 'Ficticia Valencia']]);
+    expect(grupos(s)).toEqual([['Elizabeth Ficticia Valencia'], ['Ficticia Valencia']]);
+    expect(entOf(s, 'Ficticia Valencia').type).toBe('EMPRESA');
     doc = mkDoc([['cuerpo', 'Elizabeth Ficticia Valencia firmó. Pagó Ficticia Valencia S.A.S. ayer.']]);
     s = con(doc, [per(doc, 'Elizabeth Ficticia Valencia'), org(doc, 'Ficticia Valencia S.A.S.')]);
     expect(grupos(s)).toHaveLength(2);
@@ -579,10 +599,11 @@ describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1
     doc = mkDoc([['cuerpo', 'Para: Prueba Giraldo <sergio.prueba@correo.ejemplo.test>\n\nbuenas Sergio,\nconsulte con Sergio primero.']]);
     s = con(doc, [per(doc, 'Prueba Giraldo'), per(doc, 'Sergio'), per(doc, 'Sergio', 1)]);
     expect(grupos(s)).toEqual([['Prueba Giraldo', 'Sergio', 'Sergio']]);
-    // El modelo etiquetó ORG el nombre del correo: el usuario del correo dice que es una persona.
+    // El modelo etiquetó ORG el nombre del correo: el buzón puede ser de una sociedad «Prueba Giraldo» y «Sergio», su empleado.
+    // D-14: entre tipos distintos no se une.
     s = con(doc, [org(doc, 'Prueba Giraldo'), per(doc, 'Sergio')]);
-    expect(grupos(s)).toEqual([['Prueba Giraldo', 'Sergio']]);
-    expect(entOf(s, 'Sergio')).toMatchObject({ type: 'PERSONA', canonicalKey: 'PER:prueba giraldo' });
+    expect(grupos(s)).toEqual([['Prueba Giraldo'], ['Sergio']]);
+    expect(entOf(s, 'Prueba Giraldo')).toMatchObject({ type: 'EMPRESA', canonicalKey: 'ORG:prueba giraldo' });
     // Un buzón genérico no da nombre de pila.
     doc = mkDoc([['cuerpo', 'Para: Prueba Giraldo <contacto@correo.ejemplo.test>\n\nbuenas Sergio,']]);
     expect(grupos(con(doc, [per(doc, 'Prueba Giraldo'), per(doc, 'Sergio')]))).toHaveLength(2);
@@ -629,10 +650,11 @@ describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1
     const s2 = w(s1, 2, [['Iván Darío Ejemplo Salazar', 0], ['Ejemplo Salazar', 2]]);
     expect(grupos(s2)).toEqual([['Ejemplo Salazar', 'Iván Darío Ejemplo Salazar', 'Ejemplo Salazar']]);
     expect(s2.detections[corta.id]?.confidence).toBe('baja');
-    // C0: con una segunda candidata («Diana Carolina…») la forma corta nueva ya no tiene una sola anfitriona por S-7.11, pero su clave
-    // ya está en la entidad de Iván Darío: una unión hecha no se deshace y el mismo texto lleva el mismo marcador.
+    // C0 (D-14, A-2): con una segunda candidata («Diana Carolina…») la forma corta nueva ya no tiene una sola anfitriona (S-7.11) y
+    // no se une a ninguna, aunque su clave ya esté en la entidad de Iván Darío. Las ya unidas se quedan: una unión no se deshace.
     const s3 = w(s2, 3, [['Diana Carolina Ejemplo Salazar', 0], ['Ejemplo Salazar', 4]]);
-    expect(grupos(s3)).toEqual([['Ejemplo Salazar', 'Iván Darío Ejemplo Salazar', 'Ejemplo Salazar', 'Ejemplo Salazar'], ['Diana Carolina Ejemplo Salazar']]);
+    expect(grupos(s3)).toEqual([['Ejemplo Salazar', 'Iván Darío Ejemplo Salazar', 'Ejemplo Salazar'], ['Diana Carolina Ejemplo Salazar'], ['Ejemplo Salazar']]);
+    expect(markers(s3).map(([, m]) => m)).toEqual(['[PERSONA_1]', '[PERSONA_1]', '[PERSONA_1]', '[PERSONA_2]', '[PERSONA_3]']);
     // Aceptada o separada por el usuario antes de la ventana 2, la forma corta se queda donde está (INV-R12).
     const aceptada = act(s1, { kind: 'aceptar', detectionId: corta.id }, ctx);
     const a2 = w(aceptada, 2, [['Iván Darío Ejemplo Salazar', 0]]);
@@ -674,6 +696,231 @@ describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1
     const s = con(doc, cands);
     expect(performance.now() - t0).toBeLessThan(8000);
     expect(Object.keys(s.entities)).toHaveLength(1500);
+  });
+});
+
+describe('T-MO-06 · correferencia de PB-3-r2: nunca dos titulares bajo un marcador (D-14, A-2, M-62, B-82)', () => {
+  let n = 0;
+  const ids: IdSource = { next: (p) => `${p}_${(0x70000 + ++n).toString(16).padStart(32, '0')}` };
+  const OPC = { referenceDate: '2026-10-30', rulesVersion: '1.0.0', nerHighThreshold: 0.9, nerMinScore: 0.3 };
+  const estadoDeSet = (doc: DocumentModel, set: DetectionSet & { spanEdits?: SpanEdit[] }): ReviewState => ({
+    docId: doc.id, revision: 0, detections: Object.fromEntries(set.detections.map((d) => [d.id, d])), order: set.detections.map((d) => d.id),
+    entities: Object.fromEntries(set.entities.map((e) => [e.id, e])), suggestions: Object.fromEntries(set.suggestions.map((x) => [x.id, x])),
+    flags: Object.fromEntries(set.flags.map((f) => [f.id, f])), spanEdits: Object.fromEntries((set.spanEdits ?? []).map((x) => [x.id, x])),
+    committed: false, modelo: modeloInicial(false) });
+  /** La tubería real de la sonda de la revisión: `detectar` con la lista del caso, `fusionar` con tramos del modelo e `incorporar_modelo`. */
+  async function tuberia(texto: string, lista: Array<[string, 'persona' | 'organizacion', Role]>, ner: Array<[string, NerSpan['label'], number?]>): Promise<ReviewState> {
+    const caseList = refreshVariants(lista.map(([nombre, k, r]) => newCaseEntity(nombre, k, r, ids) as CaseEntity));
+    const doc = mkDoc([['cuerpo', texto]]);
+    const part = doc.parts[0] as DocumentModel['parts'][number];
+    const h = createDetectHandler({ ids });
+    const pedir = async (kind: string, payload: unknown): Promise<DetectionSet & { spanEdits?: SpanEdit[] }> => {
+      const out: Array<{ kind: string; payload?: { set: DetectionSet & { spanEdits?: SpanEdit[] } } }> = [];
+      await h({ v: 1, reqId: `req_${(++n).toString(16).padStart(32, '0')}`, kind, payload }, (m) => out.push(m as (typeof out)[number]));
+      const r = out.find((m) => m.kind === 'resultado');
+      if (r?.payload === undefined) throw new Error('sin resultado');
+      return r.payload.set;
+    };
+    const s0 = estadoDeSet(doc, await pedir('detectar', { sessionId: 'ses_1', doc, caseList, table: EMPTY, options: OPC }));
+    const spans: NerSpan[] = ner.map(([sub, label, occ = 0]) => {
+      let i = -1; for (let k = 0; k <= occ; k++) i = texto.indexOf(sub, i + 1);
+      if (i < 0) throw new Error(`falta «${sub}»`);
+      return { start: i, end: i + sub.length, label, score: 0.95 };
+    });
+    const f = await pedir('fusionar', { sessionId: 'ses_1', ner: { [part.id]: spans }, nerEngineId: 'gliner-x-large', ventana: 1, ventanasTotales: 1 });
+    const o = incorporarModelo(s0, 1, 1, f, { table: EMPTY, caseList, doc, ids });
+    if (!o.ok) throw new Error(o.code);
+    return o.state;
+  }
+  const marcadorDe = (s: ReviewState, texto: string, occ = 0): string | undefined =>
+    s.entities[(dets(s).filter((d) => d.text === texto)[occ] ?? ({} as Detection)).entityId]?.marker;
+  const grupos = (s: ReviewState): string[][] => {
+    const out = new Map<string, string[]>();
+    for (const d of dets(s)) out.set(d.entityId, [...(out.get(d.entityId) ?? []), d.text]);
+    return [...out.values()];
+  };
+
+  it('marcaOtroTitular: el parentesco antes, en aposición después o dentro del tramo; un predicado («es hijo de un…») no', () => {
+    const si = ['Su hijo Pedro Luis Ejemplo Prueba declaró.', 'la tía, Pedro Luis Ejemplo Prueba, vino', 'Hijo: Pedro Luis Ejemplo Prueba',
+      'del hermano menor, el señor Pedro Luis Ejemplo Prueba', 'Pedro Luis Ejemplo Prueba, hijo de Pedro Ejemplo, declaró',
+      'Pedro Luis Ejemplo Prueba (su hijo) declaró', 'Pedro Luis Ejemplo Prueba hija de la demandante', 'PEDRO LUIS EJEMPLO PRUEBA JR. FIRMÓ',
+      'Pedro Luis Ejemplo Prueba Junior firmó', 'SU ESPOSA PEDRO LUIS EJEMPLO PRUEBA FIRMÓ'];
+    const no = ['El señor Pedro Luis Ejemplo Prueba declaró.', 'ojo que Pedro Luis Ejemplo Prueba es hijo de un congresista',
+      'los hijos de Pedro Luis Ejemplo Prueba no vinieron', 'Pedro Luis Ejemplo Prueba, identificado con C.C. 1000000001',
+      'Prima de servicios. Pedro Luis Ejemplo Prueba cobró'];
+    const at = (t: string): [number, number] => {
+      const i = t.toLowerCase().indexOf('pedro luis ejemplo prueba');
+      const largo = t.slice(i).match(/^(?:Pedro Luis Ejemplo Prueba(?: Junior)?|PEDRO LUIS EJEMPLO PRUEBA)/u)?.[0] ?? '';
+      return [i, i + largo.length];
+    };
+    for (const t of si) expect(marcaOtroTitular(t, ...at(t)), t).toBe(true);
+    for (const t of no) expect(marcaOtroTitular(t, ...at(t)), t).toBe(false);
+    // Ventanas fijas: 40.000 blancos no la hacen lenta.
+    const largo = `Pedro Luis Ejemplo Prueba${' '.repeat(40_000)}`;
+    const t0 = performance.now();
+    expect(marcaOtroTitular(`${' '.repeat(40_000)}${largo}`, 40_000, 40_025)).toBe(false);
+    expect(performance.now() - t0).toBeLessThan(300);
+  });
+
+  it('INV-R12 A-2 C1 con la tubería real: el hijo, la tía o el «hijo de» con el nombre de la persona de la lista no reciben su marcador', async () => {
+    const lista: Array<[string, 'persona', Role]> = [['Pedro Ejemplo', 'persona', 'DEMANDANTE']];
+    // Sonda C1 de la revisión: antes, [DEMANDANTE_1] (confianza media) para el hijo y para la tía.
+    let s = await tuberia('Pedro Ejemplo demandó. Su hijo Pedro Luis Ejemplo Prueba declaró.', lista, [['Pedro Luis Ejemplo Prueba', 'PER']]);
+    expect([marcadorDe(s, 'Pedro Ejemplo'), marcadorDe(s, 'Pedro Luis Ejemplo Prueba')]).toEqual(['[DEMANDANTE_1]', '[PERSONA_1]']);
+    s = await tuberia('Ana Ficticia demandó. Su tía Ana Lucía Ficticia Prueba declaró.', [['Ana Ficticia', 'persona', 'DEMANDANTE']],
+      [['Ana Lucía Ficticia Prueba', 'PER']]);
+    expect([marcadorDe(s, 'Ana Ficticia'), marcadorDe(s, 'Ana Lucía Ficticia Prueba')]).toEqual(['[DEMANDANTE_1]', '[PERSONA_1]']);
+    s = await tuberia('Pedro Ejemplo demandó. Pedro Luis Ejemplo Prueba, hijo de Pedro Ejemplo, declaró.', lista, [['Pedro Luis Ejemplo Prueba', 'PER']]);
+    expect(marcadorDe(s, 'Pedro Luis Ejemplo Prueba')).toBe('[PERSONA_1]');
+    // La regla E de merge.ts tampoco: la mención de la lista dentro del nombre del hijo cede y el nombre entra entero, con su entidad.
+    s = await tuberia('Pedro Ejemplo demandó. Su hijo Pedro Ejemplo Prueba declaró.', lista, [['Pedro Ejemplo Prueba', 'PER']]);
+    expect(markers(s)).toEqual([['Pedro Ejemplo', '[DEMANDANTE_1]'], ['Pedro Ejemplo Prueba', '[PERSONA_1]']]);
+    s = await tuberia('Pedro Ejemplo demandó. Pedro Ejemplo Junior declaró.', lista, [['Pedro Ejemplo Junior', 'PER']]);
+    expect(markers(s)).toEqual([['Pedro Ejemplo', '[DEMANDANTE_1]'], ['Pedro Ejemplo Junior', '[PERSONA_1]']]);
+    // C29 · Otro nombre de pila con los apellidos de la persona de la lista (su variante `apellidos`): el hermano tiene su marcador.
+    s = await tuberia('Carmen Rosa Ejemplo Muñoz demandó. Wilson Ejemplo Muñoz declaró.', [['Carmen Rosa Ejemplo Muñoz', 'persona', 'DEMANDANTE']],
+      [['Wilson Ejemplo Muñoz', 'PER']]);
+    expect(markers(s)).toEqual([['Carmen Rosa Ejemplo Muñoz', '[DEMANDANTE_1]'], ['Wilson Ejemplo Muñoz', '[PERSONA_1]']]);
+    // Sin parentesco, C1 sigue uniendo (D-13), con confianza media.
+    s = await tuberia('Pedro Ejemplo demandó. El señor Pedro Luis Ejemplo Prueba declaró.', lista, [['Pedro Luis Ejemplo Prueba', 'PER']]);
+    expect(marcadorDe(s, 'Pedro Luis Ejemplo Prueba')).toBe('[DEMANDANTE_1]');
+    expect(dets(s).find((d) => d.text === 'Pedro Luis Ejemplo Prueba')?.confidence).toBe('media');
+  });
+
+  it('INV-R12 A-2 C2 con la tubería real: la sigla de otra institución que encaja en los prefijos no recibe el marcador de la IPS de la lista; la definida sí', async () => {
+    const lista: Array<[string, 'organizacion', Role]> = [['Clínica Ejemplo S.A.', 'organizacion', 'IPS']];
+    // Sonda C2 de la revisión: antes, [IPS_1] con el tipo cambiado a IPS.
+    let s = await tuberia('La Clínica Ejemplo S.A. atendió al paciente, que estudió en el CESA.', lista, [['CESA', 'ORG']]);
+    expect([marcadorDe(s, 'Clínica Ejemplo S.A.'), marcadorDe(s, 'CESA')]).toEqual(['[IPS_1]', '[EMPRESA_1]']);
+    expect(dets(s).find((d) => d.text === 'CESA')?.type).toBe('EMPRESA');
+    s = await tuberia('La Clínica Ejemplo S.A. (CESA) atendió al paciente. CESA facturó.', lista, [['CESA', 'ORG'], ['CESA', 'ORG', 1]]);
+    expect([marcadorDe(s, 'CESA'), marcadorDe(s, 'CESA', 1)]).toEqual(['[IPS_1]', '[IPS_1]']);
+  });
+
+  it('INV-R12 A-2 C3 con la tubería real: una persona y su sociedad epónima, o una persona y un lugar con su nombre, son dos titulares', async () => {
+    // Sonda C1 de la revisión: antes, un solo marcador para la persona y la sociedad; la persona y el lugar, [DIRECCIÓN_1].
+    let s = await tuberia('Pedro Ejemplo Gómez firmó con Pedro Ejemplo Gómez S.A.S. y Pedro Ejemplo Gómez S.A.S. pagó.', [],
+      [['Pedro Ejemplo Gómez', 'PER'], ['Pedro Ejemplo Gómez S.A.S.', 'ORG'], ['Pedro Ejemplo Gómez S.A.S.', 'ORG', 1]]);
+    expect(markers(s)).toEqual([['Pedro Ejemplo Gómez', '[PERSONA_1]'], ['Pedro Ejemplo Gómez S.A.S.', '[EMPRESA_1]'], ['Pedro Ejemplo Gómez S.A.S.', '[EMPRESA_1]']]);
+    expect(dets(s).map((d) => d.type)).toEqual(['PERSONA', 'EMPRESA', 'EMPRESA']);
+    s = await tuberia('El señor Ejemplo Nariño declaró que vive en Ejemplo Nariño, y que Ejemplo Nariño es frío.', [],
+      [['Ejemplo Nariño', 'PER'], ['Ejemplo Nariño', 'LOC', 1], ['Ejemplo Nariño', 'LOC', 2]]);
+    expect(markers(s)).toEqual([['Ejemplo Nariño', '[PERSONA_1]'], ['Ejemplo Nariño', '[DIRECCIÓN_1]'], ['Ejemplo Nariño', '[DIRECCIÓN_1]']]);
+  });
+
+  it('A-2 al construir (sonda C2 de la revisión): padre e hijo, tía, persona y sociedad, persona y lugar quedan aparte', () => {
+    const CAS_P = 'cas_000000000000000000000000000000c1' as CaseEntityId;
+    const persona = (name: string): CaseEntity => ({ id: CAS_P, name, variants: [], kind: 'persona', role: 'DEMANDANTE' });
+    const per = (doc: DocumentModel, t: string, occ = 0) => mc(doc, 0, t, { type: 'PERSONA', source: 'modelo', nerLabel: 'PER', canonicalKey: personKey(t) }, occ);
+    const org = (doc: DocumentModel, t: string, occ = 0) => mc(doc, 0, t, { type: 'EMPRESA', source: 'modelo', nerLabel: 'ORG', canonicalKey: orgKey(t) }, occ);
+    const loc = (doc: DocumentModel, t: string, occ = 0) => mc(doc, 0, t, { type: 'LUGAR', source: 'modelo', nerLabel: 'LOC', canonicalKey: `LUGAR:${t.toLowerCase()}` }, occ);
+    const lst = (doc: DocumentModel, t: string) => mc(doc, 0, t, { type: 'PERSONA', source: 'lista', caseEntityId: CAS_P, variantClass: 'exacta', canonicalKey: `LISTA:${CAS_P}` });
+    const con = (doc: DocumentModel, c: MergedCandidate[], cl: CaseEntity[] = []) => buildReviewState(doc, c, { table: EMPTY, caseList: cl, ids: seqIds(1000) });
+    let doc = mkDoc([['cuerpo', 'Pedro Ejemplo demandó. Su hijo Pedro Luis Ejemplo Prueba declaró.']]);
+    expect(grupos(con(doc, [lst(doc, 'Pedro Ejemplo'), per(doc, 'Pedro Luis Ejemplo Prueba')], [persona('Pedro Ejemplo')])))
+      .toEqual([['Pedro Ejemplo'], ['Pedro Luis Ejemplo Prueba']]);
+    doc = mkDoc([['cuerpo', 'Ana Ficticia demandó. Su tía Ana Lucía Ficticia Prueba declaró.']]);
+    expect(grupos(con(doc, [lst(doc, 'Ana Ficticia'), per(doc, 'Ana Lucía Ficticia Prueba')], [persona('Ana Ficticia')])))
+      .toEqual([['Ana Ficticia'], ['Ana Lucía Ficticia Prueba']]);
+    doc = mkDoc([['cuerpo', 'Pedro Ejemplo Gómez firmó con Pedro Ejemplo Gómez S.A.S. y Pedro Ejemplo Gómez S.A.S. pagó.']]);
+    let s = con(doc, [per(doc, 'Pedro Ejemplo Gómez'), org(doc, 'Pedro Ejemplo Gómez S.A.S.'), org(doc, 'Pedro Ejemplo Gómez S.A.S.', 1)]);
+    expect(grupos(s)).toEqual([['Pedro Ejemplo Gómez'], ['Pedro Ejemplo Gómez S.A.S.', 'Pedro Ejemplo Gómez S.A.S.']]);
+    expect(entOf(s, 'Pedro Ejemplo Gómez').type).toBe('PERSONA');
+    doc = mkDoc([['cuerpo', 'El señor Ejemplo Nariño declaró que vive en Ejemplo Nariño, y que Ejemplo Nariño es frío.']]);
+    s = con(doc, [per(doc, 'Ejemplo Nariño'), loc(doc, 'Ejemplo Nariño', 1), loc(doc, 'Ejemplo Nariño', 2)]);
+    expect(grupos(s)).toEqual([['Ejemplo Nariño'], ['Ejemplo Nariño', 'Ejemplo Nariño']]);
+  });
+
+  // Ventanas del modelo sobre un texto fijo, como en la prueba de 7.12.2.4 por ventana.
+  const TEXTO = 'reportó a Ejemplo Salazar como retirado. Salazar firmó. Iván Darío Ejemplo Salazar declaró. Ejemplo Salazar firmó. Ejemplo Salazar volvió.';
+  function ventanas(table: TableIndex = EMPTY, texto = TEXTO) {
+    const doc = mkDoc([['cuerpo', texto]]);
+    const partId = (doc.parts[0] as DocumentModel['parts'][number]).id;
+    const delta = (items: Array<[string, number] | [string, number, 'ORG']>): DetectionSet => {
+      const detections: Detection[] = [];
+      const entities = new Map<string, Entity>();
+      for (const [sub, occ, etiqueta] of items) {
+        let i = -1; for (let k = 0; k <= occ; k++) i = texto.indexOf(sub, i + 1);
+        const org = etiqueta === 'ORG';
+        const key = org ? orgKey(sub) : personKey(sub);
+        const e = entities.get(key) ?? { id: `ent_${(0xe0000 + ++n).toString(16).padStart(32, '0')}` as Entity['id'], canonicalKey: key,
+          type: org ? 'EMPRESA' : 'PERSONA', role: org ? 'EMPRESA' : 'OTRA_PERSONA', family: org ? 'EMPRESA' : 'PERSONA', marcadorEspecifico: false,
+          mentions: [], sameHolderAs: [], display: sub } as Entity;
+        const d: Detection = { id: `det_${(0xd0000 + ++n).toString(16).padStart(32, '0')}` as Detection['id'], docId: doc.id, partId, start: i, end: i + sub.length,
+          text: sub, type: org ? 'EMPRESA' : 'PERSONA', source: 'modelo', nerLabel: org ? 'ORG' : 'PER', precedence: 6, confidence: 'media', score: 0.6,
+          canonicalKey: key, status: 'pendiente', entityId: e.id, replacement: { proposedTemplate: '{m}' } };
+        if (!org) d.role = 'OTRA_PERSONA';
+        e.mentions.push(d.id); entities.set(key, e); detections.push(d);
+      }
+      return { detections, entities: [...entities.values()], flags: [], suggestions: [] };
+    };
+    const ctx: ReviewContext = { table, caseList: [], doc, ids: seqIds(9000) };
+    const s0 = buildReviewState(doc, [], { table, caseList: [], ids: seqIds(1000) });
+    const w = (s: ReviewState, v: number, items: Array<[string, number] | [string, number, 'ORG']>) =>
+      act(s, { kind: 'incorporar_modelo', ventana: v, ventanasTotales: 3, delta: delta(items) }, ctx);
+    return { ctx, s0, w };
+  }
+  // Apariciones de «Ejemplo Salazar» en TEXTO: 0 suelta, 1 dentro de Iván Darío, 2 y 3 sueltas.
+
+  it('INV-R12 M-62 cambiar_rol antes de la ventana 2: la forma corta se queda en su entidad, con su marcador, su rol y su confianza', () => {
+    const { ctx, s0, w } = ventanas();
+    const s1 = w(s0, 1, [['Ejemplo Salazar', 0]]);
+    const corta = dets(s1)[0] as Detection;
+    const r = act(s1, { kind: 'cambiar_rol', entityId: corta.entityId, role: 'TESTIGO' }, ctx);
+    expect(r.entities[corta.entityId]?.marker).toBe('[TESTIGO_1]');
+    // Sonda C3 de la revisión: antes pasaba a la entidad nueva con [PERSONA_1], confianza baja y el rol TESTIGO en la detección.
+    for (const antes of [r, act(act(r, { kind: 'aceptar', detectionId: corta.id }, ctx), { kind: 'restablecer', detectionId: corta.id }, ctx)]) {
+      const s2 = w(antes, 2, [['Iván Darío Ejemplo Salazar', 0]]);
+      const d = s2.detections[corta.id] as Detection;
+      expect(s2.entities[d.entityId]).toMatchObject({ marker: '[TESTIGO_1]', role: 'TESTIGO' });
+      expect(d).toMatchObject({ confidence: 'media', role: 'TESTIGO', entityId: corta.entityId });
+      expect(grupos(s2)).toEqual([['Ejemplo Salazar'], ['Iván Darío Ejemplo Salazar']]);
+    }
+  });
+
+  it('INV-R12 M-62 unir_entidades del usuario antes de la ventana 2: el grupo no se mueve a la anfitriona nueva', () => {
+    const texto = 'Pagó Papelería Ficticia. Cotizó Ferretería Prueba. El taller Papelería Ficticia respondió, el taller Papelería Ficticia facturó y el taller Papelería Ficticia cobró.';
+    const { ctx, s0, w } = ventanas(EMPTY, texto);
+    const s1 = w(s0, 1, [['Papelería Ficticia', 0, 'ORG'], ['Ferretería Prueba', 0, 'ORG']]);
+    const [pap, fer] = dets(s1) as [Detection, Detection];
+    const u = act(s1, { kind: 'unir_entidades', fromId: fer.entityId, intoId: pap.entityId }, ctx);
+    const ventana2: Array<[string, number, 'ORG']> = [0, 1, 2].map((k) => ['taller Papelería Ficticia', k, 'ORG']);
+    // Sin la acción del usuario, C3 lleva «Papelería Ficticia» a la entidad de más menciones (la del taller).
+    expect(grupos(w(s1, 2, ventana2))).toEqual([['Papelería Ficticia', 'taller Papelería Ficticia', 'taller Papelería Ficticia', 'taller Papelería Ficticia'],
+      ['Ferretería Prueba']]);
+    // Con la unión del usuario, su grupo se queda junto, con su marcador y su confianza.
+    const s2 = w(u, 2, ventana2);
+    expect(grupos(s2)).toEqual([['Papelería Ficticia', 'Ferretería Prueba'], ['taller Papelería Ficticia', 'taller Papelería Ficticia', 'taller Papelería Ficticia']]);
+    expect(s2.entities[pap.entityId]?.marker).toBe(u.entities[pap.entityId]?.marker);
+    expect([s2.detections[pap.id]?.confidence, s2.detections[fer.id]?.confidence]).toEqual(['media', 'media']);
+  });
+
+  it('INV-R12 INV-T04 M-62 una entidad con el marcador fijado en el asunto no se mueve con la correferencia', () => {
+    const table: TableIndex = { byKey: { 'PER:ejemplo salazar': '[PERSONA_7]' }, counters: { PERSONA: 7 }, documentCount: 1 };
+    const { s0, w } = ventanas(table);
+    const s1 = w(s0, 1, [['Ejemplo Salazar', 0]]);
+    const corta = dets(s1)[0] as Detection;
+    expect(s1.entities[corta.entityId]).toMatchObject({ marker: '[PERSONA_7]', markerState: 'heredado' });
+    const s2 = w(s1, 2, [['Iván Darío Ejemplo Salazar', 0]]);
+    expect(markers(s2)).toEqual([['Ejemplo Salazar', '[PERSONA_7]'], ['Iván Darío Ejemplo Salazar', '[PERSONA_8]']]);
+  });
+
+  it('INV-R12 B-82 separar, aceptar, restablecer y otra ventana: la mención separada no se vuelve a unir', () => {
+    const { ctx, s0, w } = ventanas();
+    const s1 = w(s0, 1, [['Ejemplo Salazar', 0]]);
+    const corta = dets(s1)[0] as Detection;
+    const s2 = w(s1, 2, [['Iván Darío Ejemplo Salazar', 0], ['Ejemplo Salazar', 2]]);
+    const ivan = s2.detections[corta.id]?.entityId as Entity['id'];
+    expect(grupos(s2)).toEqual([['Ejemplo Salazar', 'Iván Darío Ejemplo Salazar', 'Ejemplo Salazar']]);
+    const sep = act(s2, { kind: 'separar_mencion', detectionId: corta.id }, ctx);
+    const rest = act(act(sep, { kind: 'aceptar', detectionId: corta.id }, ctx), { kind: 'restablecer', detectionId: corta.id }, ctx);
+    // restablecer conserva el `decidedBy` de separar_mencion; la clave de la detección lleva `~sep`.
+    expect(rest.detections[corta.id]).toMatchObject({ status: 'pendiente', decidedBy: 'individual', canonicalKey: 'PER:ejemplo salazar~sep' });
+    assertR05(rest);
+    const s3 = w(rest, 3, [['Ejemplo Salazar', 3]]);
+    expect(s3.detections[corta.id]?.entityId).toBe(sep.detections[corta.id]?.entityId);
+    expect(s3.detections[corta.id]?.entityId).not.toBe(ivan);
+    expect(s3.detections[corta.id]).toEqual(rest.detections[corta.id]);
   });
 });
 

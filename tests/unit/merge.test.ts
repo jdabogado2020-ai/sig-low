@@ -74,9 +74,9 @@ function assertInvariants(part: Part, out: readonly MergedCandidate[]): void {
     if (i > 0) expect((out[i - 1] as MergedCandidate).end).toBeLessThanOrEqual(d.start);   // sin solapes y por inicio
   }
 }
-function run(text: string, cands: DetectionCandidate[], rules: RuleRegistry = NO_RULES, kind: PartKind = 'cuerpo') {
+function run(text: string, cands: DetectionCandidate[], rules: RuleRegistry = NO_RULES, kind: PartKind = 'cuerpo', esVariante?: EsVarianteDe) {
   const part = mkPart(text, kind);
-  const out = mergeCandidates(part, cands, rules);
+  const out = mergeCandidates(part, cands, rules, esVariante);
   assertInvariants(part, out);
   return out;
 }
@@ -325,15 +325,56 @@ describe('T-MO-05 · bordes entre la lista y un tramo extendido por el modelo (7
     mk(t, sub, { type: 'PERSONA', source: 'lista', caseEntityId: id, confidence: 'alta', canonicalKey: `LISTA:${id}` }, occ);
   const per = (t: string, sub: string) => mk(t, sub, { type: 'PERSONA', source: 'modelo', nerLabel: 'PER', score: 0.7, canonicalKey: 'PER:x' });
 
+  /** El oráculo de pipeline.ts para la persona de la lista «Ana Ficticia Rojas»: un texto hecho de palabras de su nombre. */
+  const deAnaFicticiaRojas: EsVarianteDe = (id, texto) => id === CAS_A
+    && texto.trim().split(/\s+/u).every((w) => ['ana', 'ficticia', 'rojas'].includes(w.toLowerCase()));
+
   it('INV-R02 extiende a la izquierda, a ambos lados, con guion y en MAYÚSCULAS', () => {
     let t = 'firmó Ana Ficticia Rojas ayer';
-    expect(show(t, run(t, [lista(t, 'Ficticia Rojas'), per(t, 'Ana Ficticia Rojas')]))).toEqual(['PERSONA:«Ana Ficticia Rojas»:media:extendido']);
+    // A la izquierda solo con el nombre de pila de la persona de la lista (D-14, A-2: el oráculo de la lista lo confirma).
+    expect(show(t, run(t, [lista(t, 'Ficticia Rojas'), per(t, 'Ana Ficticia Rojas')], NO_RULES, 'cuerpo', deAnaFicticiaRojas)))
+      .toEqual(['PERSONA:«Ana Ficticia Rojas»:media:extendido']);
     t = 'firmó Ana Ficticia Rojas Prueba ayer';
-    expect(show(t, run(t, [lista(t, 'Ficticia Rojas'), per(t, 'Ana Ficticia Rojas Prueba')]))).toEqual(['PERSONA:«Ana Ficticia Rojas Prueba»:media:extendido']);
+    expect(show(t, run(t, [lista(t, 'Ficticia Rojas'), per(t, 'Ana Ficticia Rojas Prueba')], NO_RULES, 'cuerpo', deAnaFicticiaRojas)))
+      .toEqual(['PERSONA:«Ana Ficticia Rojas Prueba»:media:extendido']);
     t = 'firmó Ana Ficticia Rojas-Prueba ayer';
     expect(show(t, run(t, [lista(t, 'Ana Ficticia Rojas'), per(t, 'Ana Ficticia Rojas-Prueba')]))).toEqual(['PERSONA:«Ana Ficticia Rojas-Prueba»:media:extendido']);
     t = 'FIRMÓ ANA FICTICIA ROJAS PRUEBA AYER';
     expect(show(t, run(t, [lista(t, 'ANA FICTICIA ROJAS'), per(t, 'ANA FICTICIA ROJAS PRUEBA')]))).toEqual(['PERSONA:«ANA FICTICIA ROJAS PRUEBA»:media:extendido']);
+  });
+
+  it('INV-R02 D-14 (A-2) la regla E no une a dos titulares: con otro nombre de pila delante o con parentesco, la lista cede y el nombre entra entero', () => {
+    const apellidos = (tt: string, sub: string) => mk(tt, sub, { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'apellidos',
+      confidence: 'media', canonicalKey: `LISTA:${CAS_A}` });
+    // C29: el hermano con los apellidos de la persona de la lista quedaba con su marcador («Wilson» + la variante `apellidos`).
+    let t = 'Asistieron Wilson Ficticia Rojas y la demandante.';
+    let out = run(t, [apellidos(t, 'Ficticia Rojas'), per(t, 'Wilson Ficticia Rojas')], NO_RULES, 'cuerpo', deAnaFicticiaRojas);
+    expect(show(t, out)).toEqual(['PERSONA:«Wilson Ficticia Rojas»:media']);
+    expect(out[0]).toMatchObject({ source: 'modelo', canonicalKey: 'PER:x' });
+    expect(out[0]?.caseEntityId).toBeUndefined();
+    // Sin el oráculo de la lista no se sabe de quién es el nombre de pila: no extiende a la izquierda (cede, como en D-03 B).
+    t = 'firmó Ana Ficticia Rojas ayer';
+    out = run(t, [lista(t, 'Ficticia Rojas'), per(t, 'Ana Ficticia Rojas')]);
+    expect(out.map((d) => `${d.source}:${t.slice(d.start, d.end)}`)).toEqual(['modelo:Ana Ficticia Rojas']);
+    // El parentesco marca a otra persona de la familia: antes del nombre, en aposición después o dentro del tramo.
+    const casos: Array<[string, string]> = [
+      ['Ana Ficticia Rojas demandó. Su hija Ana Ficticia Rojas Prueba declaró.', 'Ana Ficticia Rojas Prueba'],
+      ['Declaró Ana Ficticia Rojas Prueba, hija de la demandante.', 'Ana Ficticia Rojas Prueba'],
+      ['Declaró la tía, Ana Ficticia Rojas Prueba, ayer.', 'Ana Ficticia Rojas Prueba'],
+      ['FIRMÓ ANA FICTICIA ROJAS JUNIOR AYER', 'ANA FICTICIA ROJAS JUNIOR'],
+    ];
+    for (const [tt, largo] of casos) {
+      const corto = largo.split(' ').slice(0, 3).join(' ');
+      // La aparición de la lista es la que empieza el nombre largo.
+      let occ = 0;
+      for (let k = tt.indexOf(corto); k >= 0 && k < tt.indexOf(largo); k = tt.indexOf(corto, k + 1)) occ++;
+      const o = run(tt, [lista(tt, corto, occ), per(tt, largo)], NO_RULES, 'cuerpo', deAnaFicticiaRojas);
+      expect(o.map((d) => `${d.source}:${tt.slice(d.start, d.end)}`), tt).toEqual([`modelo:${largo}`]);
+    }
+    // Sin parentesco ni otro nombre de pila, la regla E sigue igual (D-03 E).
+    t = 'Declaró la señora Ana Ficticia Rojas Prueba ayer.';
+    expect(show(t, run(t, [lista(t, 'Ana Ficticia Rojas'), per(t, 'Ana Ficticia Rojas Prueba')], NO_RULES, 'cuerpo', deAnaFicticiaRojas)))
+      .toEqual(['PERSONA:«Ana Ficticia Rojas Prueba»:media:extendido']);
   });
 
   it('INV-R02 una organización de la lista se extiende solo con un ORG del modelo', () => {
@@ -840,6 +881,25 @@ describe('T-MO-05 · fusión de una ventana del modelo contra lo ya fusionado (7
     const deAna: EsVarianteDe = (id) => id === CAS_A;
     expect(show(t2, porVentana(t2, [suelto('Ana', 'nombre_suelto'), suelto('Rojas', 'apellido_suelto')], [per(t2, 'Ana Rojas')], NO_RULES, deAna)))
       .toEqual(['PERSONA:«Ana Rojas»:media:extendido']);
+  });
+
+  it('INV-R02 INV-R12 D-14 (A-2) por ventana: el nombre de otra persona de la familia o con otro nombre de pila no toma la mención de la lista; la lista cede', () => {
+    let t = 'Su hija Ana Ficticia Rojas Prueba declaró';
+    const exacta = mk(t, 'Ana Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'exacta', confidence: 'alta', canonicalKey: `LISTA:${CAS_A}` });
+    const deAna: EsVarianteDe = (id, texto) => id === CAS_A && texto.trim().split(/\s+/u).every((w) => ['ana', 'ficticia', 'rojas'].includes(w.toLowerCase()));
+    // Antes (PB-3-r1): la lista tomaba el tramo entero y la hija quedaba con el marcador de la demandante.
+    let out = porVentana(t, [exacta], [per(t, 'Ana Ficticia Rojas Prueba')], NO_RULES, deAna);
+    expect(show(t, out)).toEqual(['PERSONA:«Ana Ficticia Rojas Prueba»:media']);
+    expect(out[0]).toMatchObject({ source: 'modelo', canonicalKey: 'PER:ana ficticia rojas prueba' });
+    t = 'Asistió Wilson Ficticia Rojas al despacho';
+    const ap = mk(t, 'Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'apellidos', confidence: 'media', canonicalKey: `LISTA:${CAS_A}` });
+    out = porVentana(t, [ap], [per(t, 'Wilson Ficticia Rojas')], NO_RULES, deAna);
+    expect(show(t, out)).toEqual(['PERSONA:«Wilson Ficticia Rojas»:media']);
+    expect(out[0]?.source).toBe('modelo');
+    // Con el nombre de pila de la persona de la lista, la regla E sigue igual.
+    t = 'Asistió Ana Ficticia Rojas al despacho';
+    const ap2 = mk(t, 'Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'apellidos', confidence: 'media', canonicalKey: `LISTA:${CAS_A}` });
+    expect(show(t, porVentana(t, [ap2], [per(t, 'Ana Ficticia Rojas')], NO_RULES, deAna))).toEqual(['PERSONA:«Ana Ficticia Rojas»:media:extendido']);
   });
 
   it('INV-R02 D-03 A y B el ORG del modelo con un apellido suelto de la lista entra entero, con su sufijo (M3 por ventana)', () => {

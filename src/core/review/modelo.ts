@@ -39,7 +39,8 @@ export function modeloInicial(desactivado: boolean): ModelProgress {
  * `ventana` cuenta ventanas incorporadas (1 a N), no el índice 0 del motor.
  *
  * Única excepción a INV-R12 (D-03 B y E, 31-oct): la fusión propone que una detección de la lista ceda ante el nombre completo
- * del modelo o lo tome. El reductor la acepta solo si esa detección sigue intacta (`listaIntacta` en entities.ts). Si el usuario
+ * del modelo o lo tome; también cede la que está dentro del nombre completo de otra persona (D-14, A-2: parentesco u otro nombre
+ * de pila, `cedeAnteModelo`). El reductor la acepta solo si esa detección sigue intacta (`listaIntacta` en entities.ts). Si el usuario
  * ya actuó sobre ella, aquí la propuesta vuelve a ser el tramo del modelo partido alrededor de lo que no cede, con cada resto
  * por 7.11.2 (recorte R-MOD-03, confianza baja): el resultado de antes de D-03, sin perder el resto del nombre.
  */
@@ -106,7 +107,7 @@ function restosDePropuestas(state: ReviewState, ventana: number, delta: Detectio
     const tocadas = vivas.filter((o) => tocan(o, d0));
     const ediciones = Object.values(state.spanEdits).map((x) => x.span).filter((x) => tocan(x, d0));
     const propuesta = esPropuestaSobreLista(state, d0);
-    const entra = ediciones.length === 0 && (propuesta ? tocadas.every((o) => cedeAnteModelo(state, o, d0, ctx.caseList)) : tocadas.length === 0);
+    const entra = ediciones.length === 0 && (propuesta ? tocadas.every((o) => cedeAnteModelo(state, o, d0, ctx.caseList, partes)) : tocadas.length === 0);
     if (entra || !CON_RESTOS.has(d0.type) || (!propuesta && d0.source !== 'modelo')) { detections.push(d0); continue; }
     cambio = true;
     const role = d0.type === 'PERSONA' ? 'OTRA_PERSONA' : undefined;

@@ -319,7 +319,7 @@ export function buildDetectionSet(doc: DocumentModel, merged: readonly MergedCan
     state.detections[det.id] = det; e.mentions.push(det.id); state.order.push(det.id);
   }
   for (const e of Object.values(state.entities)) settleEntity(e, state, ctx.table);
-  correferir(state, { caseList: ctx.caseList, parts });
+  correferir(state, { caseList: ctx.caseList, parts, table: ctx.table });
   linkHolders(state, naturalNit);
   tidyEntities(state);
   preapplyRotulo(state, parts, ctx);
@@ -345,32 +345,66 @@ function settleEntity(e: Entity, state: ReviewState, table: TableIndex): void {
 }
 
 // ---------------------------------------------------------------------------------------------
-// 7.12.2.4 · Correferencia (SUPUESTO S-7.11) y su extensión de PB-3-r1
+// 7.12.2.4 · Correferencia (SUPUESTO S-7.11), su extensión de PB-3-r1 y sus límites de PB-3-r2 (D-14)
 // ---------------------------------------------------------------------------------------------
 //
 // «Mismo dato, mismo marcador» (6.6.1) entre las entidades que propone el modelo. Solo agrupa: no crea, no borra ni mueve tramos.
 // Cada unión lleva las menciones del modelo a la entidad anfitriona con confianza baja (media si es el nombre completo de una
-// persona de la lista, como D-03 E). Reglas, en este orden:
+// persona de la lista, como D-03 E). D-14, decisión 3 (A-2): la correferencia nunca une a dos titulares distintos; es mejor perder
+// consistencia que crear una colisión (un marcador para dos titulares reinserta el dato de otro). Reglas, en este orden:
 //   C0 · Un grupo por clave (7.12.2 paso 2), solo por ventana: la mención nueva cuya clave ya está en una entidad a la que se unió
-//        antes va a esa entidad («una unión ya hecha y mostrada no se deshace»).
+//        antes va a esa entidad («una unión ya hecha y mostrada no se deshace»), salvo que otra persona también la contenga: con
+//        dos anfitrionas no se une a ninguna (S-7.11).
 //   C1 · Nombre de la lista incompleto (F44): una PER: del modelo que contiene, en orden y desde el nombre de pila, todas las palabras
-//        del nombre de **una sola** persona de la lista es esa persona («Martha Cecilia Ejemplo-Acosta Ortiz» de «Martha Ejemplo-Acosta»).
+//        del nombre de **una sola** persona de la lista es esa persona («Martha Cecilia Ejemplo-Acosta Ortiz» de «Martha Ejemplo-Acosta»),
+//        salvo que el texto la marque como otra persona de la familia (`marcaOtroTitular`: «su hijo…», «…, hijo de…», «Junior»).
 //   C2 · Sigla silábica: una ORG: del modelo de una sola palabra en mayúsculas formada con prefijos, en orden, de cada palabra del
-//        núcleo de **una sola** organización de la lista («FESA» de «Ferretería Ejemplo S.A.S.»).
-//   C3 · Mismo núcleo: dos entidades del modelo en PER:, ORG: o LUGAR: con las mismas palabras de nombre (sin sufijo societario)
-//        son una, tenga la etiqueta que tenga («Papelería Ficticia» dicha una vez PER y dos ORG; «taller Laboratorio Clínico Prueba
-//        Ltda.» y «Laboratorio Clínico Prueba Ltda.»). Gana la de más menciones; a igualdad, la de texto limpio y el orden de 7.11.3.
+//        núcleo de **una sola** organización de la lista («FESA» de «Ferretería Ejemplo S.A.S.»), solo si el texto la define junto
+//        a una mención de esa organización («(FESA)», «en adelante FESA», «FESA (Ferretería…)»).
+//   C3 · Mismo núcleo dentro del mismo tipo: dos personas, dos organizaciones o dos lugares del modelo con las mismas palabras de
+//        nombre (sin sufijo societario) son una («taller Laboratorio Clínico Prueba Ltda.» y «Laboratorio Clínico Prueba Ltda.»).
+//        Gana la de más menciones; a igualdad, la de texto limpio y el orden de 7.11.3. Nunca una persona con una organización o
+//        un lugar, ni una organización con un lugar: «Pedro Ejemplo Gómez» y «Pedro Ejemplo Gómez S.A.S.» son dos titulares.
 //   C4 · S-7.11: una PER: de 1 o 2 palabras de nombre cuyas palabras están todas en **una sola** persona más larga se une a ella. La
 //        anfitriona puede ser también una persona de la lista (sus menciones extendidas por D-03 E o unidas por C1 dan sus palabras)
-//        y suma el nombre de pila de su correo («Prueba Giraldo <sergio.prueba@…>», también si el modelo la etiquetó ORG) y el
-//        apodo que el texto introduce («Constanza Ficticia Ruiz, a quien le decimos Cata»). Una ORG: del modelo de 1 o 2 palabras de
-//        nombre, sin sufijo societario ni token de salud, contenida en una sola persona y en ninguna organización, es esa persona.
+//        y suma el nombre de pila de su correo («Prueba Giraldo <sergio.prueba@…>») y el apodo que el texto introduce
+//        («Constanza Ficticia Ruiz, a quien le decimos Cata»). Una ORG o un LUGAR del modelo nunca se une a una persona.
 // Con 2 o más candidatas no se une (S-7.11). Con los resultados por ventana (reductor, `incorporar_modelo`) la correferencia se
 // recalcula sobre lo acumulado: solo mueve detecciones del modelo pendientes sin ninguna acción del usuario, nunca deshace una
 // unión, no une lo que el usuario separó o rechazó (M-12), y una unión exige que una de las dos entidades sea nueva o haya
-// recibido menciones en esa ventana.
+// recibido menciones en esa ventana. M-62: una entidad con una decisión del usuario (`cambiar_rol`, `unir_entidades`, un
+// marcador fijado en el asunto) nunca se mueve. B-82: una mención separada lleva `~sep` en su clave y `restablecer` conserva su
+// `decidedBy`. La regla E de merge.ts (D-03 E) tiene los mismos límites (`otroTitularEnLaExtension`).
 
 const TRATAMIENTOS: ReadonlySet<string> = new Set('senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr'.split('|'));
+/** D-14 (A-2) · Palabras de parentesco (vista `lista`): marcan a otra persona de la familia, que puede llevar el mismo nombre. */
+const PARENTESCO = String.raw`(?:hij[oa]s?|hijastr[oa]s?|padres?|madres?|padrastros?|madrastras?|papa|mama|herman[oa]s?|ti[oa]s?`
+  + String.raw`|sobrin[oa]s?|prim[oa]s?|abuel[oa]s?|bisabuel[oa]s?|niet[oa]s?|bisniet[oa]s?|espos[oa]s?|conyuges?`
+  + String.raw`|companer[oa]s? permanentes?|suegr[oa]s?|yernos?|nueras?|cunad[oa]s?|homonim[oa]s?)`;
+/** Lo que se mira antes y después del nombre (vista `lista`, blancos colapsados). */
+const VENTANA_PARENTESCO = 48;
+/** «su hijo Pedro…», «la tía Ana…», «Hijo: Pedro…», «del hermano menor, el señor Pedro…»: el parentesco pegado antes del nombre. */
+const RE_PARENTESCO_ANTES = new RegExp(String.raw`(?<![\p{L}\p{N}])` + PARENTESCO
+  + String.raw`(?: (?:menor|mayor|menores|mayores|unic[oa]|legitim[oa]|natural|adoptiv[oa]|biologic[oa]|politic[oa]))? ?[,:]? ?`
+  + String.raw`(?:(?:el|la) )?(?:(?:senor|senora|senorita|don|dona|sr|sra|srta|dr|dra|doctor|doctora)\.? ?)?$`, 'u');
+/** «Pedro…, hijo de…», «Pedro… (su hijo)», «Pedro…, la tía», «Pedro… hijo de…», «Pedro… Jr.»: el parentesco en aposición. */
+const RE_PARENTESCO_DESPUES = new RegExp(String.raw`^ ?(?:[,(] ?(?:(?:su|sus|mi|mis|nuestr[oa]s?|el|la|los|las) )?` + PARENTESCO
+  + String.raw`|(?:[,(] ?)?(?:junior|jr|senior)|` + PARENTESCO + String.raw` (?:de|del))(?![\p{L}\p{N}])`, 'u');
+/** «Pedro Ejemplo Junior», «PEDRO EJEMPLO HIJO»: el parentesco dentro del tramo. */
+const RE_PARENTESCO_DENTRO = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:` + PARENTESCO + String.raw`|junior|jr|senior)(?![\p{L}\p{N}])`, 'u');
+
+/**
+ * D-14 (A-2) · ¿El texto marca el nombre de [start, end) como el de otra persona de la familia? Parentesco pegado antes
+ * («su hijo Pedro Luis Ejemplo Prueba»), en aposición después («…, hijo de Pedro Ejemplo», «… (tía)», «… Jr.») o dentro del
+ * tramo («Pedro Ejemplo Junior»). Un nombre así nunca se une a la persona de la lista que contiene (C1, regla E de merge.ts):
+ * el padre y el hijo comparten nombre de pila y apellido. Ante la duda no se une («su padre Pedro…» puede ser la misma persona
+ * de la lista si el posesivo es de otro): se pierde consistencia, nunca se crea una colisión. Vista `lista`, ventanas fijas.
+ */
+export function marcaOtroTitular(text: string, start: number, end: number, kind: PartKind = 'cuerpo'): boolean {
+  return RE_PARENTESCO_ANTES.test(fold(text.slice(Math.max(0, start - VENTANA_PARENTESCO), start), kind))
+    || RE_PARENTESCO_DENTRO.test(fold(text.slice(start, end), kind))
+    || RE_PARENTESCO_DESPUES.test(fold(text.slice(end, end + VENTANA_PARENTESCO), kind));
+}
 const RE_PIEZAS_NOMBRE = /[\s\-‐‑]+/u;
 const RE_EMPIEZA_MAYUSCULA = /^[^\p{L}]*\p{Lu}/u;
 /** «Nombre <usuario@dominio>»: el usuario del correo que sigue a la mención (cabecera De:/Para: de un correo, F52). */
@@ -420,20 +454,43 @@ export function esSiglaSilabica(sigla: string, palabras: readonly string[], sufi
   return go(0, 0);
 }
 
-/** La correferencia solo mueve detecciones del modelo pendientes sobre las que el usuario no hizo nada (`separar_mencion` deja
- *  `decidedBy`: una mención separada no se vuelve a unir). */
+/**
+ * La correferencia solo mueve detecciones del modelo pendientes sobre las que el usuario no hizo nada. Rastros de una acción:
+ * `decidedBy` (aceptar, rechazar…; también `separar_mencion`, y `cambiar_rol` y `unir_entidades` sobre las pendientes, M-62),
+ * `~sep` en la clave (`separar_mencion`, que `restablecer` no borra: B-82) y un rol distinto del de nacimiento (`cambiar_rol`,
+ * M-62: el modelo propone `OTRA_PERSONA` para una persona y ningún rol, o el del tipo, para una organización o un lugar).
+ * Límite: un `unir_entidades` seguido de una decisión y un `restablecer` en cada mención ya no deja rastro.
+ */
 function movible(d: Detection): boolean {
   return d.source === 'modelo' && d.status === 'pendiente' && d.decidedBy === undefined && d.rejectReason === undefined
     && d.replacement.edited === undefined && d.replacement.generalized === undefined && d.coveredBy === undefined
-    && d.suggestionId === undefined && !d.canonicalKey.includes('~sep');
+    && d.suggestionId === undefined && !d.canonicalKey.includes('~sep')
+    && (d.role === undefined || d.role === (d.type === 'PERSONA' ? 'OTRA_PERSONA' : d.type));
 }
 
 interface Correferencia {
   caseList: readonly CaseEntity[];
   parts: ReadonlyMap<PartId, Part>;
+  /** M-62: una entidad con el marcador fijado en el asunto (heredado o definitivo) no se mueve. */
+  table: TableIndex;
   /** Solo en el reductor: entidades nuevas o con menciones nuevas de esta ventana. */
   cambiadas?: ReadonlySet<EntityId>;
 }
+
+/** C3 · Tipo de la agrupación: persona, organización o lugar (D-14: nunca se une entre tipos distintos). */
+const tipoC3 = (t: DetectableType): string => (t === 'PERSONA' ? 'PER' : isOrg(t) ? 'ORG' : t);
+
+/** C2 (D-14) · Signos que rodean una sigla definida: comillas y raya. */
+const COMILLAS = `"«“'‘»”’`;
+/** Palabras con que el texto define una sigla (vista `lista`). */
+const DEFINE_SIGLA = String.raw`(?:en adelante|en lo sucesivo|en lo que sigue|que en adelante se (?:denominara|llamara)|por sus siglas`
+  + String.raw`|con (?:la )?sigla|sigla|identificad[oa] con la sigla)(?: (?:como|simplemente))? ?[,:]? ?`;
+/** Lo que va entre el nombre de la organización y su sigla al definirla (vista `lista`): un paréntesis, una raya o las palabras
+ *  que la definen («(», « – », «, en adelante», «(en lo sucesivo, «»). La sola yuxtaposición («… S.A.S. FESA pagó») no la define. */
+const RE_ANTES_DE_SIGLA = new RegExp(String.raw`^\.? ?[,;]? ?(?:[(\[—–-] ?(?:` + DEFINE_SIGLA + String.raw`)?|` + DEFINE_SIGLA + String.raw`)`
+  + String.raw`(?:(?:el|la|los|las) )?[${COMILLAS}]? ?$`, 'u');
+/** Tras la sigla, para «FESA (Ferretería Ejemplo S.A.S.)»: solo un paréntesis o una raya antes del nombre. */
+const RE_ENTRE_SIGLA_Y_NOMBRE = /^[ \t]*[(\[—–-][ \t]*$/u;
 
 /** 7.12.2.4 · Correferencia sobre todo el estado (C1 a C4, arriba). */
 function correferir(state: ReviewState, cx: Correferencia): void {
@@ -441,19 +498,31 @@ function correferir(state: ReviewState, cx: Correferencia): void {
   for (const e of Object.values(state.entities)) e.mentions = e.mentions.filter((m) => state.detections[m]?.entityId === e.id);
   const det = (m: DetectionId): Detection => state.detections[m] as Detection;
   const kindOf = (d: Detection): PartKind => cx.parts.get(d.partId)?.kind ?? 'cuerpo';
+  // M-62: una entidad con el marcador fijado en el asunto, o con alguna mención decidida, no se mueve.
   const delModelo = (e: Entity): boolean => e.mentions.length > 0 && e.caseEntityId === undefined
-    && !e.canonicalKey.startsWith('LISTA:') && e.mentions.every((m) => movible(det(m)));
+    && !e.canonicalKey.startsWith('LISTA:') && !isFixed(e, cx.table) && e.mentions.every((m) => movible(det(m)));
+  /** D-14 (A-2): sin el texto de la parte no se puede mirar el contexto, y ante la duda no se une. */
+  const otroTitular = (d: Detection): boolean => {
+    const p = cx.parts.get(d.partId);
+    return p === undefined || marcaOtroTitular(p.text, d.start, d.end, p.kind);
+  };
   // M-12: si el usuario rechazó una mención de la entidad que se solapa con una de las que se unirían, ese texto no es esa entidad.
   const rechazos = Object.values(state.detections).filter((o) => o.status === 'rechazada');
   const puede = (a: Entity, b: Entity): boolean => (cx.cambiadas === undefined || cx.cambiadas.has(a.id) || cx.cambiadas.has(b.id))
     && !a.mentions.some((m) => rechazos.some((o) => overlaps(spanOf(o), spanOf(det(m)))
       && (o.entityId === b.id || (b.caseEntityId !== undefined && o.caseEntityId === b.caseEntityId))));
+  /** La mención que da nombre a la entidad: la primera con la clave de la entidad. Las formas cortas que se le unieron antes van
+   *  primero en el orden de lectura y no la definen (D-14, A-2: si no, la anfitriona «Iván Darío Ejemplo Salazar» parecía otra
+   *  «Ejemplo Salazar» para C3 y absorbía las formas cortas nuevas aunque hubiera una segunda anfitriona). */
+  const cabeza = (e: Entity): Detection => det(e.mentions.find((m) => det(m).canonicalKey === e.canonicalKey) ?? e.mentions[0] as DetectionId);
   const palabrasDe = (e: Entity): string[] => {
     const out = new Set<string>();
     for (const m of e.mentions) for (const w of palabrasDeNombre(det(m).text, kindOf(det(m)))) out.add(w);
     return [...out];
   };
   const unir = (from: Entity, into: Entity, confianza: Detection['confidence']): void => {
+    // D-14 (A-2): nunca entre tipos distintos (persona, organización, lugar). Entre clases de organización sí («FESA» → la EMPRESA).
+    if (from !== into && tipoC3(from.type) !== tipoC3(into.type)) return;
     for (const m of from.mentions) {
       const d = det(m);
       d.entityId = into.id; d.confidence = confianza;
@@ -478,51 +547,127 @@ function correferir(state: ReviewState, cx: Correferencia): void {
   };
   const vivas = (): Entity[] => Object.values(state.entities).filter((e) => e.mentions.length > 0);
 
+  /**
+   * C4 · Índice por palabra de las personas anfitrionas (lineal en el número de entidades: el reductor lo arma en cada ventana).
+   * Suma el nombre de pila del correo y el apodo introducido; una persona de la lista suma su nombre en la lista.
+   */
+  const indicePersonas = (): { candidatas: (s: Entity, w: readonly string[]) => Entity[] } => {
+    const extra = new Map<EntityId, Set<string>>();
+    for (const d of Object.values(state.detections)) {
+      const part = cx.parts.get(d.partId);
+      if (part === undefined || d.type !== 'PERSONA' || d.status === 'rechazada') continue;
+      const tras = part.text.slice(d.end, d.end + 96);
+      const add = (w: string): void => { const s = extra.get(d.entityId) ?? new Set<string>(); s.add(w); extra.set(d.entityId, s); };
+      const c = RE_CORREO_TRAS_NOMBRE.exec(tras);
+      if (c !== null) {
+        const nombre = palabrasDeNombre(d.text, part.kind);
+        const toks = fold(c[1] as string, part.kind).split(/[^\p{L}]+/u).filter((t) => t.length >= 3);
+        const fuera = [...new Set(toks.filter((t) => !nombre.includes(t)))];
+        if (toks.some((t) => nombre.includes(t)) && fuera.length === 1 && unidadesDeNombre(d.text, part.kind).length <= 3) add(fuera[0] as string);
+      }
+      const a = RE_APODO_TRAS_NOMBRE.exec(tras);
+      if (a !== null) add(fold(a[1] as string, part.kind));
+    }
+    const anfitrionas = new Map<EntityId, Set<string>>();
+    const delNombreDeLista = new Map<EntityId, Set<string>>();
+    const porPalabra = new Map<string, Entity[]>();
+    for (const e of vivas()) {
+      if (e.type !== 'PERSONA' || !(e.canonicalKey.startsWith('PER:') || e.canonicalKey.startsWith('LISTA:'))) continue;
+      const w = new Set([...palabrasDe(e), ...(extra.get(e.id) ?? [])]);
+      const ce = e.caseEntityId === undefined ? undefined : cx.caseList.find((c) => c.id === e.caseEntityId);
+      if (ce !== undefined) {
+        const n = new Set(palabrasDeNombre(ce.name));
+        delNombreDeLista.set(e.id, n);
+        for (const x of n) w.add(x);
+      }
+      anfitrionas.set(e.id, w);
+      for (const x of w) { const l = porPalabra.get(x); if (l === undefined) porPalabra.set(x, [e]); else l.push(e); }
+    }
+    // Una persona de la lista solo es anfitriona de una forma con alguna palabra que su nombre en la lista no trae: las formas hechas
+    // solo de palabras del nombre son variantes y las busca la lista («Las personas de la lista no lo necesitan», 7.12.2.4).
+    const candidatas = (s: Entity, w: readonly string[]): Entity[] => (w.length === 0 ? [] : (porPalabra.get(w[0] as string) ?? []))
+      .filter((o) => o !== s && o.mentions.length > 0
+        && (anfitrionas.get(o.id)?.size ?? 0) > w.length && w.every((x) => anfitrionas.get(o.id)?.has(x) === true)
+        && (!delNombreDeLista.has(o.id) || w.some((x) => delNombreDeLista.get(o.id)?.has(x) !== true)));
+    return { candidatas };
+  };
+
   // C0 · 7.12.2 paso 2, un grupo por clave: con los resultados por ventana, una mención nueva con la misma clave que una que ya se
   // unió a otra entidad (una unión ya hecha no se deshace) va a esa entidad. Al construir desde cero no ocurre.
+  // S-7.11 (D-14, A-2): si otra persona también contiene la forma corta, ya hay dos anfitrionas y la mención nueva no se une a
+  // ninguna (las formas cortas ya unidas a la primera se quedan: una unión no se deshace).
   if (cx.cambiadas !== undefined) {
+    let indice: ReturnType<typeof indicePersonas> | null = null;
     for (const s of vivas()) {
       if (!cx.cambiadas.has(s.id) || !delModelo(s)) continue;
       const k = s.canonicalKey;
       const hosts = vivas().filter((o) => o !== s && o.mentions.some((m) => det(m).canonicalKey === k && det(m).status !== 'rechazada'));
-      if (hosts.length === 1) unir(s, hosts[0] as Entity, 'baja');
+      if (hosts.length !== 1) continue;
+      const host = hosts[0] as Entity;
+      if (s.type === 'PERSONA') {
+        indice ??= indicePersonas();
+        if (indice.candidatas(s, palabrasDe(s)).some((o) => o !== host)) continue;
+      }
+      if (puede(s, host)) unir(s, host, 'baja');
     }
   }
 
-  // C1 · Nombre de la lista incompleto.
+  // C1 · Nombre de la lista incompleto. D-14 (A-2): no si el texto lo marca como otra persona de la familia («su hijo…»).
   const personasLista = cx.caseList.filter((c) => c.kind === 'persona').map((c) => ({ c, w: palabrasDeNombre(c.name) }))
     .filter((x) => x.w.length >= 2);
   for (const e of vivas()) {
     if (e.type !== 'PERSONA' || !e.canonicalKey.startsWith('PER:') || !delModelo(e)) continue;
-    const d0 = det(e.mentions[0] as DetectionId);
+    if (cx.cambiadas !== undefined && !cx.cambiadas.has(e.id)) continue;
+    const d0 = cabeza(e);
     const w = palabrasDeNombre(d0.text, kindOf(d0));
     const hits = personasLista.filter((x) => w.length > x.w.length && w[0] === x.w[0] && esSubsecuencia(x.w, w));
-    if (hits.length === 1 && (cx.cambiadas === undefined || cx.cambiadas.has(e.id))) haciaLista((hits[0] as { c: CaseEntity }).c, e, 'media');
+    if (hits.length !== 1 || e.mentions.some((m) => otroTitular(det(m)))) continue;
+    haciaLista((hits[0] as { c: CaseEntity }).c, e, 'media');
   }
 
-  // C2 · Sigla silábica de una organización de la lista.
+  // C2 · Sigla silábica de una organización de la lista. D-14 (A-2): solo si el texto la deriva de esa organización, es decir, la
+  // define junto a una mención suya («Ferretería Ejemplo S.A.S. (FESA)», «…, en adelante «FESA»», «FESA (Ferretería…)»). Una
+  // sigla que solo encaja en los prefijos puede ser de otra institución («estudió en el CESA»): se queda aparte.
   const orgsLista = cx.caseList.filter((c) => c.kind === 'organizacion').map((c) => {
     const lv = fold(c.name, 'cuerpo').trim();
     const m = RE_SUFIJO_FINAL.exec(lv);
     const nucleo = (m === null ? lv : lv.slice(0, m.index)).replace(RE_SALUD_ALL, ' ');
     return { c, w: nucleo.split(/[^\p{L}\p{N}]+/u).filter((t) => t !== '' && !FW_SET.has(t)), suf: m === null ? '' : m[0].replace(/[^a-z]/gu, '') };
   });
+  const definida = (ce: CaseEntity, sigla: string): boolean => {
+    const lista = Object.values(state.entities).find((x) => x.canonicalKey === `LISTA:${ce.id}`);
+    for (const m of lista?.mentions ?? []) {
+      const n = det(m);
+      const p = cx.parts.get(n.partId);
+      if (p === undefined || n.status === 'rechazada') continue;
+      const tras = fold(p.text.slice(n.end, n.end + 96), p.kind);
+      for (let i = tras.indexOf(sigla); i >= 0 && i <= 80; i = tras.indexOf(sigla, i + 1)) {
+        if (RE_ANTES_DE_SIGLA.test(tras.slice(0, i)) && !/[\p{L}\p{N}]/u.test(tras.charAt(i + sigla.length))) return true;
+      }
+      const antes = fold(p.text.slice(Math.max(0, n.start - 16), n.start), p.kind);
+      const j = antes.lastIndexOf(sigla);
+      if (j >= 0 && (j === 0 || !/[\p{L}\p{N}]/u.test(antes.charAt(j - 1))) && RE_ENTRE_SIGLA_Y_NOMBRE.test(antes.slice(j + sigla.length))) return true;
+    }
+    return false;
+  };
   for (const e of vivas()) {
     if (!isOrg(e.type) || !e.canonicalKey.startsWith('ORG:') || !delModelo(e)) continue;
+    if (cx.cambiadas !== undefined && !cx.cambiadas.has(e.id)) continue;
     const t = det(e.mentions[0] as DetectionId).text.trim();
     if (!RE_SIGLA.test(t) || e.mentions.some((m) => det(m).text.trim() !== t)) continue;
     const s = fold(t, 'cuerpo');
     const hits = orgsLista.filter((x) => esSiglaSilabica(s, x.w, x.suf));
-    if (hits.length === 1 && (cx.cambiadas === undefined || cx.cambiadas.has(e.id))) haciaLista((hits[0] as { c: CaseEntity }).c, e, 'baja');
+    if (hits.length === 1 && definida((hits[0] as { c: CaseEntity }).c, s)) haciaLista((hits[0] as { c: CaseEntity }).c, e, 'baja');
   }
 
-  // C3 · Mismo texto con otra etiqueta, o con una palabra común que el modelo se llevó («taller Laboratorio Clínico Prueba Ltda.»):
-  // el núcleo son las palabras de nombre del texto, sin el sufijo societario final.
+  // C3 · Mismo texto con una palabra común que el modelo se llevó («taller Laboratorio Clínico Prueba Ltda.»): el núcleo son las
+  // palabras de nombre del texto, sin el sufijo societario final. D-14 (A-2): solo dentro del mismo tipo. Una persona y su sociedad
+  // epónima («Pedro Ejemplo Gómez» y «Pedro Ejemplo Gómez S.A.S.») o una persona y un lugar con el mismo nombre son dos titulares.
   const nucleoC3 = (e: Entity): string | null => {
     if (!/^(?:PER|ORG|LUGAR):/u.test(e.canonicalKey) || /^ORG:(?:EPS|IPS):/u.test(e.canonicalKey) || e.canonicalKey.includes(':~')) return null;
-    const d0 = det(e.mentions[0] as DetectionId);
+    const d0 = cabeza(e);
     const n = palabrasDeNombre(d0.text, kindOf(d0)).join(' ').replace(RE_SUFIJO_FINAL, '').trim();
-    return /\p{L}{3}/u.test(n) ? n : null;
+    return /\p{L}{3}/u.test(n) ? `${tipoC3(e.type)}|${n}` : null;
   };
   const grupos = new Map<string, Entity[]>();
   for (const e of vivas()) {
@@ -536,92 +681,26 @@ function correferir(state: ReviewState, cx: Correferencia): void {
     const orden = (t: DetectableType): number => { const i = ORDEN_C3.indexOf(t); return i < 0 ? ORDEN_C3.length : i; };
     // Anfitriona: la de más menciones; a igualdad, la de texto limpio (sin palabras comunes ni tratamientos), y luego el orden de tipos.
     const sucio = (e: Entity): number => {
-      const t = det(e.mentions[0] as DetectionId).text;
+      const t = cabeza(e).text;
       return unidadesDeNombre(t, 'cuerpo').length === t.trim().split(/\s+/u).length ? 0 : 1;
     };
     const into = [...g].sort((a, b) => b.mentions.length - a.mentions.length || sucio(a) - sucio(b) || orden(a.type) - orden(b.type))[0] as Entity;
     for (const e of g) if (e !== into && delModelo(e) && puede(e, into)) unir(e, into, 'baja');
   }
 
-  // C4 · S-7.11, con la lista, el correo y el apodo.
-  const extra = new Map<EntityId, Set<string>>();
-  // Una ORG: del modelo seguida de «<nombre.apellido@…>» con uno de sus apellidos es una persona (el modelo le cambió la etiqueta).
-  const porCorreo = new Set<EntityId>();
-  for (const d of Object.values(state.detections)) {
-    const part = cx.parts.get(d.partId);
-    const ent = state.entities[d.entityId];
-    const orgDelModelo = isOrg(d.type) && ent !== undefined && ent.canonicalKey.startsWith('ORG:') && delModelo(ent);
-    if (part === undefined || (d.type !== 'PERSONA' && !orgDelModelo) || d.status === 'rechazada') continue;
-    const tras = part.text.slice(d.end, d.end + 96);
-    const add = (w: string): void => { const s = extra.get(d.entityId) ?? new Set<string>(); s.add(w); extra.set(d.entityId, s); };
-    const c = RE_CORREO_TRAS_NOMBRE.exec(tras);
-    if (c !== null) {
-      const nombre = palabrasDeNombre(d.text, part.kind);
-      const toks = fold(c[1] as string, part.kind).split(/[^\p{L}]+/u).filter((t) => t.length >= 3);
-      const fuera = [...new Set(toks.filter((t) => !nombre.includes(t)))];
-      if (toks.some((t) => nombre.includes(t)) && fuera.length === 1 && unidadesDeNombre(d.text, part.kind).length <= 3) {
-        add(fuera[0] as string);
-        if (orgDelModelo) porCorreo.add(d.entityId);
-      }
-    }
-    const a = d.type === 'PERSONA' ? RE_APODO_TRAS_NOMBRE.exec(tras) : null;
-    if (a !== null) add(fold(a[1] as string, part.kind));
-  }
-  const personas = vivas().filter((e) => (e.type === 'PERSONA' && (e.canonicalKey.startsWith('PER:') || e.canonicalKey.startsWith('LISTA:')))
-    || porCorreo.has(e.id));
-  // Índices por palabra: lineal en el número de entidades (el reductor corre esto en cada ventana).
-  const anfitrionas = new Map<EntityId, Set<string>>();
-  const delNombreDeLista = new Map<EntityId, Set<string>>();
-  const porPalabra = new Map<string, Entity[]>();
-  for (const e of personas) {
-    const w = new Set([...palabrasDe(e), ...(extra.get(e.id) ?? [])]);
-    const ce = e.caseEntityId === undefined ? undefined : cx.caseList.find((c) => c.id === e.caseEntityId);
-    if (ce !== undefined) {
-      const n = new Set(palabrasDeNombre(ce.name));
-      delNombreDeLista.set(e.id, n);
-      for (const x of n) w.add(x);
-    }
-    anfitrionas.set(e.id, w);
-    for (const x of w) { const l = porPalabra.get(x); if (l === undefined) porPalabra.set(x, [e]); else l.push(e); }
-  }
-  const orgPorPalabra = new Map<string, Array<{ e: Entity; w: Set<string> }>>();
-  for (const e of vivas()) {
-    if (!isOrg(e.type)) continue;
-    const w = new Set(palabrasDe(e));
-    for (const x of w) { const l = orgPorPalabra.get(x); if (l === undefined) orgPorPalabra.set(x, [{ e, w }]); else l.push({ e, w }); }
-  }
+  // C4 · S-7.11 entre personas, con la lista, el nombre de pila del correo y el apodo. D-14 (A-2): una ORG o un LUGAR del modelo
+  // ya no se une a una persona, tampoco por el correo que sigue al nombre (el buzón de «Prueba Giraldo» puede ser de la sociedad).
+  const indice = indicePersonas();
   for (const s of vivas()) {
-    const persona = s.type === 'PERSONA' && s.canonicalKey.startsWith('PER:');
-    const org = isOrg(s.type) && s.canonicalKey.startsWith('ORG:') && !/^ORG:(?:EPS|IPS):/u.test(s.canonicalKey);
-    if ((!persona && !org) || !delModelo(s)) continue;
+    if (s.type !== 'PERSONA' || !s.canonicalKey.startsWith('PER:') || !delModelo(s)) continue;
     const w = palabrasDe(s);
     // 1 o 2 palabras del nombre: un apellido con guion es una unidad (7.9.2, «Ejemplo-Acosta Ortiz» son dos).
-    const d0 = det(s.mentions[0] as DetectionId);
+    const d0 = cabeza(s);
     if (w.length < 1 || unidadesDeNombre(d0.text, kindOf(d0)).length > 2) continue;
-    if (org) {
-      const t = det(s.mentions[0] as DetectionId).text;
-      const lv = fold(t, 'cuerpo');
-      if (unidadesDeNombre(t, kindOf(d0)).length !== t.trim().split(/\s+/u).length || /\p{N}/u.test(t)
-        || RE_SUFIJO_FINAL.test(lv) || RE_SALUD_FIRST.test(lv)) continue;
-      if ((orgPorPalabra.get(w[0] as string) ?? []).some((o) => o.e !== s && w.every((x) => o.w.has(x)))) continue;
-    }
-    // Una persona de la lista solo es anfitriona de una forma con alguna palabra que su nombre en la lista no trae: las formas hechas
-    // solo de palabras del nombre son variantes y las busca la lista («Las personas de la lista no lo necesitan», 7.12.2.4).
-    const hosts = (porPalabra.get(w[0] as string) ?? []).filter((o) => o !== s && o.mentions.length > 0
-      && (anfitrionas.get(o.id)?.size ?? 0) > w.length && w.every((x) => anfitrionas.get(o.id)?.has(x) === true)
-      && (!delNombreDeLista.has(o.id) || w.some((x) => delNombreDeLista.get(o.id)?.has(x) !== true)));
+    const hosts = indice.candidatas(s, w);
     if (hosts.length !== 1) continue;
     const host = hosts[0] as Entity;
-    if (!puede(s, host)) continue;
-    if (porCorreo.has(host.id) && host.type !== 'PERSONA') {
-      // La anfitriona era una ORG: con un nombre de pila de su correo: pasa a persona con la clave de persona de su texto.
-      const hd = det(host.mentions[0] as DetectionId);
-      const key = personKey(hd.text, kindOf(hd));
-      if (Object.values(state.entities).some((x) => x !== host && x.canonicalKey === key && x.mentions.length > 0)) continue;
-      host.canonicalKey = key; host.type = 'PERSONA'; host.role = 'OTRA_PERSONA'; host.family = familyFor('PERSONA', 'OTRA_PERSONA');
-      for (const m of host.mentions) { const d = det(m); d.type = 'PERSONA'; d.role = 'OTRA_PERSONA'; }
-    }
-    unir(s, host, 'baja');
+    if (puede(s, host)) unir(s, host, 'baja');
   }
 }
 
@@ -808,6 +887,17 @@ function setStatus(d: Detection, status: Detection['status'], by: 'individual' |
   if (status === 'rechazada') d.rejectReason = reason ?? 'SIN_MOTIVO'; else delete d.rejectReason;
   if (status !== 'editada') delete d.replacement.edited;
 }
+/**
+ * M-62 · Una acción del usuario sobre la entidad (`cambiar_rol`, `unir_entidades`) deja `decidedBy = 'grupo'` en sus menciones
+ * del modelo que siguen pendientes y sin decisión: la correferencia de una ventana posterior ya no las mueve (`movible`). No
+ * cambia el estado, lo ya decidido ni el informe (report.ts solo cuenta las aceptadas por grupo).
+ */
+function decididaPorEntidad(s: ReviewState, e: Entity): void {
+  for (const m of e.mentions) {
+    const d = s.detections[m];
+    if (d !== undefined && d.source === 'modelo' && d.status === 'pendiente' && d.decidedBy === undefined) d.decidedBy = 'grupo';
+  }
+}
 function newEntity(state: ReviewState, ids: IdSource, key: string, d: Detection, role?: Role): Entity {
   const e: Entity = { id: ids.next('ent') as EntityId, canonicalKey: key, type: key.startsWith('DEP:') ? 'DEPARTAMENTO' : d.type,
     family: 'PERSONA', marcadorEspecifico: false, mentions: [], sameHolderAs: [], display: d.text };
@@ -862,13 +952,33 @@ export function listaIntacta(state: ReviewState, d: Detection, caseList: readonl
 /**
  * D-03 B y E · ¿La detección `o` del estado cede ante la detección nueva `d0` de una ventana del modelo? Solo si es de la lista,
  * está intacta, `d0` la contiene y es más larga, y: (E) `d0` es la misma entidad de la lista con el nombre completo, o
- * (B) `o` es una variante débil de una palabra de otra entidad. La comprobación semántica (si el tramo es variante de la
+ * (B) `o` es una variante débil de una palabra de otra entidad, o (D-14, A-2) `d0` es el nombre completo de otra persona
+ * (`nombreDeOtraPersona`, con `parts`). La comprobación semántica (si el tramo es variante de la
  * entidad) la hizo la fusión (merge.ts); el reductor solo acota a quién se le puede quitar el tramo.
  */
-export function cedeAnteModelo(state: ReviewState, o: Detection, d0: Detection, caseList: readonly CaseEntity[]): boolean {
+export function cedeAnteModelo(state: ReviewState, o: Detection, d0: Detection, caseList: readonly CaseEntity[],
+  parts?: ReadonlyMap<PartId, Part>): boolean {
   if (!contains(spanOf(d0), spanOf(o)) || o.end - o.start >= d0.end - d0.start || !listaIntacta(state, o, caseList)) return false;
   if (d0.source === 'lista' && d0.caseEntityId === o.caseEntityId) return true;
+  if (d0.source === 'modelo' && nombreDeOtraPersona(o, d0, caseList, parts)) return true;
   return (d0.source === 'modelo' || d0.source === 'lista') && esVarianteDebil(o, o.text);
+}
+
+/**
+ * D-14 (A-2) · El nombre completo `d0` del modelo que contiene la mención `o` de una persona de la lista es el de otra persona: el
+ * texto la marca como otra de la familia (`marcaOtroTitular`) o `d0` agrega delante de `o` un nombre de pila que no es del nombre
+ * de esa persona («Wilson» + «Ejemplo Muñoz» de «Carmen Rosa Ejemplo Muñoz»). La fusión (`planDelModelo` de merge.ts) propone
+ * entonces que la lista ceda; el reductor lo acepta con la detección de la lista intacta. Sin el texto de las partes, no.
+ */
+function nombreDeOtraPersona(o: Detection, d0: Detection, caseList: readonly CaseEntity[], parts?: ReadonlyMap<PartId, Part>): boolean {
+  const p = parts?.get(d0.partId);
+  if (p === undefined || o.type !== 'PERSONA' || d0.type !== 'PERSONA' || o.caseEntityId === undefined) return false;
+  if (marcaOtroTitular(p.text, d0.start, d0.end, p.kind)) return true;
+  const ce = caseList.find((c) => c.id === o.caseEntityId);
+  if (ce === undefined) return false;
+  const nombre = new Set(palabrasDeNombre(ce.name));
+  const antes = palabrasDeNombre(p.text.slice(d0.start, Math.max(d0.start, o.start)), p.kind);
+  return antes.some((w) => !nombre.has(w)) && palabrasDeNombre(d0.text, p.kind).some((w) => !nombre.has(w));
 }
 
 /** D-03 · Una detección de una ventana que contiene una de la lista: la propuesta de la fusión de extenderla o de que ceda. */
@@ -918,7 +1028,13 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
         if (a.text === finalText(d, e)) setStatus(d, 'aceptada', 'individual');
         else { setStatus(d, 'editada', 'individual'); d.replacement.edited = a.text; }
       } else if (a.kind === 'restablecer') {
-        d.status = 'pendiente'; delete d.rejectReason; delete d.replacement.edited; delete d.decidedBy;
+        // B-82 (D-14): restablecer deshace la decisión de estado, no la separación ni lo que el usuario hizo sobre la entidad. Una
+        // mención separada (`~sep` en su clave) conserva el `decidedBy` de `separar_mencion`; una pendiente no tiene decisión que
+        // deshacer y conserva el suyo (`cambiar_rol`, `unir_entidades`, M-62).
+        const pendiente = d.status === 'pendiente';
+        d.status = 'pendiente'; delete d.rejectReason; delete d.replacement.edited;
+        if (d.canonicalKey.endsWith('~sep')) d.decidedBy = 'individual';
+        else if (!pendiente) delete d.decidedBy;
         if (d.suggestionId !== undefined) {
           const sug = s.suggestions[d.suggestionId];
           delete s.detections[d.id];
@@ -930,8 +1046,10 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
         let key = e.type === 'PERSONA' ? personKey(d.text, kind) : orgKey(d.text, kind);
         if (key === e.canonicalKey) key += '~sep';
         const target = entityByKey(s, key) ?? newEntity(s, ids, key, { ...d, type: e.type }, e.type === 'PERSONA' ? 'OTRA_PERSONA' : undefined);
-        delete d.caseEntityId; d.canonicalKey = key;
-        // 7.12.2.4: una mención que el revisor separó no se vuelve a unir con la correferencia de una ventana posterior.
+        // 7.12.2.4: una mención que el revisor separó no se vuelve a unir con la correferencia de una ventana posterior. B-82: la clave
+        // de la detección lleva siempre `~sep` (la entidad, la de 7.12.6: `~sep` solo si repite la de origen), que ni `restablecer`
+        // ni una decisión borran; `decidedBy` lo conserva `restablecer`.
+        delete d.caseEntityId; d.canonicalKey = key.endsWith('~sep') ? key : `${key}~sep`;
         d.decidedBy = 'individual';
         attach(s, d, target);
       } else if (a.kind === 'cambiar_tipo') {
@@ -962,6 +1080,7 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
       if (isOrg(e.type)) e.type = a.role as DetectableType;
       e.family = familyFor(e.type, e.role, { marcadorEspecifico: e.marcadorEspecifico });
       for (const m of e.mentions) (s.detections[m] as Detection).role = a.role;
+      decididaPorEntidad(s, e);
       return null;
     }
     case 'especificar_documento': {
@@ -995,6 +1114,7 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
       for (const m of [...from.mentions]) attach(s, s.detections[m] as Detection, into);
       into.sameHolderAs = [...new Set([...into.sameHolderAs, ...from.sameHolderAs])];
       for (const o of Object.values(s.entities)) o.sameHolderAs = o.sameHolderAs.map((x) => (x === from.id ? into.id : x));
+      decididaPorEntidad(s, into);
       return null;
     }
     case 'agregar_manual': {
@@ -1103,7 +1223,7 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
           if (extensionSobreRechazada(s, d0)) continue;
           const tocadas = Object.values(s.detections).filter((o) => o.status !== 'rechazada' && overlaps(spanOf(o), span));
           if (Object.values(s.spanEdits).some((x) => overlaps(x.span, span))
-            || !tocadas.every((o) => cedeAnteModelo(s, o, d0, ctx.caseList))) continue;
+            || !tocadas.every((o) => cedeAnteModelo(s, o, d0, ctx.caseList, parts))) continue;
           for (const o of tocadas) delete s.detections[o.id];
         } else if (blocks(s, span)) continue;
         const d: Detection = structuredClone(d0);
@@ -1123,7 +1243,7 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
       }
       // 7.12.2.4: la correferencia se recalcula sobre lo acumulado (una forma corta de una ventana anterior y el nombre completo
       // que llega ahora); solo mueve detecciones del modelo pendientes e intactas y nunca deshace una unión.
-      if (cambiadas.size > 0) correferir(s, { caseList: ctx.caseList, parts, cambiadas });
+      if (cambiadas.size > 0) correferir(s, { caseList: ctx.caseList, parts, table: ctx.table, cambiadas });
       for (const x of a.delta.suggestions) {
         const rel = x.target.kind === 'deteccion' ? x.target.detectionId : x.target.relatedDetectionId;
         if (s.suggestions[x.id] === undefined && (rel === undefined || s.detections[rel] !== undefined)) s.suggestions[x.id] = structuredClone(x);
