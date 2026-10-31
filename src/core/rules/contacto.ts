@@ -12,10 +12,12 @@ const BR = R`(?![\p{L}\p{N}_])`;
 const NL = R`(?<![\p{L}\p{N}_]|\p{N}[.,'\-\/])`;
 const NR = R`(?![\p{L}\p{N}_]|[.,'\-\/]\p{N})`;
 const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
-const GAP = R`[ \t]*[:.]?[ \t]*(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*[:.]?[ \t]*)?`;
+// GAP y EXT sin cuantificadores de blancos separados por un opcional (PB-2-r5): `B*(?:S B*)?` es el lenguaje de `B* S? B*` sin
+// su retroceso cuadrático.
+const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?)?`;
 const PFX = R`(?:\(\+57\)|\+[ ]?57|0057|\(57\)|57)`;
 const SUB7 = R`\d{3}(?:[ \-.]?\d{4}|[ \-.]\d{2}[ \-.]\d{2})`;
-const EXT = R`(?:[ ]*,?[ ]*(?:ext\.?|extensi[óo]n)[ ]*:?[ ]*\d{1,5})?`;
+const EXT = R`(?:[ ]*(?:,[ ]*)?(?:ext\.?|extensi[óo]n)[ ]*(?::[ ]*)?\d{1,5})?`;
 
 // ---- rótulos (7.2.1) ----
 const L_TEL = R`tel[ée]fonos?(?:[ ]+(?:fijo|celular|m[óo]vil|de[ ]+contacto))?|tels?\.|tel|fijo|pbx|cel(?:ular)?\.?|m[óo]vil|whats[ ]?app|contacto|l[íi]nea(?:[ ]+gratuita)?|fax`;
@@ -37,7 +39,7 @@ const V_ALIAS = R`@[\p{L}\p{N}](?:[\p{L}\p{N}._\-]{1,28}[\p{L}\p{N}])?`;
 const digitos = (s: string): string => s.replace(/[^0-9]/gu, '');
 /** Una muesca menos: alta → media → baja → baja. */
 const muesca = (c: Confidence): Confidence => (c === 'alta' ? 'media' : 'baja');
-const sinExtension = (s: string): string => s.replace(/(?:ext\.?|extensi[óo]n)[ ]*:?[ ]*\d+$/iu, '');
+const sinExtension = (s: string): string => s.replace(/(?:ext\.?|extensi[óo]n)[ ]*(?::[ ]*)?\d+$/iu, '');
 
 function valorV(m: RegExpExecArray, ctx: RuleContext): string | null {
   const span = m.indices?.groups?.['v'];

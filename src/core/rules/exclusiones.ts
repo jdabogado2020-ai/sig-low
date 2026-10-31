@@ -92,10 +92,12 @@ function modoDesp02(m: RegExpExecArray): ModoExclusion | null {
   return r.ok && CORPORACIONES.has(d.slice(5, 7)) ? 'baja' : null;
 }
 
+// E-NORMA-01, E-CIE10-01, E-DESP-01 y OWN_CASE no ponen dos cuantificadores de blancos separados por un opcional (PB-2-r5):
+// `B*(?:S B*)?` es el lenguaje de `B* S? B*` sin su retroceso cuadrático.
 export const EXCLUSIONES: readonly Exclusion[] = [
   {
     id: 'E-NORMA-01', flags: 'dgiu', modo: 'suprime', alcance: '*', protege: ['n','fy'],
-    source: R`${BL}(?:ley(?:[ ]+estatutaria|[ ]+org[áa]nica)?|decreto(?:[ ]*-?[ ]*ley|[ ]+legislativo|[ ]+reglamentario|[ ]+[úu]nico[ ]+reglamentario)?|dec\.|acuerdo|circular(?:[ ]+(?:externa|interna|conjunta|[úu]nica))?|ordenanza|directiva|instrucci[óo]n|acto[ ]+legislativo)[ ]+(?:(?:n[úu]mero|no\.?|n\.?[ ]?º|nro\.?)[ ]*)?(?:[A-Z]{1,8}\d{0,2}[ ]?-[ ]?)?(?<n>\d{1,3}(?:\.\d{3})?|\d{1,6})${NR}(?:[ ]+(?:de|del)[ ]+(?<fy>(?:\d{1,2}[ ]+de[ ]+\p{L}+[ ]+de[ ]+)?(?:19|20)\d{2}))?`,
+    source: R`${BL}(?:ley(?:[ ]+estatutaria|[ ]+org[áa]nica)?|decreto(?:[ ]*(?:-[ ]*)?ley|[ ]+legislativo|[ ]+reglamentario|[ ]+[úu]nico[ ]+reglamentario)?|dec\.|acuerdo|circular(?:[ ]+(?:externa|interna|conjunta|[úu]nica))?|ordenanza|directiva|instrucci[óo]n|acto[ ]+legislativo)[ ]+(?:(?:n[úu]mero|no\.?|n\.?[ ]?º|nro\.?)[ ]*)?(?:[A-Z]{1,8}\d{0,2}[ ]?-[ ]?)?(?<n>\d{1,3}(?:\.\d{3})?|\d{1,6})${NR}(?:[ ]+(?:de|del)[ ]+(?<fy>(?:\d{1,2}[ ]+de[ ]+\p{L}+[ ]+de[ ]+)?(?:19|20)\d{2}))?`,
   },
   {
     id: 'E-NORMA-02', flags: 'dgiu', modo: 'suprime', modoGrupo: {'fy':'baja'}, alcance: '*', protege: ['n','fy'],
@@ -151,11 +153,11 @@ export const EXCLUSIONES: readonly Exclusion[] = [
   },
   {
     id: 'E-CIE10-01', flags: 'dgiu', modo: 'suprime', alcance: ID_TIPOS, protege: ['n'],
-    source: R`${BL}(?:cie[ ]?-?[ ]?10|diagn[óo]stico|dx|c[óo]digo)[ ]*:?[ ]*(?<n>[A-Z]\d{2}(?:\.\d{1,2})?)${BR}`,
+    source: R`${BL}(?:cie[ ]?-?[ ]?10|diagn[óo]stico|dx|c[óo]digo)[ ]*(?::[ ]*)?(?<n>[A-Z]\d{2}(?:\.\d{1,2})?)${BR}`,
   },
   {
     id: 'E-DESP-01', flags: 'dgiu', modo: 'suprime', alcance: '*', protege: ['n'],
-    source: R`${BL}(?:c[óo]digo[ ]+(?:del[ ]+)?despacho|despacho[ ]+(?:judicial[ ]+)?(?:c[óo]digo|no\.?))[ ]*:?[ ]*(?<n>\d{2}[ \-]?\d{3}[ \-]?\d{2}[ \-]?\d{2}[ \-]?\d{3})${NR}`,
+    source: R`${BL}(?:c[óo]digo[ ]+(?:del[ ]+)?despacho|despacho[ ]+(?:judicial[ ]+)?(?:c[óo]digo|no\.?))[ ]*(?::[ ]*)?(?<n>\d{2}[ \-]?\d{3}[ \-]?\d{2}[ \-]?\d{2}[ \-]?\d{3})${NR}`,
   },
   {
     id: 'E-DESP-02', flags: 'dgu', modo: modoDesp02, alcance: '*', protege: ['n'],
@@ -265,7 +267,7 @@ const CITA_PROPIO = /(?<![\p{L}])(?:de[ ]+la[ ]+referencia|del[ ]+asunto|(?:el|l
 
 // R-CIT-01 (7.7.6) complementa E-CITA-01 con un léxico más amplio de cita (`CITE_LEX`) y con los rótulos del propio caso (`OWN_CASE`).
 const HZ = '[ \\t]';
-const OWN_CASE = new RegExp(`(?:(?:^|\\n)${HZ}*(?:Ref(?:erencia)?\\.?|Radicado|Radicaci[oó]n|Rad\\.|Proceso|Expediente|Exp\\.|Asunto|Acci[oó]n${HZ}+de${HZ}+tutela)(?:${HZ}+(?:No\\.?|N[º°]\\.?|n\\.º|n[uú]mero))?${HZ}*:?${HZ}*$)|(?:(?:este|presente|nuestro|el${HZ}+presente)${HZ}+(?:proceso|expediente|asunto|tr[aá]mite)[^.\\n]{0,40}$)`, 'iu');
+const OWN_CASE = new RegExp(`(?:(?:^|\\n)${HZ}*(?:Ref(?:erencia)?\\.?|Radicado|Radicaci[oó]n|Rad\\.|Proceso|Expediente|Exp\\.|Asunto|Acci[oó]n${HZ}+de${HZ}+tutela)(?:${HZ}+(?:No\\.?|N[º°]\\.?|n\\.º|n[uú]mero))?${HZ}*(?::${HZ}*)?$)|(?:(?:este|presente|nuestro|el${HZ}+presente)${HZ}+(?:proceso|expediente|asunto|tr[aá]mite)[^.\\n]{0,40}$)`, 'iu');
 const CITE_LEX = new RegExp(`sentencia|providencia|Corte(?!\\p{L})|Consejo${HZ}+de${HZ}+Estado|Tribunal|Sala${HZ}+de|Secci[oó]n|M\\.${HZ}*P\\.|C\\.${HZ}*P\\.|[Mm]agistrad[oa]${HZ}+[Pp]onente|[Cc]onsejer[oa]${HZ}+[Pp]onente|precedente|jurisprudencia|reiterad|citad|cfr\\.|v[eé]ase|(?:SU|T|C)-\\d{3,4}|S[CLPT][CLP]?\\d{3,5}-\\d{4}`, 'iu');
 
 /**

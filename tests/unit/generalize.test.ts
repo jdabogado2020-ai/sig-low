@@ -1292,6 +1292,25 @@ describe('R-EDAD-01 · edad explícita (G-06)', () => {
     }
     expect(sugDe(correr('tiene\t30 años de edad', [], { sinLugares: true }).res, 'EDAD_A_RANGO').map((s) => s.originalText)).toEqual(['30 años de edad']);
   });
+
+  // GAP (PB-2-r5): E-DESP-01, C_NAC y la exclusión de CIE-10 (`cieExcl`) ponían dos cuantificadores de blancos separados por un
+  // opcional (`[ ]*:?[ ]*`), ambiguo y cuadrático en la racha. E-DESP-01 recorre toda la parte (sin la vista `reglas`, también
+  // los espacios: «código del despacho» y 40.000 espacios tardaban unos 2 s); C_NAC y `cieExcl` miran una ventana fija de 40 y
+  // 20 caracteres, así que no se podían explotar, y la prueba lo deja fijado. `generalize` entero, el mejor de 3, por debajo de 300 ms.
+  it.each([
+    ['E-DESP-01: «código del despacho» y espacios', 'código del despacho' + ' '.repeat(40_000) + 'x', [] as GenDetection[]],
+    ['C_NAC: «nació», tabuladores y una fecha de nacimiento', 'nació' + '\t'.repeat(40_000) + '14 de marzo de 1990',
+      [{ start: 40_005, end: 40_024, type: 'FECHA', canonicalKey: 'FECHA:1990-03-14', context: 'nacimiento' }] as GenDetection[]],
+    ['cieExcl: «tabla», tabuladores y un código CIE-10', 'tabla' + '\t'.repeat(40_000) + 'J45.0', [] as GenDetection[]],
+  ])('GAP %s: 40.000 blancos por debajo de 300 ms', (_n, texto, dets) => {
+    correr('tiene 30 años', [], { sinLugares: true });   // construye los patrones antes de medir
+    const mejor = Math.min(...[0, 1, 2].map(() => {
+      const t0 = performance.now();
+      generalize({ part: { id: PID, text: texto }, detections: dets, options: { referenceDate: REF }, ids: makeIds() });
+      return performance.now() - t0;
+    }));
+    expect(mejor).toBeLessThan(300);
+  });
 });
 
 const BANDERAS: [string, FlagReason, FlagType][] = [

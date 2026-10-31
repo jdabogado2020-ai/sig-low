@@ -80,7 +80,9 @@ const NAME = `${NAMEW}(?:${H}+(?:${CONN}${H}+){0,2}(?:${NAMEW}|\\d{1,3}(?!\\p{N}
 const NAME_ADDR = `${NAMEW}(?:${H}+(?:${CONN}${H}+){0,2}(?:(?!${KWSTOP})${NAMEW}|\\d{1,3}(?!\\p{N}))){0,3}`;
 const COMP_ITEM = `(?:${alt(todas(COMP_NUM))}(?!\\p{L})\\.?${H}*(?:(?:No\\.?|#|Nº)${H}*)?[A-Z0-9]{1,5}(?:-[A-Z0-9]{1,4})?(?![\\p{L}\\p{N}])`
   + `|${alt(todas(COMP_NAME))}(?!\\p{L})${H}+${NAME_ADDR}|${alt(COMP_EQ)}(?!\\p{L}))`;
-const COMPS = `(?:${H}*,?${H}*${COMP_ITEM})*`;
+// COMPS y R-BAR-01 sin cuantificadores de blancos separados por un opcional (PB-2-r5): `B*(?:S B*)?` es el lenguaje de
+// `B* S? B*` sin su retroceso cuadrático.
+const COMPS = `(?:${H}*(?:,${H}*)?${COMP_ITEM})*`;
 const ADDR_LABEL = `(?:(?:[Dd]omiciliad[oa]s?|[Rr]esidenciad[oa]s?|[Uu]bicad[oa]s?|[Ss]ituad[oa]s?|[Rr]esidentes?|[Rr]eside|[Vv]ive|[Cc]on${H}+domicilio)${H}+en|(?:[Dd]irecci[oó]n|DIRECCI[OÓ]N|[Dd]omicilio|DOMICILIO)(?:${H}+de${H}+notificaci[oó]n(?:es)?)?${H}*:?)`;
 const AVNAMED = alt(['Avenida', 'AVENIDA', 'avenida', 'Av.', 'Av', 'AV.', 'AV', 'Avda.', 'Autopista', 'AUTOPISTA', 'autopista', 'Autop.', 'Vía', 'VÍA', 'vía', 'Variante', 'VARIANTE', 'variante', 'Circunvalar', 'CIRCUNVALAR', 'Troncal', 'TRONCAL', 'Calle', 'CALLE', 'Carrera', 'CARRERA', 'Cl.', 'Cra.']);
 const NAME_BAR = `(?:${NAME}|\\d{1,2}${H}+del?${H}+\\p{Lu}\\p{L}+)`;
@@ -288,7 +290,7 @@ const rDIR06: RuleSpec = { id: 'R-DIR-06', type: 'DIRECCION', flags: 'dgu', sour
 // ---------------------------------------------------------------------------------------------------------------------
 const BARRIO_KW = ['barrio', 'Barrio', 'BARRIO', 'B/', 'Bº', 'urbanización', 'Urbanización', 'URBANIZACIÓN', 'urbanizacion', 'Urbanizacion', 'Urb.', 'URB.',
   'conjunto residencial', 'Conjunto Residencial', 'CONJUNTO RESIDENCIAL', 'Conj. Res.', 'ciudadela', 'Ciudadela', 'CIUDADELA', 'condominio', 'Condominio', 'CONDOMINIO'];
-const SRC_BAR01 = `(?<![\\p{L}\\p{N}])(?<l>${alt(BARRIO_KW)})(?:(?<=[/º])|(?!\\p{L}))${H}*:?${H}*(?:(?:de|del)${H}+)?[«"“]?(?<name>${NAME_BAR})`;
+const SRC_BAR01 = `(?<![\\p{L}\\p{N}])(?<l>${alt(BARRIO_KW)})(?:(?<=[/º])|(?!\\p{L}))${H}*(?::${H}*)?(?:(?:de|del)${H}+)?[«"“]?(?<name>${NAME_BAR})`;
 
 function assessBar01(m: RegExpExecArray): RuleVerdict | null {
   const nm = span(m, 'name');

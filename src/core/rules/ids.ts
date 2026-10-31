@@ -13,13 +13,20 @@ const BL = R`(?<![\p{L}\p{N}_])`;
 const NL = R`(?<![\p{L}\p{N}_]|\p{N}[.,'\-\/])`;
 const NR = R`(?![\p{L}\p{N}_]|[.,'\-\/]\p{N})`;
 const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
-const GAP = R`[ \t]*[:.]?[ \t]*(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*[:.]?[ \t]*)?`;
+/**
+ * Entre el rótulo y el valor (7.2.0). `[ \t]*(?:[:.][ \t]*)?` es el mismo lenguaje que `[ \t]*[:.]?[ \t]*` sin su ambigüedad: con
+ * los dos cuantificadores separados por un opcional, el retroceso probaba cada reparto de la racha de blancos y era cuadrático
+ * (PB-2-r5, pedido del integrador: «cc», 40.000 tabuladores y otra cosa, 2,1 s en R-CC-01).
+ */
+const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?)?`;
 /**
  * NOHC: el tipo de documento escrito dentro de una historia clínica («HC: CC 1000000001») es de R-HC-01. Los blancos del
  * lookbehind llevan tope (M-14, PB-2-r5): con `[ \t]*` sin tope, el retroceso en una racha de tabuladores antes del rótulo era
- * cuadrático en cada posición (20.000 tabuladores y «cc 1000000001», 1,8 s en R-CC-01 y 2,7 s en R-CE-01).
+ * cuadrático en cada posición (20.000 tabuladores y «cc 1000000001», 1,8 s en R-CC-01 y 2,7 s en R-CE-01). Sin separador son
+ * hasta 16 blancos y con él hasta 8 a cada lado, en dos alternativas que no se pisan: el mismo lenguaje que
+ * `[ \t]{0,8}[:.]?[ \t]{0,8}`, sin repartir la racha entre dos cuantificadores.
  */
-const NOHC = R`(?<!(?:(?<![\p{L}])h\.?[ ]?c\.?l?|cl[íi]nica)[ \t]{0,8}[:.]?[ \t]{0,8}(?:(?:n[úu]mero|no\.?)[ \t]{0,8})?)`;
+const NOHC = R`(?<!(?:(?<![\p{L}])h\.?[ ]?c\.?l?|cl[íi]nica)(?:[ \t]{0,8}[:.][ \t]{0,8}|[ \t]{0,16})(?:(?:n[úu]mero|no\.?)[ \t]{0,8})?)`;
 export const FR = { BL, NL, NR, NUMSIGN, GAP, NOHC } as const;
 
 // Rótulos (7.2.1)

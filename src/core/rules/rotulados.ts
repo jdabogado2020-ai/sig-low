@@ -12,7 +12,9 @@ const BL = R`(?<![\p{L}\p{N}_])`;
 const NL = R`(?<![\p{L}\p{N}_]|\p{N}[.,'\-\/])`;
 const NR = R`(?![\p{L}\p{N}_]|[.,'\-\/]\p{N})`;
 const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
-const GAP = R`[ \t]*[:.]?[ \t]*(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*[:.]?[ \t]*)?`;
+// GAP, V_DOCPFX y R-TARJETA-02 sin cuantificadores de blancos separados por un opcional (PB-2-r5): `B*(?:S B*)?` es el lenguaje
+// de `B* S? B*`, y `(?:B* S)?B+` el de `B* S? B+`, sin su retroceso cuadrático.
+const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?)?`;
 const SEPP = R`[ \-·.]?`;
 
 // ---- rótulos (7.2.1) ----
@@ -38,7 +40,7 @@ const V_PLACA_L = R`[A-Z]{3}${SEPP}\d{3}|[A-Z]{3}${SEPP}\d{2}[A-Z]?|\d{3}${SEPP}
 const V_PLACA_U = R`[A-Z]{3}[ \-·]?\d{3}|[A-Z]{3}\d{2}[A-Z]`;
 const V_MAT_F = R`\d{2}[0-9A-Z][ ]?-?[ ]?\d{1,8}`;
 const V_MAT_D = R`\d{2}[0-9A-Z][ ]?-[ ]?\d{1,8}`;
-const V_DOCPFX = R`(?:(?<tp>c\.?[ ]?c|t\.?[ ]?i|r\.?[ ]?c|c\.?[ ]?e|p\.?[ ]?a)\.?[ ]*[:.]?[ ]*)?`;
+const V_DOCPFX = R`(?:(?<tp>c\.?[ ]?c|t\.?[ ]?i|r\.?[ ]?c|c\.?[ ]?e|p\.?[ ]?a)\.?[ ]*(?:[:.][ ]*)?)?`;
 const V_HC = R`(?:[A-Z]{1,3}-?)?\d{1,3}(?:\.\d{3}){1,4}|(?:[A-Z]{1,3}-?)?\d{3,15}(?:-\d{1,6})?`;
 const V_ALNUM = R`(?=[A-Za-z0-9\-]*\d)[A-Za-z0-9]+(?:-[A-Za-z0-9]+){0,3}`;
 const V_CTA = R`\d(?:[ \-]?\d){5,19}`;
@@ -213,7 +215,7 @@ export const rules: RuleSpec[] = [
     id: 'R-TARJETA-02',
     type: 'TARJETA',
     flags: 'dgiu',
-    source: R`${BL}(?<l>${L_MASK})(?:[ ]+(?:en|son|es))?[ ]*:?[ ]+(?:(?:el|los|las)[ ]+(?:[úu]ltimos[ ]+)?(?:n[úu]meros?|d[íi]gitos?|cifras?)[ ]+)?(?<v>\d{4})${NR}`,
+    source: R`${BL}(?<l>${L_MASK})(?:[ ]+(?:en|son|es))?(?:[ ]*:)?[ ]+(?:(?:el|los|las)[ ]+(?:[úu]ltimos[ ]+)?(?:n[úu]meros?|d[íi]gitos?|cifras?)[ ]+)?(?<v>\d{4})${NR}`,
     needsCue: PISTA_TARJETA,
     assess: assessTarjetaVisible,
   },

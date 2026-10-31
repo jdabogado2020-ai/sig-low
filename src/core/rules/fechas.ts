@@ -37,23 +37,26 @@ F.NUMPH = `${F.NW}(?:${H}+(?:y${H}+)?${F.NW})*`;
 // ---------------------------------------------------------------------------------------------------------------------
 // Contexto de las fechas (7.5.5). Se evalúa sobre el texto anterior a la fecha.
 // ---------------------------------------------------------------------------------------------------------------------
+// Contextos y reglas de fechas sin dos cuantificadores de blancos separados por un opcional (PB-2-r5): `B*(?:S B*)?` es el
+// lenguaje de `B* S? B*`, y `(?:B* S)?B+` el de `B* S? B+`, sin su retroceso cuadrático (con «Ley 100», tabuladores y otra cosa,
+// EXC-FECHA-A tenía tres seguidos y era cúbica).
 /** EXC-FECHA-A: norma numerada, sentencia con número, Diario Oficial o Gaceta antes de la fecha → se suprime. */
 export const EXC_FECHA_A = new RegExp(
   `(?:(?:ley(?:${H}+(?:estatutaria|org[aá]nica|marco))?|decreto(?:${H}+(?:ley|legislativo|reglamentario|[uú]nico${H}+reglamentario))?|acto${H}+legislativo|constituci[oó]n(?:${H}+pol[ií]tica)?)(?:${H}+(?:No\\.?|N[º°]\\.?|n\\.º|n[uú]mero))?${H}+\\d{1,5}(?:${H}+de${H}+\\d{4})?`
   + `|diario${H}+oficial(?:${H}+(?:No\\.?|N[º°]\\.?|n\\.º))?${H}+\\d{1,3}(?:\\.\\d{3})*`
   + `|gaceta(?:${H}+\\p{L}+){0,3}(?:${H}+(?:No\\.?|N[º°]\\.?))?${H}+\\d[\\d.]*`
-  + `|(?:sentencia|auto|providencia|fallo)(?:${H}+de${H}+tutela)?${H}+(?:T|C|SU|A|STC|STP|STL|SC|SL|SP|AC|AP|AL)${H}*-?${H}*\\d{1,5}(?:${H}*[-/]${H}*\\d{2,4})?(?:${H}+de${H}+\\d{4})?`
+  + `|(?:sentencia|auto|providencia|fallo)(?:${H}+de${H}+tutela)?${H}+(?:T|C|SU|A|STC|STP|STL|SC|SL|SP|AC|AP|AL)${H}*(?:-${H}*)?\\d{1,5}(?:${H}*[-/]${H}*\\d{2,4})?(?:${H}+de${H}+\\d{4})?`
   + `|(?<![\\p{L}])(?:T|C|SU|STC|STP|STL|SC|SL|SP)-?\\d{1,5}(?:[-/]\\d{2,4})?(?:${H}+de${H}+\\d{4})?)`
-  + `${H}*[,(]?${H}*(?:del?|expedid[oa]${H}+el|publicad[oa]${H}+el|de${H}+fecha|fechad[oa]${H}+el)?${H}*$`, 'iu');
+  + `${H}*(?:[,(]${H}*)?(?:(?:del?|expedid[oa]${H}+el|publicad[oa]${H}+el|de${H}+fecha|fechad[oa]${H}+el)${H}*)?$`, 'iu');
 /** EXC-FECHA-B: acto administrativo con número (`adm`) o sentencia/providencia sin número (`prov`) → baja. */
 export const EXC_FECHA_B = new RegExp(
   `(?:(?<adm>(?:resoluci[oó]n|acuerdo|circular|ordenanza|concepto|directiva)(?:${H}+(?:No\\.?|N[º°]\\.?|n\\.º|n[uú]mero))?${H}+[\\p{L}\\d.-]{1,20}(?:${H}+de${H}+\\d{4})?)`
-  + `|(?<prov>sentencia|providencia|fallo))${H}*,?${H}*(?:del?|de${H}+fecha|expedid[oa]${H}+el)${H}*$`, 'iu');
+  + `|(?<prov>sentencia|providencia|fallo))${H}*(?:,${H}*)?(?:del?|de${H}+fecha|expedid[oa]${H}+el)${H}*$`, 'iu');
 /** Nacimiento. */
-export const C_NAC = new RegExp(`(?:naci[oó]|nacid[oa]|nacimiento|f\\.${H}*(?:de${H}*)?nac\\.?|fecha${H}+de${H}+nac\\.?|natalicio)(?:${H}+(?:el|en))?(?:${H}+d[ií]a)?${H}*:?${H}*$`, 'iu');
+export const C_NAC = new RegExp(`(?:naci[oó]|nacid[oa]|nacimiento|f\\.${H}*(?:de${H}*)?nac\\.?|fecha${H}+de${H}+nac\\.?|natalicio)(?:${H}+(?:el|en))?(?:${H}+d[ií]a)?${H}*(?::${H}*)?$`, 'iu');
 /** Léxico procesal o contractual. */
 export const C_PROC = new RegExp('radic|present[oóa]|interpu|notific|admiti|admisi|audiencia|t[eé]rmino|plazo|venc|ejecutori|traslado|fall[oó]|sentencia|auto(?!\\p{L})|providencia|recurso|apelaci|impugn|contestaci|vigencia|suscri|firm|celebr|otorg|expedi|corte(?!\\p{L})|emisi|emiti', 'iu');
-const ROTULO_ARTICULO = new RegExp(`(?:art[ií]culos?|arts?\\.|numeral(?:es)?|num\\.|literal(?:es)?|lit\\.|incisos?|folios?|fls?\\.|decreto|ley|cap[ií]tulo|t[ií]tulo|p[aá]ginas?|p[aá]gs?\\.|tomo|cuaderno)${H}*(?:No\\.?|N[º°]\\.?)?${H}*$`, 'iu');
+const ROTULO_ARTICULO = new RegExp(`(?:art[ií]culos?|arts?\\.|numeral(?:es)?|num\\.|literal(?:es)?|lit\\.|incisos?|folios?|fls?\\.|decreto|ley|cap[ií]tulo|t[ií]tulo|p[aá]ginas?|p[aá]gs?\\.|tomo|cuaderno)${H}*(?:(?:No\\.?|N[º°]\\.?)${H}*)?$`, 'iu');
 const LUGAR_PROPIO = new RegExp(`(?:barrio|avenida|av\\.|calle|colegio|plaza|batall[oó]n|hospital|instituci[oó]n|escuela|parque|urbanizaci[oó]n|sede)[^.\\n]{0,20}$`, 'iu');
 
 type ContextoFecha = NonNullable<RuleVerdict['context']>;
@@ -126,7 +129,7 @@ const rFEC03: RuleSpec = {
 
 const rFEC04: RuleSpec = {
   id: 'R-FEC-04', type: 'FECHA', flags: 'dgiu',
-  source: `${LB}(?:(?<wd>lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)${H}*,?${H}+)?(?<d>[12]\\d|3[01]|0?[1-9])(?!\\d)(?:\\.?º\\.?|o\\.?(?!\\p{L}))?${H}+(?:de${H}+)?(?<m>${F.MES}|${F.MES_ABR})(?:${H}*,)?${H}+(?:(?:de|del)${H}+)?(?:a[ñn]o${H}+)?(?<y>(?:1[89]|20)\\d{2})${RB}`,
+  source: `${LB}(?:(?<wd>lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)(?:${H}*,)?${H}+)?(?<d>[12]\\d|3[01]|0?[1-9])(?!\\d)(?:\\.?º\\.?|o\\.?(?!\\p{L}))?${H}+(?:de${H}+)?(?<m>${F.MES}|${F.MES_ABR})(?:${H}*,)?${H}+(?:(?:de|del)${H}+)?(?:a[ñn]o${H}+)?(?<y>(?:1[89]|20)\\d{2})${RB}`,
   assess: (m, ctx) => cerrarFecha(m, ctx.view.text, Number(g(m, 'y')), monthNum(g(m, 'm')), Number(g(m, 'd')), 'alta'),
 };
 
@@ -183,7 +186,7 @@ const rFEC08: RuleSpec = {
 
 const rFEC09: RuleSpec = {
   id: 'R-FEC-09', type: 'FECHA', flags: 'dgiu',
-  source: `${LB}(?<d>[12]\\d|3[01]|0?[1-9]|primero)(?!\\d)(?:\\.?º\\.?|o\\.(?!\\p{L}))?${H}+de${H}+(?<m>${F.MES})(?!${H}*,?${H}+(?:de|del)${H}+(?:a[ñn]o${H}+)?(?:\\d{4}|${F.NW}))(?!${H}*,?${H}*\\d{4})`,
+  source: `${LB}(?<d>[12]\\d|3[01]|0?[1-9]|primero)(?!\\d)(?:\\.?º\\.?|o\\.(?!\\p{L}))?${H}+de${H}+(?<m>${F.MES})(?!(?:${H}*,)?${H}+(?:de|del)${H}+(?:a[ñn]o${H}+)?(?:\\d{4}|${F.NW}))(?!${H}*(?:,${H}*)?\\d{4})`,
   assess(m, ctx) {
     const t = ctx.view.text;
     const ixMes = m.indices?.groups?.['m'];

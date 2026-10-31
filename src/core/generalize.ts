@@ -498,8 +498,12 @@ export function despachoDesdeTramo(
   return { ...sug, id: ids.next('sug') as SuggestionId };
 }
 
-/** E-DESP-01 (7.3.2): código de despacho de 12 dígitos rotulado; contiene el DANE del municipio. */
-const E_DESP_01 = new RegExp(`${LB}(?:c[óo]digo[ ]+(?:del[ ]+)?despacho|despacho[ ]+(?:judicial[ ]+)?(?:c[óo]digo|no\\.?))[ ]*:?[ ]*(?<n>\\d{2}[ \\-]?\\d{3}[ \\-]?\\d{2}[ \\-]?\\d{2}[ \\-]?\\d{3})(?![\\p{L}\\p{N}])`, 'gdiu');
+/**
+ * E-DESP-01 (7.3.2): código de despacho de 12 dígitos rotulado; contiene el DANE del municipio. Como C_NAC y `cieExcl`, sin dos
+ * cuantificadores de blancos separados por un opcional (PB-2-r5): `B*(?:S B*)?` es el lenguaje de `B* S? B*` sin su retroceso
+ * cuadrático.
+ */
+const E_DESP_01 = new RegExp(`${LB}(?:c[óo]digo[ ]+(?:del[ ]+)?despacho|despacho[ ]+(?:judicial[ ]+)?(?:c[óo]digo|no\\.?))[ ]*(?::[ ]*)?(?<n>\\d{2}[ \\-]?\\d{3}[ \\-]?\\d{2}[ \\-]?\\d{2}[ \\-]?\\d{3})(?![\\p{L}\\p{N}])`, 'gdiu');
 
 // ===================================================================== edad (R-EDAD-01) y fechas (7.5.5, 7.8.3)
 
@@ -597,7 +601,7 @@ function scanEdades(t: string): EdadMatch[] {
 }
 
 /** Contexto de nacimiento (7.5.5): verbo («nació», «nacida») o rótulo («fecha de nacimiento», «F. nac.»). */
-const C_NAC = new RegExp(`(?:naci[oó]|nacid[oa]|nacimiento|f\\.${H}*(?:de${H}*)?nac\\.?|fecha${H}+de${H}+nac\\.?|natalicio)(?:${H}+(?:el|en))?(?:${H}+d[ií]a)?${H}*:?${H}*$`, 'iu');
+const C_NAC = new RegExp(`(?:naci[oó]|nacid[oa]|nacimiento|f\\.${H}*(?:de${H}*)?nac\\.?|fecha${H}+de${H}+nac\\.?|natalicio)(?:${H}+(?:el|en))?(?:${H}+d[ií]a)?${H}*(?::${H}*)?$`, 'iu');
 const PREFIJO_ROTULO_NAC = new RegExp(`(?:fecha${H}+de${H}+|f\\.${H}*(?:de${H}*)?)$`, 'iu');
 const NAC_VERBO = /^naci[oó]|^nacid[oa]/iu;
 const ARTICULO_ANTES = new RegExp(`(?<![\\p{L}\\p{N}])(?<art>desde${H}+el|hasta${H}+el|el${H}+d[ií]a|del|al|el)${H}+$`, 'iu');
@@ -632,7 +636,7 @@ function getFlagRegexes(): FlagRegexes {
     men: new RegExp(`(?<![\\p{L}\\p{N}])(?:(?:(?<art>${menArt})${H}+)?(?<t>${menExpr})(?![\\p{L}\\p{N}])`
       + `|(?<art2>${menArt2})${H}+(?<t2>menor(?:es)?)(?!${H}+(?:${menNot})(?!\\p{L}))(?![\\p{L}\\p{N}]))`, 'gdiu'),
     clin: new RegExp(diagnosticosRaw.contextoClinico.map(sub).join('|'), 'iu'),
-    cieExcl: new RegExp(`(?:${diagnosticosRaw.excluyenAntes.join('|')})[ \\t]*(?:No\\.?|N[º°]\\.?|#)?[ \\t]*$`, 'iu'),
+    cieExcl: new RegExp(`(?:${diagnosticosRaw.excluyenAntes.join('|')})[ \\t]*(?:(?:No\\.?|N[º°]\\.?|#)[ \\t]*)?$`, 'iu'),
   };
   return flagRx;
 }

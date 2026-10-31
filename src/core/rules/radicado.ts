@@ -12,9 +12,11 @@ const BL = R`(?<![\p{L}\p{N}_])`;
 const NL = R`(?<![\p{L}\p{N}_]|\p{N}[.,'\-\/])`;
 const NR = R`(?![\p{L}\p{N}_]|[.,'\-\/]\p{N})`;
 const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
-const GAP = R`[ \t]*[:.]?[ \t]*(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*[:.]?[ \t]*)?`;
+// GAP y GAP_CS sin cuantificadores de blancos separados por un opcional (PB-2-r5): `B*(?:S B*)?` es el lenguaje de `B* S? B*`
+// sin su retroceso cuadrático.
+const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?)?`;
 const NUMSIGN_CS = R`(?:[Nn]\.?[ ]?º|N[Oo]\.?|no\.?|[Nn]ro\.?|NRO\.?|[Nn][úu]m\.?|N[ÚU]M\.?|[Nn][úu]mero|N[ÚU]MERO|[Nn]\.|#)`;
-const GAP_CS = R`[ \t]*[:.]?[ \t]*(?:\n[ \t]*)?(?:${NUMSIGN_CS}[ \t]*[:.]?[ \t]*)?`;
+const GAP_CS = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN_CS}[ \t]*(?:[:.][ \t]*)?)?`;
 
 // ---- rótulos (7.2.1) ----
 const L_RAD = R`radicad[oa]|rad\.|rdo\.|radicaci[óo]n|expediente|exp\.|proceso(?:[ ]+(?:ejecutivo|ordinario|verbal(?:[ ]+sumario)?|declarativo|penal|laboral|civil|monitorio|abreviado))?|ref(?:erencia)?\.?|c\.?[ ]?u\.?[ ]?i\.?|n\.?[ ]?u\.?[ ]?n\.?[ ]?c\.?|spoa|n[úu]mero[ ]+[úu]nico(?:[ ]+de[ ]+noticia[ ]+criminal)?|c[óo]digo[ ]+[úu]nico(?:[ ]+de[ ]+investigaci[óo]n)?|noticia[ ]+criminal`;

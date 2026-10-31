@@ -569,6 +569,70 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     expect(mejor).toBeLessThan(200);
   }, 90_000);
 
+  // GAP (PB-2-r5, pedido del integrador): dos cuantificadores de blancos separados por un opcional (`[ \t]*[:.]?[ \t]*`) son
+  // ambiguos. Cuando lo que sigue no casa, el retroceso prueba cada reparto de la racha: es cuadrático en el largo de la racha
+  // (en `detectar`, «registro civil», 40.000 tabuladores y «nuip …» tardaban 28,6 s). Cada caso pasa al lenguaje equivalente
+  // no ambiguo (`[ \t]*(?:[:.][ \t]*)?`, `(?:[ \t]*,)?[ \t]+`…). 40.000 blancos entre el rótulo y el resto; la expresión sola,
+  // el mejor de 3, por debajo de 50 ms. Los tabuladores llegan a la tubería (la vista `reglas` no los colapsa); los espacios,
+  // solo fuera de ella.
+  const K = 40_000;
+  const TB = '\t'.repeat(K);
+  const SP = ' '.repeat(K);
+  const ambiguos: Array<[string, string, string]> = [
+    ['R-CC-01', 'GAP (ids.ts): «cc», tabuladores y otra cosa', 'cc' + TB + 'x'],
+    ['R-CC-01', 'GAP con NUMSIGN (ids.ts): «cc:», tabuladores, «No.» y tabuladores', 'cc:' + TB + 'No.' + TB + 'x'],
+    ['R-TEL-03', 'GAP (contacto.ts): «fax» y tabuladores', 'fax' + TB + 'x'],
+    ['R-TEL-01', 'EXT (contacto.ts): un celular y espacios', '300 000 0001' + SP + 'x'],
+    ['R-TEL-01', 'EXT (contacto.ts): un celular, «ext» y espacios', '300 000 0001 ext' + SP + 'x'],
+    ['R-RAD-01', 'GAP (radicado.ts): «radicado» y tabuladores', 'radicado' + TB + 'x'],
+    ['R-RAD_ADMIN-03', 'GAP_CS (radicado.ts): «EXPEDIENTE» y tabuladores', 'EXPEDIENTE' + TB + 'x'],
+    ['R-PLACA-01', 'GAP (rotulados.ts): «placa» y tabuladores', 'placa' + TB + 'x'],
+    ['R-HC-01', 'V_DOCPFX (rotulados.ts): «HC: cc» y espacios', 'HC: cc' + SP + 'x'],
+    ['R-TARJETA-02', 'R-TARJETA-02 (rotulados.ts): «terminada» y espacios', 'terminada' + SP + 'x'],
+    ['R-DIR-01', 'COMPS (direccion.ts): una dirección y tabuladores', 'Calle 00 # 00-00' + TB + 'x'],
+    ['R-BAR-01', 'R-BAR-01 (direccion.ts): «barrio» y tabuladores', 'barrio' + TB + 'x'],
+    ['R-FEC-04', 'R-FEC-04 (fechas.ts): un día de la semana y tabuladores', 'lunes' + TB + 'x'],
+    ['R-FEC-09', 'R-FEC-09 (fechas.ts): «14 de marzo» y tabuladores', '14 de marzo' + TB + 'x'],
+    ['E-NORMA-01', 'E-NORMA-01 (exclusiones.ts): «decreto» y espacios', 'decreto' + SP + 'x'],
+    ['E-CIE10-01', 'E-CIE10-01 (exclusiones.ts): «diagnóstico» y espacios', 'diagnóstico' + SP + 'x'],
+    ['E-DESP-01', 'E-DESP-01 (exclusiones.ts): «código del despacho» y espacios', 'código del despacho' + SP + 'x'],
+    ['EXC_FECHA_A', 'EXC-FECHA-A (fechas.ts): «sentencia T» y tabuladores', 'sentencia T' + TB + 'x'],
+    ['EXC_FECHA_A', 'EXC-FECHA-A (fechas.ts): «Ley 100» y tabuladores', 'Ley 100' + TB + 'x'],
+    ['EXC_FECHA_B', 'EXC-FECHA-B (fechas.ts): «sentencia» y tabuladores', 'sentencia' + TB + 'x'],
+    ['C_NAC', 'C_NAC (fechas.ts): «nació» y tabuladores', 'nació' + TB + 'x'],
+  ];
+  it.each(ambiguos)('GAP %s sin cuantificadores de blancos ambiguos, %s: 40.000 blancos por debajo de 50 ms', async (id, _n, texto) => {
+    const fechas = await import('../../src/core/rules/fechas.ts');
+    const exportadas: Record<string, RegExp> = { EXC_FECHA_A: fechas.EXC_FECHA_A, EXC_FECHA_B: fechas.EXC_FECHA_B, C_NAC: fechas.C_NAC };
+    const regla = (await reglasDeModulos(MODULOS_REGLAS)).find((r) => r.id === id);
+    const exclusion = EXCLUSIONES.find((e) => e.id === id);
+    const re = exportadas[id] ?? (regla !== undefined ? new RegExp(regla.source, regla.flags)
+      : exclusion !== undefined ? new RegExp(exclusion.source, exclusion.flags) : undefined);
+    expect(re, id).toBeDefined();
+    const correr = (): number => {
+      const r = new RegExp((re as RegExp).source, (re as RegExp).flags.includes('g') ? (re as RegExp).flags : (re as RegExp).flags + 'g');
+      let k = 0;
+      while (r.exec(texto) !== null) { k++; if (r.lastIndex === 0) break; }
+      return k;
+    };
+    const mejor = Math.min(...[0, 1, 2].map(() => { const t0 = performance.now(); correr(); return performance.now() - t0; }));
+    expect(mejor).toBeLessThan(50);
+  }, 120_000);
+
+  // ROTULO_ARTICULO (fechas.ts) y OWN_CASE (exclusiones.ts) se aplican a una ventana fija antes del dato (25 y 150 caracteres), así
+  // que no se podían explotar; también pasan al lenguaje no ambiguo, y la prueba recorre su camino público con 40.000 tabuladores.
+  it.each([
+    ['ROTULO_ARTICULO (R-FEC-*): «artículo», tabuladores y una fecha', 'artículo' + TB + '14 de marzo de 2026', 'fechas'],
+    ['OWN_CASE (esContextoDeCita): «Radicado», tabuladores y un radicado', 'Radicado' + TB + '11001-31-03-999-2026-00123-00', 'cita'],
+  ])('GAP %s: 40.000 tabuladores por debajo de 300 ms', async (_n, texto, camino) => {
+    const reglas = (await reglasDeModulos(['fechas'])).filter((r) => r.id.startsWith('R-FEC-'));
+    const view = buildSearchView(texto, 'reglas', 'cuerpo');
+    const i = texto.indexOf('11001');
+    const correr = (): unknown => (camino === 'fechas' ? runRules(view, PART, reglas, 2026) : esContextoDeCita(texto, i, texto.length));
+    const mejor = Math.min(...[0, 1, 2].map(() => { const t0 = performance.now(); correr(); return performance.now() - t0; }));
+    expect(mejor).toBeLessThan(300);
+  }, 120_000);
+
   it('el tope por exclusión corta, conserva lo hallado y avisa solo con el id', () => {
     const texto = 'ley 1 '.repeat(2000);
     const view = buildSearchView(texto, 'reglas', 'cuerpo');
