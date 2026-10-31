@@ -886,6 +886,111 @@
       "nota": "PB-2-r8 (S2 de -r7, ya se tomaba): «!»"
     },
     {
+      "texto": "En la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte amparó los derechos de mi poderdante.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "ruleId": "R-RAD_ADMIN-03", "confidence": "media", "canonicalKey": "RAD:T9000001" }],
+      "nota": "PB-2-r9 (A-1, N1 de la revisión de -r8; D-14): «mi poderdante» es señal del propio caso (en -r8, negativo)"
+    },
+    {
+      "texto": "Mediante Sentencia T-123 de 2026 (expediente T-9.000.001), la Corte Constitucional amparó los derechos fundamentales de mi representada.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (A-1, N1; D-14): «mi representada»"
+    },
+    {
+      "texto": "Mediante Sentencia T-123 de 2026 (expediente T-9.000.001), la Corte Constitucional protegió los derechos de mi prohijado.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (A-1, N1; D-14): «mi prohijado»"
+    },
+    {
+      "texto": "En la Sentencia T-123 de 2026, expediente T-9.000.001, se tutelaron los derechos de nuestro cliente.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (A-1, N1; D-14): «nuestro cliente»"
+    },
+    {
+      "texto": "La Sentencia T-123 de 2026, expediente T-9.000.001, amparó a mi mandante y la EPS no ha obedecido.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (A-1, N1; D-14): «mi mandante»"
+    },
+    {
+      "texto": "Con la Sentencia T-123 de 2026 (expediente T-9.000.001) se protegió a la suscrita.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (A-1, N1; D-14): «la suscrita», el escrito en primera persona"
+    },
+    {
+      "texto": "EN LA SENTENCIA T-123 DE 2026, EXPEDIENTE T-9.000.001, LA CORTE AMPARÓ LOS DERECHOS DE MI PODERDANTE.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (A-1, N1; D-14): en MAYÚSCULAS"
+    },
+    {
+      "texto": "En la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte amparó los derechos de mi\npoderdante.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (A-1): el PDF parte la señal en dos renglones y no corta la oración"
+    },
+    {
+      "texto": "Sentencia T-123 de 2026 – Expediente T-9.000.001",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (M-61, N4; D-14): el encabezado con guion no es una oración (en -r8, negativo)"
+    },
+    {
+      "texto": "Radicado\tExpediente\tSentencia\n11001-31-03-999-2026-00123-00\tT-9.000.001\tT-123 de 2026",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "baja" }],
+      "nota": "PB-2-r9 (M-61, N4; D-14): la fila de tabla con tabuladores"
+    },
+    {
+      "texto": "La Corte profirió la Sentencia T-123 de 2026 en el expediente T-9.000.001 a favor de la accionante.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (M-61, N4; D-14): «profirió», como «proferida»"
+    },
+    {
+      "texto": "Como lo dispuso la Sentencia T-123 de 2026 en el expediente T-9.000.001, la accionante tiene derecho al tratamiento.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (M-61, N4; D-14): «dispuso», como «ordenó»"
+    },
+    {
+      "texto": "En virtud de lo resuelto en la Sentencia T-123 de 2026, expediente T-9.000.001, la EPS debe autorizar el procedimiento.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "media" }],
+      "nota": "PB-2-r9 (M-61, N4; D-14): «lo resuelto»"
+    },
+    {
+      "texto": "| Expediente | Sentencia |\n| T-9.000.001 | T-123 de 2026 |",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [{ "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "confidence": "baja" }],
+      "nota": "PB-2-r9 (M-61): la fila de tabla con barras"
+    },
+    {
+      "texto": "A mi juicio, la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004 resuelven un caso análogo.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r9 (D-11): «a mi juicio» no nombra a la parte; otra providencia con número y año en la oración"
+    },
+    {
+      "texto": "1.\tComo precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004, donde se amparó un caso análogo.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r9 (M-61): el tabulador tras un número de lista no es una celda"
+    },
+    {
+      "texto": "\t- Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004, donde se amparó un caso análogo.",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PB-2-r9 (M-61): la sangría y la viñeta no son un encabezado con guion"
+    },
+    {
       "texto": "Expediente D-99.001",
       "reglas": ["R-RAD_ADMIN-03"],
       "esperado": [

@@ -1006,6 +1006,79 @@ describe('T-MO-12 · D-11: el expediente propio nunca queda a la vista (A-1, M-5
   });
 });
 
+describe('T-MO-12 · D-14: la parte propia, los verbos de la providencia y las celdas (A-1, M-61 y B-81 de la P0-6a de PB-2-r8; PB-2-r9)', () => {
+  async function detectarCon(...textos: string[]) {
+    const doc = documento(textos);
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await banco().enviar('detectar', { sessionId: 'ses_1', doc, caseList: [], table: TABLA, options: OPCIONES }));
+    return { doc, set: det.set };
+  }
+  const salida = (doc: DocumentModel, set: DetectionSet): string => render(doc, estadoDe(doc, set)).sections.map((s) => s.text).join('\n');
+
+  /** N1 · La parte nombrada por su abogado y el escrito en primera persona, con la sentencia del caso en la misma oración (A-1). */
+  const N1: readonly string[] = [
+    'En la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte amparó los derechos de mi poderdante.',
+    'Mediante Sentencia T-123 de 2026 (expediente T-9.000.001), la Corte Constitucional amparó los derechos fundamentales de mi representada.',
+    'Mediante Sentencia T-123 de 2026 (expediente T-9.000.001), la Corte Constitucional protegió los derechos de mi prohijado.',
+    'En la Sentencia T-123 de 2026, expediente T-9.000.001, se tutelaron los derechos de nuestro cliente.',
+    'La Sentencia T-123 de 2026, expediente T-9.000.001, amparó a mi mandante y la EPS no ha obedecido.',
+    'Con la Sentencia T-123 de 2026 (expediente T-9.000.001) se protegió a la suscrita.',
+    'EN LA SENTENCIA T-123 DE 2026, EXPEDIENTE T-9.000.001, LA CORTE AMPARÓ LOS DERECHOS DE MI PODERDANTE.',
+  ];
+  /** N4 · Sin señal textual del propio caso: un encabezado con guion, una fila de tabla y los verbos de la providencia (M-61). */
+  const N4: readonly string[] = [
+    'Sentencia T-123 de 2026 – Expediente T-9.000.001',
+    'Radicado\tExpediente\tSentencia\n11001-31-03-999-2026-00123-00\tT-9.000.001\tT-123 de 2026',
+    'La Corte profirió la Sentencia T-123 de 2026 en el expediente T-9.000.001 a favor de la accionante.',
+    'Como lo dispuso la Sentencia T-123 de 2026 en el expediente T-9.000.001, la accionante tiene derecho al tratamiento.',
+    'En virtud de lo resuelto en la Sentencia T-123 de 2026, expediente T-9.000.001, la EPS debe autorizar el procedimiento.',
+  ];
+  /** Las mismas, con el PDF que parte la señal en dos renglones y en MAYÚSCULAS; y otras formas de D-14 y de la revisión. */
+  const MAS: readonly string[] = [
+    'En la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte amparó los derechos de mi\npoderdante.',
+    'Con la Sentencia T-123 de 2026 (expediente T-9.000.001) se protegió a la\nsuscrita.',
+    'SENTENCIA T-123 DE 2026 – EXPEDIENTE T-9.000.001',
+    'LA CORTE PROFIRIÓ LA SENTENCIA T-123 DE 2026 EN EL EXPEDIENTE T-9.000.001 A FAVOR DE LA ACCIONANTE.',
+    'Sentencia T-123 de 2026 — Expediente T-9.000.001',
+    '| Expediente | Sentencia |\n| T-9.000.001 | T-123 de 2026 |',
+    'La Sentencia T-123 de 2026, dictada en el expediente T-9.000.001, amparó a la accionante.',
+    'La Corte emitió la Sentencia T-123 de 2026 en el expediente T-9.000.001.',
+    'En la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte amparó a mi agenciada.',
+    'En la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte amparó a mi menor hijo.',
+    'En la Sentencia T-123 de 2026, expediente T-9.000.001, el suscrito obtuvo el amparo.',
+  ];
+  const casos = [...N1.map((t, i) => ['N1 (A-1)', i + 1, t] as const), ...N4.map((t, i) => ['N4 (M-61)', i + 1, t] as const),
+    ...MAS.map((t, i) => ['más formas', i + 1, t] as const)];
+
+  it.each(casos)('%s, sonda %i: el expediente propio se toma, sin la bandera de cita, y no queda a la vista', async (_h, _n, T) => {
+    const { doc, set } = await detectarCon(T);
+    const exps = set.detections.filter((d) => d.text === 'T-9.000.001');
+    // Con el código de -r8, el expediente se descartaba como precedente: sin detección ni bandera, con el número en la salida.
+    expect(exps.length).toBe(1);
+    expect(exps[0]).toMatchObject({ type: 'RADICADO_ADMIN', status: 'pendiente' });
+    expect(salida(doc, set).includes('9.000.001')).toBe(false);
+    // Una señal del propio caso anula también el contexto de cita (B-70): con «mantener», el número quedaría a la vista.
+    expect(set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL' && f.detectionId === exps[0]?.id)).toEqual([]);
+  });
+
+  it('las negativas siguen sin tomarse: «a mi juicio», la sangría, la viñeta y el número de lista, y «Así lo resolvió» (D-11)', async () => {
+    const cita = 'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004, donde se amparó un caso análogo.';
+    for (const T of [
+      'A mi juicio, la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004 resuelven un caso análogo.',
+      `\t${cita}`,
+      `1.\t${cita}`,
+      `a)\t${cita}`,
+      `- ${cita}`,
+      `\t- ${cita}`,
+      `• ${cita}`,
+      'Así lo resolvió la Corte en la sentencia T-123 de 2019, expediente T-9.000.004.',
+      'COMO PRECEDENTE INVOCO LA SENTENCIA T-074 DE 2020 Y, EN PARTICULAR, EL EXPEDIENTE T-9.000.004, DONDE SE AMPARÓ UN CASO ANÁLOGO.',
+    ]) {
+      const { set } = await detectarCon(T);
+      expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text), T).toEqual([]);
+    }
+  });
+});
+
 describe('T-MO-12 · cancelación y progreso', () => {
   it('INV-W08 tras cancelar a mitad del documento, detect no envía más progreso ni resultado, responde cancelado y la sesión no existe', async () => {
     const partes = Array.from({ length: 6 }, (_, i) => `Parte ${i + 1}: Pedro Prueba Ejemplo, C.C. 100000000${i}.`);

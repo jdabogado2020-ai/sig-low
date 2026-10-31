@@ -588,11 +588,34 @@ const RAPIDA_PROVIDENCIA = new RegExp(PROVIDENCIA_CORE, 'gu');
  * amparó», «esta tutela», «se ordenó»). Anulan la de precedente y la de cita (B-70). Ante la duda se toma: detectar de más cuesta
  * una decisión del revisor; de menos, un dato a la vista (D-11). La cola de letras va acotada (`L20`): cada intento mira un largo
  * fijo, también en el índice, que reanuda en cada inicio.
+ * - A-1 (PB-2-r9, D-14): la parte nombrada por su abogado o por quien escribe («mi poderdante», «mi representada», «mi prohijado»,
+ *   «nuestro cliente», «mi mandante», «mi agenciada», «mi menor hijo»…: `PARTE_PROPIA`) y el escrito en primera persona («la
+ *   suscrita», «el suscrito», «el infrascrito», «el abajo firmante», «quien suscribe»: `ESCRITO_PROPIO`). Sin `i` no casarían en la
+ *   vista de MAYÚSCULAS: la expresión va con `i`, como las demás.
+ * - M-61 (PB-2-r9, D-14): todas las formas de los verbos con que se dice que la providencia es del expediente, no solo una: «proferida»
+ *   y también «profirió», «profiere»; «dictó», «dictada»; «emitió», «emitida»; «dispuso», «dispuesto»; «lo resuelto». («resolvió»
+ *   solo no: «Así lo resolvió la Corte en la sentencia T-123 de 2019, expediente …» es una de las negativas de D-11.)
+ * - Entre las palabras de una señal, blancos o un salto de línea (`ESP`): el PDF que parte la oración («de mi⏎poderdante») no la corta
+ *   (C03, `cortaEn`), así que tampoco puede partir la señal.
  */
 const L20 = R`\p{L}{0,20}`;
-const PROPIO_ORACION_CORE = R`(?:selecci[óo]n${L20}|insist${L20}|nulidad(?:es)?|desacatos?|temer${L20}|(?:in)?cumpl${L20}|apoderad[oa]s?|(?:otorg|confier|confer)${L20}[ ]+(?:el[ ]+)?poder|poder[ ]+(?:especial|amplio|general)|remit${L20}|remite|remisi[óo]n|escog${L20}|decret${L20}|pruebas|proferid[oa]s?|dentro[ ]+del[ ]+(?:presente[ ]+)?expediente|folios?|fls?\.|cuadernos?|cdno\.|(?:fall|decid|resolv)${L20}[ ]+(?:(?:el|este|dicho|del|al|su)[ ]+)?(?:expedientes?|exp\.)|propi[oa]s?[ ]+(?:tutela|acci[óo]n|demanda|solicitud|expediente|caso|proceso)|mis?[ ]+(?:tutela|acci[óo]n|demanda|solicitud|expediente|caso|proceso|favor)|(?:me|nos)[ ]+(?:ampar|conced|concedi|neg|tutel|proteg|reconoc|orden|otorg|favorec)${L20}|orden(?:[óo]|ad[oa]s?|aron)|las?[ ]+[óo]rden(?:es)?|esta[ ]+(?:tutela|acci[óo]n|demanda|solicitud))`;
-const PROPIO_ORACION_Y = new RegExp(R`(?<![\p{L}])${PROPIO_ORACION_CORE}(?![\p{L}])`, 'iuy');
-const RAPIDA_PROPIO_ORACION = new RegExp(PROPIO_ORACION_CORE, 'giu');
+const ESP = R`(?:[ ]+|[ ]*\n[ ]*)`;
+const PARTE_PROPIA = R`(?:mis?|nuestr[oa]s?)${ESP}(?:(?:menor(?:es)?|señor(?:a|es|as)?)${ESP})?(?:poderdantes?|representad[oa]s?|prohijad[oa]s?|client[ea]s?|mandantes?|defendid[oa]s?|apoderad[oa]s?|agenciad[oa]s?|patrocinad[oa]s?|hij[oa]s?|espos[oa]s?|compañer[oa]s?|madres?|padres?|herman[oa]s?|abuel[oa]s?|niet[oa]s?)`;
+const ESCRITO_PROPIO = R`(?:el|la|los|las)${ESP}(?:suscrit[oa]s?|infrascrit[oa]s?|abajo${ESP}firmantes?)|quien(?:es)?${ESP}suscrib${L20}`;
+const VERBO_PROPIO = R`prof(?:er|ir|ier)${L20}|dict(?:[óo]|ad[oa]s?|aron)|emit(?:i[óo]|ieron|id[oa]s?)|dispus${L20}|dispuest[oa]s?|resuelt[oa]s?`;
+const PROPIO_ORACION_CORE = R`(?:selecci[óo]n${L20}|insist${L20}|nulidad(?:es)?|desacatos?|temer${L20}|(?:in)?cumpl${L20}|apoderad[oa]s?|(?:otorg|confier|confer)${L20}${ESP}(?:el${ESP})?poder|poder${ESP}(?:especial|amplio|general)|remit${L20}|remite|remisi[óo]n|escog${L20}|decret${L20}|pruebas|${VERBO_PROPIO}|dentro${ESP}del${ESP}(?:presente${ESP})?expediente|folios?|fls?\.|cuadernos?|cdno\.|(?:fall|decid|resolv)${L20}${ESP}(?:(?:el|este|dicho|del|al|su)${ESP})?(?:expedientes?|exp\.)|propi[oa]s?${ESP}(?:tutela|acci[óo]n|demanda|solicitud|expediente|caso|proceso)|mis?${ESP}(?:tutela|acci[óo]n|demanda|solicitud|expediente|caso|proceso|favor)|${PARTE_PROPIA}|${ESCRITO_PROPIO}|(?:me|nos)${ESP}(?:ampar|conced|concedi|neg|tutel|proteg|reconoc|orden|otorg|favorec)${L20}|orden(?:[óo]|ad[oa]s?|aron)|las?${ESP}[óo]rden(?:es)?|esta${ESP}(?:tutela|acci[óo]n|demanda|solicitud))`;
+/**
+ * M-61 (PB-2-r9, D-14) · Una celda o un encabezado no es una oración, y ante la duda se toma: un tabulador o una barra entre celdas
+ * («11001-…-00⇥T-9.000.001⇥T-123 de 2026», «| T-9.000.001 | T-123 de 2026 |») y un guion entre blancos («Sentencia T-123 de 2026 –
+ * Expediente T-…»; la vista `reglas` ya convierte «–» y «—» en «-») en la oración del expediente son también señales del propio caso.
+ * No cuentan la sangría (el tabulador o el guion tras el inicio del renglón y blancos), ni el que sigue a una viñeta o a un número de
+ * lista («1.⇥», «a)⇥», «-⇥», «•⇥»), ni el guion pegado («T-123», «SU-508/20»). Va fuera de las fronteras de letra de las señales: el
+ * tabulador suele ir pegado a una palabra («Radicado⇥Expediente»). Primero el carácter y luego el retrovisor, acotado a 9 caracteres:
+ * el índice solo lo prueba en los tabuladores, las barras y los guiones.
+ */
+const SEPARADOR_CORE = R`[\t|](?<=[^\s.)\]•·*º°\-‐-―][ ]{0,8}[\t|])|[\-‐-―](?<=[^\s][ \t]{1,8}[\-‐-―])(?=[ \t])`;
+const PROPIO_ORACION_Y = new RegExp(R`(?<![\p{L}])${PROPIO_ORACION_CORE}(?![\p{L}])|${SEPARADOR_CORE}`, 'iuy');
+const RAPIDA_PROPIO_ORACION = new RegExp(`${PROPIO_ORACION_CORE}|${SEPARADOR_CORE}`, 'giu');
 
 /**
  * ¿Casa `re` (con `y`, sobre todo el texto) en alguna posición de [desde, hasta) y acaba antes de `hasta`? Con el índice de la vista
@@ -754,8 +777,9 @@ export function esPrecedenteCitado(texto: string, start: number, end: number): b
  * R-RAD_ADMIN-03 (D-11; PB-2-r8: A-1, M-50 y B-70) · El contexto del expediente en [start, end) de la vista `reglas`:
  * - `precedente` (no se toma) solo si, en la misma oración, va con **otra providencia identificada con su número y su año**
  *   (`PROVIDENCIA`) y no hay **ninguna señal del propio caso**: la de 7.3.3 (`CITA_PROPIO`), el rótulo justo antes (`OWN_CASE`),
- *   un rótulo al inicio de su renglón o del anterior (`rotuloPropio`), o un trámite o el escrito propio en la oración
- *   (`PROPIO_ORACION`). La tercera condición de D-11 (la misma clave sin cita en otra mención del documento) la aplica la tubería.
+ *   un rótulo al inicio de su renglón o del anterior (`rotuloPropio`), o en la oración un trámite, el escrito propio, la parte
+ *   nombrada por quien escribe, un verbo de la providencia del expediente, una celda o un encabezado con guion (`PROPIO_ORACION`;
+ *   PB-2-r9: A-1 y M-61). La tercera condición de D-11 (la misma clave sin cita en otra mención del documento) la aplica la tubería.
  * - `cita` (se toma, con la bandera) si está en contexto de cita (`esContextoDeCita`) y no hay ninguna señal del propio caso (B-70).
  * - `null` (se toma) en otro caso.
  * Ventanas fijas e índice de la vista (B-62 y B-72): solo se arma la oración si en la ventana empieza una providencia o una señal

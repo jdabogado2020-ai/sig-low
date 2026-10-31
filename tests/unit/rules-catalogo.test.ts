@@ -692,6 +692,117 @@ describe('T-MO-01 · A-1 (PB-2-r7 y PB-2-r8, D-11): R-RAD_ADMIN-03 solo descarta
   });
 });
 
+describe('T-MO-01 · A-1, M-61 y B-81 (PB-2-r9, D-14): la parte propia, los verbos de la providencia, las celdas y los nombres de norma con un complemento ambiguo', () => {
+  const ctx = (t: string, sub = 'T-9.000.001'): ReturnType<typeof contextoDelExpediente> => {
+    const v = buildSearchView(t, 'reglas', 'cuerpo');
+    const s = v.text.indexOf(sub);
+    return contextoDelExpediente(v.text, s, s + sub.length, v);
+  };
+  const sinIndice = (t: string, sub = 'T-9.000.001'): ReturnType<typeof contextoDelExpediente> => {
+    const v = buildSearchView(t, 'reglas', 'cuerpo');
+    const s = v.text.indexOf(sub);
+    return contextoDelExpediente(v.text, s, s + sub.length);
+  };
+  const ANTES = 'En la Sentencia T-123 de 2026, expediente T-9.000.001,';
+
+  it('A-1 · la parte nombrada por quien escribe y el escrito en primera persona son señales del propio caso, en minúsculas, con inicial y en MAYÚSCULAS', () => {
+    const senales = [
+      'mi poderdante', 'mis poderdantes', 'mi representada', 'mi representado', 'mi prohijado', 'mi prohijada', 'nuestro cliente',
+      'nuestra clienta', 'mi cliente', 'mi mandante', 'mi defendido', 'mi apoderada', 'mi agenciado', 'mi patrocinada', 'mi hija',
+      'mi menor hijo', 'mi esposa', 'mi compañera', 'mi señora madre', 'mi padre', 'mis hermanos', 'mi abuela', 'mi nieto',
+      'la suscrita', 'el suscrito', 'los suscritos', 'el infrascrito', 'el abajo firmante', 'quien suscribe',
+    ];
+    for (const s of senales) {
+      for (const t of [`${ANTES} la Corte amparó los derechos de ${s}.`, `${ANTES} la Corte amparó los derechos de ${s}.`.toUpperCase(),
+        `${s.charAt(0).toUpperCase()}${s.slice(1)} obtuvo la Sentencia T-123 de 2026 en el expediente T-9.000.001.`]) {
+        // Con el código de -r8, 'precedente': el expediente propio no se tomaba.
+        expect(ctx(t), t).toBeNull();
+        expect(sinIndice(t), t).toBeNull();
+      }
+    }
+    // El PDF que parte la señal en dos renglones no la corta (el renglón acaba en palabra y el siguiente empieza en minúscula).
+    for (const t of [`${ANTES} la Corte amparó los derechos de mi\npoderdante.`, `${ANTES} se protegió a la\nsuscrita.`,
+      `${ANTES} la Corte amparó a mi   representada.`]) expect(ctx(t), t).toBeNull();
+  });
+
+  it('M-61 · todas las formas de los verbos con que la providencia es del expediente: «profirió», «dictó», «emitió», «dispuso», «lo resuelto»', () => {
+    for (const o of [
+      'La Corte profirió la Sentencia T-123 de 2026 en el expediente T-9.000.001.',
+      'Las salas profirieron la Sentencia T-123 de 2026 en el expediente T-9.000.001.',
+      'La Corte dictó la Sentencia T-123 de 2026 en el expediente T-9.000.001.',
+      'La Sentencia T-123 de 2026, dictada en el expediente T-9.000.001, amparó a la accionante.',
+      'La Corte emitió la Sentencia T-123 de 2026 en el expediente T-9.000.001.',
+      'La Sentencia T-123 de 2026, emitida en el expediente T-9.000.001, amparó a la accionante.',
+      'Como lo dispuso la Sentencia T-123 de 2026 en el expediente T-9.000.001, la EPS debe autorizar el procedimiento.',
+      'Conforme a lo dispuesto en la Sentencia T-123 de 2026, expediente T-9.000.001, la EPS debe autorizar el procedimiento.',
+      'En virtud de lo resuelto en la Sentencia T-123 de 2026, expediente T-9.000.001, la EPS debe autorizar el procedimiento.',
+    ]) {
+      for (const t of [o, o.toUpperCase()]) {
+        // Con el código de -r8, 'precedente' (salvo «proferida», que ya era señal y aquí no se repite).
+        expect(ctx(t), t).toBeNull();
+        expect(sinIndice(t), t).toBeNull();
+      }
+    }
+    // «resolvió» solo no es señal: es la forma de una de las negativas de D-11.
+    expect(ctx('Así lo resolvió la Corte en la sentencia T-123 de 2019, expediente T-9.000.001.')).toBe('precedente');
+  });
+
+  it('M-61 · una celda (tabulador o barra entre celdas) o un encabezado con guion entre blancos es señal del propio caso', () => {
+    for (const t of [
+      'Sentencia T-123 de 2026 – Expediente T-9.000.001',
+      'Sentencia T-123 de 2026 - Expediente T-9.000.001',
+      'Expediente T-9.000.001 — Sentencia T-123 de 2026',
+      'Radicado\tExpediente\tSentencia\n11001-31-03-999-2026-00123-00\tT-9.000.001\tT-123 de 2026',
+      'T-9.000.001\tT-123 de 2026',
+      'Sentencia T-123 de 2026 \tT-9.000.001',
+      '| T-9.000.001 | T-123 de 2026 |',
+      'Sentencia T-123 de 2026|T-9.000.001',
+    ]) {
+      expect(ctx(t), t).toBeNull();
+      expect(sinIndice(t), t).toBeNull();
+    }
+  });
+
+  it('negativos: «a mi juicio», la sangría, la viñeta, el número de lista y el guion pegado no son señales (sigue siendo precedente)', () => {
+    const cita = 'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.';
+    for (const t of [
+      'A mi juicio, la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001 resuelven un caso análogo.',
+      'En mi opinión, la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001 resuelven un caso análogo.',
+      `\t${cita}`, `\t\t${cita}`, `1.\t${cita}`, `1)\t${cita}`, `a)\t${cita}`, `IV.\t${cita}`, `-\t${cita}`, `•\t${cita}`, `- ${cita}`,
+      `\t- ${cita}`, `Hechos:\n\t${cita}`,
+      'Ver la Sentencia SU-508/20 (expediente T-9.000.001), sobre la integralidad.',
+      'Así lo dijo la Corte en la sentencia T-074 de 2020, expediente T-9.000.001.',
+    ]) {
+      expect(ctx(t), t).toBe('precedente');
+      expect(sinIndice(t), t).toBe('precedente');
+    }
+  });
+
+  it('B-62 · con índice da lo mismo que sin él en textos aleatorios con las señales nuevas, tabuladores, barras, guiones y saltos', () => {
+    const trozos = ['Como precedente invoco la Sentencia T-074 de 2020', ' y, en particular,', ' el expediente T-9.000.001', '.', ' ', '\n',
+      '\t', ' - ', '-', ' | ', '|', ' mi poderdante', ' mi', ' poderdante', ' la suscrita', ' la', ' profirió', ' lo resuelto', ' dispuso',
+      '1.', 'a)', ' S.A.', ' M.P. Ana', ' la Corte', ' T-456 de 2020', ' Expediente', 'Radicado'];
+    let semilla = 11;
+    const azar = (n: number): number => { semilla = (semilla * 48271) % 2147483647; return semilla % n; };
+    let comparados = 0;
+    let propios = 0;
+    for (let k = 0; k < 600; k++) {
+      let t = '';
+      for (let j = 0; j < 14; j++) t += trozos[azar(trozos.length)] as string;
+      const v = buildSearchView(t, 'reglas', 'cuerpo');
+      for (const m of v.text.matchAll(/T-9\.000\.001/gu)) {
+        const con = contextoDelExpediente(v.text, m.index, m.index + 11, v);
+        expect(con, JSON.stringify(t)).toBe(contextoDelExpediente(v.text, m.index, m.index + 11));
+        if (con === null) propios++;
+        comparados++;
+      }
+    }
+    expect(comparados).toBeGreaterThan(300);
+    expect(propios).toBeGreaterThan(50);
+  });
+
+});
+
 describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas y exclusiones)', () => {
   const N = 40_000;
   const entradas: Array<[string, string]> = [
@@ -893,6 +1004,9 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     // PB-2-r8: el camino de la providencia y la oración (todos citados: ninguno se toma) y el del propio caso con puntos y abreviaturas.
     ['«la Sentencia T-1 de 2020 y el expediente T-9.000.001, »', 1_000_000, 'la Sentencia T-1 de 2020 y el expediente T-9.000.001, ', null, false],
     ['«S.A. La Corte, en la T-1 de 2020, Cfr. el expediente T-9.000.001 me amparó. »', 1_000_000, 'S.A. La Corte, en la T-1 de 2020, Cfr. el expediente T-9.000.001 me amparó. ', null, true],
+    // PB-2-r9: la parte propia, el encabezado con guion y la celda, en cada expediente.
+    ['«En la Sentencia T-1 de 2020 – expediente T-9.000.001 de mi poderdante; »', 1_000_000, 'En la Sentencia T-1 de 2020 – expediente T-9.000.001 de mi poderdante; ', null, true],
+    ['«T-1 de 2020⇥T-9.000.001⇥»', 1_000_000, 'T-1 de 2020\tT-9.000.001\t', null, true],
   ] as const)('B-62 y B-72 R-RAD_ADMIN-03 en un renglón con %s hasta %i caracteres: toma lo que debe y el contexto va por debajo del tope', async (_n, largo, unidad, contexto, toma) => {
     const reglas = (await reglasDeModulos(['radicado'])).filter((r) => r.id === 'R-RAD_ADMIN-03');
     const texto = unidad.repeat(Math.ceil(largo / unidad.length));
@@ -925,6 +1039,34 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     ['saltos de línea antes del expediente', 'a\n'.repeat(K / 2) + 'T-9.000.001'],
     ['abreviaturas encadenadas', 'S.A. M.P. Dr. No. '.repeat(K / 18) + 'T-9.000.001'],
   ])('PB-2-r8 contextoDelExpediente, %s: 40.000 caracteres por debajo de 50 ms', (_n, texto) => {
+    const inicios = [...texto.matchAll(/T-9\.000\.001/gu)].map((m) => m.index);
+    const mejor = Math.min(...[0, 1, 2].map(() => {
+      const v = buildSearchView(texto, 'reglas', 'cuerpo');
+      const t0 = performance.now();
+      for (const s of inicios) {
+        const i = v.text === texto ? s : v.text.indexOf('T-9.000.001');
+        contextoDelExpediente(v.text, i, i + 11, v);
+        contextoDelExpediente(texto, s, s + 11);
+      }
+      return performance.now() - t0;
+    }));
+    expect(mejor).toBeLessThan(50);
+  }, 120_000);
+
+  // PB-2-r9: las señales nuevas del propio caso (la parte y el escrito propios, con blancos o un salto entre palabras; los verbos, con
+  // su cola acotada) y los separadores de celda y de encabezado (un retrovisor acotado tras el carácter), con 40.000 blancos, saltos,
+  // tabuladores, barras o guiones: el contexto de cada expediente con el índice de la vista y sin él, el mejor de 3, por debajo de 50 ms.
+  it.each([
+    ['«mi» y espacios antes de «poderdante», fuera de la vista', 'la Sentencia T-1 de 2020, el expediente T-9.000.001, mi' + SP + 'poderdante'],
+    ['«mi» y saltos con espacios antes de «poderdante»', 'la Sentencia T-1 de 2020, el expediente T-9.000.001, mi' + ' \n'.repeat(K / 2) + 'poderdante'],
+    ['«el», espacios, «abajo», espacios y «firmante»', 'la Sentencia T-1 de 2020, el expediente T-9.000.001, el' + SP + 'abajo' + SP + 'firmante'],
+    ['una racha de «profer» y «dispus» sin blancos', 'proferdispus'.repeat(K / 12) + ' la Sentencia T-1 de 2020 y el expediente T-9.000.001'],
+    ['tabuladores entre una palabra y el expediente', 'Radicado' + TB + 'T-9.000.001' + TB + 'T-1 de 2020'],
+    ['celdas cortas encadenadas', 'a\t'.repeat(K / 2) + 'T-9.000.001\tT-1 de 2020'],
+    ['barras encadenadas', '|'.repeat(K) + ' T-9.000.001 | T-1 de 2020'],
+    ['guiones entre blancos encadenados', ' - '.repeat(K / 3) + 'T-9.000.001 - T-1 de 2020'],
+    ['espacios a los dos lados de un guion', 'la Sentencia T-1 de 2020' + SP + '-' + SP + 'el expediente T-9.000.001'],
+  ])('PB-2-r9 contextoDelExpediente, %s: 40.000 caracteres por debajo de 50 ms', (_n, texto) => {
     const inicios = [...texto.matchAll(/T-9\.000\.001/gu)].map((m) => m.index);
     const mejor = Math.min(...[0, 1, 2].map(() => {
       const v = buildSearchView(texto, 'reglas', 'cuerpo');
