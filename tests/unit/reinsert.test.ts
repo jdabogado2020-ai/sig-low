@@ -64,7 +64,8 @@ describe('T-RI-01 · marcadores exactos (R-REI-01, 7.14.1)', () => {
     const { ms, r } = reinsertar('[DEMANDANTE_1] presentó la tutela contra [EPS_1].');
     expect(resumen(ms)).toEqual(['[DEMANDANTE_1]|exacto|', '[EPS_1]|exacto|']);
     expect(ms.every((m) => m.inTable)).toBe(true);
-    expect(r.text).toBe('Ana Ficticia Rojas presentó la tutela contra EPS Ejemplo S.A..');
+    // PB-4-r1: el punto de la abreviatura y el de la oración son uno («S.A.», no «S.A..»).
+    expect(r.text).toBe('Ana Ficticia Rojas presentó la tutela contra EPS Ejemplo S.A.');
   });
 
   it('T-RI-01 cada fila exacta de R-REI-01 y los marcadores con tilde', () => {
@@ -511,7 +512,15 @@ function construirSalida(id: string): Salida {
       const plantilla = d === undefined || d.status === 'editada' ? undefined : (d.replacement.generalized?.template ?? d.replacement.proposedTemplate);
       if (d !== undefined && plantilla?.includes('{m}') === true) {
         const marcador = cons.state.entities[d.entityId]?.marker as string;
-        t += plantilla.split('{m}').join(cons.table.entries[marcador]?.display as string);
+        const display = cons.table.entries[marcador]?.display as string;
+        // El tramo renderizado es la plantilla con el marcador y, si el tramo se llevó el punto que cierra la oración, ese punto
+        // (render.ts, PB-4-r1). Un display que ya termina en el punto de su abreviatura no lo duplica ante un punto («S.A.», no «S.A..»).
+        const trozos = tramo.split(marcador);
+        t += trozos.map((x, i) => {
+          if (i === trozos.length - 1) return x;
+          const sigue = (trozos[i + 1] ?? '').charAt(0) || (i + 1 === trozos.length - 1 ? s.text.charAt(seg.outEnd) : '');
+          return x + (display.endsWith('.') && sigue === '.' ? display.slice(0, -1) : display);
+        }).join('');
       } else t += tramo;
       segmentos++;
     }

@@ -258,6 +258,9 @@ export const buildReinsertion: BuildReinsertionFn = (input, matches, decisions, 
       replacement = display === undefined ? undefined : display + suffixOf(m);
     }
     if (replacement === undefined) continue;
+    // PB-4-r1 · «[EMPRESA_1].» con el punto de la oración que la salida repuso (render.ts): si el valor ya termina en el punto de
+    // la abreviatura («Ficticia S.A.»), ese punto es el mismo y no se duplica («S.A..»). La edición del abogado no se toca.
+    if (!(d !== undefined && d.action === 'editar') && replacement.endsWith('.') && text.charAt(m.end) === '.') replacement = replacement.slice(0, -1);
     text = text.slice(0, m.start) + replacement + text.slice(m.end);
     limit = m.start;
   }

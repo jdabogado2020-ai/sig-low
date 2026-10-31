@@ -214,7 +214,7 @@ describe('INV-N04 el texto reinsertado vive solo en memoria y se vacía', () => 
     buscarMarcadores(TABLA);
     const antes = obtenerReinsercion();
     expect(antes.resultado?.ready).toBe(true);
-    expect(antes.resultado?.text).toBe('Ana Ficticia Rojas presentó la tutela contra EPS Salud Ficticia S.A..');
+    expect(antes.resultado?.text).toBe('Ana Ficticia Rojas presentó la tutela contra EPS Salud Ficticia S.A.');   // sin «S.A..» (PB-4-r1)
     vaciarEstadoM();
     const despues = obtenerReinsercion();
     expect(despues.respuesta).toBe('');
@@ -272,7 +272,7 @@ describe('INV-N05 copiar o descargar el texto reinsertado exige ready', () => {
     escribirRespuesta('[DEMANDANTE_1] presentó la tutela contra [EPS_1].');
     buscarMarcadores(TABLA);
     copiarConDatosReales();
-    expect(escribir).toHaveBeenCalledWith('Ana Ficticia Rojas presentó la tutela contra EPS Salud Ficticia S.A..');
+    expect(escribir).toHaveBeenCalledWith('Ana Ficticia Rojas presentó la tutela contra EPS Salud Ficticia S.A.');
     await Promise.resolve();
     await Promise.resolve();
     expect(obtenerReinsercion().avisos.map((a) => a.id)).toEqual(['M-124']);
