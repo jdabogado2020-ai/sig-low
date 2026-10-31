@@ -16,7 +16,9 @@ const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
 // sin su retroceso cuadrático. El salto de línea de 7.1.5 cabe también después del signo de número («radicado No.⏎2026…»,
 // PA-ids-r1): cada tramo opcional empieza por un carácter distinto. GAP_CS (R-RAD_ADMIN-02 y -03) no cambia.
 const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?)?`;
-const NUMSIGN_CS = R`(?:[Nn]\.?[ ]?º|N[Oo]\.?|no\.?|[Nn]ro\.?|NRO\.?|[Nn][úu]m\.?|N[ÚU]M\.?|[Nn][úu]mero|N[ÚU]MERO|[Nn]\.|#)`;
+/** PROPUESTA PA-ids-r1: rótulo diferido («el radicado quedó escrito como …»); ver ids.ts. */
+const DIF = R`(?:[ ]+de[ ]+(?:\p{L}+[ ]+){1,4}?|[ ]+)(?:(?:figura|qued[óo]|se[ ]+anot[óo]|fue[ ]+anotad[oa])(?:[ ]+escrit[oa])?[ ]+)?como`;
+const NUMSIGN_CS =R`(?:[Nn]\.?[ ]?º|N[Oo]\.?|no\.?|[Nn]ro\.?|NRO\.?|[Nn][úu]m\.?|N[ÚU]M\.?|[Nn][úu]mero|N[ÚU]MERO|[Nn]\.|#)`;
 const GAP_CS = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN_CS}[ \t]*(?:[:.][ \t]*)?)?`;
 
 // ---- rótulos (7.2.1) ----
@@ -34,7 +36,8 @@ const ES_RADC = fuerte(R`${L_RADC}|rdo\.`);
 const ES_RADA_D = fuerte(L_RADA_D);
 
 // ---- valores (7.2.0) ----
-const V_RAD = R`\d+(?:(?:[ ]?[\-\/][ ]?(?:\n[ ]?)?|[ .])\d+){0,39}`;
+// PROPUESTA PA-ids-r1: un salto de línea (con espacios) también separa los grupos de dígitos («15759⏎41 10 959 2026 00023 00»).
+const V_RAD = R`\d+(?:(?:[ ]?[\-\/][ ]?(?:\n[ ]?)?|[ .]|[ ]?\n[ ]?)\d+){0,39}`;
 const V_RADC = R`(?:19|20)\d{2}[ ]?-[ ]?\d{3,5}(?:[ ]?-[ ]?\d{2})?`;
 const V_RADA = R`(?!${V_RADC}${NR})(?!(?:19|20)\d{2}-[01]\d-[0-3]\d${NR})(?=[A-Za-z0-9\-]*\d)[A-Za-z0-9]+(?:-[A-Za-z0-9]+){0,4}`;
 const V_NI = R`\d{1,3}(?:\.\d{3}){1,2}|\d{3,8}`;
@@ -186,7 +189,7 @@ export const rules: RuleSpec[] = [
     id: 'R-RAD-01',
     type: 'RADICADO',
     flags: 'dgiu',
-    source: R`(?:${BL}(?<l>${L_RAD})${GAP})?${NL}(?<v>${V_RAD})${NR}`,
+    source: R`(?:${BL}(?<l>${L_RAD})(?:${DIF})?${GAP})?${NL}(?<v>${V_RAD})${NR}`,
     assess: assessRad01,
   },
   {

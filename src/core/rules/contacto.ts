@@ -15,6 +15,8 @@ const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
 // GAP y EXT sin cuantificadores de blancos separados por un opcional (PB-2-r5): `B*(?:S B*)?` es el lenguaje de `B* S? B*` sin
 // su retroceso cuadrático.
 const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?)?`;   // 7.1.5: el salto también tras «No.» (PA-ids-r1)
+// PROPUESTA PA-ids-r1: rótulo y valor unidos por un verbo copulativo («el fijo de la casa es 000 0012»), ≤ 4 palabras.
+const COP = R`(?:(?:[ ]+de[ ]+(?:la|el|los|las)[ ]+\p{L}+)?[ ]+(?:es|fue|era|ser[áa])(?:[ ]+(?:la|el))?)?`;
 const PFX = R`(?:\(\+57\)|\+[ ]?57|0057|\(57\)|57)`;
 const SUB7 = R`\d{3}(?:[ \-.]?\d{4}|[ \-.]\d{2}[ \-.]\d{2})`;
 const EXT = R`(?:[ ]*(?:,[ ]*)?(?:ext\.?|extensi[óo]n)[ ]*(?::[ ]*)?\d{1,5})?`;
@@ -28,7 +30,12 @@ const ES_BREB_D = new RegExp(R`^(?:${L_BREB_D})$`, 'iu');
 // ---- valores (7.2.0) ----
 const V_CEL = R`(?:(?<p>${PFX})[ \-.]?)?(?:\(3\d{2}\)|3\d{2})[ \-.]?${SUB7}`;
 const V_FIJO = R`(?:(?<q>${PFX})[ \-.]?)?(?:\(60[124-8]\)|60[124-8])[ \-.]?${SUB7}`;
-const V_OLD1 = R`(?:(?<r>${PFX})[ \-.]?)?\(?[124-8]\)?[ \-.]?\d{3}[ \-.]?\d{4}`;
+// PROPUESTA PA-ids-r1: fijo con indicativo de tres cifras que empieza por 60 y no es de 7.2.0 («603 000 0012», indicativo erróneo),
+// solo tras un rótulo; la rama de R-TEL-02 no cambia.
+const V_FIJO_X = R`(?:\(60\d\)|60\d)(?:[ \-.]|[ ]?\n[ ]?)?${SUB7}`;
+// Rótulo diferido: «se anotó el teléfono de <nombre> como 603 000 0012».
+const DIF = R`[ ]+de[ ]+(?:\p{L}+[ ]+){1,4}?como`;
+const V_OLD1 =R`(?:(?<r>${PFX})[ \-.]?)?\(?[124-8]\)?[ \-.]?\d{3}[ \-.]?\d{4}`;
 const V_L018 = R`01[ \-.]?8000[ \-.]?\d{2}[ \-.]?\d{4}|01[ \-.]?8000[ \-.]?\d{6}`;
 const V_OLD7 = R`\d{3}[ \-.]?\d{4}`;
 const V_MAIL = R`[\p{L}\p{N}](?:[\p{L}\p{N}._%+\-]{0,62}[\p{L}\p{N}_%+\-])?@(?:[\p{L}\p{N}](?:[\p{L}\p{N}\-]{0,61}[\p{L}\p{N}])?\.)+\p{L}{2,24}`;
@@ -148,7 +155,7 @@ export const rules: RuleSpec[] = [
     id: 'R-TEL-03',
     type: 'TELEFONO',
     flags: 'dgiu',
-    source: R`${BL}(?<l>${L_TEL})${GAP}(?<v>(?:${V_CEL}|${V_FIJO}|${V_L018}|${V_OLD1}|${V_OLD7})${EXT})${NR}`,
+    source: R`${BL}(?<l>${L_TEL})(?:${COP}|(?:${DIF}))${GAP}(?<v>(?:${V_CEL}|${V_FIJO}|${V_FIJO_X}|${V_L018}|${V_OLD1}|${V_OLD7})${EXT})${NR}`,
     assess: assessTel03,
   },
   {

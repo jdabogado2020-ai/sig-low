@@ -1438,6 +1438,105 @@
         { "type": "PLACA", "texto": "XXX001", "ruleId": "R-PLACA-01", "confidence": "alta", "canonicalKey": "PLACA:XXX001" }
       ],
       "nota": "PA-ids-r1: salto de línea tras «No.» en R-PLACA-01"
+    },
+    {
+      "texto": "soy titular del servicio prestado por Salud Integral Prueba EPS (contrato 000000006).",
+      "reglas": ["R-AFIL-01"],
+      "esperado": [
+        { "type": "AFILIACION", "texto": "000000006", "ruleId": "R-AFIL-01", "confidence": "media", "canonicalKey": "AFIL:000000006" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: «contrato» como rótulo débil de afiliación"
+    },
+    {
+      "texto": "con contrato de servicio No. 0000009, para el inmueble",
+      "reglas": ["R-AFIL-01"],
+      "esperado": [
+        { "type": "AFILIACION", "texto": "0000009", "ruleId": "R-AFIL-01", "confidence": "media", "canonicalKey": "AFIL:0000009" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: «contrato de servicio No.»"
+    },
+    {
+      "texto": "descontando los servicios del contrato No. 000000005 de Aseo",
+      "reglas": ["R-AFIL-01"],
+      "esperado": [
+        { "type": "AFILIACION", "texto": "000000005", "ruleId": "R-AFIL-01", "confidence": "media", "canonicalKey": "AFIL:000000005" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: «contrato No.»"
+    },
+    {
+      "texto": "el contrato de arrendamiento vence pronto",
+      "reglas": ["R-AFIL-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PROPUESTA PA-ids-r1: «contrato» sin número"
+    },
+    {
+      "texto": "contrato 12",
+      "reglas": ["R-AFIL-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PROPUESTA PA-ids-r1: 2 dígitos"
+    },
+    {
+      "texto": "su historia clínica es la No. 12.020.600.034.",
+      "reglas": ["R-HC-01"],
+      "esperado": [
+        { "type": "HC", "texto": "12.020.600.034", "ruleId": "R-HC-01", "confidence": "alta", "canonicalKey": "HC:12020600034" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: verbo copulativo entre rótulo y número"
+    },
+    {
+      "texto": "la historia clínica será 1000000029",
+      "reglas": ["R-HC-01"],
+      "esperado": [
+        { "type": "HC", "texto": "1000000029", "ruleId": "R-HC-01", "confidence": "alta", "canonicalKey": "HC:1000000029" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: «será»"
+    },
+    {
+      "texto": "la historia clínica del paciente es compleja 1000000029",
+      "reglas": ["R-HC-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PROPUESTA PA-ids-r1: una palabra entre el verbo y el número no se admite"
+    },
+    {
+      "texto": "la matrícula de la casa es 300-00000002 y está en Palmira",
+      "reglas": ["R-MAT-02"],
+      "esperado": [
+        { "type": "MATRICULA", "texto": "300-00000002", "ruleId": "R-MAT-02", "confidence": "media", "canonicalKey": "MAT:300-00000002" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: «de la casa es» entre rótulo y valor"
+    },
+    {
+      "texto": "la matrícula de la casa 300-00000002",
+      "reglas": ["R-MAT-02"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PROPUESTA PA-ids-r1: sin verbo el rótulo no se difiere"
+    },
+    {
+      "texto": "consigne en la cuenta de ahorros del Banco\nEjemplo S.A. No. 000-000007-00, o a la llave",
+      "reglas": ["R-CUENTA-01"],
+      "esperado": [
+        { "type": "CUENTA", "texto": "000-000007-00", "ruleId": "R-CUENTA-01", "confidence": "alta", "canonicalKey": "CUENTA:00000000700" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: salto de línea de PDF dentro del rótulo (banco partido)"
+    },
+    {
+      "texto": "consigne en la cuenta de ahorros\ndel Banco Ejemplo S.A. No. 000-000016-00",
+      "reglas": ["R-CUENTA-01"],
+      "esperado": [
+        { "type": "CUENTA", "texto": "000-000016-00", "ruleId": "R-CUENTA-01", "confidence": "alta", "canonicalKey": "CUENTA:00000001600" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: salto entre el tipo de cuenta y el banco"
+    },
+    {
+      "texto": "cuenta de\n\nahorros No. 000-000016-00",
+      "reglas": ["R-CUENTA-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PROPUESTA PA-ids-r1: un párrafo en blanco no es un salto de PDF"
     }
   ]
 }

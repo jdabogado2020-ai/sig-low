@@ -619,6 +619,29 @@
       "negativo": true,
       "esperado": [],
       "nota": "PA-ids-r1: un párrafo en blanco no es un salto de línea de PDF"
+    },
+    {
+      "texto": "Por error de digitación, el radicado quedó escrito como 73001-41-03-908-1985-00014-00; se aclara",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "73001-41-03-908-1985-00014-00", "ruleId": "R-RAD-01", "confidence": "media", "canonicalKey": "RAD:73001410390819850001400" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: rótulo diferido («quedó escrito como»)"
+    },
+    {
+      "texto": "el trámite con radicado 15759\n41 10 959 2026 00023 00 ante el Juzgado",
+      "reglas": ["R-RAD-01"],
+      "esperado": [
+        { "type": "RADICADO", "texto": "15759\n41 10 959 2026 00023 00", "ruleId": "R-RAD-01", "confidence": "alta", "canonicalKey": "RAD:15759411095920260002300" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: salto de línea de PDF entre grupos de dígitos"
+    },
+    {
+      "texto": "Ana Ficticia Rojas 41.000.001\n300 000 0001\n310 000 0002",
+      "reglas": ["R-RAD-01"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PROPUESTA PA-ids-r1: celdas de tabla en líneas sucesivas siguen sin formar radicado"
     }
   ]
 }

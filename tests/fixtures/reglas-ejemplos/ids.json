@@ -170,6 +170,15 @@
     {"texto":"el titular del pasaporte No.\nVE000002, actúa en nombre propio","reglas":["R-PASAPORTE-01"],"esperado":[{"type":"PASAPORTE","texto":"VE000002","ruleId":"R-PASAPORTE-01","confidence":"alta","canonicalKey":"PASAPORTE:VE000002"}]},
     {"texto":"pasaporte venezolano:\nNo. VE000002","reglas":["R-PASAPORTE-01"],"esperado":[{"type":"PASAPORTE","texto":"VE000002","ruleId":"R-PASAPORTE-01","confidence":"alta","canonicalKey":"PASAPORTE:VE000002"}]},
     {"texto":"pasaporte No.\n\nVE000002","reglas":["R-PASAPORTE-01"],"negativo":true,"esperado":[]},
-    {"texto":"cédula de ciudadanía No.\n41.000.001","reglas":["R-CC-01"],"esperado":[{"type":"CC","texto":"41.000.001","ruleId":"R-CC-01","confidence":"alta","canonicalKey":"CC:41000001"}]}
+    {"texto":"cédula de ciudadanía No.\n41.000.001","reglas":["R-CC-01"],"esperado":[{"type":"CC","texto":"41.000.001","ruleId":"R-CC-01","confidence":"alta","canonicalKey":"CC:41000001"}]},
+    {"texto":"Conciliador: Paola Andrea Ficticia Navarro, T.P. 93.","reglas":["R-TP-01"],"esperado":[{"type":"TP","texto":"93","ruleId":"R-TP-01","confidence":"alta","canonicalKey":"TP:93"}]},
+    {"texto":"con T.P. No. 93, verificó la identidad","reglas":["R-TP-01"],"esperado":[{"type":"TP","texto":"93","ruleId":"R-TP-01","confidence":"alta","canonicalKey":"TP:93"}]},
+    {"texto":"tarjeta profesional de abogada 45","reglas":["R-TP-01"],"esperado":[{"type":"TP","texto":"45","ruleId":"R-TP-01","confidence":"alta","canonicalKey":"TP:45"}]},
+    {"texto":"registro médico 93","reglas":["R-TP-01"],"negativo":true,"esperado":[]},
+    {"texto":"T.P. 9","reglas":["R-TP-01"],"negativo":true,"esperado":[]},
+    {"texto":"Por error de digitación, la cédula de Ficticio Acosta figura como 167000032; se aclara","reglas":["R-CC-01"],"esperado":[{"type":"CC","texto":"167000032","ruleId":"R-CC-01","confidence":"media","canonicalKey":"CC:167000032"}]},
+    {"texto":"la cédula figura como 41.000.001","reglas":["R-CC-01"],"esperado":[{"type":"CC","texto":"41.000.001","ruleId":"R-CC-01","confidence":"alta","canonicalKey":"CC:41000001"}]},
+    {"texto":"la cédula de Ficticio Acosta figura 167000032","reglas":["R-CC-01"],"negativo":true,"esperado":[]},
+    {"texto":"la cédula de una persona que vive muy lejos de aquí como 167000032","reglas":["R-CC-01"],"negativo":true,"esperado":[]}
   ]
 }

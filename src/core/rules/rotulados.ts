@@ -16,6 +16,9 @@ const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
 // de `B* S? B*`, y `(?:B* S)?B+` el de `B* S? B+`, sin su retroceso cuadrático.
 const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?)?`;   // 7.1.5: el salto también tras «No.» (PA-ids-r1)
 const SEPP = R`[ \-·.]?`;
+// PROPUESTA PA-ids-r1: rótulo y valor unidos por un verbo copulativo («su historia clínica es la No. …», «la matrícula de la casa es …»):
+// hasta un complemento «de la/el/los/las <palabra>» y «es/fue/era/será» con artículo opcional. Distancia acotada (≤ 4 palabras).
+const COP = R`(?:(?:[ ]+de[ ]+(?:la|el|los|las)[ ]+\p{L}+)?[ ]+(?:es|fue|era|ser[áa])(?:[ ]+(?:la|el))?)?`;
 
 // ---- rótulos (7.2.1) ----
 const L_PLACA = R`placas?`;
@@ -23,9 +26,13 @@ const L_MAT_F = R`matr[íi]cula[ ]+inmobiliaria|folio[ ]+de[ ]+matr[íi]cula(?:[
 const L_MAT_D = R`matr[íi]cula(?![ ]+(?:mercantil|profesional|inmobiliaria|de[ ]+(?:la[ ]+)?c[áa]mara|de[ ]+comercio))|folio`;
 const L_HC = R`historia[ ]+cl[íi]nica|h\.[ ]?c\.(?:[ ]?l\.)?|hcl?|n[úu]mero[ ]+de[ ]+historia(?:[ ]+cl[íi]nica)?`;
 const L_AFIL_F = R`n[úu]mero[ ]+de[ ]+afiliaci[óo]n|(?:no\.|n\.?[ ]?º)[ ]*de[ ]+afiliaci[óo]n|afiliaci[óo]n|afiliad[oa][ ]+(?=n[úu]mero|no\.|n\.?[ ]?º|#)|c[óo]digo[ ]+de[ ]+afiliad[oa]|n[úu]mero[ ]+de[ ]+afiliad[oa]`;
-const L_AFIL_D = R`carn[ée]t?`;
+// PROPUESTA PA-ids-r1: «contrato» (de servicio) como rótulo débil de afiliación.
+const L_AFIL_D = R`carn[ée]t?|contratos?(?:[ ]+de[ ]+servicios?(?:[ ]+p[úu]blicos?)?)?`;
 const L_SALUD = R`n[úu]mero[ ]+de[ ]+autorizaci[óo]n|autorizaci[óo]n(?:[ ]+de[ ]+servicios?)?|orden[ ]+de[ ]+servicios?|n[úu]mero[ ]+de[ ]+prescripci[óo]n|prescripci[óo]n(?:[ ]+mipres)?|mipres|n[úu]mero[ ]+de[ ]+p[óo]liza|p[óo]liza(?:[ ]+(?:soat|de[ ]+seguros?|de[ ]+salud|de[ ]+responsabilidad[ ]+civil))?|n[úu]mero[ ]+de[ ]+siniestro|siniestro|reclamaci[óo]n`;
 const L_CTA_F = R`cuentas?(?![ ]+de[ ]+cobro)(?:[ ]+(?:de[ ]+ahorros?|corriente|de[ ]+n[óo]mina|bancaria|de[ ]+dep[óo]sito))?(?:[ ]+(?:(?:del|de|en(?:[ ]+el)?)[ ]+)?(?:banco(?:[ ]+[\p{L}&.]+){1,4}?|bancolombia|davivienda|bbva|ita[úu]|colpatria|scotiabank(?:[ ]+colpatria)?|av[ ]+villas|caja[ ]+social|bancoomeva|bancam[íi]a|mibanco|nequi|daviplata|lulo[ ]+bank|nu))?|cta\.?(?:[ ]+(?:de[ ]+)?(?:ahorros?|cte\.?|corriente))?|n[úu]mero[ ]+de[ ]+(?:la[ ]+)?cuenta`;
+// PROPUESTA PA-ids-r1: un rótulo de varias palabras puede partirse en un salto de línea de PDF («del Banco⏎Ejemplo S.A.»): en
+// L_CTA_F cada espacio entre palabras admite un solo salto de línea (con espacios a los lados).
+const L_CTA_FN = L_CTA_F.replaceAll('[ ]+', R`(?=[ \n])[ ]*(?:\n[ ]*)?`);
 const L_CTA_D = R`producto|dep[óo]sito[ ]+electr[óo]nico`;
 const L_TAR = R`tarjeta(?:[ ]+de)?[ ]+(?:cr[ée]dito|d[ée]bito)|tarjeta|n[úu]mero[ ]+de[ ]+(?:la[ ]+)?tarjeta|t\.?[ ]?c\.?`;
 const L_MASK = R`terminad[oa]s?|finalizad[oa]s?|que[ ]+termina|terminaci[óo]n|[úu]ltimos[ ]+(?:4|cuatro)[ ]+(?:n[úu]meros|d[íi]gitos|cifras)`;
@@ -173,14 +180,14 @@ export const rules: RuleSpec[] = [
     id: 'R-MAT-02',
     type: 'MATRICULA',
     flags: 'dgiu',
-    source: R`${BL}(?<l>${L_MAT_D})${GAP}(?<v>${V_MAT_D})${NR}`,
+    source: R`${BL}(?<l>${L_MAT_D})${COP}${GAP}(?<v>${V_MAT_D})${NR}`,
     assess: assessMat02,
   },
   {
     id: 'R-HC-01',
     type: 'HC',
     flags: 'dgiu',
-    source: R`${BL}(?<l>${L_HC})${GAP}${V_DOCPFX}(?<v>${V_HC})${NR}`,
+    source: R`${BL}(?<l>${L_HC})${COP}${GAP}${V_DOCPFX}(?<v>${V_HC})${NR}`,
     assess: assessHc01,
   },
   {
@@ -201,7 +208,7 @@ export const rules: RuleSpec[] = [
     id: 'R-CUENTA-01',
     type: 'CUENTA',
     flags: 'dgiu',
-    source: R`${BL}(?<l>${L_CTA_F}|${L_CTA_D})${GAP}(?<v>${V_CTA})${NR}`,
+    source: R`${BL}(?<l>${L_CTA_FN}|${L_CTA_D})${GAP}(?<v>${V_CTA})${NR}`,
     assess: assessCuenta01,
   },
   {

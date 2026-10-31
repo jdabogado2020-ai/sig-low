@@ -30,6 +30,11 @@ const GAP = R`[ \t]*(?:[:.][ \t]*)?(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*(?:[:.][ \t]*
  * `[ \t]{0,8}[:.]?[ \t]{0,8}`, sin repartir la racha entre dos cuantificadores.
  */
 const NOHC = R`(?<!(?:(?<![\p{L}])h\.?[ ]?c\.?l?|cl[íi]nica)(?:[ \t]{0,8}[:.][ \t]{0,8}|[ \t]{0,16})(?:(?:n[úu]mero|no\.?)[ \t]{0,8})?)`;
+/**
+ * PROPUESTA PA-ids-r1: rótulo diferido («la cédula de <nombre> figura como 167000032»): hasta 4 palabras de nombre, un verbo
+ * opcional y «como». Distancia acotada.
+ */
+const DIF = R`(?:[ ]+de[ ]+(?:\p{L}+[ ]+){1,4}?|[ ]+)(?:(?:figura|qued[óo]|se[ ]+anot[óo]|fue[ ]+anotad[oa])(?:[ ]+escrit[oa])?[ ]+)?como`;
 export const FR = { BL, NL, NR, NUMSIGN, GAP, NOHC } as const;
 
 // Rótulos (7.2.1)
@@ -101,7 +106,7 @@ const valor = (m: RegExpExecArray): string => m.groups?.['v'] ?? m[0];
 const rCC01: RuleSpec = {
   id: 'R-CC-01', type: 'CC', flags: 'dgiu',
   // Desvío D-A6-1: se agrupa `(?:${V.CC})` porque V.CC tiene alternación de primer nivel y, sin el grupo, el DV pegado solo se asociaba a la forma de dígitos seguidos (la forma con puntos, «41.000.001-7», no lo tomaba).
-  source: R`${BL}${NOHC}(?<l>${L.CC_F}|${L.CC_D})${GAP}(?<v>(?:${V.CC})(?:[ ]?-[ ]?(?<dv>\d)(?![\p{N}]))?)${NR}`,
+  source: R`${BL}${NOHC}(?<l>${L.CC_F}|${L.CC_D})(?:${DIF})?${GAP}(?<v>(?:${V.CC})(?:[ ]?-[ ]?(?<dv>\d)(?![\p{N}]))?)${NR}`,
   assess(m: RegExpExecArray, _ctx: RuleContext): RuleVerdict {
     // El DV pegado entra en el tramo (para no dejar un dígito suelto) pero no en la clave.
     const v = valor(m);
@@ -215,8 +220,10 @@ const rNIT02: RuleSpec = {
 
 const rTP01: RuleSpec = {
   id: 'R-TP-01', type: 'TP', flags: 'dgiu',
-  source: R`${BL}(?<l>${L.TP})${GAP}(?<v>${V.TP})${NR}`,
-  assess(m: RegExpExecArray): RuleVerdict {
+  source: R`${BL}(?<l>${L.TP})${GAP}(?<v>${V.TP}|\d{2})${NR}`,
+  assess(m: RegExpExecArray): RuleVerdict | null {
+    // PROPUESTA PA-ids-r1: dos cifras solo tras «T.P.» o «tarjeta profesional» (no «R.M.» ni «registro médico»).
+    if (digits(valor(m)).length === 2 && !/^(?:t\.?[ ]?p\.?|tarjeta[ ]+profesional(?:[ ]+de[ ]+abogad[oa])?)$/iu.test(grupo(m, 'l') ?? '')) return null;
     return { confidence: 'alta', canonicalKey: 'TP:' + digits(valor(m)), labelId: 'ROT-TP' };
   },
 };

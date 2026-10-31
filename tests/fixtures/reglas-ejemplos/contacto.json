@@ -560,6 +560,38 @@
       "negativo": true,
       "esperado": [],
       "nota": "PA-ids-r1: un párrafo en blanco no es un salto de línea de PDF"
+    },
+    {
+      "texto": "mi cel 321 000 0010, por si necesita llamarme; el fijo de la casa es 000 0011.",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "321 000 0010", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:3210000010" },
+        { "type": "TELEFONO", "texto": "000 0011", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:0000011" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: «el fijo de la casa es» (fijo de 7 cifras)"
+    },
+    {
+      "texto": "se anotó el teléfono de Ficticio Pérez como 603 000 0012; se aclara",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "603 000 0012", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:6030000012" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: rótulo diferido y fijo con indicativo 603"
+    },
+    {
+      "texto": "se anotó el teléfono de Ficticio Del Río como 603\n000 0020; se aclara",
+      "reglas": ["R-TEL-03"],
+      "esperado": [
+        { "type": "TELEFONO", "texto": "603\n000 0020", "ruleId": "R-TEL-03", "confidence": "alta", "canonicalKey": "TEL:6030000020" }
+      ],
+      "nota": "PROPUESTA PA-ids-r1: salto de línea entre el indicativo y el abonado"
+    },
+    {
+      "texto": "el fijo de la casa 000 0011",
+      "reglas": ["R-TEL-03"],
+      "negativo": true,
+      "esperado": [],
+      "nota": "PROPUESTA PA-ids-r1: sin verbo el rótulo no se difiere"
     }
   ]
 }
