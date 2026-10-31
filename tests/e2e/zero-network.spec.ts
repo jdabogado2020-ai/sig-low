@@ -695,3 +695,63 @@ test.describe('@cero-red fase A3 · descarga del modelo', () => {
     }
   });
 });
+
+// Fases C1 y C2 (PD-4, 10.5.1; T-RD-04), sobre el arnés: perfil persistente con conexión → asunto PRUEBA-RED-01 con «Guardar tabla
+// cifrada» y la lista del caso; se cierra el contexto (corte) y se relanza el mismo perfil sin conexión: la app sale del service
+// worker, el asunto se desbloquea con la lista intacta y se procesa otro documento. `verificar` exige desde el corte solo
+// `GET /sw.js` exacto, 0 peticiones a otros orígenes, 0 violaciones de CSP, 0 consola y nada del documento en la red; el volcado
+// del perfil (T-RD-06 con «Guardar tabla cifrada») no tiene ningún original fuera de `ct`. La reinserción (PC-6) y el modelo
+// (PF-2) se suman a C2 cuando esas tareas se fusionen.
+test('T-RD-04 @cero-red fases C1 y C2: el perfil relanzado sin conexión desbloquea PRUEBA-RED-01 y procesa otro documento sin red', async ({ arnes }) => {
+  test.setTimeout(180_000);
+  const frase = 'frase de prueba ficticia ñandú';
+  const a = await arnes({ dir: 'dist' });
+
+  // Con conexión: SW activo, asunto guardado con la lista del caso.
+  const s1 = await a.sesion({ persistente: true });
+  const p1 = await s1.nuevaPagina();
+  await p1.goto('/');
+  await a.esperarControlador(p1);
+  await expect(p1.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+  await p1.getByLabel('Código del asunto').fill('PRUEBA-RED-01');
+  await p1.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
+  await p1.getByLabel('Frase de paso. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.', { exact: true }).fill(frase);
+  await p1.getByLabel('Repita la frase de paso', { exact: true }).fill(frase);
+  await p1.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
+  await p1.getByRole('button', { name: 'Crear asunto' }).click();
+  await expect(p1.locator('[data-prueba="aviso-M-21"], [data-prueba="aviso-M-22"]')).toBeVisible({ timeout: 30_000 });
+  await p1.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante');
+  await p1.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
+  await p1.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
+  await p1.getByRole('button', { name: 'Continuar' }).click();
+  await expect(p1.getByRole('textbox', { name: 'Texto del documento' })).toBeVisible({ timeout: 30_000 });
+  await a.verificar(s1, { exigirCorte: false, secretos: ['Ficticia', 'PRUEBA-RED-01'] });
+  a.marcarCorte(s1);                                                     // el corte: el contexto se cierra
+  const perfil = s1.perfil!;
+  await s1.cerrar();
+
+  // C1: el mismo perfil, sin conexión.
+  const s2 = await a.sesion({ persistente: perfil, offline: true });
+  const p2 = await s2.nuevaPagina();
+  await p2.goto('/');
+  await expect(p2.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+  expect(await p2.evaluate(() => ({ aislado: crossOriginIsolated, controlador: navigator.serviceWorker.controller !== null })))
+    .toEqual({ aislado: true, controlador: true });
+  const sel = p2.getByLabel('Asunto guardado', { exact: true });
+  const valor = await sel.locator('option', { hasText: 'PRUEBA-RED-01' }).getAttribute('value');
+  await sel.selectOption(valor!);
+  await p2.getByLabel('Frase de paso del asunto', { exact: true }).fill(frase);
+  await p2.getByRole('button', { name: 'Abrir para anonimizar' }).click();
+  await expect(p2.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });   // tabla y lista cifradas disponibles
+  // C2: otro documento en la sesión nueva, sin conexión.
+  await p2.getByRole('button', { name: 'Continuar' }).click();
+  const texto = 'Ana Ficticia Rojas, C.C. 1.000.000.017, vive en la Calle 00 n.º 00-00. Correo: ana.ficticia@ejemplo.test.';
+  await p2.getByRole('textbox', { name: 'Texto del documento' }).fill(texto);
+  await p2.getByRole('button', { name: 'Analizar', exact: true }).click();
+  await expect(p2.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 30_000 });
+  // El perfil solo guarda la tabla cifrada: ningún original en claro en IndexedDB, Cache Storage ni almacenamiento web.
+  const v = await volcarAlmacenamiento(p2);
+  expect(Object.keys(v.indexedDB)).toEqual(['siglow-boveda']);
+  for (const secreto of ['Ficticia', 'Rojas', '1.000.000.017', 'ana.ficticia', 'Calle 00']) expect(textoDelVolcado(v), secreto).not.toContain(secreto);
+  await a.verificar(s2, { secretos: ['Ficticia', '1.000.000.017', 'PRUEBA-RED-01'] });
+});
