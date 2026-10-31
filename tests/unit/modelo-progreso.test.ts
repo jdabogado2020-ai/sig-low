@@ -538,6 +538,18 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
     expect(conv.suggestions[0]?.options.map((o) => o.template)).toEqual(['Juzgado 003 Civil Municipal de un municipio de {m}', 'un juzgado civil municipal']);
   });
 
+  it('AJ-3 «secretaría» (R-DESP-01): una secretaría con municipio da DESPACHO_A_GENERICO; sin municipio no es una autoridad con nombre propio (el cargo de una persona no es ENTIDAD)', () => {
+    const t = 'La secretaria de salud municipal informó; la Secretaría de Movilidad de Envigado respondió.';
+    const part = documento([t]).parts[0]!;
+    const conv = candidatesFromNer([
+      tramo(t, 'secretaria de salud municipal', 'ORG', 0.95), tramo(t, 'Secretaría de Movilidad de Envigado', 'ORG', 0.95),
+    ], { part, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    // Con «secretaría» entre las cabezas del mapeo 7.10.8, «secretaria de salud municipal» salía como ENTIDAD baja (falso positivo de C15).
+    expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}`)).toEqual([]);
+    expect(conv.suggestions.map((x) => `${x.kind}:${x.originalText}`)).toEqual(['DESPACHO_A_GENERICO:Secretaría de Movilidad de Envigado']);
+    expect(conv.suggestions[0]?.options.map((o) => o.template)).toEqual(['Secretaría de Movilidad de un municipio de {m}', 'una secretaría']);
+  });
+
   it('B-33 7.10.8 el ORG del modelo que trae un despacho y algo más: el despacho da su sugerencia y el resto entra como candidato del modelo, confianza baja (7.11.2)', () => {
     const t = 'Lo firmó el Juzgado Civil Municipal de Ubaté Pedro Ejemplo Gómez y lo notificó el Juzgado 2 de Familia de Cartago, Seguros Ficticios S.A.';
     const part = documento([t]).parts[0]!;

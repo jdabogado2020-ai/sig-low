@@ -219,7 +219,10 @@ const ORD_SET = new Set(DESP_ORD.map(vistaLista));
  * de autoridad del modelo (pipeline.ts, D-03 C) para no duplicar el vocabulario.
  */
 export const VOCABULARIO_DESPACHO: { readonly cabezas: ReadonlySet<string>; readonly palabras: ReadonlySet<string> } = {
-  cabezas: new Set(DESP_HEAD.map(vistaLista)), palabras: new Set(DESP_W.map(vistaLista)),
+  // AJ-3: «secretaría» es cabeza de R-DESP-01 (que exige municipio), pero no del mapeo 7.10.8 de autoridades con nombre propio:
+  // en minúscula casi siempre es el cargo de una persona («la secretaria de salud municipal»), y como cabeza daba un ENTIDAD baja
+  // falsa en la reserva (C15). Con municipio, `despachoDesdeTramo` sí la trata como despacho.
+  cabezas: new Set(DESP_HEAD.map(vistaLista).filter((h) => !h.startsWith('secretar'))), palabras: new Set(DESP_W.map(vistaLista)),
 };
 const FEM_HEAD = /^(alcald|personer|notar|comisar|inspecci|fiscal|registradur|curadur|jueza|secretar)/;
 const CTX_PERS = v3(['residente', 'residentes', 'residenciado', 'residenciada', 'domiciliado', 'domiciliada', 'domiciliados', 'vecino', 'vecina', 'vecinos',
