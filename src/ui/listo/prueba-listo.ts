@@ -26,8 +26,8 @@ function decidirUnoAUno(): number {
 export function instalarPruebaListo(): void {
   (globalThis as unknown as Record<string, unknown>)['__siglowListoPrueba'] = {
     irAListo: (): void => { ir('listo'); },
-    /** El build de medición no trae la caché del service worker: fija el SHA-256 de index.html que usa el informe. */
-    fijarCompilacion: (hex: string): void => { actualizarListo({ compilacion: hex }); },
+    /** Fija el SHA-256 de index.html que usa el informe (o `null`, como con la caché vacía) sin depender de la caché del service worker. */
+    fijarCompilacion: (hex: string | null): void => { actualizarListo({ compilacion: hex }); },
     /** Devuelve a `pendiente` la primera detección aceptada (una acción de revisión que sube `revision`, INV-R07). */
     restablecerPrimera: (): boolean => {
       const s = obtenerRevision();

@@ -27,6 +27,8 @@ export interface EstadoListo {
   recordatorioConfirmado: Date | null;
   /** Hallazgos de la última búsqueda con resultados, para mostrarlos con «Ir a la revisión». */
   hallazgos: readonly Hallazgo[];
+  /** Documento al que pertenecen los hallazgos: la banda de Revisión no los muestra para otro documento. */
+  docIdHallazgos: string | null;
   /** Hubo al menos una copia: habilita «Vaciar portapapeles» (8.2.7). */
   copiado: boolean;
   /** Avisos de las acciones (M-84, M-85, M-86, M-88, M-89, M-90, M-91, M-313…). */
@@ -42,7 +44,7 @@ export interface EstadoListo {
 
 const SIN_CASILLAS: ReminderConfirmation = { biometricos: false, reservaLegal: false, estrategia: false };
 const inicial = (): EstadoListo => ({
-  residuo: null, buscando: false, recordatorio: SIN_CASILLAS, recordatorioConfirmado: null, hallazgos: [],
+  residuo: null, buscando: false, recordatorio: SIN_CASILLAS, recordatorioConfirmado: null, hallazgos: [], docIdHallazgos: null,
   copiado: false, avisos: [], respaldo: null, errorBusqueda: null, incluirCodigoAsunto: false, compilacion: null,
 });
 

@@ -87,7 +87,7 @@ export async function buscarResiduos(): Promise<void> {
       const id = despues?.order.find((x) => { const d = despues.detections[x]; return d !== undefined && d.status === 'pendiente' && d.partId === h.partId && d.start === h.partStart; });
       return id === undefined ? h : { ...h, detectionId: id };
     });
-    actualizarListo({ residuo: result, hallazgos: conUbicacion, buscando: false });
+    actualizarListo({ residuo: result, hallazgos: conUbicacion, docIdHallazgos: state.docId, buscando: false });
     agregarAvisoAsunto({ id: 'M-78', params: { n: result.hits.length + result.newDetections } });
     actualizar({ phase: 'revision' });
     ir('revision');

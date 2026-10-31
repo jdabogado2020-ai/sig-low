@@ -1137,7 +1137,7 @@ type GanchoListo = {
   editarPorTexto(original: string, nuevo: string): boolean;
   fijarModelo(m: unknown): void;
   fijarResiduo(hits: number, nuevas: number, revision?: number): void;
-  fijarCompilacion(hex: string): void;
+  fijarCompilacion(hex: string | null): void;
   estado(): { revision: number; ok: boolean; motivos: string[]; residuoRevision: number | null; buscando: boolean; committed: boolean; copiado: boolean; banderas: number };
 };
 const GL = '__siglowListoPrueba';
@@ -1171,7 +1171,7 @@ const ganchoListo = (page: Page) => ({
   modelo: (m: unknown) => page.evaluate(([g, x]) => (globalThis as unknown as Record<string, GanchoListo>)[g as string]!.fijarModelo(x), [GL, m] as const),
   residuo: (h: number, n: number) => page.evaluate(([g, a, b]) => (globalThis as unknown as Record<string, GanchoListo>)[g as string]!.fijarResiduo(a as number, b as number), [GL, h, n] as const),
   ir: () => page.evaluate((g) => (globalThis as unknown as Record<string, GanchoListo>)[g]!.irAListo(), GL),
-  compilacion: (hex: string) => page.evaluate(([g, h]) => (globalThis as unknown as Record<string, GanchoListo>)[g as string]!.fijarCompilacion(h as string), [GL, hex] as const),
+  compilacion: (hex: string | null) => page.evaluate(([g, h]) => (globalThis as unknown as Record<string, GanchoListo>)[g as string]!.fijarCompilacion(h), [GL, hex] as const),
 });
 
 const TEXTO_LISTO = [
@@ -1481,7 +1481,8 @@ test.describe('Listo (PC-5)', () => {
     const b = botones(page);
     await expect(b.informeJson).toHaveAttribute('aria-disabled', 'true');
     await marcarRecordatorio(page);
-    // Sin la huella de la aplicación (caché del service worker) el informe no se puede generar: M-1417; el build de medición no la trae.
+    // Sin la huella de la aplicación (caché del service worker vacía) el informe no se puede generar: M-1417.
+    await ganchoListo(page).compilacion(null);
     await expect(page.getByText('No se puede generar el informe')).toBeVisible();
     await expect(b.informeJson).toHaveAttribute('aria-disabled', 'true');
     await ganchoListo(page).compilacion('ab'.repeat(32));

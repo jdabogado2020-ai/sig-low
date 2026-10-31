@@ -2,6 +2,7 @@
 // (etiqueta neutra de la parte, línea, tipo y marcador; nunca el valor) y «Ir a la ubicación», que selecciona la detección pendiente
 // que `incorporar_residuos` creó. Solo se pinta mientras Revisión es la pantalla actual y haya hallazgos de la última búsqueda.
 import type { DetectionId } from '../../core/types.ts';
+import { useRevision } from '../documento.ts';
 import { t } from '../mensajes.ts';
 import { irA } from '../review/base/almacen.ts';
 import { useListo } from './almacen.ts';
@@ -9,8 +10,9 @@ import { textoDeModo } from './busqueda.ts';
 import { L } from './textos.ts';
 
 export function BandaResiduos() {
-  const { hallazgos, residuo } = useListo();
-  if (residuo === null || hallazgos.length === 0) return null;
+  const { hallazgos, residuo, docIdHallazgos } = useListo();
+  const state = useRevision();
+  if (residuo === null || hallazgos.length === 0 || state === null || state.docId !== docIdHallazgos) return null;
   return (
     <section class="banda-residuos" aria-labelledby="h-residuos-incorporados" data-prueba="banda-residuos">
       <h2 id="h-residuos-incorporados">{t(L.valoresEncontrados)}</h2>
