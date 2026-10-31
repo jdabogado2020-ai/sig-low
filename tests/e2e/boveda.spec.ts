@@ -13,6 +13,7 @@ import { join } from 'node:path';
 import { chromium, expect, test, type Page } from '@playwright/test';
 import { build } from 'vite';
 
+import type { AsuntoId } from '../../src/core/types';
 import type { BovedaCompleta } from '../../src/ui/boveda-idb';
 import { iteracionesPara } from '../../src/vault/crypto';
 
@@ -33,6 +34,8 @@ const HTML = `<!doctype html>
 `;
 // Arnés: no es parte de la app; solo devuelve tiempos y huellas, nunca texto plano.
 const TS = `import { bovedaIdb } from '../../src/ui/boveda-idb.ts';
+import { instalarBloqueo } from '../../src/ui/bloqueo.ts';
+import { instalarPuertos } from '../../src/ui/servicios.ts';
 import { abrirSiglow, armarSiglow, derivarClave, exportarSiglow, iteracionesPara, medirT600k, serializarPayload } from '../../src/vault/crypto.ts';
 const FRASE = 'frase de prueba ficticia ñandú';
 const ID = 'asu_00112233445566778899aabbccddeeff';
@@ -51,6 +54,29 @@ globalThis.__ayuda = {
       documents: ['doc_00112233445566778899aabbccddeeff'], sameHolderAs: [] }; }
     return { asuntoId: id, counters: n ? { CC: n } : {}, entries, documents: [] }; },
   codigo: async (f) => { try { await f(); return 'SIN_ERROR'; } catch (e) { return (e && e.code) || 'SIN_CODIGO'; } },
+  // PD-4-r1. Escrituras crudas de «otra versión» (sin el adaptador ni su aviso entre pestañas) y bases presentes.
+  crudo: (f) => new Promise((ok, mal) => { const q = indexedDB.open('siglow-boveda'); q.onerror = () => mal(q.error);
+    q.onsuccess = () => { const db = q.result; const tx = db.transaction('asuntos', 'readwrite'); f(tx.objectStore('asuntos'));
+      tx.oncomplete = () => { db.close(); ok(); }; tx.onabort = () => { db.close(); mal(tx.error); }; }; }),
+  borrarCrudo: (id) => globalThis.__ayuda.crudo((s) => s.delete(id)),
+  alterarCreado: (id, creado) => globalThis.__ayuda.crudo((s) => { const g = s.get(id); g.onsuccess = () => s.put({ ...g.result, creado }); }),
+  bases: async () => (await indexedDB.databases()).map((d) => d.name),
+  idNuevo: () => 'asu_' + [...crypto.getRandomValues(new Uint8Array(16))].map((x) => x.toString(16).padStart(2, '0')).join(''),
+  // Retiene el próximo cifrado (un guardado «en curso») hasta soltar(); dentro se resuelve cuando ya entró.
+  retener: () => { const orig = crypto.subtle.encrypt; let soltar; let entro;
+    const puerta = new Promise((ok) => { soltar = ok; }); const dentro = new Promise((ok) => { entro = ok; });
+    Object.defineProperty(crypto.subtle, 'encrypt', { configurable: true, writable: true,
+      value: async (...a) => { delete crypto.subtle.encrypt; entro(); await puerta; return orig.apply(crypto.subtle, a); } });
+    globalThis.__puerta = { dentro, soltar }; },
+  // Cuenta las derivaciones (deriveKey) mientras corre f.
+  derivaciones: async (f) => { const orig = crypto.subtle.deriveKey; let n = 0;
+    Object.defineProperty(crypto.subtle, 'deriveKey', { configurable: true, writable: true, value: (...a) => { n++; return orig.apply(crypto.subtle, a); } });
+    try { return [await globalThis.__ayuda.codigo(f), n]; } finally { delete crypto.subtle.deriveKey; } },
+  // Del .siglow descargado: su encabezado y los campos del asunto del texto plano (este queda en ceros).
+  siglow: async (bytes, frase) => { const u8 = Uint8Array.from(bytes); const { encabezado, plano } = await abrirSiglow(u8, frase);
+    try { const o = JSON.parse(new TextDecoder().decode(plano)); return { encabezado, asunto: o.asunto, entradas: Object.keys(o.table.entries).length, lista: o.caseList.map((c) => c.name) }; }
+    finally { plano.fill(0); } },
+  instalarBloqueo: () => { instalarPuertos({ boveda: bovedaIdb }); instalarBloqueo(); },
 };
 globalThis.__boveda = {
   async calibrar(n) {
@@ -85,7 +111,16 @@ type Ayuda = {
   crudos(): Promise<Array<Record<string, unknown>>>;
   tabla(id: string, n: number): Record<string, unknown>;
   codigo(f: () => Promise<unknown>): Promise<string>;
+  borrarCrudo(id: string): Promise<void>;
+  alterarCreado(id: string, creado: string): Promise<void>;
+  bases(): Promise<string[]>;
+  idNuevo(): AsuntoId;
+  retener(): void;
+  derivaciones(f: () => Promise<unknown>): Promise<[string, number]>;
+  siglow(bytes: number[], frase: string): Promise<{ encabezado: string; asunto: Record<string, string>; entradas: number; lista: string[] }>;
+  instalarBloqueo(): void;
 };
+type Puerta = { __puerta: { dentro: Promise<void>; soltar(): void } };
 type Calibracion = { t: number[]; it: number[]; seguro: boolean; aislado: boolean };
 type Vector = { shaPlano: string; shaCt: string; largoCt: number; shaNfd: string; planoEnCeros: boolean };
 const mediana = (xs: number[]): number => { const s = [...xs].sort((a, b) => a - b); return s[Math.floor(s.length / 2)]!; };
@@ -354,6 +389,305 @@ test.describe('bóveda en el navegador (arnés)', () => {
     await otra.close();
     await expect.poll(bases, { timeout: 10_000 }).not.toContain('siglow-boveda');
   });
+
+  // ===== PD-4-r1: M-5, M-6, B-20 a B-24 (revisión P0-6a de PD-4 y de PC-6) =====
+  type GA = { __bovedaIdb: BovedaCompleta; __ayuda: Ayuda } & Puerta;
+  async function preparar(p: Page): Promise<void> {
+    await p.goto(`${ORIGEN}/boveda.html`);
+    await p.waitForFunction(() => '__bovedaIdb' in globalThis);
+  }
+  /** Crea un asunto guardado con `n` entidades y la lista del caso; devuelve su asuntoId. */
+  const crearCon = (p: Page, codigo: string, n: number, retener = false): Promise<AsuntoId> => p.evaluate(async ({ codigo, n, frase, lista, retener }) => {
+    const g = globalThis as unknown as GA;
+    const c = await g.__bovedaIdb.crear({ codigo, frase });
+    if (n > 0) await g.__bovedaIdb.guardar(c.asuntoId, { caseList: lista as never, table: g.__ayuda.tabla(c.asuntoId, n) as never });
+    if (retener) g.__ayuda.retener();
+    return c.asuntoId;
+  }, { codigo, n, frase: FRASE, lista: LISTA, retener });
+  /** Código del rechazo de un guardado con `n` entidades ('SIN_ERROR' si guarda). */
+  const guardarCodigo = (p: Page, id: AsuntoId, n: number): Promise<string> => p.evaluate(({ id, n }) => {
+    const g = globalThis as unknown as GA;
+    return g.__ayuda.codigo(() => g.__bovedaIdb.guardar(id, { caseList: [], table: g.__ayuda.tabla(id, n) as never }));
+  }, { id, n });
+  const dentro = (p: Page): Promise<void> => p.evaluate(() => (globalThis as unknown as GA).__puerta.dentro);
+  const soltar = (p: Page): Promise<void> => p.evaluate(() => { (globalThis as unknown as GA).__puerta.soltar(); });
+  const basesDe = (p: Page): Promise<string[]> => p.evaluate(() => (globalThis as unknown as GA).__ayuda.bases());
+
+  test('T-BO-01 @humo arnés M-5: un registro borrado no vuelve al guardar (otra pestaña lo borra, «Borrar todo» con un guardado en curso, datos del sitio borrados)', async ({ page, context }) => {
+    test.setTimeout(240_000);
+    await preparar(page);
+    const otra = await context.newPage();
+    await preparar(otra);
+
+    // A: otra pestaña borra el registro sin avisar (el almacén directo, o una versión sin el canal): ni el primer guardado ni
+    // los siguientes lo recrean.
+    const a = await crearCon(page, 'PRUEBA-020', 1);
+    await otra.evaluate((id) => (globalThis as unknown as GA).__ayuda.borrarCrudo(id), a);
+    expect(await guardarCodigo(page, a, 2)).toBe('SESION_DESCONOCIDA');
+    expect(await guardarCodigo(page, a, 3)).toBe('SESION_DESCONOCIDA');
+    expect(await page.evaluate(async () => (await (globalThis as unknown as GA).__ayuda.crudos()).length)).toBe(0);
+
+    // A con el adaptador: «Borrar» en otra pestaña avisa por el canal y esta descarta la clave enseguida.
+    const a2 = await crearCon(page, 'PRUEBA-021', 1);
+    await otra.evaluate((id) => (globalThis as unknown as GA).__bovedaIdb.borrarAsunto(id), a2);
+    expect(await guardarCodigo(page, a2, 2)).toBe('SESION_DESCONOCIDA');
+    expect((await page.evaluate(() => (globalThis as unknown as GA).__bovedaIdb.listar())).map((x) => x.codigo)).toEqual([]);
+
+    // D: «Borrar todo» en otra pestaña con un guardado en curso aquí (cifrado retenido): la base no vuelve.
+    const d = await crearCon(page, 'PRUEBA-022', 1, true);
+    const guardadoD = guardarCodigo(page, d, 2);
+    await dentro(page);
+    expect(await otra.evaluate(() => (globalThis as unknown as GA).__bovedaIdb.borrarTodo())).toBe('borrado');
+    await soltar(page);
+    expect(await guardadoD).toBe('SESION_DESCONOCIDA');
+    expect(await basesDe(page)).not.toContain('siglow-boveda');
+
+    // F: borrar los datos del sitio (cierre forzado de la conexión, como «Borrar datos de navegación»), sin y con un guardado en curso.
+    const cdp = await context.newCDPSession(page);
+    const borrarDatos = async (): Promise<void> => { await cdp.send('Storage.clearDataForOrigin', { origin: ORIGEN, storageTypes: 'indexeddb' }); };
+    const f = await crearCon(page, 'PRUEBA-023', 1);
+    await borrarDatos();
+    expect(await guardarCodigo(page, f, 2)).toBe('SESION_DESCONOCIDA');
+    expect(await basesDe(page)).not.toContain('siglow-boveda');
+    const f2 = await crearCon(page, 'PRUEBA-024', 1, true);
+    const guardadoF = guardarCodigo(page, f2, 2);
+    await dentro(page);
+    await borrarDatos();
+    await soltar(page);
+    expect(await guardadoF).toBe('SESION_DESCONOCIDA');
+    expect(await basesDe(page)).not.toContain('siglow-boveda');
+    await otra.close();
+  });
+
+  test('T-BO-01 @humo arnés B-20: sin su registro, el asunto guardado no se exporta con ninguna frase; con «No guardar», solo con una frase válida', async ({ page, context }) => {
+    test.setTimeout(120_000);
+    await preparar(page);
+    let descargas = 0;
+    page.on('download', () => { descargas++; });
+    const id = await crearCon(page, 'PRUEBA-030', 1);
+    const otra = await context.newPage();
+    await preparar(otra);
+    await otra.evaluate((x) => (globalThis as unknown as GA).__ayuda.borrarCrudo(x), id);
+    const exportarCodigo = (asuntoId: AsuntoId, codigo: string, frase: string): Promise<string> => page.evaluate(({ asuntoId, codigo, frase, lista }) => {
+      const g = globalThis as unknown as GA;
+      return g.__ayuda.codigo(() => g.__bovedaIdb.exportar({ caseList: lista as never, table: g.__ayuda.tabla(asuntoId, 1) as never }, codigo, frase));
+    }, { asuntoId, codigo, frase, lista: LISTA });
+    expect(await exportarCodigo(id, 'PRUEBA-030', '1')).toBe('SESION_DESCONOCIDA');
+    expect(await exportarCodigo(id, 'PRUEBA-030', FRASE)).toBe('SESION_DESCONOCIDA');
+    expect(descargas).toBe(0);
+    // «No guardar» (sin registro y sin clave): validatePassphrase también en el adaptador.
+    const sinGuardar = await page.evaluate(() => (globalThis as unknown as GA).__ayuda.idNuevo());
+    expect(await exportarCodigo(sinGuardar, 'PRUEBA-031', '1')).toBe('ENTRADA_INVALIDA');
+    expect(descargas).toBe(0);
+    const [descarga] = await Promise.all([page.waitForEvent('download'), exportarCodigo(sinGuardar, 'PRUEBA-031', FRASE)]);
+    expect(descarga.suggestedFilename()).toMatch(/^sig-low-tabla-\d{8}-\d{4}\.siglow$/);
+    expect(descargas).toBe(1);
+    await otra.close();
+  });
+
+  test('T-BO-01 @humo arnés B-21: cerrar() aborta un abrir, un crear y un «Pasar a Guardar cifrada» en curso; pageshow con persisted descarta la clave', async ({ page }) => {
+    test.setTimeout(120_000);
+    await preparar(page);
+    const r = await page.evaluate(async ({ frase, lista }) => {
+      const g = globalThis as unknown as GA;
+      const b = g.__bovedaIdb;
+      const h = g.__ayuda;
+      const out: Record<string, unknown> = {};
+      // crear: cerrar() durante la derivación → ni clave ni registro.
+      const pc = b.crear({ codigo: 'PRUEBA-040', frase });
+      b.cerrar();
+      out['crear'] = await h.codigo(() => pc);
+      // «Pasar a Guardar cifrada» desde «No guardar».
+      const idNg = h.idNuevo();
+      const pp = b.pasarAGuardar('PRUEBA-041', frase, { caseList: lista as never, table: h.tabla(idNg, 1) as never });
+      b.cerrar();
+      out['pasar'] = await h.codigo(() => pp);
+      out['lista'] = (await b.listar()).map((x) => x.codigo);
+      // abrir: la clave derivada se descarta y el asunto no queda abierto.
+      const c = await b.crear({ codigo: 'PRUEBA-042', frase });
+      b.cerrar();
+      const pa = b.abrir(c.asuntoId, frase);
+      b.cerrar();
+      out['abrir'] = await h.codigo(() => pa);
+      out['guardarTrasAbrir'] = await h.codigo(() => b.guardar(c.asuntoId, { caseList: [], table: h.tabla(c.asuntoId, 1) as never }));
+      // pageshow con persisted (restaurada de la caché de páginas) llama a boveda.cerrar() (bloqueo.ts de PC-1).
+      h.instalarBloqueo();
+      await b.abrir(c.asuntoId, frase);
+      out['guardarAbierto'] = await h.codigo(() => b.guardar(c.asuntoId, { caseList: [], table: h.tabla(c.asuntoId, 1) as never }));
+      dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+      out['guardarTrasPageshow'] = await h.codigo(() => b.guardar(c.asuntoId, { caseList: [], table: h.tabla(c.asuntoId, 2) as never }));
+      return out;
+    }, { frase: FRASE, lista: LISTA });
+    expect(r).toEqual({
+      crear: 'SESION_DESCONOCIDA', pasar: 'SESION_DESCONOCIDA', lista: [], abrir: 'SESION_DESCONOCIDA', guardarTrasAbrir: 'SESION_DESCONOCIDA',
+      guardarAbierto: 'SIN_ERROR', guardarTrasPageshow: 'SESION_DESCONOCIDA',
+    });
+  });
+
+  test('T-BO-01 @humo arnés B-22: exportar y listar toman «creado» del texto cifrado; un «creado» en claro alterado no abre ni pasa al .siglow', async ({ page }) => {
+    test.setTimeout(120_000);
+    await preparar(page);
+    const id = await crearCon(page, 'PRUEBA-050', 1);
+    const original = await page.evaluate(async (x) => {
+      const g = globalThis as unknown as GA;
+      const creado = String((await g.__ayuda.crudos()).find((r) => r['asuntoId'] === x)!['creado']);
+      await g.__ayuda.alterarCreado(x, '2001-01-01T00:00:00.000Z');
+      return creado;
+    }, id);
+    expect(original).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    const [descarga] = await Promise.all([
+      page.waitForEvent('download'),
+      page.evaluate(({ x, frase, lista }) => {
+        const g = globalThis as unknown as GA;
+        return g.__bovedaIdb.exportar({ caseList: lista as never, table: g.__ayuda.tabla(x, 1) as never }, 'PRUEBA-050', frase);
+      }, { x: id, frase: FRASE, lista: LISTA }),
+    ]);
+    const bytes = [...readFileSync((await descarga.path())!)];
+    const s = await page.evaluate(({ bytes, frase }) => (globalThis as unknown as GA).__ayuda.siglow(bytes, frase), { bytes, frase: FRASE });
+    expect(s.asunto['creado']).toBe(original);
+    // Con el asunto abierto, listar() también da el del texto cifrado.
+    expect((await page.evaluate(() => (globalThis as unknown as GA).__bovedaIdb.listar())).map((x) => x.creado)).toEqual([original]);
+    // Al abrir, el campo en claro alterado se nota (como el código): ARCHIVO_ALTERADO, también con un valor que no es ISO.
+    const abrir = await page.evaluate(async ({ x, frase }) => {
+      const g = globalThis as unknown as GA;
+      g.__bovedaIdb.cerrar();
+      const fecha = await g.__ayuda.codigo(() => g.__bovedaIdb.abrir(x, frase));
+      await g.__ayuda.alterarCreado(x, 'x');
+      return [fecha, await g.__ayuda.codigo(() => g.__bovedaIdb.abrir(x, frase))];
+    }, { x: id, frase: FRASE });
+    expect(abrir).toEqual(['ARCHIVO_ALTERADO', 'ARCHIVO_ALTERADO']);
+  });
+
+  test('T-BO-01 @humo arnés M-6 y B-23: «cambiar frase» en la cola, con sal e IV nuevos; un guardado con la clave vieja (otra pestaña o en curso) no lo deshace', async ({ page, context }) => {
+    test.setTimeout(300_000);
+    const NUEVA = 'otra frase ficticia de prueba ñame';
+    const NUEVA2 = 'tercera frase ficticia de ensayo';
+    await preparar(page);
+    const id = await crearCon(page, 'PRUEBA-060', 2);
+    const encabezado = (p: Page): Promise<string> => p.evaluate(async (x) =>
+      String((await (globalThis as unknown as GA).__ayuda.crudos()).find((r) => r['asuntoId'] === x)!['encabezado']), id);
+    const e0 = await encabezado(page);
+    const cambiar = (p: Page, actual: string, nueva: string): Promise<string> => p.evaluate(({ x, actual, nueva }) => {
+      const g = globalThis as unknown as GA;
+      return g.__ayuda.codigo(() => g.__bovedaIdb.cambiarFrase(x, actual, nueva));
+    }, { x: id, actual, nueva });
+    // Frase nueva débil: ENTRADA_INVALIDA sin derivar nada; frase actual errónea: CONTRASENA_O_ARCHIVO. El registro no cambia.
+    expect(await page.evaluate(({ x, frase }) => {
+      const g = globalThis as unknown as GA;
+      return g.__ayuda.derivaciones(() => g.__bovedaIdb.cambiarFrase(x, frase, 'corta'));
+    }, { x: id, frase: FRASE })).toEqual(['ENTRADA_INVALIDA', 0]);
+    expect(await cambiar(page, 'frase de prueba ficticia nandu', NUEVA)).toBe('CONTRASENA_O_ARCHIVO');
+    expect(await encabezado(page)).toBe(e0);
+    // Cuota agotada al confirmar: CUOTA_EXCEDIDA y el registro sigue igual (abre con la actual).
+    const cuota = await page.evaluate(async ({ x, frase, nueva }) => {
+      const g = globalThis as unknown as GA;
+      const put = IDBObjectStore.prototype.put;
+      IDBObjectStore.prototype.put = function (this: IDBObjectStore, ...a: Parameters<IDBObjectStore['put']>) {
+        const tx = this.transaction;
+        const req = put.apply(this, a);
+        req.addEventListener('success', () => {
+          Object.defineProperty(tx, 'error', { configurable: true, get: () => new DOMException('cuota', 'QuotaExceededError') });
+          tx.abort();
+        });
+        return req;
+      };
+      try {
+        return await g.__ayuda.codigo(() => g.__bovedaIdb.cambiarFrase(x, frase, nueva));
+      } finally {
+        IDBObjectStore.prototype.put = put;
+      }
+    }, { x: id, frase: FRASE, nueva: NUEVA });
+    expect(cuota).toBe('CUOTA_EXCEDIDA');
+    expect(await encabezado(page)).toBe(e0);
+    // B-23: un «creado» en claro alterado no pasa al registro nuevo (se rechaza al comprobar la frase actual).
+    const creado = await page.evaluate(async (x) => {
+      const g = globalThis as unknown as GA;
+      const original = String((await g.__ayuda.crudos()).find((r) => r['asuntoId'] === x)!['creado']);
+      await g.__ayuda.alterarCreado(x, '2001-01-01T00:00:00.000Z');
+      return original;
+    }, id);
+    expect(await cambiar(page, FRASE, NUEVA)).toBe('ARCHIVO_ALTERADO');
+    await page.evaluate(({ x, creado }) => (globalThis as unknown as GA).__ayuda.alterarCreado(x, creado), { x: id, creado });
+
+    // Dos pestañas más con el asunto abierto con la frase actual; en `otra`, además, un guardado en curso con la clave vieja.
+    const otra = await context.newPage();
+    const tercera = await context.newPage();
+    for (const p of [otra, tercera]) {
+      await preparar(p);
+      await p.evaluate(({ x, frase }) => (globalThis as unknown as GA).__bovedaIdb.abrir(x, frase), { x: id, frase: FRASE });
+    }
+    await otra.evaluate(() => { (globalThis as unknown as GA).__ayuda.retener(); });
+    const viejo = guardarCodigo(otra, id, 5);
+    await dentro(otra);
+    expect(await cambiar(page, FRASE, NUEVA)).toBe('SIN_ERROR');
+    await soltar(otra);
+    expect(await viejo).toBe('SESION_DESCONOCIDA');                         // M-6: la sal ya no es la de su clave
+    // El aviso del canal: la tercera descartó su clave (sin él, exportar con la frase vieja daría CONTRASENA_O_ARCHIVO).
+    await expect.poll(() => tercera.evaluate(({ x, frase, lista }) => {
+      const g = globalThis as unknown as GA;
+      return g.__ayuda.codigo(() => g.__bovedaIdb.exportar({ caseList: lista as never, table: g.__ayuda.tabla(x, 2) as never }, 'PRUEBA-060', frase));
+    }, { x: id, frase: FRASE, lista: LISTA })).toBe('SESION_DESCONOCIDA');
+    expect(await guardarCodigo(tercera, id, 6)).toBe('SESION_DESCONOCIDA');
+    const e1 = await encabezado(page);
+    const campo = (e: string, k: string): string => new RegExp(`;${k}=([^;]+);`).exec(e)![1]!;
+    expect(campo(e1, 'sal')).not.toBe(campo(e0, 'sal'));
+    expect(campo(e1, 'iv')).not.toBe(campo(e0, 'iv'));
+    const it1 = Number(campo(e1, 'it'));
+    expect(it1 >= 600000 && it1 <= 5000000 && it1 % 50000 === 0).toBe(true);
+
+    // Esta pestaña sigue con el asunto abierto, ya con la clave nueva. En la cola: un guardado en curso y después otro cambio.
+    await page.evaluate(() => { (globalThis as unknown as GA).__ayuda.retener(); });
+    const enCurso = guardarCodigo(page, id, 3);
+    await dentro(page);
+    const segundo = cambiar(page, NUEVA, NUEVA2);
+    await soltar(page);
+    expect([await enCurso, await segundo]).toEqual(['SIN_ERROR', 'SIN_ERROR']);
+    const fin = await page.evaluate(async ({ x, frase, nueva, nueva2 }) => {
+      const g = globalThis as unknown as GA;
+      const b = g.__bovedaIdb;
+      b.cerrar();
+      const vieja = await g.__ayuda.codigo(() => b.abrir(x, frase));
+      const intermedia = await g.__ayuda.codigo(() => b.abrir(x, nueva));
+      const a = await b.abrir(x, nueva2);
+      const crudo = (await g.__ayuda.crudos()).find((r) => r['asuntoId'] === x)!;
+      return { vieja, intermedia, entradas: Object.keys(a.table.entries).length, creado: crudo['creado'], claro: JSON.stringify({ ...crudo, ct: undefined, iv: undefined }).includes('Ficticia') };
+    }, { x: id, frase: FRASE, nueva: NUEVA, nueva2: NUEVA2 });
+    expect(fin).toEqual({ vieja: 'CONTRASENA_O_ARCHIVO', intermedia: 'CONTRASENA_O_ARCHIVO', entradas: 3, creado, claro: false });
+    await otra.close();
+    await tercera.close();
+  });
+
+  test('T-BO-01 @humo arnés B-24: exportarAsunto exporta sin abrir el asunto: frase errónea sin descarga, clave fuera de memoria y .siglow que abre con la frase', async ({ page }) => {
+    test.setTimeout(120_000);
+    await preparar(page);
+    let descargas = 0;
+    page.on('download', () => { descargas++; });
+    const id = await crearCon(page, 'PRUEBA-070', 2);
+    const otroAbierto = await crearCon(page, 'PRUEBA-071', 1);
+    const r0 = await page.evaluate(async (x) => {
+      const g = globalThis as unknown as GA;
+      // Solo PRUEBA-071 queda abierto: la clave de PRUEBA-070 se descarta (como tras un bloqueo y «Abrir» el otro).
+      g.__bovedaIdb.cerrar();
+      await g.__bovedaIdb.abrir(x.otro, x.frase);
+      const crudo = (await g.__ayuda.crudos()).find((r) => r['asuntoId'] === x.id)!;
+      return { encabezado: String(crudo['encabezado']), creado: String(crudo['creado']), mal: await g.__ayuda.codigo(() => g.__bovedaIdb.exportarAsunto(x.id, 'frase de prueba ficticia nandu')) };
+    }, { id, otro: otroAbierto, frase: FRASE });
+    expect(r0.mal).toBe('CONTRASENA_O_ARCHIVO');
+    expect(descargas).toBe(0);
+    const [descarga] = await Promise.all([
+      page.waitForEvent('download'),
+      page.evaluate(({ x, frase }) => (globalThis as unknown as GA).__bovedaIdb.exportarAsunto(x, frase), { x: id, frase: FRASE }),
+    ]);
+    expect(descarga.suggestedFilename()).toMatch(/^sig-low-tabla-\d{8}-\d{4}\.siglow$/);
+    const texto = readFileSync((await descarga.path())!);
+    expect(texto.toString('utf8')).not.toContain('Ficticia');
+    const s = await page.evaluate(({ bytes, frase }) => (globalThis as unknown as GA).__ayuda.siglow(bytes, frase), { bytes: [...texto], frase: FRASE });
+    expect(s.encabezado).toContain(`;uso=exportacion;id=${id};`);
+    expect(/;sal=([^;]+);/.exec(s.encabezado)![1]).not.toBe(/;sal=([^;]+);/.exec(r0.encabezado)![1]);
+    expect([s.entradas, s.lista, s.asunto['creado'], s.asunto['codigo']]).toEqual([2, ['Ana Ficticia Rojas'], r0.creado, 'PRUEBA-070']);
+    // La clave del asunto exportado no quedó en memoria; el otro asunto sigue abierto.
+    expect([await guardarCodigo(page, id, 3), await guardarCodigo(page, otroAbierto, 2)]).toEqual(['SESION_DESCONOCIDA', 'SIN_ERROR']);
+  });
 });
 
 // ===== T-BO-01 en la app real (dist/ servido por server.mjs con _headers): la interfaz de PC-1 con la bóveda conectada =====
@@ -461,6 +795,66 @@ test.describe('bóveda en la app', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
     await expect(page.getByText(M102)).toBeVisible();
     await abrirGuardado(page, 'PRUEBA-003', FRASE_APP);
+    await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
+  });
+
+  test('T-BO-01 @humo app M-5: si otra pestaña borra el registro del asunto abierto, el siguiente guardado bloquea (M-102, estado vacío) y el asunto no vuelve', async ({ page, context }) => {
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await page.getByLabel('Código del asunto').fill('PRUEBA-005');
+    await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
+    await page.getByLabel(ETIQUETA_FRASE, { exact: true }).fill(FRASE_APP);
+    await page.getByLabel('Repita la frase de paso', { exact: true }).fill(FRASE_APP);
+    await page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
+    await page.getByRole('button', { name: 'Crear asunto' }).click();
+    await expect(page.locator('[data-prueba="aviso-M-21"], [data-prueba="aviso-M-22"]')).toBeVisible({ timeout: 30_000 });
+    // Otra pestaña borra el registro directamente en IndexedDB (sin `versionchange` ni aviso del adaptador).
+    const otra = await context.newPage();
+    await otra.goto('/');
+    await otra.evaluate(() => new Promise<void>((ok, mal) => {
+      const q = indexedDB.open('siglow-boveda');
+      q.onerror = () => { mal(new Error('idb')); };
+      q.onsuccess = () => {
+        const tx = q.result.transaction('asuntos', 'readwrite');
+        tx.objectStore('asuntos').clear();
+        tx.oncomplete = () => { q.result.close(); ok(); };
+      };
+    }));
+    await otra.close();
+    // «Continuar» guarda la lista del caso: el registro no se recrea y la pestaña se bloquea.
+    await page.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante');
+    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
+    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
+    await page.getByRole('button', { name: 'Continuar' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText(M102)).toBeVisible();
+    await expect(page.locator('[data-prueba="sin-asuntos"]')).toBeVisible();   // M-106: no volvió a la lista
+    await expect(page.getByText('Ana Ficticia Rojas')).toHaveCount(0);
+    await expect(page.getByRole('textbox', { name: 'Texto del documento' })).toHaveCount(0);
+    expect(await page.evaluate(() => new Promise<number>((ok) => {
+      const q = indexedDB.open('siglow-boveda');
+      q.onsuccess = () => { const g = q.result.transaction('asuntos').objectStore('asuntos').count(); g.onsuccess = () => { q.result.close(); ok(g.result); }; };
+    }))).toBe(0);
+  });
+
+  test('T-BO-01 @humo app B-21: un pagehide durante «Abrir para anonimizar» descarta la clave derivada y la pantalla no abre el asunto', async ({ page }) => {
+    await crearGuardado(page, 'PRUEBA-006');
+    await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    const sel = page.getByLabel('Asunto guardado', { exact: true });
+    await sel.selectOption((await sel.locator('option', { hasText: 'PRUEBA-006' }).getAttribute('value'))!);
+    await page.getByLabel('Frase de paso del asunto', { exact: true }).fill(FRASE_APP);
+    // El clic arranca la derivación (0,4 a 0,8 s) y, en la misma tarea, la página sale (pagehide → boveda.cerrar()).
+    await page.evaluate(() => {
+      [...document.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Abrir para anonimizar')!.click();
+      dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }));
+    });
+    await expect(page.getByText('No se pudo completar la operación.', { exact: false })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await expect(page.getByText('Ana Ficticia Rojas')).toHaveCount(0);
+    await expect(page.getByRole('textbox', { name: 'Texto de la lista' })).toHaveCount(0);
+    // Con la frase, sin salir de la página, sí abre.
+    await abrirGuardado(page, 'PRUEBA-006', FRASE_APP);
     await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
   });
 
