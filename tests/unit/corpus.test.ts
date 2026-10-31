@@ -878,6 +878,23 @@ describe('corpus · PG-2 binarios · T-CO-05 .docx', () => {
     }
   });
 
+  it('T-CO-05 cuadros de texto, controles de contenido y resultados de campo ocupan su propia línea (6.1.1: «en su anclaje, como líneas propias»)', () => {
+    const propios = new Set(['cuadro_texto', 'control_contenido', 'campo']);
+    let n = 0;
+    for (const id of IDS) {
+      const t = textos.get(id) as TextoJson;
+      for (const e of t.estructura ?? []) {
+        const parte = t.partes.find((p) => p.kind === e.parte.kind && p.index === e.parte.index) as TextoJson['partes'][number];
+        for (const b of e.bloques.filter((x) => propios.has(x.tipo))) {
+          n++;
+          expect(b.start === 0 || parte.texto[b.start - 1] === '\n', `${id} ${b.tipo} empieza en una línea`).toBe(true);
+          expect(b.end === parte.texto.length || parte.texto[b.end] === '\n', `${id} ${b.tipo} termina su línea`).toBe(true);
+        }
+      }
+    }
+    expect(n).toBeGreaterThanOrEqual(COMPLETO ? 9 : 6);
+  });
+
   it('T-CO-05 notas, comentarios y encabezados de cada .docx se declaran por tipo de relación', () => {
     for (const id of docxPresentes()) {
       const { rels, partes } = leerDocx(new Uint8Array(readFileSync(rutaBin(id, 'docx'))));

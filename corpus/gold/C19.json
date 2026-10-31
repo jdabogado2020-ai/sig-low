@@ -12,8 +12,8 @@
       {
         "kind": "cuerpo",
         "index": 1,
-        "longitud": 6528,
-        "sha256": "203675e2597b3bd391d610442929545dc9e40479d56773c0a16783fad85aec90"
+        "longitud": 6526,
+        "sha256": "b3a911a273a5b76c7fb6be492f5e8929f877a24672e7b311f5d08a29ed4623e6"
       }
     ],
     "advertencias": [],
@@ -2644,8 +2644,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 5811,
-      "end": 5837,
+      "start": 5810,
+      "end": 5836,
       "texto": "Cll. 0A No. 0A-03, casa 19",
       "tipo": "DIRECCION",
       "rol": "CLIENTE",
@@ -2667,8 +2667,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 5895,
-      "end": 5925,
+      "start": 5893,
+      "end": 5923,
       "texto": "25-269-40-10-985-2024-00018-00",
       "tipo": "RADICADO",
       "entidad": "C19-E62",
@@ -2688,8 +2688,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 5934,
-      "end": 5978,
+      "start": 5932,
+      "end": 5976,
       "texto": "Juzgado 993 Civil del Circuito de Facatativá",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
@@ -2712,8 +2712,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 5968,
-      "end": 5978,
+      "start": 5966,
+      "end": 5976,
       "texto": "Facatativá",
       "tipo": "MUNICIPIO",
       "entidad": "C19-E64",
@@ -2736,8 +2736,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 5992,
-      "end": 6002,
+      "start": 5990,
+      "end": 6000,
       "texto": "07.06.2025",
       "tipo": "FECHA",
       "entidad": "C19-E65",
@@ -2757,8 +2757,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 6025,
-      "end": 6054,
+      "start": 6023,
+      "end": 6052,
       "texto": "25899-40-10-920-2022-00019-00",
       "tipo": "RADICADO",
       "entidad": "C19-E66",
@@ -2778,8 +2778,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 6063,
-      "end": 6098,
+      "start": 6061,
+      "end": 6096,
       "texto": "Juzgado 994 Civil Municipal de Chía",
       "tipo": "ENTIDAD",
       "rol": "ENTIDAD",
@@ -2802,8 +2802,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 6094,
-      "end": 6098,
+      "start": 6092,
+      "end": 6096,
       "texto": "Chía",
       "tipo": "MUNICIPIO",
       "entidad": "C19-E64",
@@ -2826,8 +2826,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 6112,
-      "end": 6123,
+      "start": 6110,
+      "end": 6121,
       "texto": "27-XII-2025",
       "tipo": "FECHA",
       "entidad": "C19-E68",
@@ -2847,8 +2847,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 6174,
-      "end": 6193,
+      "start": 6172,
+      "end": 6191,
       "texto": "4000 0000 0000 0229",
       "tipo": "TARJETA",
       "entidad": "C19-E69",
@@ -2868,8 +2868,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 6310,
-      "end": 6339,
+      "start": 6308,
+      "end": 6337,
       "texto": "11999-31-03-953-2021-00024-00",
       "tipo": "RADICADO",
       "entidad": "C19-E70",
@@ -2889,8 +2889,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 6452,
-      "end": 6464,
+      "start": 6450,
+      "end": 6462,
       "texto": "050014003997",
       "tipo": "RADICADO",
       "entidad": "C19-E71",
@@ -2910,8 +2910,8 @@
         "kind": "cuerpo",
         "index": 1
       },
-      "start": 6478,
-      "end": 6483,
+      "start": 6476,
+      "end": 6481,
       "texto": "05001",
       "tipo": "RADICADO_ADMIN",
       "entidad": "C19-E72",
