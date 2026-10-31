@@ -553,6 +553,8 @@ describe('T-ME-01 · AJ-4 (D-12): la fila de banderas cuenta las positivas que t
     const ev = ENT_AJ4([CARGO, CITA], [bandera('CITA_JURISPRUDENCIAL', 500, 530), bandera('CARGO', 100, 120)]);
     expect(ev.generalizacion).toEqual([{ tipo: 'CARGO', esperadas: 1, presentes: 1 }]);
     expect(ev.negativos).toMatchObject({ total: 0, citasConRadicado: 1, banderasPresentes: 1 });
+  });
+});
 
 // PB-4-r1 · La clasificación por posición cuenta como residuo lo que el motor conocía y la salida dejó (10.3.4). Una prueba por cada
 // causa de la medición en la tabla de causas de la bitácora. Textos ficticios; las posiciones van sobre una parte inventada.
