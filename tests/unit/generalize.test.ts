@@ -520,6 +520,61 @@ export const CASOS: Record<string, { pos: [string, string, Record<string, unknow
      ],
      "prioridad": "recomendada"
     }
+   ],
+   [
+    "ante la Secretaría Municipal de Ubaté",
+    "Secretaría Municipal de Ubaté",
+    {
+     "options": [
+      "Secretaría Municipal de un municipio de {m} [DEP:25]",
+      "una secretaría municipal"
+     ],
+     "prioridad": "recomendada"
+    }
+   ],
+   [
+    "la Secretaría Judicial de Cartago",
+    "Secretaría Judicial de Cartago",
+    {
+     "options": [
+      "Secretaría Judicial de un municipio de {m} [DEP:76]",
+      "una secretaría judicial"
+     ],
+     "prioridad": "recomendada"
+    }
+   ],
+   [
+    "SECRETARÍA PRIMERA CIVIL DE MEDELLÍN",
+    "SECRETARÍA PRIMERA CIVIL DE MEDELLÍN",
+    {
+     "options": [
+      "SECRETARÍA PRIMERA CIVIL DE un municipio de {m} [DEP:05]",
+      "una secretaría civil"
+     ],
+     "prioridad": "opcional_ciudad_grande"
+    }
+   ],
+   [
+    "la Secretaria Única del Circuito de Cartago",
+    "Secretaria Única del Circuito de Cartago",
+    {
+     "options": [
+      "Secretaria Única del Circuito de un municipio de {m} [DEP:76]",
+      "una secretaria del circuito"
+     ],
+     "prioridad": "recomendada"
+    }
+   ],
+   [
+    "la Secretaría del Juzgado Tercero Civil del Circuito de Cartago",
+    "Juzgado Tercero Civil del Circuito de Cartago",
+    {
+     "options": [
+      "Juzgado Tercero Civil del Circuito de un municipio de {m} [DEP:76]",
+      "un juzgado civil del circuito"
+     ],
+     "prioridad": "recomendada"
+    }
    ]
   ],
   "neg": [
@@ -558,6 +613,22 @@ export const CASOS: Record<string, { pos: [string, string, Record<string, unknow
    [
     "Juzgado 991 Laboral del Circuito\n\nde Bogotá",
     "línea en blanco antes del municipio"
+   ],
+   [
+    "la secretaría admitió el memorial de Cartago",
+    "palabra ajena al nombre del despacho (AJ-3)"
+   ],
+   [
+    "Secretaría del Juzgado",
+    "sin municipio (AJ-3)"
+   ],
+   [
+    "Secretaría de Hacienda de Ubaté",
+    "palabra propia fuera del vocabulario: solo con un tramo ORG del modelo (B-34, AJ-3)"
+   ],
+   [
+    "Secretaria: Ficticia López",
+    "rótulo de firma, sin municipio (AJ-3)"
    ]
   ]
  },
@@ -1302,6 +1373,9 @@ describe('R-EDAD-01 · edad explícita (G-06)', () => {
     ['C_NAC: «nació», tabuladores y una fecha de nacimiento', 'nació' + '\t'.repeat(40_000) + '14 de marzo de 1990',
       [{ start: 40_005, end: 40_024, type: 'FECHA', canonicalKey: 'FECHA:1990-03-14', context: 'nacimiento' }] as GenDetection[]],
     ['cieExcl: «tabla», tabuladores y un código CIE-10', 'tabla' + '\t'.repeat(40_000) + 'J45.0', [] as GenDetection[]],
+    // AJ-3: la cabeza nueva de R-DESP-01 («secretaría») con 40.000 blancos entre sus palabras, con y sin saltos de línea.
+    ['R-DESP-01: «Secretaría», 40.000 blancos y un municipio', 'Secretaría' + ' '.repeat(40_000) + 'Municipal de x', [] as GenDetection[]],
+    ['R-DESP-01: «Secretaría Civil» repetida con 40.000 blancos', ('Secretaría' + ' '.repeat(10) + 'Civil' + '\n').repeat(2_000) + ' '.repeat(40_000) + 'de x', [] as GenDetection[]],
   ])('GAP %s: 40.000 blancos por debajo de 300 ms', (_n, texto, dets) => {
     correr('tiene 30 años', [], { sinLugares: true });   // construye los patrones antes de medir
     const mejor = Math.min(...[0, 1, 2].map(() => {

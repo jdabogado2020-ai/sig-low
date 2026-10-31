@@ -205,7 +205,8 @@ interface PlaceRegexes {
 let placeRx: PlaceRegexes | null = null;
 
 const DESP_HEAD = v3(['juzgado', 'tribunal', 'alcaldía', 'alcaldia', 'personería', 'personeria', 'notaría', 'notaria', 'comisaría', 'comisaria',
-  'inspección', 'inspeccion', 'fiscalía', 'fiscalia', 'registraduría', 'registraduria', 'concejo', 'curaduría', 'curaduria', 'juez', 'jueza']);
+  'inspección', 'inspeccion', 'fiscalía', 'fiscalia', 'registraduría', 'registraduria', 'concejo', 'curaduría', 'curaduria', 'juez', 'jueza',
+  'secretaría', 'secretaria']);   // AJ-3: «Secretaría Municipal de Ubaté» (la cabeza de despacho de un municipio, como la alcaldía)
 const DESP_ORD = ['primero', 'primera', 'primer', 'segundo', 'segunda', 'tercero', 'tercera', 'cuarto', 'cuarta', 'quinto', 'quinta', 'sexto', 'sexta',
   'séptimo', 'séptima', 'octavo', 'octava', 'noveno', 'novena', 'décimo', 'décima', 'único', 'única'];
 const DESP_W = v3([...DESP_ORD, 'civil', 'penal', 'laboral', 'administrativo', 'administrativa', 'familia', 'promiscuo', 'promiscua', 'municipal',
@@ -220,7 +221,7 @@ const ORD_SET = new Set(DESP_ORD.map(vistaLista));
 export const VOCABULARIO_DESPACHO: { readonly cabezas: ReadonlySet<string>; readonly palabras: ReadonlySet<string> } = {
   cabezas: new Set(DESP_HEAD.map(vistaLista)), palabras: new Set(DESP_W.map(vistaLista)),
 };
-const FEM_HEAD = /^(alcald|personer|notar|comisar|inspecci|fiscal|registradur|curadur|jueza)/;
+const FEM_HEAD = /^(alcald|personer|notar|comisar|inspecci|fiscal|registradur|curadur|jueza|secretar)/;
 const CTX_PERS = v3(['residente', 'residentes', 'residenciado', 'residenciada', 'domiciliado', 'domiciliada', 'domiciliados', 'vecino', 'vecina', 'vecinos',
   'natural', 'naturales', 'nacido', 'nacida', 'oriundo', 'oriunda', 'radicado', 'radicada', 'reside', 'vive', 'vivía', 'habita', 'ubicado', 'ubicada',
   'expedida', 'expedido', 'con domicilio', 'jurisdicción', 'jurisdiccion']);   // PA-4-r1: «en jurisdicción de Chía»
