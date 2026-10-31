@@ -2,6 +2,7 @@
 // Reglas: errores solo con ErrorCode (INV-W01, INV-W02); el buffer recibido se pone en cero al terminar (V-23, T-PV-04).
 import { SiglowError } from '../core/types';
 import type { DocId, DocumentModel, ErrorCode, IdSource, IoLimits } from '../core/types';
+import { readDocx } from './docx-read';
 import { readTxt } from './txt-read';
 import type { ReadCtx } from './txt-read';
 
@@ -9,9 +10,10 @@ export type Post = (msg: unknown) => void;
 export type Reader = (bytes: ArrayBuffer, ctx: ReadCtx, limits: IoLimits, progress: (done: number, total: number) => void) => DocumentModel;
 export interface HandlerDeps { ids?: IdSource; readers?: Partial<Record<'txt' | 'docx', Reader>>; }
 
-/** Lectores por formato. PE-2 y PE-3 registran aquí el de .docx. */
+/** Lectores por formato (el de .docx lo registra PE-2; PE-3 lo completa). */
 export const LECTORES: Partial<Record<'txt' | 'docx', Reader>> = {
   txt: (bytes, ctx) => readTxt(bytes, ctx),
+  docx: (bytes, ctx, limits, progress) => readDocx(bytes, ctx, limits, progress),
 };
 
 const REQ_ID = /^req_[0-9a-f]{32}$/;
