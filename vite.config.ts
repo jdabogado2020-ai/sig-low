@@ -41,6 +41,8 @@ export default defineConfig(({ mode }) => {
       exclude: ['tests/e2e/**', 'tests/medicion/**', 'node_modules/**'],
       environment: 'node',
       testTimeout: 30_000,
+      // Máquina compartida con el modelo y otros carriles (15 GB): pocos trabajadores evitan la saturación.
+      maxWorkers: 4,
     },
   };
 });
