@@ -14,7 +14,8 @@ const h1 = (page: Page, nombre: string) => page.getByRole('heading', { level: 1,
 
 async function abrirInicio(page: Page): Promise<void> {
   await page.goto('/');
-  await expect(h1(page, 'Inicio')).toBeVisible();
+  // La primera visita espera el precache del SW (8.1: «sin tiempo límite»; ≈ 1,5 s con el equipo cargado).
+  await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
 }
 
 async function crearAsunto(page: Page, codigo = 'PRUEBA-001'): Promise<void> {
@@ -89,11 +90,13 @@ test.describe('T-IU-05 estados globales y de Inicio', () => {
 
   test('T-IU-05 M-39: el indicador «Lista para funcionar sin conexión» aparece cuando el service worker dejó la caché de la app', async ({ page }) => {
     await abrirInicio(page);
-    await expect(page.locator('[data-prueba="sin-conexion"]')).toHaveText('');
-    await page.evaluate(async () => { await caches.open('siglow-app-prueba'); });
+    // El service worker de PD-1 deja la caché `siglow-app-<sha>` al instalar el precache (3.2).
+    await expect(page.locator('[data-prueba="sin-conexion"]')).toHaveText('Lista para funcionar sin conexión');
+    // Sin esa caché ya no se promete el uso sin conexión (el SW sirve lo que falta verificado, sin recrearla).
+    await page.evaluate(async () => { for (const k of await caches.keys()) await caches.delete(k); });
     await page.reload();
     await expect(h1(page, 'Inicio')).toBeVisible();
-    await expect(page.locator('[data-prueba="sin-conexion"]')).toHaveText('Lista para funcionar sin conexión');
+    await expect(page.locator('[data-prueba="sin-conexion"]')).toHaveText('');
   });
 
   test('T-IU-05 sin controlador: SIN_SERVICE_WORKER muestra M-35 y M-36 y no monta ningún campo de contenido', async ({ browser, baseURL }) => {

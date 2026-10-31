@@ -9,7 +9,8 @@ const h1 = (page: Page, nombre: string) => page.getByRole('heading', { level: 1,
 
 async function abrirInicio(page: Page): Promise<void> {
   await page.goto('/');
-  await expect(h1(page, 'Inicio')).toBeVisible();
+  // La primera visita espera el precache del SW (8.1: «sin tiempo límite»; ≈ 1,5 s con el equipo cargado).
+  await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
 }
 async function crearAsunto(page: Page, codigo = 'PRUEBA-001'): Promise<void> {
   await page.getByLabel('Código del asunto').fill(codigo);
@@ -136,16 +137,15 @@ test.describe('T-IU-03 atributos de privacidad y título neutro', () => {
 const sha256 = (b: Buffer | string): string => createHash('sha256').update(b).digest('hex');
 
 test.describe('T-PV-09 «Acerca de»: versión, SHA-256 y dirección oficial', () => {
-  const PRECACHE = JSON.stringify({ v: 1, archivos: [{ ruta: '/index.html' }] });
-
-  /** Deja en Cache Storage lo que dejaría el service worker de PD-1: index.html y la lista de precache. */
+  /** Espera a que el service worker de PD-1 deje en Cache Storage index.html («/») y la lista de precache (3.2). */
   async function sembrarCache(page: Page): Promise<void> {
-    await page.evaluate(async (precache) => {
-      const c = await caches.open('siglow-app-prueba');
-      const r = await fetch('/index.html');
-      await c.put('/index.html', r);
-      await c.put('/precache.json', new Response(precache, { headers: { 'Content-Type': 'application/json' } }));
-    }, PRECACHE);
+    await page.evaluate(async () => {
+      for (let i = 0; i < 300; i += 1) {
+        if ((await caches.match('/')) && (await caches.match('/precache.json'))) return;
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      throw new Error('el service worker no dejó la caché de la app');
+    });
   }
   async function abrirAcerca(page: Page) {
     await page.getByRole('button', { name: 'Acerca de' }).click();
@@ -161,7 +161,7 @@ test.describe('T-PV-09 «Acerca de»: versión, SHA-256 y dirección oficial', (
     const dialogo = await abrirAcerca(page);
     await expect(dialogo.locator('[data-prueba="acerca-index"]')).toHaveText(`Código de compilación (SHA-256 de index.html): ${esperadoIndex}`);
     await expect(dialogo.locator('[data-prueba="acerca-precache"]')).toHaveText(
-      `Código de la lista de archivos (SHA-256 de la lista de precache): ${sha256(PRECACHE)}`,
+      `Código de la lista de archivos (SHA-256 de la lista de precache): ${sha256(readFileSync('dist/precache.json'))}`,
     );
     await expect(dialogo).toContainText('Versión 1.0.0');
     await expect(dialogo.locator('[data-prueba="acerca-direccion"]')).toHaveText('Dirección oficial: sig-low.vergarameloabogado.site');
