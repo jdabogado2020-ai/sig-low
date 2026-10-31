@@ -1,16 +1,21 @@
-// T-AB-02 y T-AB-03 (parte PF-3 de tests/medicion/evaluacion-modelo.test.ts; T-AB-01, T-AB-04 y T-AB-06 los agregan PF-4a, PF-4b y P0-4).
+// T-AB-02 y T-AB-03 (parte PF-3 de tests/medicion/evaluacion-modelo.test.ts); T-AB-01 y T-AB-06 los agrega PF-4a (al final del archivo); T-AB-04 y P0-4 agregan los suyos.
 // No ejecutan el modelo: leen la caché de salidas (metricas/modelo-x-large-natural.json) y los resultados de scripts/calibrar-modelo.ts,
 // y vuelven a calcular de ellos el umbral, el piso de proposición y las latencias. Se corren con `npm run medir`
 // (vitest excluye tests/medicion/** de `verify`). Corpus ficticio (10.1.5).
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   barridoAlto, cargarCorpus, deteccionesDe, elegirAlto, elegirUmbral, evaluarUmbral, huellaMotor, mediana, percentil, UMBRALES,
 } from '../../scripts/calibrar-modelo.ts';
-import type { CacheModelo, FilaAlto, FilaUmbral } from '../../scripts/calibrar-modelo.ts';
-import type { GoldAnnotation, GoldDocument } from '../../scripts/metrics.ts';
+import type { CacheModelo, DocumentoCache, FilaAlto, FilaUmbral, ParteTexto } from '../../scripts/calibrar-modelo.ts';
+import {
+  armarEvaluacion, ARCHIVO_VISTAS, compararVentanas, DOCUMENTOS_T_AB_06, evaluarVista, filasDe, filasDeCierre, GRUPOS_T_AB_01, huellaTextoDeCache,
+  matrizConfusion, posibleSobreajuste, reutilizarNatural, TOLERANCIA_PUNTAJE, verificarCache, vistaDeTexto,
+} from '../../scripts/evaluar-modelo.ts';
+import type { ArchivoVistas, CacheVista, EvaluacionModelo, FilasPorConjunto } from '../../scripts/evaluar-modelo.ts';
+import type { EntradaDocumento, GoldAnnotation, GoldDocument, MetricsRow } from '../../scripts/metrics.ts';
 import type { DataType } from '../../src/core/types.ts';
 
 const RAIZ = process.cwd();
@@ -263,5 +268,422 @@ describe('T-AB-03 · solape de 25 palabras frente al de 37 (9.5: ventanas que se
     expect(s?.solapes).toEqual([37, 25]);
     expect(s?.ventanas[1] ?? 0).toBeLessThan(s?.ventanas[0] ?? 0);
     expect(s?.cubiertasPerOrg[0] ?? 0).toBeGreaterThanOrEqual(s?.cubiertasPerOrg[1] ?? 0);
+  });
+});
+
+// =================================================================================================================================
+// PF-4a · T-AB-01 (exhaustividad de PER, ORG y LOC por vista) y T-AB-06 (la caché reproduce una pasada nueva)
+// =================================================================================================================================
+
+// ---------------------------------------------------------------------------------------------------------------- vista
+describe('T-AB-01 · la vista de medición (MAYÚSCULAS y minúsculas) conserva la longitud del texto canónico', () => {
+  const MUESTRA = 'Señora Ana Ficticia Muñoz, identificada con C.C. 0000000000 de Villa Ejemplo, ñandú ÁÉÍÓÚ Ü straße İstanbul 𝔘\nLínea  dos';
+
+  it('T-AB-01 INV-W04 la vista natural devuelve el texto tal cual', () => {
+    expect(vistaDeTexto(MUESTRA, 'natural')).toBe(MUESTRA);
+  });
+
+  it('T-AB-01 INV-W04 MAYÚSCULAS y minúsculas dan la misma longitud, así que las posiciones del canónico valen en la vista', () => {
+    for (const vista of ['mayusculas', 'minusculas'] as const) {
+      const v = vistaDeTexto(MUESTRA, vista);
+      expect(v.length, vista).toBe(MUESTRA.length);
+      // Cada posición que no cambia de forma (dígitos, espacios, saltos) sigue en el mismo sitio.
+      for (let i = 0; i < MUESTRA.length; i++) if (/[\d\s,.]/u.test(MUESTRA[i] as string)) expect(v[i]).toBe(MUESTRA[i]);
+    }
+  });
+
+  it('T-AB-01 INV-W04 pasa a mayúsculas y a minúsculas solo los caracteres que conservan la longitud (la «ß» y la «İ» se quedan)', () => {
+    expect(vistaDeTexto('Ana Muñoz ÁÉ', 'mayusculas')).toBe('ANA MUÑOZ ÁÉ');
+    expect(vistaDeTexto('Ana Muñoz ÁÉ', 'minusculas')).toBe('ana muñoz áé');
+    expect(vistaDeTexto('straße', 'mayusculas')).toBe('STRAßE'); // «ß».toUpperCase() es «SS»: cambiaría la longitud
+    expect(vistaDeTexto('İ', 'minusculas')).toBe('İ'); // «İ».toLowerCase() es «i̇» (dos unidades)
+    expect(vistaDeTexto('𝔘x', 'minusculas')).toBe('𝔘x'); // pares sustitutos: se conserva la longitud en unidades UTF-16
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------- filas por vista
+// Gold de juguete de dos documentos, con cada cifra calculada a mano. T01 (desarrollo): 3 menciones de persona fuera de la lista (E1 con 1,
+// E2 con 2), 1 de persona de la lista (E3), 2 de organización fuera (EPS y empresa), 1 de ubicación. T02 (reserva): 1 negativo esperado.
+function annT(id: string, doc: string, tipo: DataType, start: number, end: number, entidad: string, enLista = false, negativo = false): GoldAnnotation {
+  return {
+    id: `${doc}-${id}`, docId: doc, parte: { kind: 'cuerpo', index: 1 }, start, end, texto: 'x'.repeat(end - start), tipo, entidad: `${doc}-${entidad}`,
+    debe_generalizarse: false, es_negativo_esperado: negativo, estructura: 'no_aplica', enLista, rotulado: false, caracteristicas: [],
+  };
+}
+const ENTIDAD_T = (doc: string, id: string, tipo: DataType, enLista = false): GoldDocument['entidades'][number] =>
+  ({ id: `${doc}-${id}`, tipo, canonico: 'c', mismoTitular: [], enLista });
+const GOLD_T01: GoldDocument = {
+  docId: 'T01', conjunto: 'desarrollo',
+  entidades: [
+    ENTIDAD_T('T01', 'E1', 'PERSONA'), ENTIDAD_T('T01', 'E2', 'PERSONA'), ENTIDAD_T('T01', 'E3', 'PERSONA', true),
+    ENTIDAD_T('T01', 'E4', 'EPS'), ENTIDAD_T('T01', 'E5', 'EMPRESA'), ENTIDAD_T('T01', 'E6', 'LUGAR'),
+  ],
+  anotaciones: [
+    annT('P1', 'T01', 'PERSONA', 0, 10, 'E1'), annT('P2', 'T01', 'PERSONA', 20, 30, 'E2'), annT('P3', 'T01', 'PERSONA', 40, 50, 'E2'),
+    annT('P4', 'T01', 'PERSONA', 60, 70, 'E3', true), annT('O1', 'T01', 'EPS', 80, 90, 'E4'), annT('O2', 'T01', 'EMPRESA', 100, 110, 'E5'),
+    annT('L1', 'T01', 'LUGAR', 120, 130, 'E6'),
+  ],
+};
+const GOLD_T02: GoldDocument = {
+  docId: 'T02', conjunto: 'reserva',
+  entidades: [ENTIDAD_T('T02', 'E1', 'PERSONA')],
+  anotaciones: [annT('P1', 'T02', 'PERSONA', 0, 10, 'E1'), annT('N1', 'T02', 'LUGAR', 300, 310, 'N1', false, true)],
+};
+const det = (id: string, tipo: 'PERSONA' | 'ENTIDAD' | 'LUGAR', start: number, end: number) => ({ id, parte: 'cuerpo:1', start, end, tipo, entidad: '' });
+const ENTRADA_T01: EntradaDocumento = {
+  gold: GOLD_T01, banderas: [], sugerencias: [], paginas: 1,
+  detecciones: [
+    det('d1', 'PERSONA', 0, 10), det('d2', 'PERSONA', 20, 30), det('d3', 'PERSONA', 60, 70), det('d4', 'ENTIDAD', 80, 90),
+    det('d5', 'LUGAR', 120, 130), det('d6', 'PERSONA', 200, 210),
+  ],
+};
+// T02: el modelo cubre la persona y marca como organización el negativo esperado.
+const ENTRADA_T02: EntradaDocumento = {
+  gold: GOLD_T02, banderas: [], sugerencias: [], paginas: 1, detecciones: [det('e1', 'PERSONA', 0, 10), det('e2', 'ENTIDAD', 300, 310)],
+};
+const fila = (filas: readonly MetricsRow[], g: string): MetricsRow => filas.find((f) => f.grupo === g) as MetricsRow;
+
+describe('T-AB-01 · exhaustividad por mención y por entidad de personas, organizaciones y ubicaciones (gold de juguete)', () => {
+  const filas = filasDe([ENTRADA_T01], 'todo');
+
+  it('T-AB-01 las siete filas son las de la tarjeta: personas y organizaciones dentro y fuera de la lista, todas, y ubicaciones', () => {
+    expect(GRUPOS_T_AB_01.map((g) => g.grupo)).toEqual(['PERSONA_FUERA', 'ORG_FUERA', 'PERSONA_LISTA', 'ORG_LISTA', 'PERSONA_TODAS', 'ORG_TODAS', 'LOC_TODAS']);
+    expect(filas.map((f) => f.grupo)).toEqual(GRUPOS_T_AB_01.map((g) => g.grupo));
+  });
+
+  it('T-AB-01 personas fuera de la lista: R = 2/3 (P1 y P2 cubiertas, P3 no), entidad estricta 1/2 (E2 queda a medias), P = 2/3 y F2 = 2/3', () => {
+    const f = fila(filas, 'PERSONA_FUERA');
+    expect([f.n, f.cubiertas]).toEqual([3, 2]);
+    expect(f.exhaustividadMencion).toBeCloseTo(2 / 3, 9);
+    expect([f.entidades, f.exhaustividadEntidadEstricta, f.exhaustividadEntidadLaxa]).toEqual([2, 0.5, 1]);
+    // Detecciones del grupo: d1 y d2 verdaderas, d6 falsa; d3 es verdadera pero de una mención de la lista: no cuenta en esta fila.
+    expect([f.detecciones, f.verdaderas, f.falsas]).toEqual([3, 2, 1]);
+    expect(f.precision).toBeCloseTo(2 / 3, 9);
+    expect(f.f2).toBeCloseTo(2 / 3, 9);
+    expect(f.idsNoCubiertas).toEqual(['T01-P3']); // ids de anotación, nunca el texto
+  });
+
+  it('T-AB-01 personas de la lista: R = 1 (P4), P = 1/2 (d3 verdadera, d6 falsa) y F2 = 5/6', () => {
+    const f = fila(filas, 'PERSONA_LISTA');
+    expect([f.n, f.cubiertas, f.exhaustividadMencion]).toEqual([1, 1, 1]);
+    expect(f.precision).toBeCloseTo(0.5, 9);
+    expect(f.f2).toBeCloseTo(5 / 6, 9);
+  });
+
+  it('T-AB-01 personas, todas: R = P = 3/4 y F2 = 3/4', () => {
+    const f = fila(filas, 'PERSONA_TODAS');
+    expect([f.n, f.cubiertas]).toEqual([4, 3]);
+    expect(f.exhaustividadMencion).toBeCloseTo(0.75, 9);
+    expect(f.precision).toBeCloseTo(0.75, 9);
+    expect(f.f2).toBeCloseTo(0.75, 9);
+  });
+
+  it('T-AB-01 organizaciones fuera de la lista: R = 1/2 (EPS cubierta, empresa no), P = 1 y F2 = 5/9; la lista no tiene menciones', () => {
+    const f = fila(filas, 'ORG_FUERA');
+    expect([f.n, f.cubiertas, f.entidades, f.exhaustividadEntidadEstricta]).toEqual([2, 1, 2, 0.5]);
+    expect([f.precision, f.exhaustividadMencion]).toEqual([1, 0.5]);
+    expect(f.f2).toBeCloseTo(5 / 9, 9);
+    expect(fila(filas, 'ORG_LISTA').n).toBe(0);
+  });
+
+  it('T-AB-01 ubicaciones (LOC): R = 1, P = 1 y F2 = 1', () => {
+    const f = fila(filas, 'LOC_TODAS');
+    expect([f.n, f.cubiertas, f.precision, f.f2]).toEqual([1, 1, 1, 1]);
+  });
+
+  it('T-AB-01 el conjunto de desarrollo y el de reserva se calculan aparte (la reserva se informa aparte, 10.4.1)', () => {
+    const entradas = [ENTRADA_T01, ENTRADA_T02];
+    expect(fila(filasDe(entradas, 'desarrollo'), 'PERSONA_TODAS').n).toBe(4);
+    const r = fila(filasDe(entradas, 'reserva'), 'PERSONA_TODAS');
+    expect([r.n, r.cubiertas, r.exhaustividadMencion]).toEqual([1, 1, 1]);
+    expect(fila(filasDe(entradas, 'todo'), 'PERSONA_TODAS').n).toBe(5);
+  });
+});
+
+describe('T-AB-01 · matriz de confusión del modelo solo (gold de juguete)', () => {
+  const m = matrizConfusion([ENTRADA_T01, ENTRADA_T02]);
+
+  it('T-AB-01 cada mención positiva cae en la etiqueta del tramo del modelo que más la cubre, o en «ninguna»', () => {
+    expect(m.menciones['personas']).toEqual({ PER: 4, ORG: 0, LOC: 0, ninguna: 1 }); // T01: P1, P2, P4; T02: P1; sin cubrir: P3
+    expect(m.menciones['organizaciones']).toEqual({ PER: 0, ORG: 1, LOC: 0, ninguna: 1 }); // O1 sí, O2 no
+    expect(m.menciones['ubicacion']).toEqual({ PER: 0, ORG: 0, LOC: 1, ninguna: 0 });
+  });
+
+  it('T-AB-01 los tramos del modelo sin mención positiva se cuentan aparte, y los que tocan un negativo esperado también', () => {
+    expect(m.sinMencion).toEqual({ PER: 1, ORG: 0, LOC: 0 }); // d6
+    expect(m.enNegativos).toEqual({ PER: 0, ORG: 1, LOC: 0 }); // e2 sobre N1
+  });
+
+  it('T-AB-01 una persona detectada como organización es una confusión PER -> ORG', () => {
+    const e: EntradaDocumento = { ...ENTRADA_T01, detecciones: [det('x', 'ENTIDAD', 0, 10)] };
+    expect(matrizConfusion([e]).menciones['personas']).toEqual({ PER: 0, ORG: 1, LOC: 0, ninguna: 3 });
+  });
+});
+
+describe('T-AB-01 · filas por vista de 10.4.1 (personas 0,85 y 0,75; organizaciones 0,80 y 0,70) con el umbral de PF-3', () => {
+  const base = (grupo: string, n: number, cubiertas: number, entidades: number, estrictas: number): MetricsRow => ({
+    grupo, n, cubiertas, exhaustividadMencion: n === 0 ? 0 : cubiertas / n, exhaustividadTipificada: 0, entidades,
+    exhaustividadEntidadEstricta: entidades === 0 ? 0 : estrictas / entidades, exhaustividadEntidadLaxa: 0, detecciones: 0, verdaderas: 0, falsas: 0,
+    precision: 0, f2: 0, coincidenciaExacta: 0, idsNoCubiertas: Array.from({ length: n - cubiertas }, (_, i) => `D-${i}`),
+  });
+
+  it('T-AB-01 personas: 17 de 20 (0,85) con 6 de 8 entidades (0,75) cumple, con 3 omisiones permitidas y 3 usadas', () => {
+    const [p] = filasDeCierre('mayusculas', [base('PERSONA_FUERA', 20, 17, 8, 6), base('ORG_FUERA', 10, 8, 5, 4)]);
+    expect(p).toMatchObject({ fila: 'PERSONA_FUERA', vista: 'mayusculas', cumple: true });
+    expect(p?.mencion).toMatchObject({ umbral: 0.85, n: 20, cubiertas: 17, omisionesPermitidas: 3, omisiones: 3, cumple: true });
+    expect(p?.entidad).toMatchObject({ umbral: 0.75, n: 8, cumple: true });
+    expect(p?.idsNoCubiertas).toHaveLength(3);
+  });
+
+  it('T-AB-01 personas: 16 de 20 (0,80) no cumple; con 5 de 8 entidades (0,625) tampoco', () => {
+    expect(filasDeCierre('natural', [base('PERSONA_FUERA', 20, 16, 8, 6)])[0]?.cumple).toBe(false);
+    const e = filasDeCierre('natural', [base('PERSONA_FUERA', 20, 18, 8, 5)])[0];
+    expect(e?.mencion.cumple).toBe(true);
+    expect(e?.entidad.cumple).toBe(false);
+    expect(e?.cumple).toBe(false);
+  });
+
+  it('T-AB-01 organizaciones: 8 de 10 (0,80) con 7 de 10 entidades (0,70) cumple justo en el umbral; 7 de 10 no', () => {
+    expect(filasDeCierre('minusculas', [base('ORG_FUERA', 10, 8, 10, 7)])[0]).toMatchObject({ cumple: true });
+    expect(filasDeCierre('minusculas', [base('ORG_FUERA', 10, 7, 10, 7)])[0]?.cumple).toBe(false);
+  });
+
+  it('T-AB-01 la evaluación cierra solo si las seis filas (dos por cada una de las tres vistas) cumplen', () => {
+    const vacia: FilasPorConjunto = { todo: [], desarrollo: [], reserva: [] };
+    const vista = (n: number): ReturnType<typeof evaluarVista> => {
+      const e = evaluarVista('natural', [], []);
+      const p: FilasPorConjunto = { ...vacia, todo: [base('PERSONA_FUERA', 20, n, 8, 6), base('ORG_FUERA', 10, 8, 10, 7)] };
+      return { ...e, producto: p, cierre: filasDeCierre('natural', p.todo), cierreSoloModelo: [] };
+    };
+    const corpus = { documentos: 2, desarrollo: 1, reserva: 1, origen: 'prueba' };
+    const umbrales = { nerMinScore: 0.3, nerHighThreshold: 0.37, fuente: 'prueba' };
+    const bien = armarEvaluacion({ natural: vista(17), mayusculas: vista(17), minusculas: vista(17) }, corpus, umbrales, '2026-10-30 00:00:00');
+    expect(bien.cierra).toBe(true);
+    const mal = armarEvaluacion({ natural: vista(17), mayusculas: vista(15), minusculas: vista(17) }, corpus, umbrales, '2026-10-30 00:00:00');
+    expect(mal.cierra).toBe(false);
+    expect(armarEvaluacion({ natural: vista(17) }, corpus, umbrales, '2026-10-30 00:00:00').cierra).toBe(false); // faltan vistas
+    expect(mal.contraste.find((c) => c.fila === 'PERSONA_FUERA')).toMatchObject({ natural: 0.85, mayusculas: 0.75 });
+    expect(mal.contraste.find((c) => c.fila === 'PERSONA_FUERA')?.dMayusculas).toBeCloseTo(-0.1, 9);
+  });
+
+  it('T-AB-01 «posible sobreajuste» si la reserva queda más de 0,03 bajo el desarrollo y no si la diferencia es de 0,03 o menos', () => {
+    const f = (r: number): MetricsRow => ({ ...base('PERSONA_TODAS', 100, Math.round(r * 100), 0, 0), exhaustividadMencion: r });
+    const p = (d: number, r: number): FilasPorConjunto => ({ todo: [], desarrollo: [f(d)], reserva: [f(r)] });
+    expect(posibleSobreajuste('natural', p(0.95, 0.9))).toHaveLength(1);
+    expect(posibleSobreajuste('natural', p(0.95, 0.9))[0]).toMatchObject({ fila: 'PERSONA_TODAS', nDesarrollo: 100, nReserva: 100 });
+    expect(posibleSobreajuste('natural', p(0.95, 0.92))).toEqual([]);
+    expect(posibleSobreajuste('natural', p(0.9, 0.95))).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------- archivo real
+// El archivo `metricas/modelo-x-large-vistas.json` lo deja `node scripts/evaluar-modelo.ts pasada | verificar | evaluar` (PF-4a). Estas
+// pruebas leen el archivo guardado. Contra el gold final de los 29 documentos (rama t/PG-2-r1-lineas-propias, fuera de main hasta P0-4,
+// decisión D-01) las cifras se recalculan completas solo cuando ese corpus está en `corpus/gold/` (después de P0-4).
+const HAY_VISTAS = existsSync(ruta(ARCHIVO_VISTAS));
+const CORPUS_FINAL_EN_REPO = existsSync(ruta('corpus/gold/C07.json'));
+
+describe.skipIf(!HAY_VISTAS)('T-AB-01 · la caché de salidas de x-large en las tres vistas (metricas/modelo-x-large-vistas.json)', () => {
+  const archivo = HAY_VISTAS ? leer<ArchivoVistas>(ARCHIVO_VISTAS) : ({ vistas: {} } as ArchivoVistas);
+  const VISTAS_ESPERADAS = ['mayusculas', 'minusculas', 'natural'];
+
+  it('T-AB-01 trae las tres vistas, de x-large, con la misma configuración, el mismo ONNX y el código del motor vigente (si no, la caché es inválida: R-26)', () => {
+    expect(archivo).toMatchObject({ formato: 'sig-low/cache-modelo-vistas', v: 1, modelo: 'x-large' });
+    expect(Object.keys(archivo.vistas).sort()).toEqual(VISTAS_ESPERADAS);
+    const codigo = huellaMotor(RAIZ);
+    for (const v of VISTAS_ESPERADAS) {
+      const c = archivo.vistas[v as 'natural'];
+      expect(c, v).toMatchObject({ formato: 'sig-low/cache-modelo', v: 1, modelo: 'x-large', vista: v, etiquetas: 'estandar', piso: 0.1, opciones: { windowTokens: 512, overlapWords: 37, maxSpanWords: 12 } });
+      for (const h of Object.values(c?.huella ?? {})) expect(h).toMatch(/^[0-9a-f]{64}$/);
+      expect(c?.huella.codigo, `${v}: huella del código del motor`).toBe(codigo);
+      expect(c?.huella.onnx, `${v}: ONNX`).toBe(archivo.vistas.natural?.huella.onnx);
+      expect(c?.huella.vista).toBe(createHash('sha256').update(v).digest('hex'));
+    }
+  });
+
+  it('T-AB-01 las tres vistas traen los mismos documentos y, parte por parte, la misma huella del texto canónico (INV-W04: la vista no cambia el canónico)', () => {
+    const ids = Object.keys(archivo.vistas.natural?.documentos ?? {}).sort();
+    expect(ids.length).toBe(29); // los 30 del corpus menos C04 (PDF escaneado)
+    for (const v of VISTAS_ESPERADAS) {
+      const c = archivo.vistas[v as 'natural'];
+      expect(Object.keys(c?.documentos ?? {}).sort(), v).toEqual(ids);
+      expect(c?.huella.texto, v).toBe(huellaTextoDeCache(c?.documentos ?? {}, ids));
+      for (const id of ids) {
+        const nat = archivo.vistas.natural?.documentos[id]?.partes ?? {};
+        const dc = c?.documentos[id]?.partes ?? {};
+        expect(Object.keys(dc), `${v} ${id}`).toEqual(Object.keys(nat));
+        for (const [k, p] of Object.entries(dc)) {
+          expect(p.sha256, `${v} ${id} ${k}`).toBe(nat[k]?.sha256);
+          expect(p.ventanas.length, `${v} ${id} ${k}`).toBeGreaterThan(0);
+          expect(p.ventanas.map((x) => x.windowIndex)).toEqual(p.ventanas.map((_, i) => i));
+          for (const w of p.ventanas) for (const s of w.spans) { expect(s.score).toBeGreaterThanOrEqual(0.1); expect(s.end).toBeGreaterThan(s.start); }
+        }
+      }
+    }
+  });
+
+  it('T-AB-01 la vista natural reutiliza de PF-3 solo documentos con el mismo texto, ONNX y código, y los demás vienen de una pasada nueva', () => {
+    const nat = archivo.vistas.natural;
+    const pf3 = leer<CacheModelo>(CACHE_X_LARGE);
+    const reutilizados = Object.keys(nat?.procedencia ?? {});
+    expect(reutilizados.length).toBeGreaterThan(0);
+    expect(nat?.huella.onnx).toBe(pf3.huella.onnx);
+    expect(nat?.huella.codigo).toBe(pf3.huella.codigo);
+    for (const id of reutilizados) expect(nat?.documentos[id], id).toEqual(pf3.documentos[id]);
+    expect(reutilizados.every((id) => id in pf3.documentos)).toBe(true);
+  });
+
+  const ev = HAY_VISTAS ? (archivo.evaluacion as EvaluacionModelo | undefined) : undefined;
+  it.skipIf(ev === undefined)('T-AB-01 la evaluación guardada trae las tres vistas, 29 documentos, el umbral de PF-3 y la advertencia de muestra pequeña', () => {
+    const cal = leer<{ nerMinScore: number; nerHighThreshold: number }>(CALIBRACION);
+    expect(ev).toMatchObject({ formato: 'sig-low/evaluacion-modelo', v: 1, corpus: { documentos: 29, desarrollo: 19, reserva: 10 } });
+    expect(ev?.umbrales).toMatchObject({ nerMinScore: cal.nerMinScore, nerHighThreshold: cal.nerHighThreshold });
+    expect(Object.keys(ev?.vistas ?? {}).sort()).toEqual(VISTAS_ESPERADAS);
+    expect(ev?.advertencia).toContain('25 fragmentos, 96 entidades');
+  });
+
+  it.skipIf(ev === undefined)('T-AB-01 las filas por vista guardadas son consistentes: mismo n en las tres vistas, cumple recalculado del umbral y omisiones permitidas ⌊(1 − umbral)·n⌋', () => {
+    for (const grupo of GRUPOS_T_AB_01.map((g) => g.grupo)) {
+      const ns = VISTAS_ESPERADAS.map((v) => fila(ev?.vistas[v as 'natural']?.producto.todo ?? [], grupo).n);
+      expect(new Set(ns).size, `${grupo}: n distinto entre vistas`).toBe(1);
+      expect(ns[0]).toBeGreaterThan(0);
+    }
+    for (const v of VISTAS_ESPERADAS) {
+      const e = ev?.vistas[v as 'natural'];
+      expect(e?.cierre.map((c) => c.fila)).toEqual(['PERSONA_FUERA', 'ORG_FUERA']);
+      expect(e?.cierre).toEqual(filasDeCierre(v as 'natural', e?.producto.todo ?? []));
+      expect(e?.cierreSoloModelo).toEqual(filasDeCierre(v as 'natural', e?.soloModelo.todo ?? []));
+      for (const c of e?.cierre ?? []) {
+        expect(c.mencion.omisionesPermitidas).toBe(Math.floor((1 - c.mencion.umbral) * c.mencion.n + 1e-9));
+        expect(c.mencion.cumple).toBe(c.mencion.omisiones <= c.mencion.omisionesPermitidas);
+        expect(c.idsNoCubiertas).toHaveLength(c.mencion.omisiones);
+        for (const id of c.idsNoCubiertas) expect(id).toMatch(/^C\d\d-/u); // ids de anotación, nunca texto
+      }
+    }
+    expect(ev?.cierra).toBe(VISTAS_ESPERADAS.every((v) => ev?.vistas[v as 'natural']?.cierre.every((c) => c.cumple) === true));
+  });
+
+  it.skipIf(!CORPUS_FINAL_EN_REPO || ev === undefined)('T-AB-01 con el corpus final en el repositorio, las filas se recalculan desde la caché y el gold y coinciden con las guardadas', async () => {
+    const { evaluarVistaDesdeCache } = await import('../../scripts/evaluar-modelo.ts');
+    for (const v of VISTAS_ESPERADAS) {
+      const r = await evaluarVistaDesdeCache(v as 'natural', archivo.vistas[v as 'natural'] as never, ruta('corpus'), ev?.umbrales as never);
+      expect(r.evaluacion.producto.todo, v).toEqual(ev?.vistas[v as 'natural']?.producto.todo);
+      expect(r.evaluacion.soloModelo.todo, v).toEqual(ev?.vistas[v as 'natural']?.soloModelo.todo);
+    }
+  }, 600_000);
+
+  it.skipIf(!CORPUS_FINAL_EN_REPO)('T-AB-01 el lector de `npm run medir` (PG-3b) acepta las tres vistas contra el corpus final', async () => {
+    const { leerCache } = await import('./lib/cache.ts');
+    const { cargarCorpus: corpusMedicion } = await import('./lib/corpus.ts');
+    const corpus = corpusMedicion('todo');
+    for (const v of VISTAS_ESPERADAS) expect(leerCache('x-large', v as 'natural', corpus, ruta('metricas'))?.vista, v).toBe(v);
+  });
+});
+
+// Lo lanza `node scripts/evaluar-modelo.ts evaluar` (SIGLOW_EVALUAR=1): calcula T-AB-01 y lo guarda en el archivo de vistas.
+describe.skipIf(process.env['SIGLOW_EVALUAR'] !== '1')('T-AB-01 evaluar · cálculo y guardado de las filas por vista', () => {
+  it('T-AB-01 evaluar calcula las filas por vista desde la caché y el gold y las guarda en metricas/modelo-x-large-vistas.json', async () => {
+    const { ejecutarEvaluacion } = await import('../../scripts/evaluar-modelo.ts');
+    const args = new Map<string, string>(JSON.parse(process.env['SIGLOW_EVALUAR_ARGS'] ?? '[]') as Array<[string, string]>);
+    await ejecutarEvaluacion(RAIZ, args);
+  }, 900_000);
+});
+
+// ---------------------------------------------------------------------------------------------------------------- T-AB-06
+describe('T-AB-06 · la caché de salidas reproduce una pasada nueva (funciones puras)', () => {
+  const ventana = (i: number, spans: Array<[number, number, 'PER' | 'ORG' | 'LOC', number]>): { windowIndex: number; windowTotal: number; spans: Array<{ start: number; end: number; label: 'PER' | 'ORG' | 'LOC'; score: number }> } =>
+    ({ windowIndex: i, windowTotal: 2, spans: spans.map(([start, end, label, score]) => ({ start, end, label, score })) });
+  const A = [ventana(0, [[0, 10, 'PER', 0.95], [20, 30, 'ORG', 0.4]]), ventana(1, [[50, 60, 'LOC', 0.7]])];
+
+  it('T-AB-06 las mismas ventanas, aunque los tramos lleguen en otro orden, reproducen: 3 tramos y diferencia 0', () => {
+    const B = [ventana(0, [[20, 30, 'ORG', 0.4], [0, 10, 'PER', 0.95]]), ventana(1, [[50, 60, 'LOC', 0.7]])];
+    expect(compararVentanas('T01', 'cuerpo:1', A, B)).toEqual({ tramos: 3, maxDiferencia: 0, discrepancias: [] });
+  });
+
+  it('T-AB-06 los puntajes se admiten a ±1e-4 (inclusive) y no más', () => {
+    expect(TOLERANCIA_PUNTAJE).toBe(1e-4);
+    const dentro = [ventana(0, [[0, 10, 'PER', 0.95008], [20, 30, 'ORG', 0.4]]), A[1] as (typeof A)[number]];
+    const r = compararVentanas('T01', 'cuerpo:1', A, dentro);
+    expect(r.discrepancias).toEqual([]);
+    expect(r.maxDiferencia).toBeCloseTo(8e-5, 9);
+    const fuera = [ventana(0, [[0, 10, 'PER', 0.9502], [20, 30, 'ORG', 0.4]]), A[1] as (typeof A)[number]];
+    expect(compararVentanas('T01', 'cuerpo:1', A, fuera).discrepancias).toHaveLength(1);
+  });
+
+  it('T-AB-06 un tramo movido, una etiqueta distinta, un tramo de más o una ventana de menos son discrepancias (sin el texto del documento)', () => {
+    expect(compararVentanas('T01', 'cuerpo:1', A, [ventana(0, [[0, 11, 'PER', 0.95], [20, 30, 'ORG', 0.4]]), A[1] as (typeof A)[number]]).discrepancias).toHaveLength(1);
+    expect(compararVentanas('T01', 'cuerpo:1', A, [ventana(0, [[0, 10, 'ORG', 0.95], [20, 30, 'ORG', 0.4]]), A[1] as (typeof A)[number]]).discrepancias).toHaveLength(1);
+    expect(compararVentanas('T01', 'cuerpo:1', A, [ventana(0, [[0, 10, 'PER', 0.95]]), A[1] as (typeof A)[number]]).discrepancias[0]).toContain('2 tramos en la caché y 1');
+    expect(compararVentanas('T01', 'cuerpo:1', A, [A[0] as (typeof A)[number]]).discrepancias[0]).toContain('2 ventanas en la caché y 1');
+  });
+
+  it('T-AB-06 verificarCache cuenta ventanas y tramos de los tres documentos, exige la huella del texto y no pasa con una caché vacía', () => {
+    const mk = (docs: string[], w = A): CacheVista => ({
+      formato: 'sig-low/cache-modelo', v: 1, modelo: 'x-large', vista: 'natural', piso: 0.1, huella: { texto: 'a', vista: 'b', onnx: 'c', codigo: 'd' },
+      documentos: Object.fromEntries(docs.map((d) => [d, { partes: { 'cuerpo:1': { sha256: `h-${d}`, ventanas: w } } }])),
+    });
+    const nueva = (docs: string[], w = A): Record<string, DocumentoCache> =>
+      Object.fromEntries(docs.map((d) => [d, { partes: { 'cuerpo:1': { sha256: `h-${d}`, ventanas: w } } }]));
+    const ok = verificarCache('natural', mk([...DOCUMENTOS_T_AB_06]), nueva([...DOCUMENTOS_T_AB_06]), DOCUMENTOS_T_AB_06);
+    expect(ok).toMatchObject({ ok: true, ventanas: 6, tramos: 9, maxDiferenciaPuntaje: 0, discrepancias: [] });
+    expect(DOCUMENTOS_T_AB_06).toEqual(['C22', 'C10', 'C13']);
+    const otroTexto = nueva([...DOCUMENTOS_T_AB_06]);
+    (otroTexto['C10'] as DocumentoCache).partes['cuerpo:1'] = { sha256: 'otro', ventanas: A };
+    expect(verificarCache('natural', mk([...DOCUMENTOS_T_AB_06]), otroTexto, DOCUMENTOS_T_AB_06).ok).toBe(false);
+    expect(verificarCache('natural', mk([...DOCUMENTOS_T_AB_06]), nueva(['C22', 'C10']), DOCUMENTOS_T_AB_06).discrepancias[0]).toContain('C13');
+    expect(verificarCache('natural', mk([]), nueva([]), []).ok).toBe(false);
+  });
+
+  it('T-AB-06 reutilizarNatural copia de PF-3 solo los documentos con el mismo texto y rechaza todo si el ONNX o el código del motor cambiaron', () => {
+    const texto = (t: string): ParteTexto => ({ clave: 'cuerpo:1', texto: t, kind: 'cuerpo', index: 1 });
+    const sha = (t: string): string => createHash('sha256').update(t).digest('hex');
+    const base: CacheModelo = {
+      ...(CACHE as CacheModelo), etiquetas: 'estandar', piso: 0.1, huella: { texto: 't', vista: 'v', onnx: 'ox', codigo: 'cd' },
+      documentos: {
+        D1: { partes: { 'cuerpo:1': { sha256: sha('uno'), ventanas: [] } } },
+        D2: { partes: { 'cuerpo:1': { sha256: sha('dos'), ventanas: [] } } },
+      },
+    };
+    const textos = { D1: [texto('uno')], D2: [texto('dos CAMBIADO')], D3: [texto('tres')] };
+    const r = reutilizarNatural(base, textos, ['D1', 'D2', 'D3'], 'ox', 'cd');
+    expect(r.reutilizados).toEqual(['D1']);
+    expect(Object.keys(r.documentos)).toEqual(['D1']);
+    expect(reutilizarNatural(base, textos, ['D1'], 'otro-onnx', 'cd').reutilizados).toEqual([]);
+    expect(reutilizarNatural(base, textos, ['D1'], 'ox', 'otro-codigo').reutilizados).toEqual([]);
+    expect(reutilizarNatural({ ...base, piso: 0.3 }, textos, ['D1'], 'ox', 'cd').reutilizados).toEqual([]);
+  });
+});
+
+describe.skipIf(!HAY_VISTAS)('T-AB-06 · la caché guardada reproduce una pasada nueva de C22, C10 y C13 (≥ 12 ventanas)', () => {
+  const archivo = HAY_VISTAS ? leer<ArchivoVistas>(ARCHIVO_VISTAS) : ({ vistas: {} } as ArchivoVistas);
+  const ver = archivo.verificacion;
+
+  it('T-AB-06 hay una verificación guardada, con la tolerancia de ±1e-4, que da por buenas la huella del motor y la del ONNX', () => {
+    expect(ver).toBeDefined();
+    expect(ver?.tolerancia).toBe(1e-4);
+    expect(ver?.huellaMotorCoincide).toBe(true);
+    expect(ver?.huellaOnnxCoincide).toBe(true);
+    expect(ver?.ok).toBe(true);
+  });
+
+  it('T-AB-06 la vista natural, con los mismos tres documentos y todas sus ventanas (9.5 estima 12; con el texto final son 13), reproduce tramos y puntajes a ±1e-4', () => {
+    const r = ver?.resultados.find((x) => x.vista === 'natural');
+    expect(r?.documentos).toEqual(['C22', 'C10', 'C13']);
+    expect(r?.ventanas).toBeGreaterThanOrEqual(12);
+    expect(r?.discrepancias).toEqual([]);
+    expect(r?.ok).toBe(true);
+    expect(r?.maxDiferenciaPuntaje ?? 1).toBeLessThanOrEqual(1e-4);
+  });
+
+  it('T-AB-06 la caché natural guardada tiene las ventanas de C22, C10 y C13 que se volvieron a pasar, y las otras vistas también se verificaron', () => {
+    const ventanas = DOCUMENTOS_T_AB_06.reduce((n, id) => n + Object.values(archivo.vistas.natural?.documentos[id]?.partes ?? {}).reduce((m, p) => m + p.ventanas.length, 0), 0);
+    expect(ventanas).toBeGreaterThanOrEqual(12);
+    expect(ver?.resultados.find((x) => x.vista === 'natural')?.ventanas).toBe(ventanas);
+    for (const r of ver?.resultados ?? []) { expect(r.ok, r.vista).toBe(true); expect(r.ventanas, r.vista).toBeGreaterThan(0); }
+    expect((ver?.resultados ?? []).length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('T-AB-06 si el código del motor cambia después de la pasada, la caché se declara inválida: la huella guardada es la del motor vigente', () => {
+    for (const c of Object.values(archivo.vistas)) expect(c?.huella.codigo).toBe(huellaMotor(RAIZ));
   });
 });
