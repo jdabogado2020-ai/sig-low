@@ -1,11 +1,12 @@
 // T-PV-04 (parte PE-1) · Buffers en cero tras leer (V-23). Solo datos ficticios.
-// La parte «tras cifrar» la añade PD-3 en este mismo archivo.
-import { describe, expect, it } from 'vitest';
+// Parte PD-3: texto plano de cifrado y bytes de la frase en ceros (6.7.3, V-23).
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { SiglowError } from '../../src/core/types';
-import type { DocId, IoLimits } from '../../src/core/types';
+import type { AsuntoId, DocId, IoLimits, VaultPayload } from '../../src/core/types';
 import { handleIoMessage, ponerEnCero } from '../../src/io/io-handler';
 import type { HandlerDeps } from '../../src/io/io-handler';
 import { IO_LIMITS_POR_DEFECTO } from '../../src/io/io-client';
+import { abrirRegistro, cifrar, derivarClave, exportarSiglow, nuevoEncabezado, sellarRegistro, serializarPayload } from '../../src/vault/crypto';
 
 const DOC = 'doc_00112233445566778899aabbccddeeff' as DocId;
 const REQ = 'req_00112233445566778899aabbccddeeff';
@@ -81,5 +82,70 @@ describe('T-PV-04 buffers en cero tras leer', () => {
     const b = new ArrayBuffer(8);
     structuredClone(b, { transfer: [b] });
     expect(() => { ponerEnCero(b); }).not.toThrow();
+  });
+});
+
+// T-PV-04 (parte PD-3) · Texto plano en ceros tras cifrar, también si el cifrado falla; bytes de la frase en ceros tras derivar.
+describe('T-PV-04 buffers en cero tras cifrar', () => {
+  const ASU = 'asu_00112233445566778899aabbccddeeff' as AsuntoId;
+  const SAL = Uint8Array.from({ length: 16 }, (_, i) => i);
+  const FRASE = 'frase de prueba ficticia ñandú';
+  const AHORA = '2026-10-22T20:00:00.000Z';
+  const payload = (): VaultPayload => ({
+    formato: 'sig-low/tabla-plana', v: 1, asunto: { asuntoId: ASU, codigo: 'PRUEBA-001', creado: AHORA, actualizado: AHORA }, appVersion: '0.1.0',
+    table: { asuntoId: ASU, counters: {}, entries: {}, documents: [] },
+    caseList: [{ id: 'cas_00112233445566778899aabbccddeeff' as never, name: 'Ana Ficticia Rojas', variants: [], kind: 'persona', role: 'accionante' as never }],
+    relleno: '',
+  });
+  const todoCeroU8 = (b: Uint8Array): boolean => b.every((x) => x === 0);
+  let clave: CryptoKey;
+  beforeAll(async () => { clave = await derivarClave(FRASE, SAL, 600000); });
+  afterEach(() => { vi.restoreAllMocks(); });
+
+  it('T-PV-04 cifrar deja el texto plano en ceros y el ct descifra al texto original', async () => {
+    const plano = serializarPayload(payload());
+    const copia = new Uint8Array(plano);
+    expect(new TextDecoder().decode(plano)).toContain('Ana Ficticia Rojas');
+    const r = await sellarRegistro(clave, { asuntoId: ASU, codigo: 'PRUEBA-001', creado: AHORA, actualizado: AHORA }, { sal: SAL, it: 600000 }, plano);
+    expect(todoCeroU8(plano)).toBe(true);
+    const abierto = await abrirRegistro(r, FRASE);
+    expect(Buffer.from(abierto.plano).equals(Buffer.from(copia))).toBe(true);
+  });
+
+  it('T-PV-04 cifrar deja el texto plano en ceros aunque falle (encabezado inválido, tamaño, IV repetido, it fuera de rango)', async () => {
+    const enc = nuevoEncabezado({ uso: 'almacen', asuntoId: ASU, it: 600000, sal: SAL });
+    const planos = [serializarPayload(payload()), serializarPayload(payload()), serializarPayload(payload())];
+    const fallas: Array<() => Promise<unknown>> = [
+      () => cifrar(clave, 'sig-low/tabla;v=1', serializarPayload(payload())),
+      () => cifrar(clave, enc, new TextEncoder().encode('Ana Ficticia Rojas')),
+      async () => { await cifrar(clave, enc, serializarPayload(payload())); return cifrar(clave, enc, planos[0]!); },
+      () => exportarSiglow(FRASE, ASU, 599999, planos[1]!),
+      () => sellarRegistro(clave, { asuntoId: ASU, codigo: 'PRUEBA-001', creado: AHORA, actualizado: AHORA }, { sal: SAL, it: 5000001 }, planos[2]!),
+    ];
+    for (const f of fallas) await expect(f()).rejects.toBeInstanceOf(SiglowError);
+    for (const p of planos) expect(todoCeroU8(p)).toBe(true);
+    const corto = new TextEncoder().encode('Ana Ficticia Rojas');
+    await expect(cifrar(clave, enc, corto)).rejects.toMatchObject({ code: 'ENTRADA_INVALIDA' });
+    expect(todoCeroU8(corto)).toBe(true);
+  });
+
+  it('T-PV-04 exportarSiglow deja el texto plano en ceros', async () => {
+    const plano = serializarPayload(payload());
+    const json = await exportarSiglow(FRASE, ASU, 600000, plano);
+    expect(todoCeroU8(plano)).toBe(true);
+    expect(json).not.toContain('Ficticia');
+  });
+
+  it('T-PV-04 derivarClave deja en ceros los bytes de la frase que recibe importKey', async () => {
+    const vistos: Uint8Array[] = [];
+    const real = crypto.subtle.importKey.bind(crypto.subtle);
+    vi.spyOn(crypto.subtle, 'importKey').mockImplementation(((f: 'raw', d: Uint8Array<ArrayBuffer>, a: string, x: boolean, u: KeyUsage[]) => {
+      vistos.push(d);
+      expect(todoCeroU8(d)).toBe(false);
+      return real(f, d, a, x, u);
+    }) as never);
+    await derivarClave(FRASE, SAL, 600000);
+    expect(vistos).toHaveLength(1);
+    expect(todoCeroU8(vistos[0]!)).toBe(true);
   });
 });
