@@ -798,7 +798,7 @@ test.describe('bóveda en el navegador (arnés)', () => {
   // la primera derivación y dentro del primer cifrado (el último punto antes de descargar o de escribir).
   type Punto = 'derivacion' | 'cifrado';
   const PUNTOS: readonly Punto[] = ['derivacion', 'cifrado'];
-  type Operacion = { nombre: 'exportarAsunto' | 'cambiarFrase' | 'importar'; args: unknown[] };
+  type Operacion = { nombre: 'exportarAsunto' | 'cambiarFrase' | 'importar' | 'exportar'; args: unknown[] };
   /** Corre `op`, la retiene en `punto`, simula el bloqueo con `cerrar()`, la suelta y devuelve su código y los textos planos observados. */
   async function bloqueoDuranteOp(p: Page, punto: Punto, op: Operacion): Promise<{ codigo: string; planos: Planos }> {
     await p.evaluate((q) => {
@@ -808,7 +808,9 @@ test.describe('bóveda en el navegador (arnés)', () => {
     }, punto);
     const resultado = p.evaluate(({ nombre, args }) => {
       const g = globalThis as unknown as GA;
-      const a = nombre === 'importar' ? [Uint8Array.from(args[0] as number[]), ...args.slice(1)] : args;
+      // `exportar` (B-51) recibe la instantánea del asunto: la arma aquí, con el asuntoId en `args[0]`.
+      const a = nombre === 'importar' ? [Uint8Array.from(args[0] as number[]), ...args.slice(1)]
+        : nombre === 'exportar' ? [{ caseList: [], table: g.__ayuda.tabla(args[0] as string, 2) }, ...args.slice(1)] : args;
       return g.__ayuda.codigo(() => (g.__bovedaIdb as unknown as Record<string, (...x: unknown[]) => Promise<unknown>>)[nombre]!(...a));
     }, op);
     await p.evaluate((q) => { const g = globalThis as unknown as GA; return q === 'cifrado' ? g.__obs.dentro : g.__puerta.dentro; }, punto);
@@ -880,6 +882,43 @@ test.describe('bóveda en el navegador (arnés)', () => {
     const ok = await page.evaluate(({ b, frase }) => (globalThis as unknown as GA).__bovedaIdb.importar(Uint8Array.from(b), frase).then((r) => r.codigo), { b: bytes, frase: FRASE });
     expect(ok).toBe('PRUEBA-092');
     expect(await page.evaluate(async () => (await (globalThis as unknown as GA).__bovedaIdb.listar()).map((a) => a.codigo))).toEqual(['PRUEBA-092']);
+  });
+
+  // AJ-3 (B-51): `exportar` (el «Exportar tabla cifrada» del menú del asunto) comprueba la época como exportarAsunto. Dos asuntos: uno
+  // guardado (la frase abre su registro) y uno que no se guarda («No guardar»: frase nueva). En los dos, un bloqueo durante la derivación
+  // o el cifrado no deja descarga alguna y los textos planos quedan en ceros. A diferencia de exportarAsunto, que comprueba la época
+  // antes de serializar, `exportar` la comprueba al final (tras exportarSiglow): el texto plano sí llega a cifrarse (1 cifrado) y su
+  // resultado se descarta; la frase se comprobó contra el registro (1 descifrado) solo en el asunto guardado.
+  test('T-BO-01 @humo INV-G09 arnés B-51 época: exportar (el del menú del asunto) descarta el resultado si hubo un bloqueo mientras se derivaba o se cifraba: sin descarga y con los textos planos en ceros', async ({ page }) => {
+    test.setTimeout(240_000);
+    await preparar(page);
+    let descargas = 0;
+    page.on('download', () => { descargas++; });
+    // Un asunto guardado por punto: el bloqueo (`cerrar()`) descarta la sesión, y sin ella `exportar` falla antes de derivar.
+    for (const [i, punto] of PUNTOS.entries()) {
+      const codigo = `PRUEBA-09${3 + i}`;
+      const id = await crearCon(page, codigo, 2);
+      const r = await bloqueoDuranteOp(page, punto, { nombre: 'exportar', args: [id, codigo, FRASE] });
+      expect(r, `guardado, ${punto}`).toEqual({ codigo: 'SESION_DESCONOCIDA', planos: { descifrados: 1, cifrados: 1, descifradosEnCeros: true, cifradosEnCeros: true } });
+      expect(descargas, `guardado, ${punto}`).toBe(0);
+    }
+    // «No guardar»: ningún registro; la frase es nueva (el adaptador la valida). Sin registro no hay descifrado que comprobar.
+    const nuevo = await page.evaluate(() => (globalThis as unknown as GA).__ayuda.idNuevo());
+    for (const punto of PUNTOS) {
+      const r = await bloqueoDuranteOp(page, punto, { nombre: 'exportar', args: [nuevo, 'PRUEBA-095', FRASE] });
+      expect(r, `no guardar, ${punto}`).toEqual({ codigo: 'SESION_DESCONOCIDA', planos: { descifrados: 0, cifrados: 1, descifradosEnCeros: true, cifradosEnCeros: true } });
+      expect(descargas, `no guardar, ${punto}`).toBe(0);
+    }
+    // Control: sin bloqueo en medio, la misma operación sí descarga (con el código anterior, también tras el bloqueo).
+    const idControl = await crearCon(page, 'PRUEBA-096', 2);
+    const [descarga] = await Promise.all([
+      page.waitForEvent('download'),
+      page.evaluate(({ x, frase }) => {
+        const g = globalThis as unknown as GA;
+        return g.__bovedaIdb.exportar({ caseList: [], table: g.__ayuda.tabla(x, 2) as never }, 'PRUEBA-096', frase);
+      }, { x: idControl, frase: FRASE }),
+    ]);
+    expect(descarga.suggestedFilename()).toMatch(/^sig-low-tabla-\d{8}-\d{4}\.siglow$/);
   });
 });
 

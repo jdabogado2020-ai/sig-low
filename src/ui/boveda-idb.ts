@@ -280,6 +280,7 @@ export const bovedaIdb: BovedaCompleta = {
   },
 
   async exportar(datos, codigo, frase) {
+    const e = epoca;   // AJ-3 (B-51): como exportarAsunto, se lee al pedir la exportación, antes de cualquier espera
     if (globalThis.isSecureContext !== true || !globalThis.crypto?.subtle) throw new SiglowError('CONTEXTO_NO_SEGURO');
     const asuntoId = datos.table.asuntoId;
     const c = codigoValido(codigo);
@@ -306,6 +307,8 @@ export const bovedaIdb: BovedaCompleta = {
     const it = r ? analizarEncabezado(r.encabezado).it : await calibrarIteraciones();
     const plano = serializarPayload(payloadDe(datos, { asuntoId, codigo: c, creado, actualizado: ahora() }, __SIGLOW_VERSION__));
     const json = await exportarSiglow(frase, asuntoId, it, plano, r);
+    // Época (AJ-3, B-51): un bloqueo durante la derivación o el cifrado descarta el resultado, sin descargar nada.
+    exigirEpoca(e);
     return descargarSiglow(json);
   },
 
