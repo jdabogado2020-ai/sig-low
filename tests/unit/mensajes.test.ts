@@ -229,7 +229,8 @@ describe('T-IU-02 T-PV-26 aviso de privacidad de «Acerca de» y textos legales 
     expect(todo).toContain('Cloudflare');
     expect(todo).toContain('encargado del tratamiento');
     expect(todo).toContain('DPA');
-    expect(todo).toContain('artículos 26 y 27 de la Ley 1581 de 2012');
+    expect(todo).toContain('artículos 24 y 25 del Decreto 1377 de 2013');
+    expect(todo).not.toContain('26 y 27');   // decisión del dueño (D-09): esos artículos regulan la transferencia, no la transmisión
     expect(todo).toContain('docs/legal/politica-de-privacidad.md');
     expect(todo).not.toMatch(/https?:|www\.|mailto:|@/i);
     expect(hallazgos(textos)).toEqual([]);
@@ -255,12 +256,13 @@ describe('T-IU-02 T-PV-26 aviso de privacidad de «Acerca de» y textos legales 
     }
   });
 
-  it('T-PV-26 la política nombra a Cloudflare como encargado con su DPA y su política, y la transmisión según los artículos 26 y 27', () => {
+  it('T-PV-26 la política nombra a Cloudflare como encargado con su DPA y su política, y la transmisión según el Decreto 1377 de 2013', () => {
     const politica = leer('politica-de-privacidad.md');
     expect(politica).toContain('Cloudflare Data Processing Addendum');
     expect(politica).toContain('Cloudflare Privacy Policy');
     expect(politica).toContain('encargado del tratamiento');
-    expect(politica).toContain('artículos 26 y 27 de la Ley 1581 de 2012 y su reglamentación');
+    expect(politica).toContain('artículos 24 y 25 del Decreto 1377 de 2013, hoy compilados en el Decreto 1074 de 2015');
+    expect(politica).not.toContain('artículos 26 y 27');
     expect(politica).toMatch(/aviso de privacidad visible/);
     expect(politica).toMatch(/y no con autorización expresa/);
     expect(politica).toContain('no conserva copia propia de estos registros');  });
