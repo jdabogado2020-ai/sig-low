@@ -38,7 +38,9 @@ import {
   type TokenizerLike,
 } from '../../src/core/ner/gliner';
 import { GlinerError, codigoDeError } from '../../src/core/ner/gliner/errors';
+import { PALABRAS_DE_FUNCION } from '../../src/core/merge';
 import { crearManejadorNer } from '../../src/core/ner/handler';
+import { PALABRAS_FUNCION, VERSION_RESTAURAR, restaurarMayusculas } from '../../src/core/ner/mayusculas';
 import { SiglowError, type ModelManifest, type NerEngine, type NerLoadProgress, type NerLoadResult, type NerOptions, type NerResponse, type NerSpan, type NerWindowResult, type PartId } from '../../src/core/types';
 
 // ---------------------------------------------------------------------------
@@ -1044,5 +1046,152 @@ describe('T-MO-09 · worker ner: nada del documento en la consola ni en los erro
     expect(codigoDeError(Object.assign(new Error('Ana'), { name: 'QuotaExceededError' }))).toBe('CUOTA_EXCEDIDA');
     expect(codigoDeError(new TypeError('Ana'))).toBe('ERROR_INTERNO');
     expect(codigoDeError(undefined)).toBe('ERROR_INTERNO');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// PF-3-r1b · restauración de mayúsculas por párrafo entero antes del modelo (src/core/ner/mayusculas.ts)
+// ---------------------------------------------------------------------------
+
+describe('T-MO-09 · restauración de mayúsculas por párrafo (PF-3-r1b, INV-W04)', () => {
+  /** INV-W04: misma longitud UTF-16 y, en cada posición, el mismo carácter o su otra caja. */
+  const mismasPosiciones = (a: string, b: string): boolean => {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      const x = a[i]!;
+      const y = b[i]!;
+      if (x !== y && x.toLowerCase() !== y && x.toUpperCase() !== y && x !== y.toLowerCase() && x !== y.toUpperCase()) return false;
+    }
+    return true;
+  };
+
+  it('INV-W04 un párrafo entero en MAYÚSCULAS pasa a Title Case, con las palabras de función en minúscula, las siglas con punto en mayúsculas y los códigos intactos', () => {
+    expect(restaurarMayusculas('SEÑORA ANA FICTICIA ROJAS DE PRUEBA')).toBe('Señora Ana Ficticia Rojas de Prueba');
+    expect(restaurarMayusculas('JOSÉ-LUIS DE LA PRUEBA, C.C. 0000 EN BOGOTÁ')).toBe('José-Luis de la Prueba, C.C. 0000 en Bogotá');
+    expect(restaurarMayusculas('COMERCIAL EJEMPLO S.A.S. 0000-0')).toBe('Comercial Ejemplo S.A.S. 0000-0');
+    expect(restaurarMayusculas('EXPEDIENTE ABC123 DE C04')).toBe('Expediente ABC123 de C04');
+  });
+
+  it('INV-W04 un párrafo entero en minúsculas pasa a Title Case y queda igual que el mismo párrafo en MAYÚSCULAS', () => {
+    expect(restaurarMayusculas('ana ficticia rojas de prueba vive en villa ejemplo')).toBe('Ana Ficticia Rojas de Prueba Vive en Villa Ejemplo');
+    const t = 'comercial ejemplo s.a.s. y compañía, señor juez de prueba';
+    expect(restaurarMayusculas(t)).toBe(restaurarMayusculas(t.toUpperCase()));
+  });
+
+  it('INV-W04 un párrafo mixto o en texto natural no se toca, y en un texto con varios párrafos solo cambian los enteros en una caja', () => {
+    const natural = 'Ana Ficticia Rojas presentó la tutela contra COMERCIAL EJEMPLO S.A. el 3 de mayo.';
+    expect(restaurarMayusculas(natural)).toBe(natural);
+    expect(restaurarMayusculas('ANA ficticia')).toBe('ANA ficticia');
+    expect(restaurarMayusculas('Señor Juez\n\nANA FICTICIA ROJAS\n\nse presenta')).toBe('Señor Juez\n\nAna Ficticia Rojas\n\nSe Presenta');
+    // una línea en MAYÚSCULAS dentro de un párrafo natural (sin línea en blanco) no es un párrafo entero en MAYÚSCULAS
+    const conLinea = 'Señor Juez\nANA FICTICIA ROJAS\nse presenta';
+    expect(restaurarMayusculas(conLinea)).toBe(conLinea);
+    for (const t of ['', '   ', '12345', '--- ... ---', '\n\n\n']) expect(restaurarMayusculas(t)).toBe(t);
+  });
+
+  it('INV-W04 la «ß», la «İ» y las ligaduras se quedan como están y la longitud UTF-16 no cambia', () => {
+    expect(restaurarMayusculas('STRAßE İSTANBUL ﬁNAL')).toBe('Straße İstanbul ﬁnal');
+    expect(restaurarMayusculas('straße ﬁnal ǆ')).toBe('Straße ﬁnal Ǆ');
+    for (const t of ['STRAßE İSTANBUL ﬁNAL', 'ﬃ ﬆ ß ŉ ǰ ΐ', 'İİİ ıı', 'ÁÉÍÓÚ ÑANDÚ ÜBER', 'straße ﬁnal ǆ']) {
+      const r = restaurarMayusculas(t);
+      expect(r.length, t).toBe(t.length);
+      expect(mismasPosiciones(t, r), t).toBe(true);
+    }
+  });
+
+  it('INV-W04 los pares sustitutos y las marcas combinantes conservan las posiciones', () => {
+    // «𐐨𐐩» (U+10428 y U+10429, minúsculas del alfabeto Deseret) ocupan 2 unidades cada una y su mayúscula también.
+    expect(restaurarMayusculas('\u{10428}\u{10429} \u{10428}')).toBe('\u{10400}\u{10429} \u{10400}');
+    const combinante = 'JOSÉ MUÑOZ'; // «É» y «Ñ» descompuestas
+    const r = restaurarMayusculas(combinante);
+    expect(r).toBe('José Muñoz');
+    expect(r.length).toBe(combinante.length);
+  });
+
+  it('INV-W04 el texto restaurado solo difiere del canónico en la caja: un nombre hallado en él está en la misma posición del canónico', () => {
+    const ctx = 'ANA FICTICIA ROJAS Y PEDRO PRUEBA GÓMEZ, VECINOS DE VILLA EJEMPLO.\n\nsr. juan ejemplo de la torre, cc 0000';
+    const r = restaurarMayusculas(ctx);
+    expect(mismasPosiciones(ctx, r)).toBe(true);
+    const i = r.indexOf('Pedro Prueba Gómez');
+    expect(i).toBeGreaterThan(0);
+    expect(ctx.slice(i, i + 'Pedro Prueba Gómez'.length)).toBe('PEDRO PRUEBA GÓMEZ');
+  });
+
+  it('INV-W04 la lista de palabras de función es la de R-MOD-03 (merge.ts) y la versión de las reglas está fijada', () => {
+    expect([...PALABRAS_FUNCION].sort()).toEqual([...PALABRAS_DE_FUNCION].sort());
+    expect(VERSION_RESTAURAR).toBe('restaurar-mayusculas@1');
+  });
+
+  it('INV-W04 el tiempo es lineal: 40.000 caracteres, también en las entradas del peor caso, tardan menos de un segundo', () => {
+    const relleno = (unidad: string, n = 40_000): string => unidad.repeat(Math.ceil(n / unidad.length)).slice(0, n);
+    const casos: Array<[string, string]> = [
+      ['párrafos en MAYÚSCULAS', relleno('ANA FICTICIA ROJAS DE PRUEBA, S.A.S. C.C. 0000.\n\n')],
+      ['párrafos en minúsculas', relleno('ana ficticia rojas de prueba, s.a.s. cc 0000.\n\n')],
+      ['una sola palabra de 40.000 letras', relleno('A')],
+      ['guiones bajos y guiones', relleno('a_B-')],
+      ['siglas con punto', relleno('A.')],
+      ['40.000 blancos', ' '.repeat(40_000)],
+      ['saltos con blancos', relleno('\n \t')],
+      ['saltos de línea con retorno', relleno('\r\n')],
+      ['signos sueltos separados por blancos', relleno('. ')],
+      ['mixto', relleno('Ana FICTICIA rojas\n\n')],
+    ];
+    for (const [nombre, t] of casos) {
+      const t0 = performance.now();
+      const r = restaurarMayusculas(t);
+      const ms = performance.now() - t0;
+      expect(r.length, nombre).toBe(t.length);
+      expect(ms, `${nombre}: ${Math.round(ms)} ms`).toBeLessThan(1000);
+    }
+    // ocho veces el largo no cuesta ocho veces mucho más: sin crecimiento cuadrático
+    const una = relleno('ANA FICTICIA ROJAS DE PRUEBA, S.A.S.\n\n', 20_000);
+    const dos = relleno('ANA FICTICIA ROJAS DE PRUEBA, S.A.S.\n\n', 160_000);
+    restaurarMayusculas(una);
+    const a = performance.now(); restaurarMayusculas(una); const ta = Math.max(performance.now() - a, 1);
+    const b = performance.now(); restaurarMayusculas(dos); const tb = performance.now() - b;
+    expect(tb / ta, `20.000 → 160.000 caracteres: ${Math.round(ta)} ms y ${Math.round(tb)} ms`).toBeLessThan(40);
+  });
+});
+
+describe('T-MO-09 · worker ner: el modelo recibe el texto restaurado y todo lo demás sale con las posiciones canónicas (PF-3-r1b, INV-W04, INV-W07)', () => {
+  /** Motor que anota el texto que le llega y devuelve un tramo por ventana sobre las posiciones de ese texto. */
+  class MotorQueAnota extends MotorFalso {
+    readonly planeados: string[] = [];
+    readonly recibidos: string[] = [];
+    override planWindows(text: string): number { this.planeados.push(text); return 1; }
+    override detect(text: string, _o: NerOptions, _s: AbortSignal, onWindow?: (w: NerWindowResult) => void): Promise<NerSpan[]> {
+      this.recibidos.push(text);
+      const spans: NerSpan[] = [{ start: 0, end: 3, label: 'PER', score: 0.9 }];
+      onWindow?.({ partId: '' as PartId, windowIndex: 0, windowTotal: 1, spans, ms: 1 });
+      return Promise.resolve(spans);
+    }
+  }
+
+  it('INV-W04 planWindows y detect reciben el texto restaurado de cada parte, y el parcial lleva las mismas posiciones y ningún texto (INV-W07)', async () => {
+    const motor = new MotorQueAnota();
+    const b = banco(motor);
+    const A = 'ANA FICTICIA ROJAS VIVE EN VILLA EJEMPLO';
+    const B = 'Ana Ficticia Rojas vive en VILLA EJEMPLO';
+    const C = 'pedro prueba gómez';
+    b.enviar(req('c1', 'cargar', { manifest: MANIFIESTO_MINIMO }));
+    b.enviar(req('d1', 'detectar', { parts: [{ partId: PARTE_A, text: A }, { partId: 'parte_0000000000000000000000000000000b', text: B }, { partId: 'parte_0000000000000000000000000000000c', text: C }], options: OPC }));
+    await b.esperar((s) => s.some((m) => m.reqId === 'd1' && m.kind === 'resultado'));
+    const esperados = ['Ana Ficticia Rojas Vive en Villa Ejemplo', B, 'Pedro Prueba Gómez'];
+    expect(motor.planeados).toEqual(esperados);
+    expect(motor.recibidos).toEqual(esperados);
+    const parciales = b.salida.filter((m) => m.reqId === 'd1' && m.kind === 'parcial');
+    expect(parciales).toHaveLength(3);
+    for (const p of parciales) expect((p as { payload: { window: { spans: NerSpan[] } } }).payload.window.spans).toEqual([{ start: 0, end: 3, label: 'PER', score: 0.9 }]);
+    const texto = JSON.stringify(b.salida.filter((m) => m.reqId === 'd1'));
+    for (const t of ['Ficticia', 'FICTICIA', 'Prueba', 'gómez']) expect(texto).not.toContain(t);
+  });
+
+  it('INV-W04 un texto sin párrafos enteros en una caja llega al modelo tal cual, y una parte vacía no rompe el reparto', async () => {
+    const motor = new MotorQueAnota();
+    const b = banco(motor);
+    b.enviar(req('c2', 'cargar', { manifest: MANIFIESTO_MINIMO }));
+    b.enviar(req('d2', 'detectar', { parts: [{ partId: PARTE_A, text: 'Ana Ficticia Rojas presentó la tutela.' }, { partId: 'parte_0000000000000000000000000000000b', text: '' }], options: OPC }));
+    await b.esperar((s) => s.some((m) => m.reqId === 'd2' && m.kind === 'resultado'));
+    expect(motor.recibidos).toEqual(['Ana Ficticia Rojas presentó la tutela.', '']);
   });
 });

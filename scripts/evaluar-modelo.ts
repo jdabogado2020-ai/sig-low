@@ -10,9 +10,10 @@
 //              Reanuda: un documento cuya huella de texto ya está en el archivo no se vuelve a pasar. La vista natural reutiliza,
 //              documento a documento, la caché de PF-3 (x-large: metricas/historico/pf3-x-large-natural.json; x-base: la pasada de etiquetas
 //              estándar metricas/etiquetas-x-base-estandar.json) si el texto, el ONNX y el código del motor son los mismos; los demás
-//              se pasan de nuevo.
+//              se pasan de nuevo. Desde PF-3-r1b el texto que recibe el modelo lleva la restauración de mayúsculas por párrafo del producto
+//              (src/core/ner/mayusculas.ts, `--preproceso=restaurar-parrafos` por defecto) y la caché guarda su versión y la huella de ese archivo.
 //   verificar  T-AB-06: una pasada nueva de C22, C10 y C13 (12 ventanas) debe reproducir tramos y puntajes de la caché a +-1e-4 y la
-//              huella del motor no debe haber cambiado. Escribe `verificacion` en el mismo archivo. Candado del modelo.
+//              huella del motor y la de mayusculas.ts no deben haber cambiado; la pasada nueva usa el preproceso de la caché. Escribe `verificacion` en el mismo archivo. Candado del modelo.
 //   evaluar    T-AB-01, sin modelo: exhaustividad de PER, ORG y LOC por vista frente al gold, dentro y fuera de la lista, filas por
 //              vista de 10.4.1 con el umbral de PF-3, matriz de confusión y reserva aparte. Escribe `evaluacion` en el mismo archivo.
 //              Con --modelo=x-base calcula además T-AB-04: la comparación con el principal (`comparacion`), sin criterio de cierre.
@@ -38,6 +39,9 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { cargarCorpus as cargarTextos, deteccionesDe, evaluarUmbral, huellaMotor } from './calibrar-modelo.ts';
 import type { CacheModelo as CachePF3, DocumentoCache, ParteCache, ParteTexto, VentanaCache } from './calibrar-modelo.ts';
+import {
+  PALABRAS_FUNCION, VERSION_RESTAURAR, cajaDe, restaurarMayusculas as restaurarDelProducto, restaurarSegmentos, segmentosFrase, segmentosParrafo,
+} from '../src/core/ner/mayusculas.ts';
 import type { DataType, ModelManifest } from '../src/core/types.ts';
 import { calcularFila, claveParte, esPositiva, evaluarDocumento, grupoDeTipo, gruposDeCierre, omisionesPermitidas } from './metrics.ts';
 import type { EntradaDocumento, GoldAnnotation, GoldDocument, GrupoDef, MetricsRow, RunVista } from './metrics.ts';
@@ -69,7 +73,7 @@ export interface CacheVista extends CachePF3 {
    * PF-3-r1: preproceso del texto antes del modelo (`restaurar`: restauración de mayúsculas, experimento (b)) con su versión. Sin el
    * campo, el modelo recibió la vista tal cual.
    */
-  preproceso?: { id: Preproceso; version: string };
+  preproceso?: { id: Preproceso; version: string; /** sha256 de `src/core/ner/mayusculas.ts` al hacer la pasada (PF-3-r1b); las cachés del experimento no la traen. */ huella?: string };
   /** PF-3-r1: partes copiadas de otra pasada cuyo texto de entrada al modelo era idéntico (mismas etiquetas, ONNX y código). */
   partesReutilizadas?: number;
 }
@@ -87,6 +91,8 @@ export interface Verificacion {
   fecha: string;
   tolerancia: number;
   huellaMotorCoincide: boolean;
+  /** PF-3-r1b: la caché se hizo con el `mayusculas.ts` vigente (o sin preproceso). Las verificaciones anteriores no traen el campo. */
+  huellaPreprocesoCoincide?: boolean;
   huellaOnnxCoincide: boolean;
   resultados: ResultadoVerificacion[];
   ok: boolean;
@@ -126,48 +132,19 @@ export function vistaDeTexto(texto: string, vista: Vista): string {
 }
 
 // ===================================================================================================================
-// PF-3-r1 · Restauración de mayúsculas antes del modelo (experimento (b) de D-06, decisión 6)
+// Restauración de mayúsculas antes del modelo (PF-3-r1: experimento de D-06, decisión 6; PF-3-r1b: (b′) en el producto)
 // ===================================================================================================================
 //
-// Solo en los segmentos que vienen enteros en MAYÚSCULAS o enteros en minúsculas:
-//   - MAYÚSCULAS: por línea, cortada además tras «.», «!», «?», «;» o «:» seguidos de un blanco (un encabezado, una firma, un nombre
-//     en su propia línea, aunque el párrafo de alrededor esté en texto natural);
-//   - minúsculas: por frase entera (cortada tras «.», «!» o «?» seguidos de un blanco, o por una línea en blanco), sin cortar en un
-//     salto de línea simple: una línea en minúsculas en medio de un párrafo natural partido por el PDF es prosa normal y no se toca.
-// En el segmento, cada palabra (R-MOD-01) pasa a Title Case; las de función y los tratamientos (FW de R-MOD-03) quedan en minúscula,
-// salvo la primera de la frase; una letra sola seguida de «.» (inicial o sigla: «S.A.», «C.C.») y una palabra con dígitos (un código:
-// «C04», «ABC123») van en mayúsculas. Así el resultado no depende de la caja de origen: un texto entero en MAYÚSCULAS y el mismo en
-// minúsculas quedan iguales. Conserva las posiciones 1:1 (INV-W04): solo cambia caracteres cuya conversión no cambia la longitud
-// UTF-16 (la «ß», la «İ» y las ligaduras se quedan como están) y lanza si la longitud cambiara. Cambiar estas reglas exige subir la versión.
-export const VERSION_RESTAURAR = 'restaurar-mayusculas@1';
+// La restauración (b′) vive en `src/core/ner/mayusculas.ts` y la aplica el worker `ner` (`handler.ts`): aquí se reutiliza tal cual, así
+// que la caché de salidas se hace con el mismo código que usa el producto. Las reglas (párrafos enteros en MAYÚSCULAS o en minúsculas
+// a Title Case, FW de R-MOD-03 en minúscula, siglas y códigos en mayúsculas, posiciones 1:1 de INV-W04) están descritas allí. La
+// variante (b) del experimento (por líneas y frases) solo sirve para las cachés `metricas/pf3r1-restaurar*.json` y sus pruebas.
+export { PALABRAS_FUNCION, VERSION_RESTAURAR, cajaDe, segmentosFrase, segmentosParrafo };
 
-/** FW de R-MOD-03 (7.10.7): palabras de función y tratamientos, plegadas (minúsculas, sin tildes). */
-export const PALABRAS_FUNCION: ReadonlySet<string> = new Set(
-  'de|del|la|las|los|el|lo|y|e|o|u|a|al|en|por|para|con|sin|su|sus|que|se|un|una|unos|unas|senorita|senora|senor|srta|sra|sr|dona|don|doctora|doctor|dra|dr|mrs|mr|ms'.split('|'),
-);
-
-/** Palabra de R-MOD-01 (7.10.2), sin la alternativa del signo suelto. */
-const RE_PALABRA = /[\p{L}\p{M}\p{N}_][\p{L}\p{M}\p{N}_\u{AD}\u{200B}-\u{200D}]*(?:[-_][\p{L}\p{M}\p{N}_][\p{L}\p{M}\p{N}_\u{AD}\u{200B}-\u{200D}]*)*/gu;
 const RE_SALTO = /[\n\r\u{B}\u{C}\u{85}\u{2028}\u{2029}]/u;
-const aMay = (c: string): string => { const t = c.toUpperCase(); return t.length === c.length ? t : c; };
-const aMin = (c: string): string => { const t = c.toLowerCase(); return t.length === c.length ? t : c; };
-/** Mayúscula o minúscula «convertible»: la que tiene la otra forma con la misma longitud (la «ß» y la «İ» no cuentan). */
-const esMay = (c: string): boolean => aMin(c) !== c;
-const esMin = (c: string): boolean => aMay(c) !== c;
 const plegar = (p: string): string => p.normalize('NFD').replace(/[\p{M}\u{AD}\u{200B}-\u{200D}]/gu, '').toLowerCase();
 
-/** Caja de un segmento: `may` si tiene mayúsculas y ninguna minúscula, `min` al revés, `mixta` o `sin` (sin letras con caja). */
-export function cajaDe(t: string): 'may' | 'min' | 'mixta' | 'sin' {
-  let may = false;
-  let min = false;
-  for (const c of t) {
-    if (esMay(c)) may = true; else if (esMin(c)) min = true;
-    if (may && min) return 'mixta';
-  }
-  return may ? 'may' : min ? 'min' : 'sin';
-}
-
-/** Segmentos para las MAYÚSCULAS: líneas, cortadas además tras [.!?;:] seguidos de un blanco. Posiciones [inicio, fin). */
+/** Segmentos para las MAYÚSCULAS de (b): líneas, cortadas además tras [.!?;:] seguidos de un blanco. Posiciones [inicio, fin). */
 export function segmentosLinea(t: string): Array<[number, number]> {
   const out: Array<[number, number]> = [];
   let s = 0;
@@ -180,97 +157,33 @@ export function segmentosLinea(t: string): Array<[number, number]> {
   return out;
 }
 
-/** Segmentos para las minúsculas: frases enteras, cortadas tras [.!?] seguidos de un blanco o por una línea en blanco. */
-export function segmentosFrase(t: string): Array<[number, number]> {
-  const out: Array<[number, number]> = [];
-  const re = /[.!?](?=\s|$)|\r?\n[ \t\r]*\n/gu;
-  let s = 0;
-  for (let m = re.exec(t); m !== null; m = re.exec(t)) {
-    const e = m.index + m[0].length;
-    if (e > s) out.push([s, e]);
-    s = e;
-  }
-  if (s < t.length) out.push([s, t.length]);
-  return out;
-}
-
-/** Caja de una palabra dentro de un segmento restaurable. */
-function casarPalabra(p: string, primera: boolean, seguidaDePunto: boolean): string {
-  const base = plegar(p);
-  if (/\p{N}/u.test(p) || ([...base].length === 1 && seguidaDePunto)) return [...p].map(aMay).join('');
-  if (!primera && PALABRAS_FUNCION.has(base)) return [...p].map(aMin).join('');
-  let inicio = true;
-  let out = '';
-  for (const c of p) {
-    if (c === '-' || c === '_') { out += c; inicio = true; continue; }
-    if (/\p{L}/u.test(c)) { out += inicio ? aMay(c) : aMin(c); inicio = false; continue; }
-    out += c;
-  }
-  return out;
-}
-
 /**
- * Restauración de mayúsculas (experimento (b) de PF-3-r1). Devuelve un texto de la misma longitud UTF-16 en el que cada posición es el
- * mismo carácter o su otra caja: los tramos del modelo sobre el texto restaurado valen tal cual en el canónico (INV-W04).
+ * Restauración de mayúsculas. `parrafos` es (b′), la del producto (`restaurarMayusculas` de `src/core/ner/mayusculas.ts`); `segmentos`
+ * es (b) del experimento: las líneas enteras en MAYÚSCULAS y las frases enteras en minúsculas. Misma longitud UTF-16 (INV-W04).
  */
 export function restaurarMayusculas(texto: string, alcance: 'segmentos' | 'parrafos' = 'segmentos'): string {
-  const cambios: Array<[number, number, string]> = [];
-  const frases = segmentosFrase(texto);
-  // Primera palabra de cada frase: la única de función que se escribe con mayúscula inicial.
-  const iniciales = new Set<number>();
-  for (const [s, e] of frases) {
-    RE_PALABRA.lastIndex = 0;
-    const m = RE_PALABRA.exec(texto.slice(s, e));
-    if (m !== null) iniciales.add(s + m.index);
-  }
-  const restaurar = (s: number, e: number): void => {
-    const seg = texto.slice(s, e);
-    RE_PALABRA.lastIndex = 0;
-    for (let m = RE_PALABRA.exec(seg); m !== null; m = RE_PALABRA.exec(seg)) {
-      const ini = s + m.index;
-      const fin = ini + m[0].length;
-      const nuevo = casarPalabra(m[0], iniciales.has(ini), texto[fin] === '.');
-      if (nuevo !== m[0]) cambios.push([ini, fin, nuevo]);
-    }
-  };
-  if (alcance === 'parrafos') {
-    // (b′): solo los párrafos enteros en MAYÚSCULAS o en minúsculas; una línea o una frase dentro de un párrafo natural no se toca.
-    for (const [s, e] of segmentosParrafo(texto)) { const k = cajaDe(texto.slice(s, e)); if (k === 'may' || k === 'min') restaurar(s, e); }
-  } else {
-    for (const [s, e] of segmentosLinea(texto)) if (cajaDe(texto.slice(s, e)) === 'may') restaurar(s, e);
-    for (const [s, e] of frases) if (cajaDe(texto.slice(s, e)) === 'min') restaurar(s, e);
-  }
-  if (cambios.length === 0) return texto;
-  cambios.sort((x, y) => x[0] - y[0]);
-  let salida = '';
-  let k = 0;
-  for (const [ini, fin, nuevo] of cambios) { salida += texto.slice(k, ini) + nuevo; k = fin; }
-  salida += texto.slice(k);
-  if (salida.length !== texto.length) throw new Error('RESTAURAR_CAMBIA_LONGITUD');
-  return salida;
-}
-
-/** Párrafos: tramos separados por una línea en blanco (posiciones [inicio, fin)). */
-export function segmentosParrafo(t: string): Array<[number, number]> {
-  const out: Array<[number, number]> = [];
-  const re = /\r?\n[ \t\r]*\n/gu;
-  let s = 0;
-  for (let m = re.exec(t); m !== null; m = re.exec(t)) {
-    if (m.index > s) out.push([s, m.index]);
-    s = m.index + m[0].length;
-  }
-  if (s < t.length) out.push([s, t.length]);
-  return out;
+  if (alcance === 'parrafos') return restaurarDelProducto(texto);
+  return restaurarSegmentos(texto, (frases) => [
+    ...segmentosLinea(texto).filter(([s, e]) => cajaDe(texto.slice(s, e)) === 'may'),
+    ...frases.filter(([s, e]) => cajaDe(texto.slice(s, e)) === 'min'),
+  ]);
 }
 
 /** `restaurar`: (b) por líneas y frases; `restaurar-parrafos`: (b′), solo párrafos enteros en MAYÚSCULAS o en minúsculas. */
 export type Preproceso = 'ninguno' | 'restaurar' | 'restaurar-parrafos';
+/** El preproceso que hace el producto: la caché única (`metricas/modelo-<modelo>-vistas.json`) se pasa siempre con él (PF-3-r1b). */
+export const PREPROCESO_PRODUCTO: Preproceso = 'restaurar-parrafos';
 export type EtiquetasPasada = 'estandar' | 'traducidas';
 /** Texto que recibe el modelo: la vista de medición y, con la restauración, la restauración de mayúsculas encima. */
 export function entradaModelo(texto: string, vista: Vista, preproceso: Preproceso): string {
   const v = vistaDeTexto(texto, vista);
   if (preproceso === 'ninguno') return v;
   return restaurarMayusculas(v, preproceso === 'restaurar-parrafos' ? 'parrafos' : 'segmentos');
+}
+
+/** Huella de `src/core/ner/mayusculas.ts` (saltos de línea normalizados): la caché con preproceso guarda la del código que la hizo. */
+export function huellaMayusculas(raiz: string): string {
+  return sha256Texto(readFileSync(join(raiz, 'src/core/ner/mayusculas.ts'), 'utf8').replace(/\r\n/g, '\n'));
 }
 
 /** Huella de texto de una caché: sha256 de las huellas de las partes, en el orden de documentos dado (el mismo cálculo de PF-3). */
@@ -345,9 +258,13 @@ export function verificarCache(
   return { vista, documentos: [...docs], ventanas, tramos, maxDiferenciaPuntaje: redondear(max), ok: discrepancias.length === 0 && ventanas > 0, discrepancias };
 }
 
-/** Une una caché de PF-3 en la de una vista natural: copia los documentos cuyo texto no cambió (parte por parte, por sha256). */
+/**
+ * Une una caché de PF-3 en la de una vista natural: copia los documentos cuyo texto no cambió (parte por parte, por sha256). Con un
+ * preproceso (PF-3-r1b), `sinCambio` dice si el texto de una parte llega al modelo igual: solo entonces vale la salida de PF-3.
+ */
 export function reutilizarNatural(
   base: CachePF3, textos: Record<string, ParteTexto[]>, ids: readonly string[], onnx: string, codigo: string, modelo?: Modelo,
+  sinCambio: (texto: string) => boolean = () => true,
 ): { documentos: Record<string, DocumentoCache>; reutilizados: string[] } {
   const documentos: Record<string, DocumentoCache> = {};
   const reutilizados: string[] = [];
@@ -358,7 +275,7 @@ export function reutilizarNatural(
     const bd = base.documentos[id];
     const ps = textos[id] ?? [];
     if (bd === undefined) continue;
-    const mismas = ps.length > 0 && ps.every((p) => bd.partes[p.clave]?.sha256 === sha256Texto(p.texto));
+    const mismas = ps.length > 0 && ps.every((p) => bd.partes[p.clave]?.sha256 === sha256Texto(p.texto) && sinCambio(p.texto));
     const soloEsas = Object.keys(bd.partes).every((k) => ps.some((p) => p.clave === k));
     if (mismas && soloEsas) {
       documentos[id] = structuredClone(bd);
@@ -417,15 +334,22 @@ function parseEtiquetas(a: Map<string, string>): EtiquetasPasada {
   if (e !== 'estandar' && e !== 'traducidas') throw new Error(`etiquetas no válidas: ${e}`);
   return e;
 }
-/** PF-3-r1: `--preproceso=ninguno|restaurar|restaurar-parrafos` (restauración de mayúsculas antes del modelo: (b) y (b′)). */
+/**
+ * `--preproceso=ninguno|restaurar|restaurar-parrafos` (restauración de mayúsculas antes del modelo: (b) y (b′) de PF-3-r1). Por defecto, el del
+ * producto (PF-3-r1b: `restaurar-parrafos`): la caché única se pasa con el mismo texto que el worker `ner` entrega al modelo.
+ */
 function parsePreproceso(a: Map<string, string>): Preproceso {
-  const p = arg(a, 'preproceso', 'ninguno');
+  const p = arg(a, 'preproceso', PREPROCESO_PRODUCTO);
   if (p !== 'ninguno' && p !== 'restaurar' && p !== 'restaurar-parrafos') throw new Error(`preproceso no válido: ${p}`);
   return p;
 }
 const preprocesoDe = (c: CacheVista): Preproceso => c.preproceso?.id ?? 'ninguno';
-/** La caché se hizo con el preproceso pedido y, si es la restauración, con la versión vigente de sus reglas. */
-const mismoPreproceso = (c: CacheVista, p: Preproceso): boolean => preprocesoDe(c) === p && (p === 'ninguno' || c.preproceso?.version === VERSION_RESTAURAR);
+/**
+ * La caché se hizo con el preproceso pedido y, si es la restauración, con la versión vigente de sus reglas y, si se da `huella`, con el
+ * `mayusculas.ts` vigente (la caché sin huella, la del experimento, no la cumple).
+ */
+const mismoPreproceso = (c: CacheVista, p: Preproceso, huella?: string): boolean =>
+  preprocesoDe(c) === p && (p === 'ninguno' || (c.preproceso?.version === VERSION_RESTAURAR && (huella === undefined || c.preproceso?.huella === huella)));
 
 /**
  * PF-3-r1 · índice de salidas por texto de entrada al modelo: `<etiquetas>|<sha256 de la entrada>` → ventanas. Una parte cuyo texto
@@ -433,12 +357,14 @@ const mismoPreproceso = (c: CacheVista, p: Preproceso): boolean => preprocesoDe(
  * ventanas (el motor es determinista: T-AB-06 reproduce con diferencia 0), así que se copia sin volver a pasarla.
  */
 export function indiceDeEntradas(
-  caches: ReadonlyArray<CacheVista>, textos: Record<string, ParteTexto[]>, onnx: string, codigo: string,
+  caches: ReadonlyArray<CacheVista>, textos: Record<string, ParteTexto[]>, onnx: string, codigo: string, huellaPreproceso?: string,
 ): Map<string, VentanaCache[]> {
   const indice = new Map<string, VentanaCache[]>();
   for (const c of caches) {
     if (c.huella.onnx !== onnx || c.huella.codigo !== codigo) continue;
     if (preprocesoDe(c) !== 'ninguno' && c.preproceso?.version !== VERSION_RESTAURAR) continue;
+    // Una caché con la huella de `mayusculas.ts` de otra versión del código no vale; las del experimento (sin huella) valen por su versión.
+    if (huellaPreproceso !== undefined && c.preproceso?.huella !== undefined && c.preproceso.huella !== huellaPreproceso) continue;
     const etiquetas = c.etiquetas ?? 'estandar';
     for (const [id, d] of Object.entries(c.documentos)) {
       for (const p of textos[id] ?? []) {
@@ -632,8 +558,9 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
   const salida = resolve(raiz, arg(a, 'salida', archivoVistasDe(modelo)));
   const etiquetas = parseEtiquetas(a);
   const preproceso = parsePreproceso(a);
-  // Las variantes de PF-3-r1 van a su propio archivo de experimento: nunca sobre la caché que mide `npm run medir`.
-  if ((etiquetas !== 'estandar' || preproceso !== 'ninguno') && salida === resolve(raiz, archivoVistasDe(modelo))) throw new Error('una variante de experimento necesita --salida propia');
+  // Las variantes de PF-3-r1 van a su propio archivo de experimento: la caché que mide `npm run medir` es la del producto (PF-3-r1b).
+  if ((etiquetas !== 'estandar' || preproceso !== PREPROCESO_PRODUCTO) && salida === resolve(raiz, archivoVistasDe(modelo))) throw new Error('una variante de experimento necesita --salida propia');
+  const huellaPre = huellaMayusculas(raiz);
   const { ids, textos, carpeta } = cargarContexto(raiz, a);
   const huellaCodigo = huellaMotor(raiz);
   const liberarCandado = await tomarCandado(raiz, arg(a, 'quien', `evaluar-modelo pasada ${modelo}`));
@@ -646,7 +573,7 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
     const fuentes = (a.get('reutilizar') ?? '').split(',').filter((r) => r !== '').map((r) => leerArchivoVistas(resolve(raiz, r), modelo));
     const indice = indiceDeEntradas(
       [archivo, ...fuentes].flatMap((f) => Object.values(f.vistas)).filter((c): c is CacheVista => c !== undefined),
-      textos, arnes.manifiesto.sha256, huellaCodigo,
+      textos, arnes.manifiesto.sha256, huellaCodigo, huellaPre,
     );
     for (const vista of vistas) {
       const previa = archivo.vistas[vista];
@@ -654,7 +581,7 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
         log(`la caché de ${vista} del archivo es de otro ONNX o de otro código del motor: la descarto`);
         delete archivo.vistas[vista];
       }
-      if (previa !== undefined && archivo.vistas[vista] !== undefined && ((previa.etiquetas ?? 'estandar') !== etiquetas || !mismoPreproceso(previa, preproceso))) {
+      if (previa !== undefined && archivo.vistas[vista] !== undefined && ((previa.etiquetas ?? 'estandar') !== etiquetas || !mismoPreproceso(previa, preproceso, huellaPre))) {
         log(`la caché de ${vista} del archivo es de otras etiquetas o de otro preproceso: la descarto`);
         delete archivo.vistas[vista];
       }
@@ -666,9 +593,10 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
         return d !== undefined && ps.every((p) => d.partes[p.clave]?.sha256 === sha256Texto(p.texto)) && Object.keys(d.partes).length === ps.length;
       };
       for (const id of Object.keys(documentos)) if (!ids.includes(id) || !vigente(id)) { delete documentos[id]; delete procedencia[id]; }
-      if (vista === 'natural' && etiquetas === 'estandar' && preproceso === 'ninguno' && existsSync(resolve(raiz, archivoNaturalPf3De(modelo))) && !a.has('sin-pf3')) {
+      if (vista === 'natural' && etiquetas === 'estandar' && existsSync(resolve(raiz, archivoNaturalPf3De(modelo))) && !a.has('sin-pf3')) {
         const base = JSON.parse(readFileSync(resolve(raiz, archivoNaturalPf3De(modelo)), 'utf8')) as CachePF3;
-        const { documentos: reus, reutilizados } = reutilizarNatural(base, textos, ids.filter((id) => documentos[id] === undefined), arnes.manifiesto.sha256, huellaCodigo, modelo);
+        const { documentos: reus, reutilizados } = reutilizarNatural(base, textos, ids.filter((id) => documentos[id] === undefined), arnes.manifiesto.sha256, huellaCodigo, modelo,
+          (texto) => entradaModelo(texto, 'natural', preproceso) === texto);
         for (const id of reutilizados) { documentos[id] = reus[id] as DocumentoCache; procedencia[id] = 'PF-3'; }
         if (reutilizados.length > 0) log(`natural: ${reutilizados.length} documentos reutilizados de PF-3 (${reutilizados.join(' ')})`);
       }
@@ -688,7 +616,7 @@ async function ordenPasada(raiz: string, a: Map<string, string>): Promise<void> 
           },
           documentos: Object.fromEntries(conocidos.map((id) => [id, documentos[id] as DocumentoCache])),
           ...(Object.keys(procedencia).length > 0 ? { procedencia } : {}),
-          ...(preproceso === 'ninguno' ? {} : { preproceso: { id: preproceso, version: VERSION_RESTAURAR } }),
+          ...(preproceso === 'ninguno' ? {} : { preproceso: { id: preproceso, version: VERSION_RESTAURAR, huella: huellaPre } }),
           ...(reutilizadas > 0 ? { partesReutilizadas: reutilizadas } : {}),
         };
         archivo.vistas[vista] = cuerpo;
@@ -727,7 +655,7 @@ async function ordenVerificar(raiz: string, a: Map<string, string>): Promise<voi
   const hilos = Number(arg(a, 'hilos', '8'));
   const solape = Number(arg(a, 'solape', '37'));
   const modelo = parseModelo(a);
-  const vistas = parseVistas(arg(a, 'vistas', 'natural,mayusculas'));
+  const vistas = parseVistas(arg(a, 'vistas', 'natural,mayusculas,minusculas'));
   const salida = resolve(raiz, arg(a, 'salida', archivoVistasDe(modelo)));
   const docsArg = a.get('docs');
   const docs = docsArg === undefined || docsArg === '' ? [...DOCUMENTOS_T_AB_06] : docsArg.split(',');
@@ -745,7 +673,8 @@ async function ordenVerificar(raiz: string, a: Map<string, string>): Promise<voi
       if (cache === undefined) throw new Error(`la caché de la vista ${vista} no existe en ${salida}`);
       const nueva: Record<string, DocumentoCache> = {};
       for (const id of docs) {
-        const r = await pasarDocumento(sesion, textos[id] as ParteTexto[], vista, solape);
+        // Con las mismas etiquetas y el mismo preproceso con que se hizo la caché (PF-3-r1b: el del producto).
+        const r = await pasarDocumento(sesion, textos[id] as ParteTexto[], vista, solape, { etiquetas: cache.etiquetas === 'traducidas' ? 'traducidas' : 'estandar', preproceso: preprocesoDe(cache) });
         nueva[id] = r.doc;
         log(`${vista} ${id}: ${r.ventanas} ventanas nuevas, ${Math.round(r.ms / 100) / 10} s`);
       }
@@ -755,9 +684,11 @@ async function ordenVerificar(raiz: string, a: Map<string, string>): Promise<voi
     }
     const huellasCoinciden = vistas.every((v) => archivo.vistas[v]?.huella.codigo === huellaCodigo);
     const onnxCoincide = vistas.every((v) => archivo.vistas[v]?.huella.onnx === arnes.manifiesto.sha256);
+    const huellaPre = huellaMayusculas(raiz);
+    const preprocesoCoincide = vistas.every((v) => { const c = archivo.vistas[v]; return c !== undefined && mismoPreproceso(c, preprocesoDe(c), preprocesoDe(c) === 'ninguno' ? undefined : huellaPre); });
     const verificacion: Verificacion = {
-      fecha: ahora(), tolerancia: TOLERANCIA_PUNTAJE, huellaMotorCoincide: huellasCoinciden, huellaOnnxCoincide: onnxCoincide,
-      resultados, ok: huellasCoinciden && onnxCoincide && resultados.every((r) => r.ok),
+      fecha: ahora(), tolerancia: TOLERANCIA_PUNTAJE, huellaMotorCoincide: huellasCoinciden, huellaOnnxCoincide: onnxCoincide, huellaPreprocesoCoincide: preprocesoCoincide,
+      resultados, ok: huellasCoinciden && onnxCoincide && preprocesoCoincide && resultados.every((r) => r.ok),
     };
     archivo.verificacion = verificacion;
     escribirJson(salida, archivo);

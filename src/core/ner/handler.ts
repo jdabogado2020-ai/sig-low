@@ -11,6 +11,7 @@
 
 import { codigoDeError } from './gliner/errors';
 import { esManifiesto } from './manifest';
+import { restaurarMayusculas } from './mayusculas';
 import {
   SiglowError,
   type ErrorCode,
@@ -110,13 +111,15 @@ export function crearManejadorNer(deps: NerHandlerDeps): (data: unknown) => void
       const m = motor;
       if (!m) throw new SiglowError('MODELO_NO_DESCARGADO');
       const t0 = now();
-      const total = partes.reduce((s, p) => s + m.planWindows(p.text, opciones), 0);
+      // PF-3-r1b: al modelo le llega el texto con los párrafos enteros en MAYÚSCULAS o minúsculas restaurados (misma longitud: los tramos valen en el canónico, INV-W04).
+      const textos = partes.map((p) => restaurarMayusculas(p.text));
+      const total = textos.reduce((s, t) => s + m.planWindows(t, opciones), 0);
       deps.post({ v: 1, reqId, kind: 'progreso', stage: 'modelo', done: 0, total, unit: 'ventanas' });
       let hechas = 0;
       let ultimo = now();
-      for (const parte of partes) {
+      for (const [i, parte] of partes.entries()) {
         if (signal.aborted) return false;
-        await m.detect(parte.text, opciones, signal, (w) => {
+        await m.detect(textos[i] as string, opciones, signal, (w) => {
           if (signal.aborted) return; // INV-W08: tras cancelar no sale otro parcial
           hechas += 1;
           const spans: NerSpan[] = w.spans;
