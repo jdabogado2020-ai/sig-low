@@ -302,13 +302,49 @@ function esDeUnaPalabra(c: MergedCandidate, text: string): boolean {
  * de la lista) dentro de «barrio Altos del Ejemplo», o la razón social dentro del dominio de un correo, ya no parte la regla, y
  * todo el tramo queda reemplazado con el marcador de la regla. Una detección de la lista más larga o igual a la regla, o de varias
  * palabras, conserva su precedencia (2). En la fusión por ventana se aplica a los candidatos nuevos; lo ya fusionado no cambia.
+ *
+ * B-61 (PB-2-r7): la absorción se decide al colocar, en el paso 4b, y no antes. Aquí solo se aparta cada detección absorbible
+ * (`tras`: la detección de la lista → sus reglas estructurales), para que no entre en el paso 2 y para colocarla justo detrás de la
+ * última de esas reglas (`detrasDeSuRegla`). Si la regla entra entera, 4b absorbe la palabra; si un candidato de mayor prioridad la
+ * parte, la palabra se coloca como cualquier detección de la lista y no queda a la vista.
  */
-function absorberEnEstructurales(work: MergedCandidate[], part: Part): MergedCandidate[] {
+function apartarAbsorbibles(work: MergedCandidate[], part: Part): { resto: MergedCandidate[]; tras: Map<MergedCandidate, MergedCandidate[]> } {
   const text = part.text;
+  const tras = new Map<MergedCandidate, MergedCandidate[]>();
   const reglas = work.filter(esEstructural);
-  if (reglas.length === 0) return work;
-  return work.filter((L) => !(esDeUnaPalabra(L, text)
-    && reglas.some((R) => R.start <= L.start && L.end <= R.end && L.end - L.start < R.end - R.start)));
+  if (reglas.length === 0) return { resto: work, tras };
+  for (const L of work) {
+    if (!esDeUnaPalabra(L, text)) continue;
+    const suyas = reglas.filter((R) => R.start <= L.start && L.end <= R.end && L.end - L.start < R.end - R.start);
+    if (suyas.length > 0) tras.set(L, suyas);
+  }
+  return { resto: tras.size === 0 ? work : work.filter((c) => !tras.has(c)), tras };
+}
+
+/**
+ * B-61 · Inserta cada detección apartada justo detrás de la última de sus reglas en el orden de prioridad de `ordenado` (paso 3):
+ * cuando le toca, todas las reglas que la contienen ya se colocaron. Las de una misma regla, en su orden de prioridad.
+ */
+function detrasDeSuRegla(ordenado: MergedCandidate[], tras: ReadonlyMap<MergedCandidate, readonly MergedCandidate[]>): MergedCandidate[] {
+  if (tras.size === 0) return ordenado;
+  const pos = new Map<MergedCandidate, number>(ordenado.map((c, i) => [c, i]));
+  const detras = new Map<MergedCandidate, MergedCandidate[]>();
+  const sueltas: MergedCandidate[] = [];
+  for (const L of [...tras.keys()].sort(byPriority)) {
+    let ultima: MergedCandidate | undefined;
+    for (const R of tras.get(L) ?? []) if (pos.has(R) && (ultima === undefined || (pos.get(R) as number) > (pos.get(ultima) as number))) ultima = R;
+    const l = ultima === undefined ? undefined : detras.get(ultima);
+    if (ultima === undefined) sueltas.push(L);
+    else if (l === undefined) detras.set(ultima, [L]); else l.push(L);
+  }
+  const out: MergedCandidate[] = [];
+  for (const c of ordenado) {
+    out.push(c);
+    const l = detras.get(c);
+    if (l !== undefined) out.push(...l);
+  }
+  // Una regla que ya no está (no pasa: el paso 2 solo retira candidatos de la lista y del modelo): la detección va al final.
+  return [...out, ...sueltas];
 }
 
 /** Paso 1 · R-MRG-01: VALOR + VALOR o FECHA + FECHA con la misma clave, separados solo por « (» o uno dentro del otro (PA-6-r1). */
@@ -527,13 +563,15 @@ export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[]
   let work = normalize(part, cands);
   // 1. Unir por paréntesis (R-MRG-01).
   work = joinParen(work, part);
-  // D-06 decisión 5: la lista de una sola palabra estrictamente dentro de una regla estructural se absorbe en ella.
-  work = absorberEnEstructurales(work, part);
+  // D-06 decisión 5: la lista de una sola palabra estrictamente dentro de una regla estructural se aparta del paso 2 y se coloca
+  // justo detrás de su regla, que la absorbe en 4b si entra entera (B-61).
+  const { resto, tras } = apartarAbsorbibles(work, part);
   // 2. Extender la lista con el modelo, después de que la variante débil de otra entidad ceda (D-03 B).
-  work = cederVariantesDebiles(work, part, esVariante);
+  work = cederVariantesDebiles(resto, part, esVariante);
   work = extendWithModel(work, part);
   // 3. Ordenar.
   work.sort(byPriority);
+  work = detrasDeSuRegla(work, tras);
   // 4. Colocar en orden.
   const accepted = place(part, work, [], rules);
   // 5. Devolver ordenado por inicio.
@@ -557,8 +595,9 @@ export function mergeIntoFused(part: Part, fused: readonly MergedCandidate[], ca
   let fixed = fused.filter((c) => c.partId === part.id).map((c) => ({ ...c }));
   let work = normalize(part, cands);
   work = joinParen(work, part);
-  // D-06 decisión 5 entre los candidatos nuevos (lo ya fusionado no se toca: INV-R12).
-  work = absorberEnEstructurales(work, part);
+  // D-06 decisión 5 entre los candidatos nuevos (lo ya fusionado no se toca: INV-R12), decidida al colocar (B-61).
+  const { resto, tras } = apartarAbsorbibles(work, part);
+  work = resto;
   work.sort(byPriority);
   // Paso 2 por ventana (D-03 B y E), del tramo del modelo de mayor prioridad al de menor.
   const tomados = new Set<MergedCandidate>();
@@ -570,6 +609,6 @@ export function mergeIntoFused(part: Part, fused: readonly MergedCandidate[], ca
     fixed = fixed.filter((c) => !fuera.has(c));
     if (plan.kind === 'extender') { fixed.push(finish(extension(M, plan.propias), part.text)); tomados.add(M); }
   }
-  work = work.filter((c) => !tomados.has(c));
+  work = detrasDeSuRegla(work.filter((c) => !tomados.has(c)), tras);
   return [...fixed, ...place(part, work, fixed, rules)].sort(byStart);
 }

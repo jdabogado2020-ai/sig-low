@@ -960,6 +960,44 @@ describe('T-MO-05 · D-06 decisión 5: la lista de una sola palabra dentro de un
   });
 });
 
+describe('T-MO-05 · B-61: la absorción de D-06 se decide al colocar, en el paso 4b (7.11.1, PB-2-r7)', () => {
+  const persona = (t: string, sub: string, cas: CaseEntityId, variantClass: DetectionCandidate['variantClass']): DetectionCandidate =>
+    mk(t, sub, { type: 'PERSONA', source: 'lista', caseEntityId: cas, variantClass, role: cas === CAS_A ? 'DEMANDANTE' : 'DEMANDADO',
+      canonicalKey: `LISTA:${cas}` });
+  const T = 'Vive en el barrio Villa Prueba de Ana Ficticia Rojas desde 2020.';
+  const barrio = mk(T, 'Villa Prueba de Ana Ficticia', { type: 'BARRIO', ...r4, ruleId: 'R-BAR-01', confidence: 'alta',
+    canonicalKey: 'BARRIO:villa prueba de ana ficticia' });
+  const cands = (): DetectionCandidate[] => [barrio, persona(T, 'Ana Ficticia Rojas', CAS_A, 'exacta'), persona(T, 'Prueba', CAS_B, 'apellido_suelto')];
+
+  it('INV-R02 si un candidato de mayor prioridad parte la regla, la palabra de la lista que absorbía se coloca y no queda a la vista', () => {
+    // El nombre de varias palabras (precedencia 2) solapa el final del barrio: el barrio se parte y su resto sin dígitos se descarta.
+    // Con el código anterior la absorción se decidía antes de colocar: «Prueba» desaparecía con el barrio y quedaba a la vista.
+    const part = mkPart(T);
+    const out = mergeCandidates(part, cands(), NO_RULES);
+    assertInvariants(part, out);
+    expect(show(T, out)).toEqual(['PERSONA:«Prueba»:media', 'PERSONA:«Ana Ficticia Rojas»:media']);
+    // Por ventana, entre los candidatos nuevos, lo mismo.
+    expect(show(T, mergeIntoFused(part, [], cands(), NO_RULES))).toEqual(['PERSONA:«Prueba»:media', 'PERSONA:«Ana Ficticia Rojas»:media']);
+  });
+
+  it('INV-R02 si la regla entra entera, 4b absorbe la palabra como antes (D-06), en cualquier orden de llegada', () => {
+    const t = 'Vive en el barrio Villa Prueba de la Sierra desde 2020; Ana Ficticia Rojas firmó.';
+    const bar = mk(t, 'Villa Prueba de la Sierra', { type: 'BARRIO', ...r4, ruleId: 'R-BAR-01', confidence: 'alta', canonicalKey: 'BARRIO:v' });
+    const xs = [bar, persona(t, 'Prueba', CAS_B, 'apellido_suelto'), persona(t, 'Ana Ficticia Rojas', CAS_A, 'exacta')];
+    const esperado = ['BARRIO:«Villa Prueba de la Sierra»:alta', 'PERSONA:«Ana Ficticia Rojas»:media'];
+    expect(show(t, run(t, xs))).toEqual(esperado);
+    expect(show(t, run(t, [...xs].reverse()))).toEqual(esperado);
+  });
+
+  it('INV-R02 la palabra dentro de dos reglas estructurales se coloca detrás de la última: la absorbe la que entra entera', () => {
+    const t = 'Consta en el registro VSE-PRUEBA-000123 del asunto.';
+    const afil = mk(t, 'VSE-PRUEBA-000123', { type: 'AFILIACION', ...r4, canonicalKey: 'AFIL:x' });
+    const rad = mk(t, 'VSE-PRUEBA-000123', { type: 'RADICADO_ADMIN', ...r5, canonicalKey: 'RAD:x' });
+    const out = run(t, [persona(t, 'PRUEBA', CAS_B, 'apellido_suelto'), rad, afil]);
+    expect(show(t, out)).toEqual(['AFILIACION:«VSE-PRUEBA-000123»:media']);
+  });
+});
+
 describe('T-MO-05 · el punto que completa el sufijo societario de un tramo ORG (D-03 A, hallazgo de PF-3-r1; PB-2-r6)', () => {
   const fin = (t: string, sub: string): string => {
     const s = t.indexOf(sub);
