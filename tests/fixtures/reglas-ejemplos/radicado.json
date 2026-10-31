@@ -514,6 +514,14 @@
       "nota": "PB-2-r6: el expediente del propio caso («de la referencia») se sigue tomando aunque la línea cite una sentencia"
     },
     {
+      "texto": "Expediente T-9.000.001 (sentencia T-760 de 2008)",
+      "reglas": ["R-RAD_ADMIN-03"],
+      "esperado": [
+        { "type": "RADICADO_ADMIN", "texto": "T-9.000.001", "ruleId": "R-RAD_ADMIN-03", "confidence": "media", "canonicalKey": "RAD:T9000001" }
+      ],
+      "nota": "PB-2-r6: caso de integración del laboratorio 07a; el rótulo del propio caso justo antes (OWN_CASE de R-CIT-01) gana a la sentencia"
+    },
+    {
       "texto": "Expediente D-99.001",
       "reglas": ["R-RAD_ADMIN-03"],
       "esperado": [
