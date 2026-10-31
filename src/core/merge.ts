@@ -402,12 +402,24 @@ function nerLabelOf(c: MergedCandidate): NerLabel | undefined {
   return ORG_SET.has(c.type) ? 'ORG' : undefined;
 }
 /** Lo que el modelo agrega: vacío, o solo palabras con mayúscula inicial que no son de función ni tratamientos,
- *  sin signos salvo guion. */
+ *  sin signos salvo guion. Las partículas de 7.9.2 («de», «del», «de la», «de las», «de los») que se pegan a la palabra de nombre
+ *  siguiente son parte del apellido, no palabras de función (D-12, C29: «CATALINA PRUEBA DEL VALLE» de «Catalina Prueba»). */
 function onlyNameWords(extra: string, kind: PartKind): boolean {
   if (extra === '') return true;
   if (RE_NOT_NAME_CHAR.test(extra)) return false;
   const words = extra.split(RE_NAME_SPLIT).filter((w) => w !== '');
-  return words.length > 0 && words.every((w) => RE_UPPER_INITIAL.test(w) && !NAME_STOP.has(fold(w, kind)));
+  let particula = false;
+  let previa = '';
+  for (const w of words) {
+    const f = fold(w, kind);
+    if (f === 'de' || f === 'del' || (previa === 'de' && (f === 'la' || f === 'las' || f === 'los'))) {
+      particula = true; previa = f;
+      continue;
+    }
+    if (!RE_UPPER_INITIAL.test(w) || NAME_STOP.has(f)) return false;
+    particula = false; previa = f;
+  }
+  return words.length > 0 && !particula;
 }
 
 /**

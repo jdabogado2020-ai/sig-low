@@ -346,10 +346,21 @@ describe('T-MO-05 · bordes entre la lista y un tramo extendido por el modelo (7
   });
 
   it('INV-R02 no extiende con palabra de función, cifra, signo ni tratamiento; el resto sigue 7.11.2', () => {
-    let t = 'Ana Ficticia Rojas de Prueba declaró';
-    let out = run(t, [lista(t, 'Ana Ficticia Rojas'), per(t, 'Ana Ficticia Rojas de Prueba')]);
+    let t = 'Ana Ficticia Rojas y Prueba declaró';
+    let out = run(t, [lista(t, 'Ana Ficticia Rojas'), per(t, 'Ana Ficticia Rojas y Prueba')]);
     expect(show(t, out)).toEqual(['PERSONA:«Ana Ficticia Rojas»:alta', 'PERSONA:«Prueba»:baja']);
     expect(out[1]).toMatchObject({ source: 'modelo', canonicalKey: 'PER:prueba', score: 0.7 });
+    // PB-3-r1 (D-12, C29) · Las partículas de 7.9.2 pegadas a una palabra de nombre son parte del apellido: sí extienden.
+    // Sueltas al final, no («de» sin palabra de nombre detrás es palabra de función).
+    t = 'Ana Ficticia Rojas de Prueba declaró';
+    expect(show(t, run(t, [lista(t, 'Ana Ficticia Rojas'), per(t, 'Ana Ficticia Rojas de Prueba')])))
+      .toEqual(['PERSONA:«Ana Ficticia Rojas de Prueba»:media:extendido']);
+    t = 'ANA FICTICIA DE LA PRUEBA declaró';
+    expect(show(t, run(t, [lista(t, 'ANA FICTICIA'), per(t, 'ANA FICTICIA DE LA PRUEBA')])))
+      .toEqual(['PERSONA:«ANA FICTICIA DE LA PRUEBA»:media:extendido']);
+    t = 'Ana Ficticia Rojas de prueba declaró';
+    expect(show(t, run(t, [lista(t, 'Ana Ficticia Rojas'), per(t, 'Ana Ficticia Rojas de prueba')])))
+      .toEqual(['PERSONA:«Ana Ficticia Rojas»:alta']);
     t = 'Ana Ficticia Rojas 2 declaró';
     expect(show(t, run(t, [lista(t, 'Ana Ficticia Rojas'), per(t, 'Ana Ficticia Rojas 2')]))).toEqual(['PERSONA:«Ana Ficticia Rojas»:alta']);
     t = 'Ana Ficticia Rojas, Prueba declaró';
