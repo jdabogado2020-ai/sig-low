@@ -562,7 +562,8 @@ export function edadEnLetras(frase: string): number | null {
 
 interface EdadRx { re: RegExp }
 let edadRx: EdadRx | null = null;
-function getEdadRegex(): RegExp {
+/** R-EDAD-01 (7.5.6), con banderas `gdiu`. Exportada para la prueba de tiempo de M-14, que la mide sola, sin el resto de `generalize`. */
+export function getEdadRegex(): RegExp {
   if (edadRx) return edadRx.re;
   const NW = alt(AGE_WORDS_SRC) + '(?!\\p{L})';
   const NUMPH = `${NW}(?:${H}+(?:y${H}+)?${NW})*`;

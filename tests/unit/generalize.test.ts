@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   DIVIPOLA, buildDivipolaIndex, candidateFromLoc, departamentoPorNombre, departamentosDeRadicados, detectPlaces, edadCumplida, edadEnLetras, esCapital,
-  despachoDesdeTramo, formasDeNombre, generalize, getDivipolaIndex, isCitation, mesYAnioDeClave, municipiosPorNombre, nombreDepartamento, prioridadDe, rangoDeEdad, resolvePlace,
+  despachoDesdeTramo, formasDeNombre, generalize, getDivipolaIndex, getEdadRegex, isCitation, mesYAnioDeClave, municipiosPorNombre, nombreDepartamento, prioridadDe, rangoDeEdad, resolvePlace,
 } from '../../src/core/generalize.ts';
 import { esContextoDeCita } from '../../src/core/rules/exclusiones.ts';
 import type { GenDetection, GeneralizeInput, GeneralizeResult } from '../../src/core/generalize.ts';
@@ -1277,14 +1277,14 @@ describe('R-EDAD-01 · edad explícita (G-06)', () => {
       ['«más de» con 8 tabuladores, repetido', ('más' + '\t'.repeat(8) + 'de' + '\t'.repeat(8) + '1 año ').repeat(N / 26)],
     ];
     correr('tiene 30 años', [], { sinLugares: true });   // construye los patrones antes de medir
+    const re = getEdadRegex();
+    const recorrer = (t: string): number => { re.lastIndex = 0; let k = 0; while (re.exec(t) !== null) { k++; if (re.lastIndex === 0) break; } return k; };
+    const mejorDe3 = (f: () => unknown): number => Math.min(...[0, 1, 2].map(() => { const t0 = performance.now(); f(); return performance.now() - t0; }));
     for (const [nombre, t] of hostiles) {
-      let mejor = Infinity;
-      for (let i = 0; i < 3; i++) {
-        const t0 = performance.now();
-        generalize({ part: { id: PID, text: t }, detections: [], options: { referenceDate: REF }, ids: makeIds() });
-        mejor = Math.min(mejor, performance.now() - t0);
-      }
-      expect(mejor, nombre).toBeLessThan(200);
+      // La expresión sola (aislada, menos de 10 ms); y `generalize` entero, que recorre además los otros patrones (unos 70 ms
+      // aislado), con un tope que aguanta dos `verify` en paralelo: con el lookbehind sin tope tardaba minutos.
+      expect(mejorDe3(() => recorrer(t)), nombre).toBeLessThan(200);
+      expect(mejorDe3(() => generalize({ part: { id: PID, text: t }, detections: [], options: { referenceDate: REF }, ids: makeIds() })), nombre).toBeLessThan(2000);
     }
     for (const sep of ['\t', '\t'.repeat(8), ' \t \t']) {
       expect(sugDe(correr(`tiene más${sep}de${sep}30 años de edad`, [], { sinLugares: true }).res, 'EDAD_A_RANGO'), JSON.stringify(sep)).toEqual([]);
