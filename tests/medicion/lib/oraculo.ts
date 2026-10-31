@@ -107,9 +107,16 @@ export async function revisarConOraculo(a: ArgsOraculo): Promise<ResultadoOracul
     dc.gold.anotaciones.some((g) => g.debe_generalizarse && claveParte(g.parte) === dc.claveDe.get(s.partId) && solapa(g, s));
 
   decidirPendientes();
-  // Banderas: la cita se mantiene (rechaza el radicado vinculado); con gold `debe_generalizarse` sobre su tramo se reemplaza con 'o1'.
+  // Banderas: la cita se mantiene (rechaza el radicado vinculado), salvo que el gold marque ese expediente como dato positivo del
+  // propio caso (7.3.3: quien sigue la guía lo conserva anonimizado; PB-2-r7, A-1): entonces se resuelve como «reemplazar», que
+  // acepta la detección vinculada. Con gold `debe_generalizarse` sobre su tramo, las demás banderas se reemplazan con 'o1'.
   for (const f of Object.values(st.flags)) {
-    if (f.type === 'CITA_JURISPRUDENCIAL') { act({ kind: 'resolver_bandera', flagId: f.id, resolution: 'mantener' }); continue; }
+    if (f.type === 'CITA_JURISPRUDENCIAL') {
+      const vinculada = f.detectionId === undefined ? undefined : st.detections[f.detectionId];
+      const propio = vinculada !== undefined && verdadera(vinculada);
+      act({ kind: 'resolver_bandera', flagId: f.id, resolution: propio ? 'reemplazar' : 'mantener' });
+      continue;
+    }
     if (generaliza({ ...f.span })) {
       const ok = act({ kind: 'resolver_bandera', flagId: f.id, resolution: 'reemplazar', optionId: 'o1' }, true);
       if (!ok) act({ kind: 'resolver_bandera', flagId: f.id, resolution: 'mantener' });
