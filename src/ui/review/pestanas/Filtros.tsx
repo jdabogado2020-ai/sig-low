@@ -14,8 +14,9 @@ const FUENTES: readonly DetectionSource[] = ['manual', 'lista', 'regla', 'modelo
 export function Filtros() {
   const f = useFiltros();
   return (
-    <fieldset class="filtros-revision" data-prueba="filtros">
-      <legend>{tp('M-1440')}</legend>
+    <details class="filtros-revision" data-prueba="filtros">
+      <summary>{tp('M-1440')}</summary>
+      <div class="filtros-campos">
       <Seleccion
         etiqueta={tp('M-1441')}
         valor={f.categoria}
@@ -46,6 +47,7 @@ export function Filtros() {
           {tp('M-1448')}
         </button>
       ) : null}
-    </fieldset>
+      </div>
+    </details>
   );
 }

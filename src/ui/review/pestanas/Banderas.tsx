@@ -8,7 +8,7 @@ import { atributosDeContenido, useIdNeutro } from '../../campos.tsx';
 import { etiqueta, mensajeDeCodigo, ROTULOS, t } from '../../mensajes.ts';
 import { anunciar, despachar, limpiarError, useRevisionUi } from '../base/almacen.ts';
 import { nombreDeTipo } from '../base/presentacion.ts';
-import { compararPosiciones, Contexto, IrALaUbicacion, posicionDe, useFocoDeTarjeta } from './comunes.tsx';
+import { compararPosiciones, Contexto, IrALaUbicacion, posicionDe, Radio, useFocoDeTarjeta } from './comunes.tsx';
 import { tp } from './textos.ts';
 
 export const sinConfirmar = (state: ReviewState): number => Object.values(state.flags).filter((f) => !f.acknowledged).length;
@@ -101,10 +101,7 @@ function Tarjeta({ f, i, n, doc, state }: { f: Flag; i: number; n: number; doc: 
             <fieldset class="grupo">
               <legend>{tp('M-1417')}</legend>
               {propias.map((o) => (
-                <label key={o.id} class="opcion">
-                  <input type="radio" name={nombre} value={o.id} checked={opcion === o.id && texto === ''} onChange={() => { setOpcion(o.id); setTexto(''); }} />
-                  {' '}{o.template}
-                </label>
+                <Radio key={o.id} grupo={nombre} valor={o.id} marcado={opcion === o.id && texto === ''} onCambio={() => { setOpcion(o.id); setTexto(''); }}>{o.template}</Radio>
               ))}
             </fieldset>
           ) : null}

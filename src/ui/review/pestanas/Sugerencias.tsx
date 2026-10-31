@@ -7,7 +7,7 @@ import type { DocumentModel, ReviewState, Suggestion, SuggestionId } from '../..
 import { useIdNeutro } from '../../campos.tsx';
 import { etiqueta, mensajeDeCodigo, ROTULOS, t } from '../../mensajes.ts';
 import { anunciar, despachar, limpiarError, useRevisionUi } from '../base/almacen.ts';
-import { compararPosiciones, Contexto, IrALaUbicacion, posicionDe, tramoDeSugerencia, useFocoDeTarjeta } from './comunes.tsx';
+import { compararPosiciones, Contexto, IrALaUbicacion, posicionDe, Radio, tramoDeSugerencia, useFocoDeTarjeta } from './comunes.tsx';
 import { tp } from './textos.ts';
 
 /** Departamentos de la DIVIPOLA (DANE) por código, para las opciones de un municipio homónimo. */
@@ -88,20 +88,16 @@ function Tarjeta({ s, i, n, doc, state }: { s: Suggestion; i: number; n: number;
         <fieldset class="grupo">
           <legend>{t('M-127')}</legend>
           {(s.placeOptions ?? []).map((codigo) => (
-            <label key={codigo} class="opcion">
-              <input type="radio" name={`${nombre}d`} value={codigo} checked={dep === codigo} onChange={() => { setDep(codigo); setError(null); }} />
-              {' '}{nombreDeDepartamento(codigo)}
-            </label>
+            <Radio key={codigo} grupo={`${nombre}d`} valor={codigo} marcado={dep === codigo} onCambio={() => { setDep(codigo); setError(null); }}>{nombreDeDepartamento(codigo)}</Radio>
           ))}
         </fieldset>
       ) : null}
       <fieldset class="grupo">
         <legend>{tp('M-1406')}</legend>
         {s.options.map((o) => (
-          <label key={o.id} class="opcion">
-            <input type="radio" name={`${nombre}o`} value={o.id} checked={elegida === o.id} onChange={() => { setOpcion(o.id); }} />
-            {' '}{verOpcion(o.template)}{o.depCode !== undefined ? ` (${nombreDeDepartamento(o.depCode)})` : ''}
-          </label>
+          <Radio key={o.id} grupo={`${nombre}o`} valor={o.id} marcado={elegida === o.id} onCambio={() => { setOpcion(o.id); }}>
+            {verOpcion(o.template)}{o.depCode !== undefined ? ` (${nombreDeDepartamento(o.depCode)})` : ''}
+          </Radio>
         ))}
       </fieldset>
       {error !== null ? <p class="error-campo" role="alert">{error}</p> : null}

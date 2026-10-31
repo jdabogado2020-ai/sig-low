@@ -1,7 +1,8 @@
 // Piezas comunes de las pestañas «Sugerencias de generalización» y «Revisión manual (banderas)» (PC-4, 8.2.6).
+import type { ComponentChildren } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import type { DocumentModel, Part, ReviewState, Span } from '../../../core/types.ts';
-import { atributosDeContenedor } from '../../campos.tsx';
+import { atributosDeContenedor, useIdNeutro } from '../../campos.tsx';
 import { ROTULOS, t } from '../../mensajes.ts';
 import { consumirFocoDeTarjeta, irAUbicacion, useLateral } from './herramientas.ts';
 
@@ -56,4 +57,15 @@ export function useFocoDeTarjeta(tipo: 'sug' | 'ban', id: string) {
     consumirFocoDeTarjeta(foco.n);
   }, [foco, tipo, id]);
   return ref;
+}
+
+/** Radio con `id` neutro (c1, c2…): 8.7 pide ids sin palabras del contenido; el grupo comparte un `name` neutro. */
+export function Radio(p: { grupo: string; valor: string; marcado: boolean; onCambio: () => void; children: ComponentChildren }) {
+  const id = useIdNeutro();
+  return (
+    <label class="opcion" for={id}>
+      <input id={id} type="radio" name={p.grupo} value={p.valor} checked={p.marcado} onChange={p.onCambio} />
+      {' '}{p.children}
+    </label>
+  );
 }

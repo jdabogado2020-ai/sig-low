@@ -25,12 +25,14 @@
 .progreso-revision button[aria-disabled='true'] { opacity: 0.65; cursor: not-allowed; }
 .herramientas-revision { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.5rem 1rem; align-items: start; }
 @media (max-width: 56.25rem) { .herramientas-revision { grid-template-columns: minmax(0, 1fr); } }
-.busqueda-revision .fila, .filtros-revision { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.busqueda-revision .fila, .filtros-campos { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
 .busqueda-revision input { flex: 1 1 12rem; min-inline-size: 8rem; }
 .estado-busqueda { min-inline-size: 5rem; }
 .filtros-revision { border: 1px solid var(--sl-borde-suave); border-radius: 0.5rem; padding: 0.4rem 0.75rem; margin: 0; }
-.filtros-revision .campo { flex: 1 1 9rem; margin: 0.2rem 0; }
-.filtros-revision .ayuda { flex: 1 0 100%; margin: 0; }
+.filtros-revision summary { cursor: pointer; font-weight: 600; }
+.filtros-campos { margin-block-start: 0.4rem; }
+.filtros-campos .campo { flex: 1 1 9rem; margin: 0.2rem 0; }
+.filtros-campos .ayuda { flex: 1 0 100%; margin: 0; }
 
 /* Coincidencias de la búsqueda propia dentro del panel de texto */
 .coincidencia { color: var(--co-texto); background: var(--co-relleno); border-radius: 0.15rem; }

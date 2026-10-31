@@ -1104,6 +1104,8 @@ test.describe('T-PV-05 PDF de punta a punta en la app (PE-4-r2)', () => {
     await expect(page.getByLabel(/contraseña/i)).toHaveCount(0);
     await expect(page.locator('body')).not.toContainText('de Prueba.');
     await expect(analizar(page)).toBeDisabled();
+  });
+});
 
 // ===== PC-4 · Revisión II (8.2.6): sugerencias, banderas, contador, filtros, recorrido y búsqueda propia =====
 // Mismo build de medición y mismo gancho que Revisión I. Datos ficticios (10.1.5). Los lugares son municipios reales de la DIVIPOLA
@@ -1322,6 +1324,7 @@ test.describe('Revisión II (PC-4)', () => {
 
   test('T-IU-06 filtros de categoría, estado, confianza y fuente: filtran la lista y el contador cuenta todo', async ({ page }) => {
     await abrirRevision(page);
+    await page.getByText('Filtros de la lista de detecciones').click();
     const filas = page.getByRole('treegrid', { name: 'Detecciones' }).getByRole('row');
     const antes = await filas.count();
     const textoContador = await contador(page).textContent();
