@@ -34,7 +34,7 @@ describe.skipIf(!activo)(`medición · ${config} · vista ${vista} · ${hilos} h
       } catch (e) {
         throw new Error(`caché inválida (${e instanceof CacheInvalida ? e.problemas.slice(0, 5).join(' ') : 'ilegible'})`);
       }
-      if (cache === null) throw new Error(`falta metricas/modelo-${modeloDeConfig(config)}-${vista}.json (lo dejan PF-3 y PF-4a): la corrida con modelo no se cuenta como cumplida`);
+      if (cache === null) throw new Error(`falta la vista ${vista} en metricas/modelo-${modeloDeConfig(config)}-vistas.json (PF-4a, PF-4b): la corrida con modelo no se cuenta como cumplida`);
     }
     c = await correr({ config, vista, hilos, conjunto, corpus, cache, oraculo: !rapido });
     const ruta = escribirInforme(c.informe, carpeta);

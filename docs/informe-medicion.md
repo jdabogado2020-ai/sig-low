@@ -372,7 +372,7 @@ npm run veredicto
 node node_modules/vitest/vitest.mjs run --config tests/medicion/vitest.config.ts
 ```
 
-Archivos de `metricas/`: `calibracion-umbral.json` (sección 3), `modelo-x-large-vistas.json` y `modelo-x-base-vistas.json` (secciones 4 y 5; el segundo trae también la comparación), `etiquetas-*.json` (3.3), `solape-25-x-large-natural.json` (3.4), `latencia-*.json`, `edge-*.json` y `chromium-x-large-jitless.json` (sección 7) y `modelo-x-large-natural.json` (caché natural de PF-3).
+Archivos de `metricas/`: `calibracion-umbral.json` (sección 3), `modelo-x-large-vistas.json` y `modelo-x-base-vistas.json` (secciones 4 y 5; el segundo trae también la comparación), `etiquetas-*.json` (3.3), `solape-25-x-large-natural.json` (3.4), `latencia-*.json`, `edge-*.json` y `chromium-x-large-jitless.json` (sección 7), `calibracion-reserva.json` (confirmación del umbral y la banda en la reserva, P0-4) e `historico/pf3-x-large-natural.json` (caché natural de PF-3, 19 documentos con el texto anterior a PG-1a-r1 y PG-2-r1; histórica desde P0-4: la medición lee solo `modelo-x-large-vistas.json`).
 
 ## 10. Pendientes de este informe
 

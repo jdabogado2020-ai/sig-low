@@ -17,8 +17,13 @@
 //   }
 //
 // Las posiciones son del texto canónico de la parte (la vista MAYÚSCULAS o minúsculas conserva la longitud, INV-W04). La clave de
-// parte es `claveParte` (`<kind>:<index>` y `:p<n>` si hay página). Un archivo combinado con `"vistas": { "<vista>": <cuerpo> }`
-// también se acepta. Sin texto del documento: solo posiciones y puntajes.
+// parte es `claveParte` (`<kind>:<index>` y `:p<n>` si hay página). Sin texto del documento: solo posiciones y puntajes.
+//
+// Caché única (P0-4): el archivo combinado `metricas/modelo-<id>-vistas.json` (`"vistas": { "<vista>": <cuerpo> }`, lo dejan PF-4a y
+// PF-4b con las tres vistas de los 29 documentos medibles y la verificación T-AB-06) se lee primero; el archivo por vista solo cuenta si
+// el combinado no existe o no trae esa vista. Así una pasada suelta de una vista (p. ej. `calibrar-modelo.ts pasada`, que escribe
+// `modelo-<id>-natural.json`) no tapa la caché verificada. La caché natural de PF-3 (19 documentos, texto anterior a PG-1a-r1 y PG-2-r1)
+// queda como histórico en `metricas/historico/pf3-x-large-natural.json`, fuera del patrón que lee este módulo.
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -54,10 +59,11 @@ export class CacheInvalida extends Error {
 /** Id del modelo de la caché para una configuración de la corrida (`sin-modelo` no usa caché). */
 export const modeloDeConfig = (c: RunConfig): 'x-large' | 'x-base' | null => (c === 'sin-modelo' ? null : c);
 
+/** Rutas candidatas en orden de lectura: primero el archivo combinado de las tres vistas (la caché única), después el de la vista. */
 export function rutaCache(config: RunConfig, vista: RunVista, carpeta: string = join(RAIZ, 'metricas')): string[] {
   const m = modeloDeConfig(config);
   if (m === null) return [];
-  return [join(carpeta, `modelo-${m}-${vista}.json`), join(carpeta, `modelo-${m}-vistas.json`)];
+  return [join(carpeta, `modelo-${m}-vistas.json`), join(carpeta, `modelo-${m}-${vista}.json`)];
 }
 
 /** Valida la forma de la caché y, contra el corpus, que las posiciones caben en el texto y que la huella de cada parte coincide. */

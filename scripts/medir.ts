@@ -1,7 +1,8 @@
 // npm run medir (PG-3b; plan 10.3.3): lanza las corridas de tests/medicion/ con el motor de producción sobre el texto canónico.
 //   npm run medir -- --config=<sin-modelo|x-large|x-base> --vista=<natural|mayusculas|minusculas> --hilos=<1|4|8> --conjunto=<todo|desarrollo|reserva>
 //   npm run medir -- --rapido            reglas y lista sobre los .txt, sin oráculo (medir:rapido)
-//   npm run medir -- --todo              el recorrido de cierre: sin modelo, y x-large en las tres vistas, y luego el veredicto
+//   npm run medir -- --todo              el recorrido de cierre: sin modelo, y x-large en las tres vistas (los 29 documentos, más el
+//                                        desarrollo y la reserva aparte, 10.4.1), y luego el veredicto
 //   npm run medir -- --solo-veredicto    solo el veredicto de 10.4.1 y el registro de brechas sobre los informes ya escritos
 // No ejecuta el modelo: con --config=x-large o x-base lee la caché `metricas/modelo-<id>-<vista>.json` (PF-3, PF-4a, PF-4b).
 // Con x-large, al terminar corre el veredicto (scripts/veredicto.ts). Sale con 0 si todo cumple, 1 si alguna prueba o el veredicto
@@ -44,6 +45,10 @@ export function leerArgumentos(argv: readonly string[]): { corridas: Corrida[]; 
   if (todo) {
     const corridas: Corrida[] = [{ config: 'sin-modelo', vista: 'natural', hilos, conjunto, rapido }];
     for (const vista of VISTAS) corridas.push({ config: 'x-large', vista, hilos, conjunto, rapido });
+    // La reserva se informa aparte (10.4.1): con el corpus completo, x-large también sobre el desarrollo y sobre la reserva.
+    if (conjunto === 'todo' && !rapido) {
+      for (const c of ['desarrollo', 'reserva'] as const) for (const vista of VISTAS) corridas.push({ config: 'x-large', vista, hilos, conjunto: c, rapido });
+    }
     return { corridas, todo, soloVeredicto };
   }
   const configE = elegir('config', CONFIGS, 'sin-modelo');

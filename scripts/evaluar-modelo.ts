@@ -8,7 +8,7 @@
 //   pasada     Pasada del modelo en las vistas pedidas (por defecto mayusculas, minusculas y natural) sobre los documentos medibles
 //              del corpus y caché de salidas por ventana (puntaje >= 0,1) en metricas/modelo-<modelo>-vistas.json. Candado del modelo.
 //              Reanuda: un documento cuya huella de texto ya está en el archivo no se vuelve a pasar. La vista natural reutiliza,
-//              documento a documento, la caché de PF-3 (x-large: metricas/modelo-x-large-natural.json; x-base: la pasada de etiquetas
+//              documento a documento, la caché de PF-3 (x-large: metricas/historico/pf3-x-large-natural.json; x-base: la pasada de etiquetas
 //              estándar metricas/etiquetas-x-base-estandar.json) si el texto, el ONNX y el código del motor son los mismos; los demás
 //              se pasan de nuevo.
 //   verificar  T-AB-06: una pasada nueva de C22, C10 y C13 (12 ventanas) debe reproducir tramos y puntajes de la caché a +-1e-4 y la
@@ -42,7 +42,8 @@ export const VISTAS: readonly Vista[] = ['natural', 'mayusculas', 'minusculas'];
 export type Modelo = 'x-large' | 'x-base';
 export const ARCHIVO_VISTAS = 'metricas/modelo-x-large-vistas.json';
 export const ARCHIVO_VISTAS_X_BASE = 'metricas/modelo-x-base-vistas.json';
-export const ARCHIVO_NATURAL_PF3 = 'metricas/modelo-x-large-natural.json';
+/** Caché natural de x-large de PF-3 (19 documentos de desarrollo), histórica desde P0-4: fuera del patrón que lee `npm run medir`. */
+export const ARCHIVO_NATURAL_PF3 = 'metricas/historico/pf3-x-large-natural.json';
 /** Caché natural de x-base de PF-3 (etiquetas estándar, piso 0,1): de ella la vista natural del respaldo toma los documentos que no cambiaron. */
 export const ARCHIVO_NATURAL_X_BASE_PF3 = 'metricas/etiquetas-x-base-estandar.json';
 export const archivoVistasDe = (modelo: Modelo): string => (modelo === 'x-base' ? ARCHIVO_VISTAS_X_BASE : ARCHIVO_VISTAS);
@@ -906,7 +907,7 @@ export async function ejecutarEvaluacion(raiz: string, a: Map<string, string>): 
   }
   const evaluacion = armarEvaluacion(vistas, {
     documentos: conjuntos.length, desarrollo: conjuntos.filter((c) => c === 'desarrollo').length, reserva: conjuntos.filter((c) => c === 'reserva').length,
-    origen: `corpus/gold del commit ${commitDe(raizCorpus)} (rama t/PG-2-r1-lineas-propias, decisión D-01)`,
+    origen: `corpus/gold del commit ${commitDe(raizCorpus)}`,
   }, umbrales, ahora(), modelo);
   archivo.evaluacion = evaluacion;
   if (modelo === 'x-base') {

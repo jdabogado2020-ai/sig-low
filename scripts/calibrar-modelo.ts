@@ -9,7 +9,11 @@
 //              preliminar), en Chromium o en Edge. Candado del modelo.
 //   edge       T-ED-01 y T-ED-02: carga del modelo y dos documentos con el JIT desactivado, y calibración de PBKDF2.
 //   calibrar   Sin modelo: barre `nerMinScore` y fija `nerHighThreshold` con las salidas guardadas (T-AB-03). Escribe
-//              metricas/calibracion-umbral.json.
+//              metricas/calibracion-umbral.json. Su caché por defecto (la natural de PF-3) quedó como histórico en P0-4
+//              (metricas/historico/pf3-x-large-natural.json, texto anterior a PG-1a-r1 y PG-2-r1): pásela con --cache=.
+//   confirmar  Sin modelo (P0-4): confirma el umbral y la banda de calibracion-umbral.json con la vista natural de
+//              metricas/modelo-x-large-vistas.json, en el desarrollo con el texto final y en la reserva, aparte. Escribe
+//              metricas/calibracion-reserva.json. La reserva nunca cambia el umbral: solo lo confirma o no.
 //
 // Las funciones de la calibración son puras y están exportadas (las usa tests/medicion/evaluacion-modelo.test.ts). La parte que
 // maneja el navegador (Playwright y Vite) se importa solo al ejecutar la orden. El corpus es ficticio (10.1.5): lo único que se
@@ -671,6 +675,104 @@ function ordenCalibrar(raiz: string, a: Map<string, string>): void {
 }
 
 // ===================================================================================================================
+// Confirmación de la calibración en la reserva (P0-4; T-AB-03, 10.8.5), sin modelo
+// ===================================================================================================================
+
+/** Lo que dan el umbral y la banda calibrados en un conjunto de documentos (desarrollo con el texto final, o reserva). */
+export interface ConfirmacionConjunto {
+  docs: string[];
+  barridoUmbral: FilaUmbral[];
+  /** Lo que elegiría la misma regla de T-AB-03 (a) en este conjunto. Informativo: la reserva nunca cambia el umbral. */
+  seleccion: Seleccion;
+  barridoAlto: FilaAlto[];
+  /** El menor valor con precisión >= 0,90 entre los tramos `media` en este conjunto (informativo). */
+  alto: FilaAlto | null;
+  enElUmbral: FilaUmbral;
+  enLaBanda: FilaAlto;
+  /** La regla de (a) elige en este conjunto el mismo `nerMinScore`, con precisión global >= 0,70. */
+  confirmaUmbral: boolean;
+  /** Los tramos `media` (puntaje >= `nerHighThreshold`) tienen precisión >= 0,90 en este conjunto. */
+  confirmaBanda: boolean;
+}
+export interface ConfirmacionCalibracion {
+  formato: 'sig-low/confirmacion-calibracion'; v: 1; fecha: string;
+  cache: { archivo: string; modelo: string; vista: string; etiquetas: string; huella: CacheModelo['huella']; documentos: number };
+  calibrado: { nerMinScore: number; nerHighThreshold: number; fuente: string };
+  minPrecisionGlobal: number; minPrecisionBanda: number;
+  desarrollo: ConfirmacionConjunto;
+  reserva: ConfirmacionConjunto;
+  etiquetas: { calibradas: string; nota: string };
+  /** Umbral y banda confirmados en la reserva. */
+  confirmada: boolean;
+}
+
+/** T-AB-03 sobre un conjunto: barre el piso, aplica la regla de (a) y mide la banda calibrada. `docs` filtra la caché (la reserva aparte). */
+export function confirmarConjunto(
+  cache: CacheModelo, golds: Record<string, GoldDocument>, docs: readonly string[], nerMinScore: number, nerHighThreshold: number,
+  minPrecision = 0.7, minPrecisionBanda = 0.9,
+): ConfirmacionConjunto {
+  const ids = [...docs].filter((d) => cache.documentos[d] !== undefined && golds[d] !== undefined).sort();
+  const rejilla = [...new Set([...UMBRALES, nerMinScore])].sort((a, b) => a - b);
+  const barridoUmbral = rejilla.map((u) => evaluarUmbral(cache, golds, u, ids));
+  const seleccion = elegirUmbral(barridoUmbral.filter((f) => (UMBRALES as readonly number[]).includes(f.umbral)), minPrecision);
+  const n = Math.round((0.99 - nerMinScore) * 100) + 1;
+  const candidatos = [...new Set([...Array.from({ length: n }, (_, i) => Math.round((nerMinScore + i * 0.01) * 100) / 100), nerHighThreshold])].sort((a, b) => a - b);
+  const barridoAlto0 = barridoAlto(cache, golds, nerMinScore, candidatos, ids);
+  const enElUmbral = barridoUmbral.find((f) => f.umbral === nerMinScore) as FilaUmbral;
+  const enLaBanda = barridoAlto0.find((f) => f.umbral === nerHighThreshold) as FilaAlto;
+  return {
+    docs: ids, barridoUmbral, seleccion, barridoAlto: barridoAlto0, alto: elegirAlto(barridoAlto0, minPrecisionBanda), enElUmbral, enLaBanda,
+    confirmaUmbral: seleccion.cumplePrecision && seleccion.umbral === nerMinScore && enElUmbral.precisionGlobal >= minPrecision,
+    confirmaBanda: enLaBanda.tramos > 0 && enLaBanda.precision >= minPrecisionBanda,
+  };
+}
+
+export const NOTA_ETIQUETAS_RESERVA =
+  'La caché de la reserva solo trae las etiquetas estándar (person, organization, location): la comparación con las traducidas y con las nueve '
+  + 'de T-AB-03 (a) no se repite en la reserva sin una pasada nueva del modelo. Con las estándar se confirma el umbral (misma regla, misma elección).';
+
+/** Arma la confirmación de P0-4: el desarrollo con el texto final (19 documentos) y la reserva (10), con el umbral y la banda de PF-3. */
+export function confirmarCalibracion(
+  cache: CacheModelo, archivo: string, golds: Record<string, GoldDocument>, calibrado: { nerMinScore: number; nerHighThreshold: number }, fecha: string,
+  minPrecision = 0.7, minPrecisionBanda = 0.9,
+): ConfirmacionCalibracion {
+  if (cache.vista !== 'natural') throw new Error('VISTA_NO_NATURAL');
+  const de = (c: string): string[] => Object.keys(cache.documentos).filter((id) => golds[id]?.conjunto === c).sort();
+  const desarrollo = confirmarConjunto(cache, golds, de('desarrollo'), calibrado.nerMinScore, calibrado.nerHighThreshold, minPrecision, minPrecisionBanda);
+  const reserva = confirmarConjunto(cache, golds, de('reserva'), calibrado.nerMinScore, calibrado.nerHighThreshold, minPrecision, minPrecisionBanda);
+  return {
+    formato: 'sig-low/confirmacion-calibracion', v: 1, fecha,
+    cache: { archivo, modelo: cache.modelo, vista: cache.vista, etiquetas: cache.etiquetas ?? 'estandar', huella: cache.huella, documentos: Object.keys(cache.documentos).length },
+    calibrado: { ...calibrado, fuente: 'metricas/calibracion-umbral.json (PF-3)' },
+    minPrecisionGlobal: minPrecision, minPrecisionBanda,
+    desarrollo, reserva,
+    etiquetas: { calibradas: cache.etiquetas ?? 'estandar', nota: NOTA_ETIQUETAS_RESERVA },
+    confirmada: reserva.confirmaUmbral && reserva.confirmaBanda,
+  };
+}
+
+function ordenConfirmar(raiz: string, a: Map<string, string>): number {
+  const { golds } = cargarCorpus(raiz);
+  const rutaVistas = arg(a, 'vistas', 'metricas/modelo-x-large-vistas.json');
+  const archivo = JSON.parse(readFileSync(resolve(raiz, rutaVistas), 'utf8')) as { vistas?: { natural?: CacheModelo } };
+  const cache = archivo.vistas?.natural;
+  if (cache === undefined) throw new Error(`falta la vista natural en ${rutaVistas}`);
+  const cal = JSON.parse(readFileSync(resolve(raiz, 'metricas/calibracion-umbral.json'), 'utf8')) as { nerMinScore: number; nerHighThreshold: number };
+  const c = confirmarCalibracion(cache, `${rutaVistas} (vista natural)`, golds, { nerMinScore: cal.nerMinScore, nerHighThreshold: cal.nerHighThreshold }, ahora());
+  escribirJson(resolve(raiz, arg(a, 'salida', 'metricas/calibracion-reserva.json')), c);
+  for (const [nombre, x] of [['desarrollo', c.desarrollo], ['reserva', c.reserva]] as const) {
+    log(`== ${nombre} (${x.docs.length} documentos) ==`);
+    for (const f of x.barridoUmbral) {
+      const g = f.grupos['PER_ORG'] as FilaUmbral['grupos'][string];
+      log(`umbral ${f.umbral}: precisión global ${f.precisionGlobal.toFixed(3)} (${f.verdaderas}/${f.detecciones}); PER+ORG n ${g.n} R ${g.exhaustividadMencion.toFixed(3)} P ${g.precision.toFixed(3)} F2 ${g.f2.toFixed(3)}`);
+    }
+    log(`regla de (a): ${x.seleccion.umbral} (${x.confirmaUmbral ? 'confirma' : 'NO confirma'} ${c.calibrado.nerMinScore}); banda ${c.calibrado.nerHighThreshold}: ${x.enLaBanda.verdaderas}/${x.enLaBanda.tramos} = ${x.enLaBanda.precision.toFixed(3)} (${x.confirmaBanda ? 'confirma' : 'NO confirma'}); el conjunto elegiría ${x.alto?.umbral ?? 'ninguno'}`);
+  }
+  log(`T-AB-03 en la reserva: ${c.confirmada ? 'confirmada' : 'NO confirmada'}`);
+  return c.confirmada ? 0 : 1;
+}
+
+// ===================================================================================================================
 
 export async function main(argv: readonly string[]): Promise<number> {
   const orden = argv[0];
@@ -690,8 +792,9 @@ export async function main(argv: readonly string[]): Promise<number> {
     case 'latencia': await ordenLatencia(raiz, a); return 0;
     case 'edge': await ordenEdge(raiz, a); return 0;
     case 'calibrar': ordenCalibrar(raiz, a); return 0;
+    case 'confirmar': return ordenConfirmar(raiz, a);
     default:
-      process.stderr.write('Uso: node scripts/calibrar-modelo.ts <pasada|etiquetas|latencia|edge|calibrar> [--opcion=valor]\n');
+      process.stderr.write('Uso: node scripts/calibrar-modelo.ts <pasada|etiquetas|latencia|edge|calibrar|confirmar> [--opcion=valor]\n');
       return 2;
   }
 }

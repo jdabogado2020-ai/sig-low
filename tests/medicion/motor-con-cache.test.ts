@@ -109,6 +109,23 @@ describe('T-ME-03 · lectura y validación de la caché', () => {
     expect(leerCache('x-large', 'mayusculas', corpus, carpeta)?.vista).toBe('mayusculas');
   });
 
+  // P0-4: la caché única. Una caché por vista vieja (otro texto, como la natural de PF-3 tras PG-1a-r1 y PG-2-r1) no tapa el archivo combinado.
+  it('T-ME-03 con el archivo combinado y uno por vista, se lee el combinado; el de la vista solo cubre la vista que al combinado le falte', () => {
+    const carpeta = join(tmp, 'ambas');
+    mkdirSync(carpeta, { recursive: true });
+    const vieja = structuredClone(cacheSimulada(corpus, 'natural'));
+    const doc = corpus[0]!;
+    const clave = [...doc.claveDe.values()][0]!;
+    (vieja.documentos[doc.docId]!.partes[clave] as { sha256?: string }).sha256 = 'x'.repeat(64);   // texto anterior: la sola lectura la rechazaría
+    writeFileSync(join(carpeta, 'modelo-x-large-natural.json'), JSON.stringify(vieja));
+    writeFileSync(join(carpeta, 'modelo-x-large-vistas.json'), JSON.stringify({ vistas: { natural: cacheSimulada(corpus, 'natural') } }));
+    expect(leerCache('x-large', 'natural', corpus, carpeta)?.vista).toBe('natural');   // no lanza CACHE_INVALIDA: se tomó el combinado
+    writeFileSync(join(carpeta, 'modelo-x-large-minusculas.json'), JSON.stringify(cacheSimulada(corpus, 'minusculas')));
+    expect(leerCache('x-large', 'minusculas', corpus, carpeta)?.vista).toBe('minusculas');   // el combinado no trae minúsculas
+    rmSync(join(carpeta, 'modelo-x-large-vistas.json'));
+    expect(() => leerCache('x-large', 'natural', corpus, carpeta)).toThrow(CacheInvalida);   // sin combinado, la vieja se lee y se rechaza
+  });
+
   it('T-ME-03 una caché con la huella del texto cambiada, un tramo fuera de rango o otra vista se declara inválida', () => {
     const buena = cacheSimulada(corpus, 'natural');
     expect(() => validarCache(buena, corpus, 'natural')).not.toThrow();

@@ -95,6 +95,21 @@ export interface ConsistenciaPorGrupo extends Record<GrupoConsistencia, Consiste
   /** Colisiones cuyo `Entity` cubre al menos una entidad gold del grupo `modelo` (informativas); el resto son duras. */
   colisionesDelModelo: number;
 }
+/**
+ * Ids de anotación afectados en las cifras que no son filas de exhaustividad (P0-4; 10.4.3 pide «ids de anotación afectados —nunca
+ * valores—» en cada brecha): menciones esperadas sin su sugerencia o bandera, negativos con detección, menciones cubiertas de las
+ * entidades inconsistentes por grupo y menciones que caen en una `Entity` con colisión (duras y del modelo).
+ */
+export interface IdsAfectados {
+  generalizacion: Record<string, string[]>;
+  negativos: string[];
+  consistencia: Record<GrupoConsistencia, string[]>;
+  colisiones: string[];
+  colisionesDelModelo: string[];
+}
+export const idsAfectadosVacios = (): IdsAfectados => ({
+  generalizacion: {}, negativos: [], consistencia: { ids: [], lista: [], fechas_valores: [], modelo: [] }, colisiones: [], colisionesDelModelo: [],
+});
 export interface MetricsReport {
   formato: 'sig-low/metricas'; v: 1;
   corrida: {
@@ -108,6 +123,7 @@ export interface MetricsReport {
   consistenciaPorGrupo?: ConsistenciaPorGrupo;
   negativos: { total: number; conDeteccion: number; citasConRadicado: number; banderasPresentes: number };
   generalizacion: Array<{ tipo: string; esperadas: number; presentes: number }>;
+  idsAfectados?: IdsAfectados;
   residuos: {
     antesDelBucle: number; despuesDelBucle: number; omisiones: number;
     porDocumento: Array<{ docId: CorpusDocId; residuos: number; omisiones: number; idsAnotacion: string[] }>;
@@ -251,6 +267,7 @@ export interface EvaluacionDocumento {
   consistenciaPorGrupo: ConsistenciaPorGrupo;
   negativos: { total: number; conDeteccion: number; citasConRadicado: number; banderasPresentes: number };
   generalizacion: Array<{ tipo: string; esperadas: number; presentes: number }>;
+  idsAfectados: IdsAfectados;
   falsas: number;
 }
 
@@ -376,6 +393,7 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
     const e = entGold.get(id);
     return e === undefined ? 'ids' : grupoDeConsistencia(e);
   };
+  const idsAfectados = idsAfectadosVacios();
   for (const [idEnt, ms] of mencPorEntidad) {
     const cubiertas = ms.filter((m) => m.cubierta);
     if (cubiertas.length < 2) continue;
@@ -383,22 +401,28 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
     const ents = new Set(cubiertas.map((m) => (m.cubridoras[0] as DeteccionMedida).entidad));
     const gr = porGrupo[grupoDe(idEnt)];
     gr.evaluadas++;
-    if (ents.size === 1) { consistentes++; gr.consistentes++; }
+    if (ents.size === 1) { consistentes++; gr.consistentes++; } else idsAfectados.consistencia[grupoDe(idEnt)].push(...cubiertas.map((m) => m.g.id));
   }
   // Colisiones: Entity cuyas detecciones cubren ≥ 2 entidades gold.
   const goldPorEntity = new Map<string, Set<string>>();
+  const mencionesPorEntity = new Map<string, Set<string>>();
   for (const m of menciones) {
     for (const d of m.cubridoras) {
       const s = goldPorEntity.get(d.entidad);
       if (s === undefined) goldPorEntity.set(d.entidad, new Set([m.g.entidad]));
       else s.add(m.g.entidad);
+      const ids = mencionesPorEntity.get(d.entidad);
+      if (ids === undefined) mencionesPorEntity.set(d.entidad, new Set([m.g.id]));
+      else ids.add(m.g.id);
     }
   }
   let colisiones = 0;
-  for (const [, s] of goldPorEntity) {
+  for (const [entity, s] of goldPorEntity) {
     if (s.size < 2) continue;
     colisiones++;
-    if ([...s].some((id) => grupoDe(id) === 'modelo')) porGrupo.colisionesDelModelo++;
+    const delModelo = [...s].some((id) => grupoDe(id) === 'modelo');
+    if (delModelo) porGrupo.colisionesDelModelo++;
+    (delModelo ? idsAfectados.colisionesDelModelo : idsAfectados.colisiones).push(...(mencionesPorEntity.get(entity) ?? []));
   }
   const fusiones = resDet.filter((r) => r.fusion).length;
 
@@ -412,7 +436,7 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
     const dets = (detPorParte.get(k) ?? []).filter((d) => solapa(d, n));
     if (n.bandera_esperada === undefined) {
       sinBanderaEsperada++;
-      if (dets.length > 0) conDeteccion++;
+      if (dets.length > 0) { conDeteccion++; idsAfectados.negativos.push(n.id); }
     }
     if (n.bandera_esperada === 'CITA_JURISPRUDENCIAL') {
       citas++;
@@ -422,10 +446,11 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
 
   // Banderas y sugerencias esperadas, por tipo esperado.
   const esperadas = new Map<string, { esperadas: number; presentes: number }>();
-  const contar = (clave: string, presente: boolean): void => {
+  const contar = (clave: string, presente: boolean, id: string): void => {
     const e = esperadas.get(clave) ?? { esperadas: 0, presentes: 0 };
     e.esperadas++;
     if (presente) e.presentes++;
+    else (idsAfectados.generalizacion[clave] ??= []).push(id);
     esperadas.set(clave, e);
   };
   for (const g of todas) {
@@ -433,13 +458,13 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
     if (g.bandera_esperada !== undefined || !g.debe_generalizarse) continue;   // las citas se cuentan en `negativos`
     const esFlag = (FLAG_TYPES as readonly string[]).includes(g.tipo);
     if (esFlag) {
-      contar(g.tipo, banderas.some((f) => f.tipo === g.tipo && f.parte === k && solapa(f, g)));
+      contar(g.tipo, banderas.some((f) => f.tipo === g.tipo && f.parte === k && solapa(f, g)), g.id);
     } else if (g.generalizacion !== undefined) {
       const kind = g.generalizacion;
       contar(kind, sugerencias.some((s) => s.kind === kind && s.parte === k && solapa(s, g))
-        || banderas.some((f) => f.parte === k && solapa(f, g) && `${f.tipo}_A_GENERICO` === kind));
+        || banderas.some((f) => f.parte === k && solapa(f, g) && `${f.tipo}_A_GENERICO` === kind), g.id);
     } else {
-      contar(g.tipo, false);
+      contar(g.tipo, false, g.id);
     }
   }
 
@@ -453,6 +478,7 @@ export function evaluarDocumento(entrada: EntradaDocumento): EvaluacionDocumento
     consistenciaPorGrupo: porGrupo,
     negativos: { total: sinBanderaEsperada, conDeteccion, citasConRadicado: citas, banderasPresentes: citasConBandera },
     generalizacion: [...esperadas.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([tipo, v]) => ({ tipo, ...v })),
+    idsAfectados,
     falsas: resDet.filter((r) => r.falsa).length,
   };
 }
@@ -691,6 +717,14 @@ export function construirInforme(
       gen.set(x.tipo, v);
     }
   }
+  const afectados = idsAfectadosVacios();
+  for (const e of evals) {
+    for (const [k, l] of Object.entries(e.idsAfectados.generalizacion)) (afectados.generalizacion[k] ??= []).push(...l);
+    afectados.negativos.push(...e.idsAfectados.negativos);
+    for (const k of ['ids', 'lista', 'fechas_valores', 'modelo'] as const) afectados.consistencia[k].push(...e.idsAfectados.consistencia[k]);
+    afectados.colisiones.push(...e.idsAfectados.colisiones);
+    afectados.colisionesDelModelo.push(...e.idsAfectados.colisionesDelModelo);
+  }
 
   let antes = 0;
   let despues = 0;
@@ -729,6 +763,7 @@ export function construirInforme(
     consistenciaPorGrupo: grupos,
     negativos: { total: sumaNeg('total'), conDeteccion: sumaNeg('conDeteccion'), citasConRadicado: sumaNeg('citasConRadicado'), banderasPresentes: sumaNeg('banderasPresentes') },
     generalizacion: [...gen.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([tipo, v]) => ({ tipo, ...v })),
+    idsAfectados: afectados,
     residuos: {
       antesDelBucle: antes, despuesDelBucle: despues, omisiones: omisionesTotal, porDocumento,
       concordanciaResidueTs: concordancia(escaneres, residue),
@@ -777,11 +812,16 @@ export function tablaTexto(r: MetricsReport): string {
   return l.join('\n');
 }
 
-/** Nombre del informe: `AAAAMMDD-HHMM-<config>-<vista>-<hilos>h.json` (10.3.3). `fecha` es ISO local `AAAA-MM-DDTHH:MM`. */
-export function nombreInforme(c: Pick<CorridaInfo, 'config' | 'vista' | 'hilos'>, fecha: string): string {
+/**
+ * Nombre del informe: `AAAAMMDD-HHMM-<config>-<vista>-<hilos>h.json` (10.3.3) para todo el corpus. Una corrida de un solo conjunto
+ * (`--conjunto=desarrollo` o `reserva`, la reserva aparte de 10.4.1) lleva además `-<conjunto>`: sin él, la corrida de la reserva del
+ * mismo minuto pisaría el informe de los 29 (P0-4). `fecha` es ISO local `AAAA-MM-DDTHH:MM`.
+ */
+export function nombreInforme(c: Pick<CorridaInfo, 'config' | 'vista' | 'hilos'> & { conjunto?: CorridaInfo['conjunto'] }, fecha: string): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/u.exec(fecha);
   const sello = m === null ? 'sin-fecha' : `${m[1]}${m[2]}${m[3]}-${m[4]}${m[5]}`;
-  return `${sello}-${c.config}-${c.vista}-${c.hilos}h.json`;
+  const conjunto = c.conjunto === undefined || c.conjunto === 'todo' ? '' : `-${c.conjunto}`;
+  return `${sello}-${c.config}-${c.vista}-${c.hilos}h${conjunto}.json`;
 }
 
 // ===================================================================================================================

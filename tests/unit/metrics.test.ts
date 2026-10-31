@@ -280,6 +280,20 @@ describe('T-ME-01 · evaluación del documento de juguete', () => {
       { tipo: 'MUNICIPIO_A_DEPARTAMENTO', esperadas: 1, presentes: 0 },
     ]);
   });
+
+  // P0-4: cada brecha lleva los ids de anotación afectados (10.4.3), también en las cifras que no son filas de exhaustividad.
+  it('ids de anotación afectados: sugerencias y banderas que faltan, negativos con detección, entidades inconsistentes y colisiones', () => {
+    expect(EV.idsAfectados).toEqual({
+      generalizacion: { DIAGNOSTICO: ['T01-A19'], MUNICIPIO_A_DEPARTAMENTO: ['T01-A11'] },
+      negativos: ['T01-N2'],
+      consistencia: { ids: ['T01-A01', 'T01-A02'], lista: [], fechas_valores: [], modelo: [] },   // E01: D01 y D02 en Entity distintas
+      colisiones: ['T01-A07', 'T01-A08'],                                                         // En5 cubre E06 y E07
+      colisionesDelModelo: [],
+    });
+    const informe = construirInforme([ENTRADA, ENTRADA], CORRIDA);
+    expect(informe.idsAfectados?.negativos).toEqual(['T01-N2', 'T01-N2']);
+    expect(informe.idsAfectados?.generalizacion['DIAGNOSTICO']).toEqual(['T01-A19', 'T01-A19']);
+  });
 });
 
 describe('T-ME-01 · filas por grupo', () => {
@@ -455,9 +469,12 @@ describe('T-ME-01 · informe, tabla y código de salida', () => {
     expect(t).not.toContain('xxxx');
   });
 
-  it('nombre del informe: AAAAMMDD-HHMM-<config>-<vista>-<hilos>h.json', () => {
-    expect(nombreInforme(CORRIDA, CORRIDA.fecha)).toBe('20261030-1405-sin-modelo-natural-1h.json');
+  it('nombre del informe: AAAAMMDD-HHMM-<config>-<vista>-<hilos>h.json; una corrida de un solo conjunto lleva -<conjunto>', () => {
+    expect(nombreInforme({ ...CORRIDA, conjunto: 'todo' }, CORRIDA.fecha)).toBe('20261030-1405-sin-modelo-natural-1h.json');
     expect(nombreInforme({ config: 'x-large', vista: 'mayusculas', hilos: 8 }, '2026-11-02T09:07:33')).toBe('20261102-0907-x-large-mayusculas-8h.json');
-    expect(nombreInforme(CORRIDA, 'ayer')).toBe('sin-fecha-sin-modelo-natural-1h.json');
+    expect(nombreInforme({ ...CORRIDA, conjunto: 'todo' }, 'ayer')).toBe('sin-fecha-sin-modelo-natural-1h.json');
+    // P0-4: la reserva aparte (10.4.1) corre en el mismo minuto que la de los 29 y no debe pisar su informe.
+    expect(nombreInforme(CORRIDA, CORRIDA.fecha)).toBe('20261030-1405-sin-modelo-natural-1h-desarrollo.json');
+    expect(nombreInforme({ ...CORRIDA, config: 'x-large', hilos: 8, conjunto: 'reserva' }, CORRIDA.fecha)).toBe('20261030-1405-x-large-natural-8h-reserva.json');
   });
 });

@@ -1,15 +1,22 @@
 // T-AB-02 y T-AB-03 (parte PF-3 de tests/medicion/evaluacion-modelo.test.ts); T-AB-01 y T-AB-06 los agrega PF-4a; T-AB-04 los agrega PF-4b (al final del archivo); P0-4 agrega los suyos.
-// No ejecutan el modelo: leen la caché de salidas (metricas/modelo-x-large-natural.json) y los resultados de scripts/calibrar-modelo.ts,
-// y vuelven a calcular de ellos el umbral, el piso de proposición y las latencias. Se corren con `npm run medir`
-// (vitest excluye tests/medicion/** de `verify`). Corpus ficticio (10.1.5).
+// No ejecutan el modelo: leen la caché de salidas y los resultados de scripts/calibrar-modelo.ts, y vuelven a calcular de ellos el
+// umbral, el piso de proposición y las latencias. Se corren con `npm run medir` (vitest excluye tests/medicion/** de `verify`).
+// Corpus ficticio (10.1.5).
+//
+// P0-4 (caché única): la caché que se mide es la vista natural de metricas/modelo-x-large-vistas.json (PF-4a: los 29 documentos
+// medibles con el texto final). La natural de PF-3 (19 documentos de desarrollo, con otro texto en C02, C06, C17, C27 y C28 desde
+// PG-1a-r1 y PG-2-r1) quedó como histórico en metricas/historico/pf3-x-large-natural.json: de ella solo se comprueba la procedencia.
+// T-AB-03 se recalcula con el texto final sobre los 19 de desarrollo (la calibración nunca mira la reserva) y se confirma en la
+// reserva aparte (metricas/calibracion-reserva.json, `node scripts/calibrar-modelo.ts confirmar`).
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  barridoAlto, cargarCorpus, deteccionesDe, elegirAlto, elegirUmbral, evaluarUmbral, huellaMotor, mediana, percentil, UMBRALES,
+  barridoAlto, cargarCorpus, confirmarCalibracion, confirmarConjunto, deteccionesDe, elegirAlto, elegirUmbral, evaluarUmbral, huellaMotor, mediana,
+  percentil, UMBRALES,
 } from '../../scripts/calibrar-modelo.ts';
-import type { CacheModelo, DocumentoCache, FilaAlto, FilaUmbral, ParteTexto } from '../../scripts/calibrar-modelo.ts';
+import type { CacheModelo, ConfirmacionCalibracion, DocumentoCache, FilaAlto, FilaUmbral, ParteTexto } from '../../scripts/calibrar-modelo.ts';
 import {
   archivoVistasDe, armarEvaluacion, ARCHIVO_VISTAS, ARCHIVO_VISTAS_X_BASE, compararRespaldo, compararVentanas, DOCUMENTOS_T_AB_06, evaluarVista,
   filasDe, filasDeCierre, FILAS_T_AB_04, GRUPOS_T_AB_01, huellaTextoDeCache, matrizConfusion, posibleSobreajuste, reutilizarNatural, tablaRespaldo,
@@ -132,19 +139,32 @@ interface Calibracion {
   formato: string; nerMinScore: number; nerHighThreshold: number | null; altoAlcanzable: boolean; minPrecisionGlobal: number;
   seleccion: { umbral: number; cumplePrecision: boolean };
   barridoUmbral: FilaUmbral[]; barridoAlto: FilaAlto[];
+  cache: { modelo: string; huella: CacheModelo['huella']; documentos: number };
 }
 const { ids: IDS, textos, golds: GOLDS } = cargarCorpus(RAIZ);
-const CACHE_X_LARGE = 'metricas/modelo-x-large-natural.json';
+/** Caché natural de PF-3 (19 documentos de desarrollo), histórica desde P0-4: solo se comprueba de ella la procedencia. */
+const CACHE_PF3_HISTORICA = 'metricas/historico/pf3-x-large-natural.json';
 const CALIBRACION = 'metricas/calibracion-umbral.json';
+/** Confirmación de P0-4 (`node scripts/calibrar-modelo.ts confirmar`): desarrollo con el texto final y reserva, aparte. */
+const CONFIRMACION = 'metricas/calibracion-reserva.json';
+const DESARROLLO = IDS.filter((id) => GOLDS[id]?.conjunto === 'desarrollo');
+const RESERVA = IDS.filter((id) => GOLDS[id]?.conjunto === 'reserva');
+const shaTexto = (t: string): string => createHash('sha256').update(t).digest('hex');
+/** La caché que se mide: la vista natural del archivo combinado de PF-4a (la caché única de P0-4). */
+const naturalDeVistas = (): CacheModelo => (leer<ArchivoVistas>(ARCHIVO_VISTAS).vistas.natural as CacheModelo);
 
 describe('T-AB-03 · calibración con las salidas guardadas de x-large (vista natural)', () => {
-  const cache = leer<CacheModelo>(CACHE_X_LARGE);
+  const cache = naturalDeVistas();
   const cal = leer<Calibracion>(CALIBRACION);
 
-  it('T-AB-03 la caché de salidas es de x-large en vista natural, guarda desde 0,1 y trae los documentos medibles del corpus de desarrollo', () => {
+  it('T-AB-03 la caché de salidas es de x-large en vista natural, guarda desde 0,1 y trae los 29 documentos medibles: 19 de desarrollo y 10 de reserva', () => {
     expect(cache).toMatchObject({ formato: 'sig-low/cache-modelo', v: 1, modelo: 'x-large', vista: 'natural', etiquetas: 'estandar', piso: 0.1 });
     expect(Object.keys(cache.documentos).sort()).toEqual(IDS);
-    expect(IDS.length).toBe(19); // los 20 de desarrollo menos C04 (PDF escaneado, sin texto que medir)
+    expect(IDS.length).toBe(29); // los 30 del corpus menos C04 (PDF escaneado, sin texto que medir)
+    expect(IDS).not.toContain('C04');
+    expect(GOLDS['C04']?.conjunto).toBe('desarrollo');
+    expect(DESARROLLO.length).toBe(19); // los 20 de desarrollo menos C04
+    expect(RESERVA.length).toBe(10);
     for (const h of Object.values(cache.huella)) expect(h).toMatch(/^[0-9a-f]{64}$/);
     for (const d of Object.values(cache.documentos)) {
       for (const pc of Object.values(d.partes)) {
@@ -157,17 +177,30 @@ describe('T-AB-03 · calibración con las salidas guardadas de x-large (vista na
     }
   });
 
-  it('T-AB-03 la huella de la caché coincide con el texto canónico y con el código del motor actuales (si no, la caché es inválida: R-26)', () => {
+  it('T-AB-03 la huella de la caché coincide con el texto canónico de los 29 documentos y con el código del motor actuales (si no, la caché es inválida: R-26)', () => {
     for (const id of IDS) {
       const ps = textos[id] ?? [];
       expect(Object.keys(cache.documentos[id]?.partes ?? {}), id).toEqual(ps.map((p) => p.clave));
-      for (const p of ps) expect(cache.documentos[id]?.partes[p.clave]?.sha256, `${id} ${p.clave}`).toBe(createHash('sha256').update(p.texto).digest('hex'));
+      for (const p of ps) expect(cache.documentos[id]?.partes[p.clave]?.sha256, `${id} ${p.clave}`).toBe(shaTexto(p.texto));
     }
     expect(cache.huella.codigo).toBe(huellaMotor(RAIZ));
   });
 
-  it('T-AB-03 (a) el piso registrado sale de la caché: mayor F2 de PER y ORG con precisión global >= 0,70, dentro de la rejilla', () => {
-    const filas = UMBRALES.map((u) => evaluarUmbral(cache, GOLDS, u));
+  it('T-AB-03 la calibración de PF-3 salió de su caché natural (histórica, solo desarrollo), que no se mide porque cinco documentos cambiaron de texto', () => {
+    const pf3 = leer<CacheModelo>(CACHE_PF3_HISTORICA);
+    expect(pf3).toMatchObject({ formato: 'sig-low/cache-modelo', modelo: 'x-large', vista: 'natural', etiquetas: 'estandar', piso: 0.1 });
+    expect(cal.cache).toMatchObject({ modelo: 'x-large', documentos: 19 });
+    expect(cal.cache.huella).toEqual(pf3.huella);
+    expect(Object.keys(pf3.documentos).sort()).toEqual(DESARROLLO); // PF-3 calibró sin mirar la reserva (D-01)
+    // Los documentos cuyo texto cambió después de PF-3 (PG-1a-r1, PG-2-r1) ya no reproducen su huella; la vista natural de PF-4a los pasó de nuevo.
+    const cambiados = DESARROLLO.filter((id) => (textos[id] ?? []).some((p) => pf3.documentos[id]?.partes[p.clave]?.sha256 !== shaTexto(p.texto)));
+    expect(cambiados).toEqual(['C02', 'C06', 'C17', 'C27', 'C28']);
+    const procedencia = (cache as CacheVista).procedencia ?? {};
+    expect(DESARROLLO.filter((id) => !(id in procedencia))).toEqual(cambiados);
+  });
+
+  it('T-AB-03 (a) con el texto final, el piso registrado sigue saliendo de la caché en los 19 de desarrollo: mayor F2 de PER y ORG con precisión global >= 0,70', () => {
+    const filas = UMBRALES.map((u) => evaluarUmbral(cache, GOLDS, u, DESARROLLO));
     const sel = elegirUmbral(filas, 0.7);
     expect(sel.cumplePrecision).toBe(true);
     expect(UMBRALES as readonly number[]).toContain(sel.umbral);
@@ -178,20 +211,96 @@ describe('T-AB-03 · calibración con las salidas guardadas de x-large (vista na
     for (const f of filas.filter((x) => x.precisionGlobal >= 0.7)) {
       expect(f.grupos['PER_ORG']?.f2 ?? 0).toBeLessThanOrEqual(elegida.grupos['PER_ORG']?.f2 ?? 0);
     }
-    // El archivo de calibración guarda las mismas cifras que se recalculan.
-    expect(cal.barridoUmbral.map((f) => [f.umbral, f.detecciones, f.verdaderas])).toEqual(filas.map((f) => [f.umbral, f.detecciones, f.verdaderas]));
+    // La confirmación de P0-4 guarda las mismas cifras que se recalculan. Las de calibracion-umbral.json son del texto de PF-3, que
+    // ya no se puede reproducir con el gold final (ver la prueba de procedencia); su elección sí, y es la misma.
+    const conf = leer<ConfirmacionCalibracion>(CONFIRMACION);
+    expect(conf.desarrollo.docs).toEqual(DESARROLLO);
+    expect(conf.desarrollo.barridoUmbral.filter((f) => (UMBRALES as readonly number[]).includes(f.umbral)).map((f) => [f.umbral, f.detecciones, f.verdaderas]))
+      .toEqual(filas.map((f) => [f.umbral, f.detecciones, f.verdaderas]));
+    expect(conf.desarrollo.seleccion.umbral).toBe(cal.seleccion.umbral);
   });
 
-  it('T-AB-03 (b) nerHighThreshold es el menor valor con precisión >= 0,90 entre los tramos media y el anterior (0,01 menos) no la alcanza', () => {
+  it('T-AB-03 (b) con el texto final, nerHighThreshold sigue siendo el menor valor con precisión >= 0,90 entre los tramos media de desarrollo y el anterior (0,01 menos) no la alcanza', () => {
     expect(cal.altoAlcanzable).toBe(true);
     const alto = cal.nerHighThreshold as number;
     expect(alto).toBeGreaterThanOrEqual(cal.nerMinScore);
     const candidatos = Array.from({ length: Math.round((0.99 - cal.nerMinScore) * 100) + 1 }, (_, i) => Math.round((cal.nerMinScore + i * 0.01) * 100) / 100);
-    const filas = barridoAlto(cache, GOLDS, cal.nerMinScore, candidatos);
+    const filas = barridoAlto(cache, GOLDS, cal.nerMinScore, candidatos, DESARROLLO);
     const fila = filas.find((f) => f.umbral === alto) as FilaAlto;
     expect(fila.precision).toBeGreaterThanOrEqual(0.9);
     expect(elegirAlto(filas, 0.9)?.umbral).toBe(alto);
     for (const f of filas.filter((x) => x.umbral < alto)) expect(f.precision).toBeLessThan(0.9);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------- P0-4 · T-AB-03 en la reserva
+describe('T-AB-03 · confirmación del umbral y de la banda en la reserva (P0-4, funciones puras)', () => {
+  it('T-AB-03 confirmarConjunto aplica la regla de (a) y mide la banda calibrada, con cifras calculadas a mano en el gold de juguete', () => {
+    // Piso 0,4: 4 tramos (0,95 v, 0,45 v, 0,70 v, 0,60 f), precisión 0,75; la regla elige 0,4 (la única con precisión >= 0,70).
+    const a = confirmarConjunto(CACHE, { T01: GOLD }, ['T01'], 0.4, 0.7);
+    expect(a.seleccion).toMatchObject({ umbral: 0.4, cumplePrecision: true });
+    expect(a.confirmaUmbral).toBe(true);
+    expect(a.enElUmbral).toMatchObject({ umbral: 0.4, detecciones: 4, verdaderas: 3 });
+    expect(a.enLaBanda).toMatchObject({ umbral: 0.7, tramos: 2, verdaderas: 2, precision: 1 }); // 0,95 y 0,70
+    expect(a.confirmaBanda).toBe(true);
+    expect(a.alto?.umbral).toBe(0.61); // desde 0,61 solo quedan 0,95 y 0,70
+    // Con el piso 0,3 la regla elige 0,4 (a 0,3 la precisión es 0,6): el piso no se confirma; la banda 0,5 da 2 de 3 y tampoco.
+    const b = confirmarConjunto(CACHE, { T01: GOLD }, ['T01'], 0.3, 0.5);
+    expect(b.confirmaUmbral).toBe(false);
+    expect(b.enLaBanda).toMatchObject({ tramos: 3, verdaderas: 2 });
+    expect(b.confirmaBanda).toBe(false);
+    // Un documento que no está en la caché no se mide.
+    expect(confirmarConjunto(CACHE, { T01: GOLD }, ['T01', 'T09'], 0.4, 0.7).docs).toEqual(['T01']);
+  });
+
+  it('T-AB-03 confirmarCalibracion separa el desarrollo de la reserva por el conjunto del gold y confirma solo si la reserva confirma piso y banda', () => {
+    const reserva: GoldDocument = { ...GOLD, docId: 'T02', conjunto: 'reserva' };
+    const cache: CacheModelo = { ...CACHE, documentos: { T01: CACHE.documentos['T01'] as DocumentoCache, T02: CACHE.documentos['T01'] as DocumentoCache } };
+    const c = confirmarCalibracion(cache, 'prueba', { T01: GOLD, T02: reserva }, { nerMinScore: 0.4, nerHighThreshold: 0.7 }, '2026-10-31 00:00:00');
+    expect([c.desarrollo.docs, c.reserva.docs]).toEqual([['T01'], ['T02']]);
+    expect(c.confirmada).toBe(true);
+    expect(c.etiquetas.nota).toContain('no se repite en la reserva');
+    expect(confirmarCalibracion(cache, 'prueba', { T01: GOLD, T02: reserva }, { nerMinScore: 0.4, nerHighThreshold: 0.5 }, 'f').confirmada).toBe(false);
+    expect(() => confirmarCalibracion({ ...cache, vista: 'mayusculas' }, 'prueba', { T01: GOLD }, { nerMinScore: 0.4, nerHighThreshold: 0.7 }, 'f')).toThrow('VISTA_NO_NATURAL');
+  });
+});
+
+describe('T-AB-03 · confirmación de la calibración en la reserva con las salidas guardadas (P0-4)', () => {
+  const cache = naturalDeVistas();
+  const cal = leer<Calibracion>(CALIBRACION);
+  const conf = leer<ConfirmacionCalibracion>(CONFIRMACION);
+
+  it('T-AB-03 la confirmación guardada usa el umbral y la banda de PF-3 y la vista natural de la caché única, con el desarrollo y la reserva aparte', () => {
+    expect(conf).toMatchObject({ formato: 'sig-low/confirmacion-calibracion', v: 1, minPrecisionGlobal: 0.7, minPrecisionBanda: 0.9 });
+    expect(conf.calibrado).toMatchObject({ nerMinScore: cal.nerMinScore, nerHighThreshold: cal.nerHighThreshold });
+    expect(conf.cache).toMatchObject({ modelo: 'x-large', vista: 'natural', etiquetas: 'estandar', documentos: 29 });
+    expect(conf.cache.huella).toEqual(cache.huella);
+    expect(conf.desarrollo.docs).toEqual(DESARROLLO);
+    expect(conf.reserva.docs).toEqual(RESERVA);
+  });
+
+  it('T-AB-03 la confirmación guardada se recalcula igual desde la caché y el gold', () => {
+    expect(confirmarCalibracion(cache, conf.cache.archivo, GOLDS, conf.calibrado, conf.fecha)).toEqual(conf);
+  });
+
+  it('T-AB-03 en la reserva, la regla de (a) elige el mismo nerMinScore con precisión global >= 0,70: el piso se confirma', () => {
+    expect(conf.reserva.seleccion).toMatchObject({ umbral: cal.nerMinScore, cumplePrecision: true });
+    expect(conf.reserva.enElUmbral.precisionGlobal).toBeGreaterThanOrEqual(0.7);
+    expect(conf.reserva.confirmaUmbral).toBe(true);
+  });
+
+  it('T-AB-03 la banda queda registrada con su precisión en cada conjunto y solo se da por confirmada con precisión >= 0,90 en la reserva', () => {
+    for (const x of [conf.desarrollo, conf.reserva]) {
+      expect(x.enLaBanda.umbral).toBe(cal.nerHighThreshold);
+      expect(x.confirmaBanda).toBe(x.enLaBanda.tramos > 0 && x.enLaBanda.precision >= 0.9);
+    }
+    expect(conf.desarrollo.confirmaUmbral && conf.desarrollo.confirmaBanda).toBe(true); // el desarrollo con el texto final sí la confirma
+    expect(conf.confirmada).toBe(conf.reserva.confirmaUmbral && conf.reserva.confirmaBanda);
+  });
+
+  it('T-AB-03 la reserva no cambia el umbral ni la banda del producto: siguen siendo los de PF-3', async () => {
+    const { UMBRALES_MODELO } = await import('../../src/core/umbrales.ts');
+    expect(UMBRALES_MODELO).toEqual({ nerHighThreshold: cal.nerHighThreshold, nerMinScore: cal.nerMinScore });
   });
 });
 
@@ -479,8 +588,9 @@ describe('T-AB-01 · filas por vista de 10.4.1 (personas 0,85 y 0,75; organizaci
 
 // ---------------------------------------------------------------------------------------------------------------- archivo real
 // El archivo `metricas/modelo-x-large-vistas.json` lo deja `node scripts/evaluar-modelo.ts pasada | verificar | evaluar` (PF-4a). Estas
-// pruebas leen el archivo guardado. Contra el gold final de los 29 documentos (rama t/PG-2-r1-lineas-propias, fuera de main hasta P0-4,
-// decisión D-01) las cifras se recalculan completas solo cuando ese corpus está en `corpus/gold/` (después de P0-4).
+// pruebas leen el archivo guardado. Contra el gold final de los 29 documentos las cifras se recalculan completas cuando ese corpus está
+// en `corpus/gold/` (en main desde PG-2-r1; D-01). P0-4 volvió a correr `evaluar` con el motor vigente (PB-2-r3 y PB-2-r4 cambiaron la
+// fusión después de PF-4a), así que la evaluación guardada es la del código que se mide.
 const HAY_VISTAS = existsSync(ruta(ARCHIVO_VISTAS));
 const CORPUS_FINAL_EN_REPO = existsSync(ruta('corpus/gold/C07.json'));
 
@@ -525,7 +635,7 @@ describe.skipIf(!HAY_VISTAS)('T-AB-01 · la caché de salidas de x-large en las 
 
   it('T-AB-01 la vista natural reutiliza de PF-3 solo documentos con el mismo texto, ONNX y código, y los demás vienen de una pasada nueva', () => {
     const nat = archivo.vistas.natural;
-    const pf3 = leer<CacheModelo>(CACHE_X_LARGE);
+    const pf3 = leer<CacheModelo>(CACHE_PF3_HISTORICA);
     const reutilizados = Object.keys(nat?.procedencia ?? {});
     expect(reutilizados.length).toBeGreaterThan(0);
     expect(nat?.huella.onnx).toBe(pf3.huella.onnx);

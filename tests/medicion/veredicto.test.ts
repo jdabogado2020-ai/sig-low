@@ -7,7 +7,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { codigoDeSalida, construirInforme, gruposDeCierre } from '../../scripts/metrics.ts';
 import type { MetricsReport, RunConfig, RunVista } from '../../scripts/metrics.ts';
 import {
-  actualizarBrechas, brechaCompleta, brechasDe, conVeredicto, evaluarVeredicto, leerBrechas, main, BRECHAS_VACIAS,
+  actualizarBrechas, brechaCompleta, brechasDe, brechasSobreajuste, conVeredicto, evaluarVeredicto, leerBrechas, leerInformes, main, reservaAparte,
+  tablaReserva, ultimosPorVista, BRECHAS_VACIAS, PREFIJO_SOBREAJUSTE,
 } from '../../scripts/veredicto.ts';
 import { cacheSimulada } from './lib/cache-simulada.ts';
 import { cargarCorpus, RAIZ } from './lib/corpus.ts';
@@ -148,6 +149,22 @@ describe('T-UA-01 · evaluación automática de 10.4.1', () => {
     expect(informes[0]?.veredicto).toBeUndefined();   // no muta los informes de entrada
   });
 
+  // P0-4: 10.4.1 se evalúa sobre los 29 documentos; medir solo sobre desarrollo está prohibido (10.4.3).
+  it('T-UA-01 el veredicto usa las corridas de todo el corpus: una de desarrollo o de reserva más reciente no reemplaza a la de los 29', () => {
+    const informes = tres();
+    const desarrollo = informe('natural', 'x-large', '2026-10-30T16:00');
+    desarrollo.corrida.conjunto = 'desarrollo';
+    fila(desarrollo, 'CC').exhaustividadMencion = 0.5;
+    const reserva = informe('mayusculas', 'x-large', '2026-10-30T16:00');
+    reserva.corrida.conjunto = 'reserva';
+    fila(reserva, 'PERSONA_FUERA@mayusculas').exhaustividadMencion = 0.5;
+    const v = evaluarVeredicto([...informes, desarrollo, reserva]);
+    expect(v.incumplidos).toEqual([]);
+    expect(v.cierra).toBe(true);
+    // Sin la corrida de los 29 en una vista, la de desarrollo no la suple.
+    expect(evaluarVeredicto([informes[1] as MetricsReport, informes[2] as MetricsReport, desarrollo]).incumplidos).toContain('FALTA_CORRIDA_X_LARGE_NATURAL');
+  });
+
   it('T-UA-01 con el motor real y la caché simulada existen todas las filas que el veredicto exige', async () => {
     const corpus = cargarCorpus('todo').slice(0, 3);
     const informes: MetricsReport[] = [];
@@ -159,6 +176,59 @@ describe('T-UA-01 · evaluación automática de 10.4.1', () => {
     expect(v.filas.length).toBeGreaterThan(30);
     for (const f of v.filas) expect(Number.isFinite(f.valor), f.fila).toBe(true);
   }, 300_000);
+});
+
+// P0-4: la reserva se informa aparte (10.4.1). Informes de x-large sobre el desarrollo y sobre la reserva, uno por vista.
+const enConjunto = (r: MetricsReport, c: 'desarrollo' | 'reserva'): MetricsReport => { r.corrida.conjunto = c; return r; };
+const seis = (): MetricsReport[] => [
+  ...(['natural', 'mayusculas', 'minusculas'] as const).map((v) => enConjunto(informe(v), 'desarrollo')),
+  ...(['natural', 'mayusculas', 'minusculas'] as const).map((v) => enConjunto(informe(v), 'reserva')),
+];
+const GRUPOS_EXHAUSTIVIDAD = ['CC', 'NIT', 'RADICADO', 'TELEFONO', 'CORREO', 'IDS_ROTULADOS', 'IDS_ROTULADOS_CON_ROTULO', 'LISTA', 'LISTA_CLASES_FUERTES',
+  'PERSONA_FUERA', 'ORG_FUERA', 'DIRECCIONES', 'FECHA', 'VALOR'];
+
+describe('T-UA-01 · la reserva se informa aparte (10.4.1)', () => {
+  it('T-UA-01 compara desarrollo y reserva en cada grupo de exhaustividad de la vista natural y en los de fuera de la lista de las otras dos vistas', () => {
+    const ra = reservaAparte(seis());
+    expect(ra.faltan).toEqual([]);
+    expect(ra.filas.filter((f) => f.vista === 'natural').map((f) => f.grupo)).toEqual(GRUPOS_EXHAUSTIVIDAD);
+    expect(ra.filas.filter((f) => f.vista === 'mayusculas').map((f) => f.grupo)).toEqual(['PERSONA_FUERA@mayusculas', 'ORG_FUERA@mayusculas']);
+    expect(ra.filas.filter((f) => f.vista === 'minusculas').map((f) => f.grupo)).toEqual(['PERSONA_FUERA@minusculas', 'ORG_FUERA@minusculas']);
+    expect(ra.filas.every((f) => !f.sobreajuste && f.diferencia === 0 && f.nDesarrollo === 100 && f.nReserva === 100)).toBe(true);
+    expect(ra.corridas.desarrollo).toHaveLength(3);
+    expect(ra.corridas.reserva[0]).toMatch(/^20261030-1400-x-large-natural-8h-reserva$/u);
+  });
+
+  it('T-UA-01 «posible sobreajuste» si la reserva queda más de 0,03 bajo el desarrollo; a 0,03 justo o por encima del desarrollo, no', () => {
+    const i = seis();
+    const resNatural = i[3] as MetricsReport;
+    fila(resNatural, 'CC').exhaustividadMencion = 0.96;
+    fila(resNatural, 'CC').idsNoCubiertas = ['C07-A001', 'C08-A002'];
+    fila(resNatural, 'FECHA').exhaustividadMencion = 0.97;               // 1 − 0,97 = 0,03: no
+    fila(i[0] as MetricsReport, 'VALOR').exhaustividadMencion = 0.9;     // la reserva supera al desarrollo: no
+    fila(i[4] as MetricsReport, 'ORG_FUERA@mayusculas').exhaustividadMencion = 0.9;
+    const ra = reservaAparte(i);
+    expect(ra.filas.filter((f) => f.sobreajuste).map((f) => `${f.grupo}|${f.vista}`)).toEqual(['CC|natural', 'ORG_FUERA@mayusculas|mayusculas']);
+    const cc = ra.filas.find((f) => f.grupo === 'CC');
+    expect(cc).toMatchObject({ desarrollo: 1, reserva: 0.96, nDesarrollo: 100, nReserva: 100, idsReserva: ['C07-A001', 'C08-A002'] });
+    expect(cc?.diferencia).toBeCloseTo(0.04, 9);
+    expect(ra.filas.find((f) => f.grupo === 'VALOR')?.diferencia).toBeCloseTo(-0.1, 9);
+    const t = tablaReserva(ra);
+    expect(t).toMatch(/CC\s+natural\s+100\s+1\.000\s+100\s+0\.960\s+\+0\.040\s+posible sobreajuste/u);
+    expect(t).not.toContain('C07-A001');   // la tabla no lista ids ni valores: solo contadores
+  });
+
+  it('T-UA-01 un grupo sin menciones en uno de los dos conjuntos no se compara, y una vista sin sus dos corridas se dice', () => {
+    const i = seis();
+    fila(i[3] as MetricsReport, 'LISTA').n = 0;
+    expect(reservaAparte(i).filas.some((f) => f.grupo === 'LISTA')).toBe(false);
+    expect(reservaAparte(seis().slice(0, 5)).faltan).toEqual(['FALTA_RESERVA_MINUSCULAS']);
+    expect(reservaAparte(tres()).faltan).toEqual(['FALTA_DESARROLLO_NATURAL', 'FALTA_DESARROLLO_MAYUSCULAS', 'FALTA_DESARROLLO_MINUSCULAS']);
+    // La reserva aparte no entra en el veredicto: las corridas de desarrollo y reserva no lo cambian.
+    const peor = seis();
+    fila(peor[3] as MetricsReport, 'CC').exhaustividadMencion = 0.5;
+    expect(evaluarVeredicto([...tres(), ...peor]).cierra).toBe(true);
+  });
 });
 
 describe('T-UA-02 · registro de brechas', () => {
@@ -206,6 +276,61 @@ describe('T-UA-02 · registro de brechas', () => {
     expect(a2.brechas.length).toBe(2);
   });
 
+  // P0-4: la hipótesis, la tarea y la acción se afinan al revisar (10.4.3); una nueva corrida no debe devolverlas a las genéricas.
+  it('T-UA-02 una brecha que sigue abierta conserva la hipótesis, la tarea y la acción afinadas y pone al día valor, n, ids y corrida', () => {
+    const a1 = actualizarBrechas(BRECHAS_VACIAS, evaluarVeredicto(incumplido()), 'c1');
+    const afinado = structuredClone(a1);
+    const cc = afinado.brechas.find((b) => b.fila === 'CC') as NonNullable<(typeof afinado.brechas)[number]>;
+    Object.assign(cc, { hipotesis: 'hipótesis afinada', tarea: 'PA-2-r1', accion: 'acción afinada' });
+    const otra = incumplido();
+    fila(otra[0] as MetricsReport, 'CC').exhaustividadMencion = 0.95;
+    fila(otra[0] as MetricsReport, 'CC').idsNoCubiertas = ['C01-A010'];
+    const a2 = actualizarBrechas(afinado, evaluarVeredicto(otra), 'c2');
+    expect(a2.brechas.find((b) => b.fila === 'CC')).toMatchObject({
+      hipotesis: 'hipótesis afinada', tarea: 'PA-2-r1', accion: 'acción afinada', valor: 0.95, idsAnotacion: ['C01-A010'], corrida: 'c2', estado: 'abierta',
+    });
+  });
+
+  it('T-UA-02 «posible sobreajuste» se registra como brecha informativa completa, con ids de la reserva, y solo se reconcilia con las tres vistas comparadas', () => {
+    const i = seis();
+    fila(i[3] as MetricsReport, 'CC').exhaustividadMencion = 0.96;
+    fila(i[3] as MetricsReport, 'CC').idsNoCubiertas = ['C07-A001'];
+    const sobre = brechasSobreajuste(reservaAparte(i));
+    expect(sobre).toHaveLength(1);
+    expect(sobre[0]).toMatchObject({
+      fila: `${PREFIJO_SOBREAJUSTE}CC`, vista: 'natural', medida: 'sobreajuste', valor: 0.96, umbral: 0.97, operador: '>=', n: 100,
+      idsAnotacion: ['C07-A001'], cierre: false, estado: 'abierta',
+    });
+    expect(brechaCompleta(sobre[0] as NonNullable<(typeof sobre)[number]>)).toBe(true);
+    expect(sobre[0]?.tarea).toContain('PA-2');
+    expect(sobre[0]?.accion).toContain('D-01');
+    const v = evaluarVeredicto(tres());
+    const a1 = actualizarBrechas(BRECHAS_VACIAS, v, 'c1', sobre);
+    expect(a1.brechas.map((b) => [b.fila, b.cierre, b.estado])).toEqual([[`${PREFIJO_SOBREAJUSTE}CC`, false, 'abierta']]);
+    // Sin corridas de desarrollo y reserva no se toca; con las tres vistas y sin sobreajuste, se cierra.
+    expect(actualizarBrechas(a1, v, 'c2')).toEqual(a1);
+    expect(actualizarBrechas(a1, v, 'c3', [])?.brechas[0]?.estado).toBe('cerrada');
+  });
+
+  it('T-UA-02 la línea de órdenes informa la reserva aparte, registra el sobreajuste sin bloquear el cierre y no escribe el veredicto en las corridas parciales', () => {
+    const carpeta = join(tmp, 'resultados');
+    mkdirSync(carpeta);
+    for (const r of tres()) writeFileSync(join(carpeta, `20261030-1400-x-large-${r.corrida.vista}-8h.json`), JSON.stringify(r));
+    const parciales = seis();
+    fila(parciales[3] as MetricsReport, 'CC').exhaustividadMencion = 0.9;
+    fila(parciales[3] as MetricsReport, 'CC').idsNoCubiertas = ['C07-A001'];
+    for (const r of parciales) writeFileSync(join(carpeta, `20261030-1400-x-large-${r.corrida.vista}-8h-${r.corrida.conjunto}.json`), JSON.stringify(r));
+    const rutaBrechas = join(tmp, 'brechas.json');
+    expect(main([`--informes=${carpeta}`, `--brechas=${rutaBrechas}`])).toBe(0);   // cierra: el sobreajuste es informativo
+    const b = leerBrechas(rutaBrechas);
+    expect(b.brechas.map((x) => [x.fila, x.vista, x.cierre, x.estado])).toEqual([[`${PREFIJO_SOBREAJUSTE}CC`, 'natural', false, 'abierta']]);
+    expect(b.brechas[0]?.corrida).toContain('-reserva');
+    const parcial = JSON.parse(readFileSync(join(carpeta, '20261030-1400-x-large-natural-8h-reserva.json'), 'utf8')) as MetricsReport;
+    expect(parcial.veredicto).toBeUndefined();
+    const todo = JSON.parse(readFileSync(join(carpeta, '20261030-1400-x-large-natural-8h.json'), 'utf8')) as MetricsReport;
+    expect(todo.veredicto?.cierra).toBe(true);
+  });
+
   it('T-UA-02 la línea de órdenes escribe el veredicto en los informes y las brechas en corpus/brechas.json, y sale con 1 si no cierra', () => {
     const carpeta = join(tmp, 'resultados');
     mkdirSync(carpeta);
@@ -226,9 +351,21 @@ describe('T-UA-02 · registro de brechas', () => {
     expect(leerBrechas(rutaBrechas).brechas.every((x) => x.estado === 'cerrada')).toBe(true);
   });
 
-  it('T-UA-02 corpus/brechas.json existe, es del formato y está vacío hasta P0-4 (sin filas de cierre abiertas)', () => {
+  // P0-4: antes de la primera medición el registro estaba vacío; desde P0-4 sus brechas de cierre abiertas son exactamente las filas
+  // incumplidas del veredicto de los informes guardados (10.4.3: se cierran en la ventana de ajustes; P0-5 exige que no quede ninguna).
+  it('T-UA-02 corpus/brechas.json es del formato, cada entrada está completa y sus brechas de cierre abiertas son las filas incumplidas del veredicto guardado', () => {
     const b = leerBrechas(join(RAIZ, 'corpus', 'brechas.json'));
     expect(b.formato).toBe('sig-low/brechas');
-    expect(b.brechas.filter((x) => x.cierre && x.estado === 'abierta')).toEqual([]);
+    for (const x of b.brechas) {
+      expect(brechaCompleta(x), x.fila).toBe(true);
+      for (const id of x.idsAnotacion) expect(id, x.fila).toMatch(/^C\d\d-A\d{3}$/u);   // ids de anotación, nunca valores
+    }
+    const abiertas = b.brechas.filter((x) => x.cierre && x.estado === 'abierta').map((x) => `${x.fila}|${x.vista ?? ''}`).sort();
+    const informes = leerInformes(join(RAIZ, 'corpus', 'resultados')).map((x) => x.informe);
+    if (informes.length === 0) { expect(abiertas).toEqual([]); return; }   // sin medición todavía: vacío
+    const v = evaluarVeredicto(informes);
+    expect(abiertas).toEqual(brechasDe(v, 'x').map((x) => `${x.fila}|${x.vista ?? ''}`).sort());
+    // Los informes que usó el veredicto (los últimos de x-large sobre los 29, por vista) llevan escrito el mismo resultado.
+    for (const r of ultimosPorVista(informes).values()) expect(r.veredicto, r.corrida.vista).toEqual({ cierra: v.cierra, incumplidos: v.incumplidos });
   });
 });

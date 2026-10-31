@@ -1,9 +1,11 @@
 // Veredicto de 10.4.1 y registro de brechas (PG-3b; T-UA-01 y T-UA-02; plan 10.4.3).
 // Funciones puras sobre los informes de `scripts/metrics.ts`. Línea de órdenes:
 //   node scripts/veredicto.ts [--informes=<carpeta>] [--brechas=<corpus/brechas.json>] [--sin-escribir]
-// Toma el informe más reciente de x-large por vista (natural, mayusculas, minusculas), evalúa todas las filas de cierre, escribe
-// `veredicto` en esos informes y registra en `corpus/brechas.json` cada fila de cierre incumplida (ids de anotación, nunca valores).
-// Sale con 0 si cierra, 1 si no cierra y 2 si el uso o la entrada son inválidos.
+// Toma el informe más reciente de x-large por vista (natural, mayusculas, minusculas) sobre todo el corpus (conjunto `todo`),
+// evalúa todas las filas de cierre, escribe `veredicto` en esos informes y registra en `corpus/brechas.json` cada fila de cierre
+// incumplida (ids de anotación, nunca valores). Si hay corridas de x-large sobre el desarrollo y sobre la reserva, informa la
+// reserva aparte y registra «posible sobreajuste» (10.4.1) como brecha informativa. Sale con 0 si cierra, 1 si no cierra y 2 si el
+// uso o la entrada son inválidos.
 //
 // Convención de filas filtradas (decisión del integrador sobre PG-3a): en una fila que filtra por anotación (lista, fuera de la
 // lista) una detección verdadera cuenta solo si su mejor anotación cumple el filtro y una falsa cuenta en todas las filas de su
@@ -55,11 +57,18 @@ const UMBRALES_EXHAUSTIVIDAD: ReadonlyArray<readonly [grupo: string, mencion: nu
 /** Tipos de «banderas de datos indirectos» (10.4.1): CARGO, DIAGNOSTICO, MENOR, fecha de nacimiento y edad. */
 const TIPOS_INDIRECTOS: readonly string[] = ['CARGO', 'DIAGNOSTICO', 'MENOR', 'FECHA_NACIMIENTO_A_RANGO_EDAD', 'EDAD_A_RANGO'];
 
-/** Último informe por (config, vista) entre los dados: el de `corrida.fecha` mayor. */
-export function ultimosPorVista(informes: readonly MetricsReport[], config: MetricsReport['corrida']['config'] = 'x-large'): Map<RunVista, MetricsReport> {
+/**
+ * Último informe por (config, vista) del conjunto dado entre los dados: el de `corrida.fecha` mayor. El veredicto usa el conjunto
+ * `todo` (10.4.1 se evalúa sobre los 29 documentos; medir solo sobre desarrollo está prohibido, 10.4.3): una corrida de desarrollo o
+ * de reserva, aunque sea más reciente, no reemplaza a la de todo el corpus. Las de desarrollo y reserva sirven para informar la
+ * reserva aparte (`reservaAparte`).
+ */
+export function ultimosPorVista(
+  informes: readonly MetricsReport[], config: MetricsReport['corrida']['config'] = 'x-large', conjunto: MetricsReport['corrida']['conjunto'] = 'todo',
+): Map<RunVista, MetricsReport> {
   const m = new Map<RunVista, MetricsReport>();
   for (const r of informes) {
-    if (r.corrida.config !== config) continue;
+    if (r.corrida.config !== config || r.corrida.conjunto !== conjunto) continue;
     const previo = m.get(r.corrida.vista);
     if (previo === undefined || r.corrida.fecha >= previo.corrida.fecha) m.set(r.corrida.vista, r);
   }
@@ -89,7 +98,8 @@ export function evaluarVeredicto(informes: readonly MetricsReport[]): Veredicto 
       cumple: sinDatos || cumple(f.exhaustividadMencion, '>=', mencion), ids: base.ids, ...(sinDatos ? { nota: 'sin menciones en el conjunto' } : {}) });
     if (entidad !== undefined) {
       filas.push({ ...v, fila: nombre, medida: 'entidad', valor: f.exhaustividadEntidadEstricta, umbral: entidad, operador: '>=', n: f.entidades, cierre: true,
-        cumple: f.entidades === 0 || cumple(f.exhaustividadEntidadEstricta, '>=', entidad), ids: [], ...(f.entidades === 0 ? { nota: 'sin entidades en el conjunto' } : {}) });
+        // Una entidad incumple la estricta por una mención sin cubrir: los ids afectados son los de esas menciones.
+        cumple: f.entidades === 0 || cumple(f.exhaustividadEntidadEstricta, '>=', entidad), ids: base.ids, ...(f.entidades === 0 ? { nota: 'sin entidades en el conjunto' } : {}) });
     }
   };
 
@@ -97,22 +107,25 @@ export function evaluarVeredicto(informes: readonly MetricsReport[]): Veredicto 
     for (const [g, m, e] of UMBRALES_EXHAUSTIVIDAD) exhaustividad(nat, g, m, e);
     // Generalización: municipios y despachos (sugerencia presente) y banderas de datos indirectos.
     const gen = (k: string): { esperadas: number; presentes: number } => nat.generalizacion.find((x) => x.tipo === k) ?? { esperadas: 0, presentes: 0 };
+    // Ids de anotación afectados de las filas que no son de exhaustividad (informes desde P0-4; los anteriores no los traen).
+    const afect = nat.idsAfectados;
+    const idsGen = (k: string): string[] => [...(afect?.generalizacion[k] ?? [])];
     for (const k of ['MUNICIPIO_A_DEPARTAMENTO', 'DESPACHO_A_GENERICO']) {
       const x = gen(k);
       filas.push({ fila: k, medida: 'banderas', valor: razon(x.presentes, x.esperadas), umbral: 0.95, operador: '>=', n: x.esperadas, cierre: true,
-        cumple: x.esperadas === 0 || cumple(razon(x.presentes, x.esperadas), '>=', 0.95), ids: [], ...(x.esperadas === 0 ? { nota: 'sin esperadas' } : {}) });
+        cumple: x.esperadas === 0 || cumple(razon(x.presentes, x.esperadas), '>=', 0.95), ids: idsGen(k), ...(x.esperadas === 0 ? { nota: 'sin esperadas' } : {}) });
     }
     const ind = TIPOS_INDIRECTOS.map(gen);
     const esp = ind.reduce((s, x) => s + x.esperadas, 0);
     const pre = ind.reduce((s, x) => s + x.presentes, 0);
     filas.push({ fila: 'BANDERAS_INDIRECTAS', medida: 'banderas', valor: razon(pre, esp), umbral: 0.90, operador: '>=', n: esp, cierre: true,
-      cumple: esp === 0 || cumple(razon(pre, esp), '>=', 0.90), ids: [], ...(esp === 0 ? { nota: 'sin esperadas' } : {}) });
+      cumple: esp === 0 || cumple(razon(pre, esp), '>=', 0.90), ids: TIPOS_INDIRECTOS.flatMap(idsGen), ...(esp === 0 ? { nota: 'sin esperadas' } : {}) });
     const hl = gen('HECHO_LLAMATIVO');
     filas.push({ fila: 'HECHO_LLAMATIVO', medida: 'banderas', valor: razon(hl.presentes, hl.esperadas), umbral: 0.60, operador: '>=', n: hl.esperadas, cierre: false,
-      cumple: hl.esperadas === 0 || cumple(razon(hl.presentes, hl.esperadas), '>=', 0.60), ids: [] });
+      cumple: hl.esperadas === 0 || cumple(razon(hl.presentes, hl.esperadas), '>=', 0.60), ids: idsGen('HECHO_LLAMATIVO') });
     // Negativos, citas con radicado, precisión global y fatiga.
     filas.push({ fila: 'NEGATIVOS', medida: 'negativos', valor: razon(nat.negativos.conDeteccion, nat.negativos.total), umbral: 0.10, operador: '<=',
-      n: nat.negativos.total, cierre: true, cumple: cumple(razon(nat.negativos.conDeteccion, nat.negativos.total), '<=', 0.10), ids: [] });
+      n: nat.negativos.total, cierre: true, cumple: cumple(razon(nat.negativos.conDeteccion, nat.negativos.total), '<=', 0.10), ids: [...(afect?.negativos ?? [])] });
     filas.push({ fila: 'CITAS_CON_RADICADO', medida: 'citas', valor: nat.negativos.citasConRadicado === 0 ? 1 : razon(nat.negativos.banderasPresentes, nat.negativos.citasConRadicado),
       umbral: 1, operador: '==', n: nat.negativos.citasConRadicado, cierre: true,
       cumple: nat.negativos.citasConRadicado === 0 || nat.negativos.banderasPresentes === nat.negativos.citasConRadicado, ids: [] });
@@ -130,12 +143,14 @@ export function evaluarVeredicto(informes: readonly MetricsReport[]): Veredicto 
       for (const [k, nombre, umbral] of consis) {
         const x = cg[k];
         const val = x.evaluadas === 0 ? 1 : x.consistentes / x.evaluadas;
-        filas.push({ fila: nombre, medida: 'consistencia', valor: val, umbral, operador: '>=', n: x.evaluadas, cierre: true, cumple: x.evaluadas === 0 || cumple(val, '>=', umbral), ids: [] });
+        filas.push({ fila: nombre, medida: 'consistencia', valor: val, umbral, operador: '>=', n: x.evaluadas, cierre: true, cumple: x.evaluadas === 0 || cumple(val, '>=', umbral),
+          ids: [...(afect?.consistencia[k] ?? [])] });
       }
       const duras = nat.consistencia.colisiones - cg.colisionesDelModelo;
-      filas.push({ fila: 'COLISIONES_DURAS', medida: 'colisiones', valor: duras, umbral: 0, operador: '==', n: nat.consistencia.colisiones, cierre: true, cumple: duras === 0, ids: [] });
+      filas.push({ fila: 'COLISIONES_DURAS', medida: 'colisiones', valor: duras, umbral: 0, operador: '==', n: nat.consistencia.colisiones, cierre: true, cumple: duras === 0,
+        ids: [...(afect?.colisiones ?? [])] });
       filas.push({ fila: 'COLISIONES_DEL_MODELO', medida: 'colisiones', valor: cg.colisionesDelModelo, umbral: 0, operador: '==', n: nat.consistencia.colisiones, cierre: false,
-        cumple: cg.colisionesDelModelo === 0, ids: [], nota: 'informativa: el revisor las separa con separar_mencion' });
+        cumple: cg.colisionesDelModelo === 0, ids: [...(afect?.colisionesDelModelo ?? [])], nota: 'informativa: el revisor las separa con separar_mencion' });
     }
   }
   // Filas por vista (personas y organizaciones fuera de la lista): cada una sale de la corrida de su vista.
@@ -181,13 +196,78 @@ export function conVeredicto(informes: readonly MetricsReport[], v: Veredicto): 
 }
 
 // ===================================================================================================================
+// La reserva, aparte (10.4.1)
+// ===================================================================================================================
+
+/** 10.4.1: «posible sobreajuste» si en algún grupo la exhaustividad de la reserva queda más de 0,03 bajo la de desarrollo. */
+export const MARGEN_SOBREAJUSTE = 0.03;
+export interface FilaReserva {
+  /** Grupo de exhaustividad de 10.4.1 (`CC`, `LISTA`, `PERSONA_FUERA@mayusculas`…). */
+  grupo: string;
+  vista: RunVista;
+  desarrollo: number;
+  reserva: number;
+  /** desarrollo − reserva (exhaustividad por mención). */
+  diferencia: number;
+  nDesarrollo: number;
+  nReserva: number;
+  sobreajuste: boolean;
+  /** Ids de anotación de la reserva sin cubrir (nunca valores). */
+  idsReserva: string[];
+}
+export interface ReservaAparte { filas: FilaReserva[]; faltan: string[]; corridas: { desarrollo: string[]; reserva: string[] } }
+
+const idCorrida = (r: MetricsReport): string =>
+  `${r.corrida.fecha.replace(/[-:T]/gu, '').replace(/^(\d{8})(\d{4}).*/u, '$1-$2')}-${r.corrida.config}-${r.corrida.vista}-${r.corrida.hilos}h-${r.corrida.conjunto}`;
+
+/**
+ * Compara, vista por vista, la última corrida de x-large sobre el desarrollo con la última sobre la reserva, en los grupos de
+ * exhaustividad de 10.4.1 (todos en la vista natural; personas y organizaciones fuera de la lista en las tres). Un grupo sin
+ * menciones en alguno de los dos conjuntos no se compara. Sin las dos corridas de una vista, la vista se lista en `faltan`.
+ */
+export function reservaAparte(informes: readonly MetricsReport[]): ReservaAparte {
+  const des = ultimosPorVista(informes, 'x-large', 'desarrollo');
+  const res = ultimosPorVista(informes, 'x-large', 'reserva');
+  const filas: FilaReserva[] = [];
+  const faltan: string[] = [];
+  for (const v of VISTAS) {
+    const d = des.get(v);
+    const r = res.get(v);
+    if (d === undefined || r === undefined) { faltan.push(`FALTA_${d === undefined ? 'DESARROLLO' : 'RESERVA'}_${v.toUpperCase()}`); continue; }
+    // En la vista natural, `PERSONA_FUERA` y `ORG_FUERA` ya son las filas de esa vista (`…@natural` es la misma medición).
+    const grupos = v === 'natural' ? UMBRALES_EXHAUSTIVIDAD.map(([g]) => g) : [`PERSONA_FUERA@${v}`, `ORG_FUERA@${v}`];
+    for (const g of grupos) {
+      const fd = fila(d, g);
+      const fr = fila(r, g);
+      if (fd === undefined || fr === undefined || fd.n === 0 || fr.n === 0) continue;
+      const diferencia = fd.exhaustividadMencion - fr.exhaustividadMencion;
+      filas.push({
+        grupo: g, vista: v, desarrollo: fd.exhaustividadMencion, reserva: fr.exhaustividadMencion, diferencia, nDesarrollo: fd.n, nReserva: fr.n,
+        sobreajuste: diferencia > MARGEN_SOBREAJUSTE + 1e-9, idsReserva: [...(fr.idsNoCubiertas ?? [])],
+      });
+    }
+  }
+  return { filas, faltan, corridas: { desarrollo: [...des.values()].map(idCorrida), reserva: [...res.values()].map(idCorrida) } };
+}
+
+/** Tabla de texto de la reserva aparte (solo contadores y proporciones). */
+export function tablaReserva(ra: ReservaAparte): string {
+  const l = ['== la reserva, aparte (10.4.1): exhaustividad por mención, x-large ==', 'grupo                       vista       n des  R des   n res  R res   des − res  '];
+  for (const f of ra.filas) {
+    l.push(`${f.grupo.padEnd(27)} ${f.vista.padEnd(10)} ${String(f.nDesarrollo).padStart(5)}  ${f.desarrollo.toFixed(3)}  ${String(f.nReserva).padStart(5)}  ${f.reserva.toFixed(3)}  ${(f.diferencia >= 0 ? '+' : '-') + Math.abs(f.diferencia).toFixed(3)}${f.sobreajuste ? '  posible sobreajuste' : ''}`);
+  }
+  for (const x of ra.faltan) l.push(`  sin comparar: ${x}`);
+  return l.join('\n');
+}
+
+// ===================================================================================================================
 // Registro de brechas (10.4.3, T-UA-02)
 // ===================================================================================================================
 
 export interface Brecha {
   fila: string;
   vista?: RunVista;
-  medida: FilaVeredicto['medida'];
+  medida: FilaVeredicto['medida'] | 'sobreajuste';
   valor: number;
   umbral: number;
   operador: Operador;
@@ -236,19 +316,51 @@ export function brechasDe(v: Veredicto, corrida: string): Brecha[] {
   });
 }
 
+/** Prefijo de las brechas de la reserva (10.4.1). */
+export const PREFIJO_SOBREAJUSTE = 'POSIBLE_SOBREAJUSTE:';
+
 /**
- * Pone al día el registro: agrega las brechas nuevas, actualiza las abiertas que siguen incumplidas y cierra las que ya se
- * cumplen. Nunca borra una entrada (queda `cerrada`). Una fila `FALTA_*` del veredicto no es una brecha de medición.
+ * Una brecha «posible sobreajuste» por grupo en el que la reserva queda más de 0,03 bajo el desarrollo. Se registran con
+ * `cierre: false`: 10.4.1 no las pone en la tabla de umbrales (el cierre ya cuenta la reserva dentro de los 29), y si bloquean
+ * o no lo decide el integrador. `umbral` es la cifra que la reserva tendría que alcanzar (desarrollo − 0,03).
  */
-export function actualizarBrechas(previo: BrechasArchivo, v: Veredicto, corrida: string): BrechasArchivo {
-  const nuevas = brechasDe(v, corrida);
+export function brechasSobreajuste(ra: ReservaAparte): Brecha[] {
+  const corrida = [...ra.corridas.desarrollo, ...ra.corridas.reserva].join('+') || 'sin-corridas';
+  return ra.filas.filter((f) => f.sobreajuste).map((f) => {
+    const r = responsable(f.grupo);
+    return {
+      fila: `${PREFIJO_SOBREAJUSTE}${f.grupo}`, vista: f.vista, medida: 'sobreajuste' as const,
+      valor: Number(f.reserva.toFixed(4)), umbral: Number((f.desarrollo - MARGEN_SOBREAJUSTE).toFixed(4)), operador: '>=' as const, n: f.nReserva,
+      idsAnotacion: [...f.idsReserva],
+      hipotesis: `la reserva (otra semilla y otras redacciones) queda ${f.diferencia.toFixed(3)} bajo el desarrollo (n ${f.nDesarrollo} frente a ${f.nReserva}): lo ajustado con el desarrollo no generaliza, o n es pequeño; ${r.hipotesis}`,
+      tarea: r.tarea,
+      accion: `${r.accion}; reproducir la forma con un caso de desarrollo o de prueba sintética, nunca ajustando con el texto de la reserva (D-01)`,
+      cierre: false, estado: 'abierta' as const, corrida,
+    };
+  });
+}
+
+/**
+ * Pone al día el registro: agrega las brechas nuevas, actualiza las abiertas que siguen incumplidas (cifras, n, ids y corrida; la
+ * hipótesis, la tarea y la acción ya registradas se conservan, porque se afinan al revisar) y cierra las que ya se cumplen. Nunca
+ * borra una entrada (queda `cerrada`). Una fila `FALTA_*` del veredicto no es una brecha de medición.
+ * `sobreajuste` son las brechas de la reserva aparte; si no se pasan (no hubo corridas de desarrollo y reserva), las de
+ * sobreajuste ya registradas se dejan como están, sin cerrarlas.
+ */
+export function actualizarBrechas(previo: BrechasArchivo, v: Veredicto, corrida: string, sobreajuste?: readonly Brecha[]): BrechasArchivo {
+  const nuevas = [...brechasDe(v, corrida), ...(sobreajuste ?? [])];
   const clave = (b: Pick<Brecha, 'fila' | 'vista'>): string => `${b.fila}|${b.vista ?? ''}`;
+  const esSobreajuste = (b: Brecha): boolean => b.fila.startsWith(PREFIJO_SOBREAJUSTE);
   const vigentes = new Set(nuevas.map(clave));
   const resultado: Brecha[] = [];
   for (const b of previo.brechas) {
-    if (b.estado === 'abierta' && !vigentes.has(clave(b))) resultado.push({ ...b, estado: 'cerrada' });
-    else if (b.estado === 'abierta') resultado.push(nuevas.find((n) => clave(n) === clave(b)) as Brecha);
-    else resultado.push(b);
+    if (sobreajuste === undefined && esSobreajuste(b)) resultado.push(b);
+    else if (b.estado === 'abierta' && !vigentes.has(clave(b))) resultado.push({ ...b, estado: 'cerrada' });
+    else if (b.estado === 'abierta') {
+      // Sigue abierta: se ponen al día las cifras y los ids; la hipótesis, la tarea y la acción afinadas al revisar se conservan.
+      const n = nuevas.find((x) => clave(x) === clave(b)) as Brecha;
+      resultado.push({ ...n, hipotesis: b.hipotesis, tarea: b.tarea, accion: b.accion });
+    } else resultado.push(b);
   }
   const ya = new Set(previo.brechas.filter((b) => b.estado === 'abierta').map(clave));
   for (const n of nuevas) if (!ya.has(clave(n))) resultado.push(n);
@@ -305,16 +417,24 @@ export function main(argv: readonly string[]): number {
   const corrida = usados.map((r) => `${r.corrida.fecha.replace(/[-:T]/gu, '').replace(/^(\d{8})(\d{4}).*/u, '$1-$2')}-${r.corrida.config}-${r.corrida.vista}-${r.corrida.hilos}h`).join('+') || 'sin-corridas';
   process.stdout.write(`veredicto: ${v.cierra ? 'CIERRA' : 'NO CIERRA'}\n`);
   for (const i of v.incumplidos) process.stdout.write(`  incumplida: ${i}\n`);
+  // La reserva, aparte (10.4.1): solo si hay corridas de x-large sobre el desarrollo y sobre la reserva.
+  const ra = reservaAparte(leidos.map((x) => x.informe));
+  // Las brechas de sobreajuste se reconcilian solo con las tres vistas comparadas (si falta una, las suyas no se cierran por omisión).
+  const hayReserva = ra.faltan.length === 0;
+  if (ra.filas.length > 0) process.stdout.write(`${tablaReserva(ra)}\n`);
+  if (!hayReserva) process.stdout.write(`reserva: faltan corridas de x-large con --conjunto=desarrollo y --conjunto=reserva (${ra.faltan.join(' ')}); las brechas de sobreajuste no se actualizan\n`);
   if (args.has('sin-escribir')) return v.cierra ? 0 : 1;
   const conV = conVeredicto(usados, v);
   for (const c of conV) {
-    const origen = leidos.find((x) => x.informe.corrida.vista === c.corrida.vista && x.informe.corrida.fecha === c.corrida.fecha && x.informe.corrida.config === c.corrida.config);
+    const origen = leidos.find((x) => x.informe.corrida.vista === c.corrida.vista && x.informe.corrida.fecha === c.corrida.fecha
+      && x.informe.corrida.config === c.corrida.config && x.informe.corrida.conjunto === c.corrida.conjunto);
     if (origen !== undefined) writeFileSync(origen.ruta, `${JSON.stringify(c, null, 2)}\n`);
   }
-  const brechas = actualizarBrechas(leerBrechas(rutaBrechas), v, corrida);
+  const brechas = actualizarBrechas(leerBrechas(rutaBrechas), v, corrida, hayReserva ? brechasSobreajuste(ra) : undefined);
   mkdirSync(dirname(rutaBrechas), { recursive: true });
   writeFileSync(rutaBrechas, `${JSON.stringify(brechas, null, 2)}\n`);
-  process.stdout.write(`brechas: ${rutaBrechas} (${brechas.brechas.filter((b) => b.estado === 'abierta').length} abiertas)\n`);
+  const abiertas = brechas.brechas.filter((b) => b.estado === 'abierta');
+  process.stdout.write(`brechas: ${rutaBrechas} (${abiertas.length} abiertas: ${abiertas.filter((b) => b.cierre).length} de cierre, ${abiertas.filter((b) => !b.cierre).length} informativas)\n`);
   return v.cierra ? 0 : 1;
 }
 
