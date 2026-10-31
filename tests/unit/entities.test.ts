@@ -469,7 +469,7 @@ describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1
   const loc = (doc: DocumentModel, t: string, occ = 0) => mc(doc, 0, t, { type: 'LUGAR', source: 'modelo', nerLabel: 'LOC', canonicalKey: `LUGAR:${t.toLowerCase()}` }, occ);
   const lst = (doc: DocumentModel, t: string, id: CaseEntityId, variantClass: Detection['variantClass'], occ = 0, extra: Partial<MergedCandidate> = {}) =>
     mc(doc, 0, t, { type: 'PERSONA', source: 'lista', caseEntityId: id, variantClass, canonicalKey: `LISTA:${id}`, ...extra }, occ);
-  const con = (doc: DocumentModel, cands: MergedCandidate[], caseList: CaseEntity[] = []) =>
+  const con = (doc: DocumentModel, cands: MergedCandidate[], caseList: readonly CaseEntity[] = []) =>
     buildReviewState(doc, cands, { table: EMPTY, caseList, ids: seqIds(1000) });
   /** Textos de cada entidad, en orden de lectura. */
   const grupos = (s: ReviewState): string[][] => {
