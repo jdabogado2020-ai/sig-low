@@ -7,6 +7,7 @@ import { actualizar, ir, useShell } from '../../estado.ts';
 import { Casilla } from '../../campos.tsx';
 import { Dialogo } from '../../dialogo.tsx';
 import { ROTULOS, t, X } from '../../mensajes.ts';
+import { RevisionBarra } from '../pestanas/RevisionBarra.tsx';
 import { RevisionPestanas } from '../pestanas/RevisionPestanas.tsx';
 import { AgregarReemplazo } from './AgregarReemplazo.tsx';
 import { Cuadricula } from './Cuadricula.tsx';
@@ -78,6 +79,7 @@ export function RevisionBase() {
       </div>
       <Leyenda abierta={leyenda} />
       <p class="solo-lectores" role="status" aria-label={tx('M-1307')} data-prueba="anuncio-revision">{anuncio}</p>
+      <RevisionBarra />
       {sinDetecciones ? <p class="aviso-vacio" data-prueba="sin-detecciones">{t('M-69')}</p> : null}
       <div class="revision-cuerpo">
         <PanelTexto singleKey={shell.singleKeyShortcuts} />

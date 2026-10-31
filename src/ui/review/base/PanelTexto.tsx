@@ -8,9 +8,11 @@ import { render as renderSalida } from '../../../core/render.ts';
 import type { Detection, DetectionId, Entity, ReviewState, Span } from '../../../core/types.ts';
 import { atributosDeContenedor } from '../../campos.tsx';
 import { t } from '../../mensajes.ts';
+import { consumirDestino, useBusqueda, useDestino, type Marca } from '../pestanas/herramientas.ts';
+import { trocear } from '../pestanas/coincidencias.tsx';
 import { aceptar, aceptarEntidad, restablecer, rechazar } from './acciones.ts';
 import {
-  consumirEnfoque, irAPendiente, pedirEnfoque, seleccionar, solicitarEdicion, solicitarReemplazo, useRevisionUi,
+  cambiarVista, consumirEnfoque, irAPendiente, pedirEnfoque, seleccionar, solicitarEdicion, solicitarReemplazo, useRevisionUi,
 } from './almacen.ts';
 import { Insignia } from './iconos.tsx';
 import {
@@ -102,6 +104,9 @@ export function PanelTexto({ singleKey }: { singleKey: boolean }) {
   const [flotante, setFlotante] = useState<{ span: Span; arriba: number; izq: number } | null>(null);
   const flotanteRef = useRef<HTMLButtonElement>(null);
   const intentos = useRef(0);
+  const intentosDestino = useRef(0);
+  const busq = useBusqueda();
+  const dest = useDestino();
 
   const salida = useMemo(() => (doc !== null && state !== null && vista === 'salida' ? renderSalida(doc, state) : null),
     [doc, state, vista]);
@@ -212,6 +217,33 @@ export function PanelTexto({ singleKey }: { singleKey: boolean }) {
     const destino = Math.max(0, (desplazamientos[idx] as number) - 8);
     panel.current.scrollTop = destino;
     setPos((p) => ({ ...p, st: destino }));
+  });
+
+  // Ir a la ubicación de un tramo (PC-4: coincidencia de la búsqueda, bandera o sugerencia): monta el bloque, desplaza solo este panel y no mueve el foco.
+  useLayoutEffect(() => {
+    const span = dest.span;
+    const p = panel.current;
+    if (span === null || state === null || p === null) return;
+    if (vista !== 'original') { cambiarVista('original'); return; }
+    let mejor: HTMLElement | null = null;
+    for (const r of p.querySelectorAll<HTMLElement>(`[data-p="${span.partId}"] [data-o]`)) {
+      const o = Number(r.dataset['o']);
+      if (o <= span.start && o + (r.textContent ?? '').length > span.start && (mejor === null || o >= Number(mejor.dataset['o']))) mejor = r;
+    }
+    if (mejor !== null) {
+      const objetivo = p.scrollTop + (mejor.getBoundingClientRect().top - p.getBoundingClientRect().top) - p.clientHeight / 3;
+      p.scrollTop = Math.max(0, objetivo);
+      setPos((q) => ({ ...q, st: p.scrollTop }));
+      consumirDestino(dest.n);
+      intentosDestino.current = 0;
+      return;
+    }
+    const idx = filas.findIndex((f) => !f.titulo && fuentes[f.fuente]?.partId === span.partId && span.start >= f.inicio && span.start < Math.max(f.fin, f.inicio + 1));
+    if (idx < 0 || intentosDestino.current > 6) { consumirDestino(dest.n); intentosDestino.current = 0; return; }
+    intentosDestino.current++;
+    const destinoPx = Math.max(0, (desplazamientos[idx] as number) - 8);
+    p.scrollTop = destinoPx;
+    setPos((q) => ({ ...q, st: destinoPx }));
   });
 
   // Selección con el ratón → botón flotante «Agregar reemplazo» (solo en el original).
@@ -327,7 +359,7 @@ export function PanelTexto({ singleKey }: { singleKey: boolean }) {
             <Medido key={f.clave} clave={f.clave} alAlto={alAlto}>
               <div class="bloque-texto" data-p={fu.partId}>
                 {vista === 'original'
-                  ? contenidoOriginal(fu, f, state, activo, nuevas, conSugerencia, seleccion)
+                  ? contenidoOriginal(fu, f, state, activo, nuevas, conSugerencia, seleccion, busq.marcas.get(fu.partId))
                   : contenidoSalida(fu, f, state, salida?.sections.find((s) => s.partId === fu.partId)?.segments ?? [])}
               </div>
             </Medido>
@@ -350,21 +382,21 @@ export function PanelTexto({ singleKey }: { singleKey: boolean }) {
   );
 }
 
-function contenidoOriginal(fu: Fuente, f: Fila, state: ReviewState, activo: DetectionId | null, nuevas: ReadonlySet<DetectionId>, conSugerencia: ReadonlySet<string>, seleccion: DetectionId | null) {
+function contenidoOriginal(fu: Fuente, f: Fila, state: ReviewState, activo: DetectionId | null, nuevas: ReadonlySet<DetectionId>, conSugerencia: ReadonlySet<string>, seleccion: DetectionId | null, marcas?: readonly Marca[]) {
   const elementos = fu.elementos as readonly Elemento[];
   const nodos: ComponentChildren[] = [];
   let cursor = f.inicio;
   for (const el of elementos) {
     if (el.start < f.inicio || el.start >= f.fin) continue;
-    if (el.start > cursor) nodos.push(<span key={`t${cursor}`} data-o={cursor}>{fu.texto.slice(cursor, el.start)}</span>);
-    nodos.push(resaltado(el, fu, state, activo, nuevas, conSugerencia, seleccion));
+    if (el.start > cursor) nodos.push(...trocear(fu.texto, cursor, el.start, marcas, 'p'));
+    nodos.push(resaltado(el, fu, state, activo, nuevas, conSugerencia, seleccion, marcas));
     cursor = el.end;
   }
-  if (cursor < f.fin) nodos.push(<span key={`t${cursor}`} data-o={cursor}>{fu.texto.slice(cursor, f.fin)}</span>);
+  if (cursor < f.fin) nodos.push(...trocear(fu.texto, cursor, f.fin, marcas, 'p'));
   return nodos;
 }
 
-function resaltado(el: Elemento, fu: Fuente, state: ReviewState, activo: DetectionId | null, nuevas: ReadonlySet<DetectionId>, conSugerencia: ReadonlySet<string>, seleccion: DetectionId | null) {
+function resaltado(el: Elemento, fu: Fuente, state: ReviewState, activo: DetectionId | null, nuevas: ReadonlySet<DetectionId>, conSugerencia: ReadonlySet<string>, seleccion: DetectionId | null, marcas?: readonly Marca[]) {
   if (el.clase === 'det') {
     const d: Detection = el.det;
     const entidad: Entity | undefined = state.entities[d.entityId];
@@ -379,7 +411,7 @@ function resaltado(el: Elemento, fu: Fuente, state: ReviewState, activo: Detecti
         aria-current={seleccion === d.id ? 'true' : undefined}
       >
         <Insignia abreviatura={abreviaturaDe(d.type)} estado={d.status} sugerencia={conSugerencia.has(d.id)} nueva={nuevas.has(d.id)} />
-        <span data-o={d.start}>{fu.texto.slice(d.start, d.end)}</span>
+        {trocear(fu.texto, d.start, d.end, marcas, 'd')}
       </button>
     );
   }
@@ -395,14 +427,14 @@ function resaltado(el: Elemento, fu: Fuente, state: ReviewState, activo: Detecti
         aria-label={nombreDeBandera(f)}
       >
         <Insignia abreviatura={abreviaturaDe(f.type)} bandera confirmada={f.acknowledged} />
-        <span data-o={f.span.start}>{fu.texto.slice(f.span.start, f.span.end)}</span>
+        {trocear(fu.texto, f.span.start, f.span.end, marcas, 'b')}
       </button>
     );
   }
   return (
     <span key={el.edit.id} class="res edicion" role="note" aria-label={tx('M-1336', { texto: el.edit.text })}>
       <span class="ins" aria-hidden="true"><span class="abr">≈ TXT</span></span>
-      <span data-o={el.start}>{fu.texto.slice(el.start, el.end)}</span>
+      {trocear(fu.texto, el.start, el.end, marcas, 'e')}
     </span>
   );
 }

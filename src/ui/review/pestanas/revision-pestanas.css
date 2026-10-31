@@ -1,0 +1,63 @@
+/* Revisión II (PC-4): banda del modelo, contador, filtros, búsqueda propia y pestañas del panel lateral. Solo hoja del mismo origen:
+   la CSP no admite atributos style. Los colores son propiedades redefinidas en modo oscuro (8.4.1) y respetan colores forzados. */
+:root {
+  --co-relleno: #ffe58a; --co-texto: #1b1b1f; --co-actual: #b34700;
+  --ba-fondo: #eef3fb; --ba-borde: #00446b;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --co-relleno: #6b5800; --co-texto: #ececee; --co-actual: #ffb066;
+    --ba-fondo: #1c2733; --ba-borde: #7fb6dd;
+  }
+}
+
+/* Parte superior */
+.revision-barra { margin: 0.5rem 0; }
+.banda { border: 1px solid var(--sl-borde-suave); border-inline-start: 0.35rem solid var(--ba-borde); border-radius: 0.5rem; padding: 0.5rem 0.75rem; margin: 0.5rem 0; background: var(--ba-fondo); }
+.banda p { margin: 0.2rem 0; }
+.banda-titulo { margin: 0 0 0.25rem; font-size: 1rem; }
+.banda-plegada { padding-block: 0.25rem; }
+.banda-plan-b { border-inline-start-color: var(--sl-aviso-borde); background: var(--sl-aviso-fondo); }
+.banda progress { inline-size: 100%; max-inline-size: 28rem; block-size: 0.9rem; }
+.progreso-revision { margin: 0.5rem 0; }
+.fila-progreso { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; }
+.contador-revision { margin: 0; font-weight: 600; }
+.progreso-revision button[aria-disabled='true'] { opacity: 0.65; cursor: not-allowed; }
+.herramientas-revision { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.5rem 1rem; align-items: start; }
+@media (max-width: 56.25rem) { .herramientas-revision { grid-template-columns: minmax(0, 1fr); } }
+.busqueda-revision .fila, .filtros-revision { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.busqueda-revision input { flex: 1 1 12rem; min-inline-size: 8rem; }
+.estado-busqueda { min-inline-size: 5rem; }
+.filtros-revision { border: 1px solid var(--sl-borde-suave); border-radius: 0.5rem; padding: 0.4rem 0.75rem; margin: 0; }
+.filtros-revision .campo { flex: 1 1 9rem; margin: 0.2rem 0; }
+.filtros-revision .ayuda { flex: 1 0 100%; margin: 0; }
+
+/* Coincidencias de la búsqueda propia dentro del panel de texto */
+.coincidencia { color: var(--co-texto); background: var(--co-relleno); border-radius: 0.15rem; }
+.coincidencia-actual { outline: 3px solid var(--co-actual); outline-offset: 1px; }
+
+/* Pestañas del panel lateral */
+.pestanas-laterales { margin-block-start: 1rem; }
+.pestanas-laterales [role='tablist'] { display: flex; flex-wrap: wrap; gap: 0.25rem; border-block-end: 1px solid var(--sl-borde-suave); }
+.pestana { border: 1px solid var(--sl-borde-suave); border-block-end: 0; border-radius: 0.375rem 0.375rem 0 0; background: var(--sl-fondo-2); font-weight: 600; }
+.pestana[aria-selected='true'] { background: var(--sl-fondo); border-block-end: 3px solid var(--sl-primario); }
+.panel-pestana { padding: 0.5rem 0; }
+.tarjetas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.tarjeta { border: 1px solid var(--sl-borde-suave); border-radius: 0.5rem; padding: 0.5rem 0.75rem; background: var(--sl-fondo-2); }
+.tarjeta:focus-visible { outline: 3px solid var(--sl-foco); outline-offset: 2px; }
+.tarjeta h4 { margin: 0 0 0.25rem; display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; align-items: baseline; }
+.etiqueta-tarjeta { font-size: 0.8rem; font-weight: 700; padding: 0 0.4rem; border: 1px solid currentColor; border-radius: 0.25rem; }
+.tarjeta-ban.sin-confirmar { border-inline-start: 0.35rem dashed var(--hl-ban-borde); }
+.tarjeta-ban.confirmada { border-inline-start: 0.35rem solid var(--hl-ban-borde); }
+.ctx-tarjeta { margin: 0.25rem 0; overflow-wrap: anywhere; }
+.ctx-tarjeta strong { background: var(--hl-fec-relleno); padding: 0 0.15rem; }
+.parte-tarjeta { color: var(--sl-texto-2); }
+.opcion { display: block; margin: 0.15rem 0; }
+.contador-pestana { font-weight: 600; margin: 0.25rem 0; }
+
+@media (forced-colors: active) {
+  .coincidencia { background: Mark; color: MarkText; }
+  .coincidencia-actual { outline-color: Highlight; }
+  .banda { border-color: CanvasText; }
+  .pestana[aria-selected='true'] { border-block-end-color: Highlight; }
+}

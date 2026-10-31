@@ -210,8 +210,15 @@ export function consumirEnfoque(n: number): void {
   if (ui.enfoque !== null && ui.enfoque.n === n) ui = { ...ui, enfoque: null };
 }
 
+let recorrido: ((direccion: 1 | -1) => DetectionId | null) | null = null;
+/** PC-4 registra el recorrido que incluye las banderas sin confirmar; mientras no, `irAPendiente` recorre solo detecciones. */
+export function registrarRecorrido(f: (direccion: 1 | -1) => DetectionId | null): void {
+  recorrido = f;
+}
+
 /** Ir a la siguiente (1) o anterior (-1) detección pendiente: selecciona, expande su entidad y pide el foco. */
 export function irAPendiente(direccion: 1 | -1): DetectionId | null {
+  if (recorrido !== null) return recorrido(direccion);
   const st = obtenerRevision();
   if (st === null) return null;
   const id = pendienteAdyacente(st, ui.seleccion, direccion);

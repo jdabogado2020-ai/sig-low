@@ -1104,6 +1104,244 @@ test.describe('T-PV-05 PDF de punta a punta en la app (PE-4-r2)', () => {
     await expect(page.getByLabel(/contraseña/i)).toHaveCount(0);
     await expect(page.locator('body')).not.toContainText('de Prueba.');
     await expect(analizar(page)).toBeDisabled();
+
+// ===== PC-4 · Revisión II (8.2.6): sugerencias, banderas, contador, filtros, recorrido y búsqueda propia =====
+// Mismo build de medición y mismo gancho que Revisión I. Datos ficticios (10.1.5). Los lugares son municipios reales de la DIVIPOLA
+// (no son datos personales); todo lo demás lleva «Ficticia», «Ejemplo» o «Prueba».
+
+const TEXTO_II = [
+  'El Juzgado Tercero Civil del Circuito de Cartago ordenó el trámite. El Juzgado Promiscuo Municipal de Granada recibió el oficio.',
+  'La señora Ana Ficticia Rojas vive en Cartago desde el 14 de marzo de 2026. Nació el 14 de marzo de 1991.',
+  'La gerente general de Ferretería Ejemplo firmó. Diagnóstico CIE-10 G35. Como lo reiteró el Tribunal en el expediente 11001-03-15-999-2020-01234-00 se dispuso.',
+  'La niña con T.I. 1.000.000.002 y el C.E. 123456 asistieron.',
+].join('\n');
+
+const contador = (page: Page) => page.locator('[data-prueba="contador-texto"]');
+const continuar = (page: Page) => page.locator('[data-prueba="continuar"]');
+const claseSug = (page: Page) => page.locator('li[data-sugerencia]').evaluateAll((els) => els.map((e) => (e as HTMLElement).dataset['clase']));
+
+test.describe('Revisión II (PC-4)', () => {
+  test.describe.configure({ timeout: 90_000 });
+  test.use({ baseURL: URL_MEDICION });
+  test.beforeAll(async () => { await levantarMedicion(); });
+  test.afterAll(() => { servidorMedicion?.kill(); });
+
+  test('T-IU-05 INV-R08: sugerencias en orden (recomendadas primero), con clase y prioridad; aplicar y descartar DESPACHO_A_GENERICO suben revision en 1', async ({ page }) => {
+    await abrirRevision(page, TEXTO_II, '');
+    await expect(page.getByRole('tab', { name: /^Sugerencias de generalización/ })).toHaveAttribute('aria-selected', 'true');
+    expect(await claseSug(page)).toEqual([
+      'DESPACHO_A_GENERICO', 'DESPACHO_A_GENERICO', 'MUNICIPIO_A_DEPARTAMENTO',
+      'FECHA_A_MES_ANIO', 'FECHA_NACIMIENTO_A_RANGO_EDAD', 'ROTULO_DOCUMENTO_A_GENERICO', 'ROTULO_DOCUMENTO_A_GENERICO',
+    ]);
+    await expect(page.locator('[data-prueba="prioridad"]').first()).toHaveText('Recomendada');
+    await expect(page.locator('[data-prueba="sin-decidir"]')).toHaveText('Sin decidir: 5');
+    // `ROTULO_DOCUMENTO_A_GENERICO` nace aplicada: «Aplicada» y M-128, y no cuenta como sin decidir.
+    const rotulo = page.locator('li[data-clase="ROTULO_DOCUMENTO_A_GENERICO"]').first();
+    await expect(rotulo.locator('[data-prueba="estado-sugerencia"]')).toHaveText('Aplicada');
+    await expect(rotulo).toContainText('Esta sugerencia ya viene aplicada');
+
+    // Descartar la generalización del rótulo restituye «T.I.» (la edición de tramo desaparece) y deja el marcador neutro.
+    const ediciones = panelTexto(page).locator('.res.edicion');
+    await expect(ediciones).toHaveCount(2);
+    const rAntes = await gancho(page).revision();
+    await rotulo.getByRole('button', { name: /^Descartar/ }).click();
+    await expect(rotulo.locator('[data-prueba="estado-sugerencia"]')).toHaveText('Descartada');
+    await expect(ediciones).toHaveCount(1);
+    expect(await gancho(page).revision()).toBe(rAntes + 1);
+
+    const despacho = page.locator('li[data-clase="DESPACHO_A_GENERICO"]').first();
+    const r0 = await gancho(page).revision();
+    await despacho.getByRole('button', { name: /^Aplicar/ }).click();
+    expect(await gancho(page).revision()).toBe(r0 + 1);
+    await expect(despacho.locator('[data-prueba="estado-sugerencia"]')).toHaveText('Aplicada');
+    await expect(page.locator('[data-prueba="sin-decidir"]')).toHaveText('Sin decidir: 4');
+    await expect(page.locator('[data-prueba="anuncio-revision"]')).toHaveText('Sugerencia aplicada. Quedan 4 sin decidir.');
+    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await expect(page.locator('[data-prueba="panel-texto"]')).toContainText('[DEPARTAMENTO_1]');
+    await page.getByRole('button', { name: 'Ver original' }).click();
+
+    await despacho.getByRole('button', { name: /^Descartar/ }).click();
+    expect(await gancho(page).revision()).toBe(r0 + 2);
+    await expect(despacho.locator('[data-prueba="estado-sugerencia"]')).toHaveText('Descartada');
+    await expect(page.locator('[data-prueba="sin-decidir"]')).toHaveText('Sin decidir: 4');
+    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await expect(page.locator('[data-prueba="panel-texto"]')).not.toContainText('[DEPARTAMENTO_1]');
+  });
+
+  test('T-IU-05 INV-R08: MUNICIPIO_A_DEPARTAMENTO homónimo pide el departamento (M-127) antes de Aplicar y se puede descartar', async ({ page }) => {
+    await abrirRevision(page, 'La señora Ana Ficticia Rojas vive en el municipio de Granada.', '');
+    const tarjeta = page.locator('li[data-clase="MUNICIPIO_A_DEPARTAMENTO"]');
+    await expect(tarjeta).toHaveCount(1);
+    await expect(tarjeta.getByRole('group', { name: /Hay varios municipios con este nombre/ })).toBeVisible();
+    await expect(tarjeta.getByRole('radio', { name: 'Antioquia' })).toBeVisible();
+    const r0 = await gancho(page).revision();
+    await tarjeta.getByRole('button', { name: /^Aplicar/ }).click();
+    await expect(tarjeta.getByRole('alert')).toContainText('Hay varios municipios con este nombre');
+    expect(await gancho(page).revision()).toBe(r0);
+    await tarjeta.getByRole('radio', { name: 'Antioquia' }).check();
+    await tarjeta.getByRole('button', { name: /^Aplicar/ }).click();
+    await expect(tarjeta.locator('[data-prueba="estado-sugerencia"]')).toHaveText('Aplicada');
+    expect(await gancho(page).revision()).toBe(r0 + 2);
+    await tarjeta.getByRole('button', { name: /^Descartar/ }).click();
+    await expect(tarjeta.locator('[data-prueba="estado-sugerencia"]')).toHaveText('Descartada');
+    expect(await gancho(page).revision()).toBe(r0 + 3);
+  });
+
+  test('T-IU-05 INV-R08: banderas con «Mantener el texto» y «Reemplazar por…»; una bandera sin confirmar mantiene cerrado «Continuar» (M-68)', async ({ page }) => {
+    await abrirRevision(page, 'La gerente general de Ferretería Ejemplo firmó. Diagnóstico CIE-10 G35.', '');
+    await expect(contador(page)).toHaveText('0 detecciones pendientes · 2 banderas sin confirmar');
+    await expect(continuar(page)).toHaveAttribute('aria-disabled', 'true');
+    await expect(page.locator('[data-prueba="ayuda-continuar"]')).toContainText('Para continuar, decida todas las detecciones pendientes');
+    await page.getByRole('tab', { name: /^Revisión manual \(banderas\)/ }).click();
+    const cargo = page.locator('li[data-bandera]').first();
+    await expect(cargo).toContainText('Cargo que puede ser único');
+    await expect(cargo).toContainText('Un cargo único puede identificar a la persona');
+    const r0 = await gancho(page).revision();
+    await cargo.getByRole('button', { name: /^Mantener el texto/ }).click();
+    expect(await gancho(page).revision()).toBe(r0 + 1);
+    await expect(cargo.locator('[data-prueba="estado-bandera"]')).toHaveText('Confirmada');
+    await expect(contador(page)).toHaveText('0 detecciones pendientes · 1 banderas sin confirmar');
+    await continuar(page).click({ force: true }); // aria-disabled: no hace nada
+    await expect(h1(page, 'Revisión')).toBeVisible();
+    // Reemplazo con una de las opciones de la bandera.
+    const dx = page.locator('li[data-bandera]').nth(1);
+    await dx.getByRole('button', { name: /^Reemplazar por…/ }).click();
+    await expect(dx.getByRole('radio', { name: 'un diagnóstico médico' })).toBeChecked();
+    await dx.getByRole('button', { name: 'Aplicar el reemplazo' }).click();
+    expect(await gancho(page).revision()).toBe(r0 + 2);
+    await expect(dx.locator('[data-prueba="estado-bandera"]')).toHaveText('Confirmada');
+    await expect(contador(page)).toHaveText('No quedan detecciones pendientes ni banderas sin confirmar.');
+    await expect(continuar(page)).toHaveAttribute('aria-disabled', 'false');
+    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await expect(page.locator('[data-prueba="panel-texto"]')).toContainText('un diagnóstico médico');
+    await continuar(page).click();
+    await expect(h1(page, 'Listo')).toBeVisible();
+  });
+
+  test('T-IU-05 INV-R08: bandera con texto libre en «Reemplazar por…»: entra a la salida y confirma la bandera', async ({ page }) => {
+    await abrirRevision(page, 'La gerente general de Ferretería Ejemplo firmó.', '');
+    await page.getByRole('tab', { name: /^Revisión manual/ }).click();
+    const cargo = page.locator('li[data-bandera]').first();
+    await cargo.getByRole('button', { name: /^Reemplazar por…/ }).click();
+    await cargo.getByLabel('Texto del reemplazo de la bandera').fill('una directiva de Prueba');
+    const r0 = await gancho(page).revision();
+    await cargo.getByRole('button', { name: 'Aplicar el reemplazo' }).click();
+    expect(await gancho(page).revision()).toBe(r0 + 1);
+    await expect(cargo.locator('[data-prueba="estado-bandera"]')).toHaveText('Confirmada');
+    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await expect(page.locator('[data-prueba="panel-texto"]')).toContainText('una directiva de Prueba');
+  });
+
+  test('T-IU-05 INV-R08: cita jurisprudencial («Es una cita: no reemplazar» rechaza el radicado; «Es un radicado del caso» lo acepta)', async ({ page }) => {
+    await abrirRevision(page, 'Como lo reiteró el Tribunal en el expediente 11001-03-15-999-2020-01234-00 se dispuso.', '');
+    await page.getByRole('tab', { name: /^Revisión manual/ }).click();
+    const cita = page.locator('li[data-bandera]').first();
+    await expect(cita).toContainText('Parece una cita de jurisprudencia');
+    await cita.getByRole('button', { name: 'Es una cita: no reemplazar' }).click();
+    await expect.poll(async () => (await gancho(page).estado()).estados['rechazada']).toBe(1);
+    await cita.getByRole('button', { name: 'Es un radicado del caso: reemplazar' }).click();
+    await expect.poll(async () => (await gancho(page).estado()).estados['aceptada']).toBe(1);
+    await expect(cita.locator('[data-prueba="estado-bandera"]')).toHaveText('Confirmada');
+  });
+
+  test('T-IU-05 pestañas con flechas, Inicio y Fin; el recorrido de pendientes incluye las banderas y abre su pestaña', async ({ page }) => {
+    await abrirRevision(page, TEXTO_II, '');
+    const sug = page.getByRole('tab', { name: /^Sugerencias de generalización/ });
+    const ban = page.getByRole('tab', { name: /^Revisión manual \(banderas\)/ });
+    await sug.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(ban).toHaveAttribute('aria-selected', 'true');
+    await expect(ban).toBeFocused();
+    await page.keyboard.press('Home');
+    await expect(sug).toHaveAttribute('aria-selected', 'true');
+    await page.keyboard.press('End');
+    await expect(ban).toHaveAttribute('aria-selected', 'true');
+    await sug.click();
+    // Hay 5 detecciones y 5 banderas: el recorrido de 10 pasos pasa por una tarjeta de bandera.
+    let vistoBandera = false;
+    for (let i = 0; i < 10 && !vistoBandera; i++) {
+      await page.getByRole('button', { name: 'Siguiente pendiente' }).click();
+      vistoBandera = await page.evaluate(() => (document.activeElement as HTMLElement | null)?.hasAttribute('data-bandera') ?? false);
+    }
+    expect(vistoBandera).toBe(true);
+    await expect(ban).toHaveAttribute('aria-selected', 'true');
+    // Hacia atrás vuelve a una detección (texto o lista) sin perder el orden de lectura.
+    await page.getByRole('button', { name: 'Anterior pendiente' }).click();
+    await expect.poll(() => page.evaluate(() => (document.activeElement as HTMLElement | null)?.hasAttribute('data-det') ?? false)).toBe(true);
+  });
+
+  test('T-IU-05 «Ir a la ubicación» de una bandera lejana monta su bloque y la deja a la vista', async ({ page }) => {
+    const relleno = Array.from({ length: 400 }, (_, i) => `Línea de relleno ${i + 1} sin datos.`).join('\n');
+    await abrirRevision(page, `${relleno}\nLa gerente general de Ferretería Ejemplo firmó.`, '');
+    await page.getByRole('tab', { name: /^Revisión manual/ }).click();
+    await expect(panelTexto(page).locator('[data-ban]')).toHaveCount(0);
+    await page.locator('li[data-bandera]').first().getByRole('button', { name: 'Ir a la ubicación' }).click();
+    await expect(panelTexto(page).locator('[data-ban]')).toHaveCount(1);
+    await expect(panelTexto(page).locator('[data-ban]')).toBeInViewport();
+  });
+
+  test('T-IU-06 búsqueda propia: coincidencias sobre el texto en memoria, sin tildes ni mayúsculas, Enter y Mayús+Enter, «{i} de {n}»', async ({ page }) => {
+    await abrirRevision(page, TEXTO_REVISION);
+    const campo = page.getByRole('textbox', { name: 'Buscar en el documento' });
+    for (const [k, v] of [['spellcheck', 'false'], ['autocomplete', 'off'], ['autocorrect', 'off'], ['autocapitalize', 'off'], ['translate', 'no'], ['data-gramm', 'false']]) {
+      await expect(campo).toHaveAttribute(k as string, v as string);
+    }
+    await expect(campo).toHaveAttribute('id', /^c\d+$/);
+    await expect(page.locator('[data-prueba="busqueda"]')).toContainText('Busque aquí en el documento. La búsqueda del navegador puede enviar el texto de la página a servicios en línea.');
+    await campo.fill('SENORA');
+    await expect(page.locator('[data-prueba="busqueda-estado"]')).toHaveText('1 de 2');
+    await expect(panelTexto(page).locator('mark.coincidencia')).toHaveCount(2);
+    await expect(panelTexto(page).locator('mark.coincidencia-actual')).toHaveCount(1);
+    await campo.press('Enter');
+    await expect(page.locator('[data-prueba="busqueda-estado"]')).toHaveText('2 de 2');
+    await campo.press('Enter');
+    await expect(page.locator('[data-prueba="busqueda-estado"]')).toHaveText('1 de 2');
+    await campo.press('Shift+Enter');
+    await expect(page.locator('[data-prueba="busqueda-estado"]')).toHaveText('2 de 2');
+    await campo.fill('texto que no existe');
+    await expect(page.locator('[data-prueba="busqueda-estado"]')).toHaveText('Sin coincidencias');
+    await expect(panelTexto(page).locator('mark.coincidencia')).toHaveCount(0);
+    // Una coincidencia dentro de un resaltado también se marca, y el texto copiable no cambia (8.7).
+    await campo.fill('ana ficticia');
+    await expect(panelTexto(page).locator('[data-det] mark.coincidencia')).toHaveCount(2);
+  });
+
+  test('T-IU-06 «Agregar reemplazo para esta coincidencia» abre el diálogo con el tramo y crea una detección manual', async ({ page }) => {
+    await abrirRevision(page, 'La Fundación Ejemplo Prueba atendió el caso del Barrio Ficticio.', '');
+    const campo = page.getByRole('textbox', { name: 'Buscar en el documento' });
+    await campo.fill('barrio ficticio');
+    await expect(page.locator('[data-prueba="busqueda-estado"]')).toHaveText('1 de 1');
+    await page.getByRole('button', { name: 'Agregar reemplazo para esta coincidencia' }).click();
+    const dialogo = page.getByRole('dialog', { name: 'Agregar reemplazo' });
+    await expect(dialogo.locator('[data-prueba="reemplazo-texto"]')).toHaveText('Barrio Ficticio');
+    const antes = await gancho(page).revision();
+    await dialogo.getByRole('button', { name: 'Agregar reemplazo' }).click();
+    expect(await gancho(page).revision()).toBe(antes + 1);
+    expect((await gancho(page).detalle()).some((d) => d.source === 'manual' && d.precedence === 1 && d.texto === 'Barrio Ficticio')).toBe(true);
+  });
+
+  test('T-IU-06 filtros de categoría, estado, confianza y fuente: filtran la lista y el contador cuenta todo', async ({ page }) => {
+    await abrirRevision(page);
+    const filas = page.getByRole('treegrid', { name: 'Detecciones' }).getByRole('row');
+    const antes = await filas.count();
+    const textoContador = await contador(page).textContent();
+    await page.getByLabel('Estado', { exact: true }).selectOption('aceptada');
+    await expect(filas).toHaveCount(1); // solo el encabezado: nada aceptado
+    await expect(contador(page)).toHaveText(textoContador ?? '');
+    await page.getByLabel('Estado', { exact: true }).selectOption('');
+    await panelTexto(page).locator('[data-det]').first().focus();
+    await page.keyboard.press('a');
+    await page.getByLabel('Estado', { exact: true }).selectOption('aceptada');
+    await expect(filas).toHaveCount(2); // encabezado + la entidad con una mención aceptada
+    await expect(contador(page)).not.toHaveText(textoContador ?? '');
+    await page.getByLabel('Estado', { exact: true }).selectOption('');
+    await expect(filas).toHaveCount(antes);
+    await page.getByLabel('Categoría', { exact: true }).selectOption('con');
+    expect(await filas.count()).toBeLessThan(antes);
+    await page.getByLabel('Fuente', { exact: true }).selectOption('modelo');
+    await expect(filas).toHaveCount(1);
+    await page.getByRole('button', { name: 'Quitar filtros' }).click();
+    await expect(filas).toHaveCount(antes);
   });
 });
 

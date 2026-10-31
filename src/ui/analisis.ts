@@ -359,16 +359,25 @@ function iniciarModelo(s: Sesion, doc: DocumentModel, ner: NerPuerto): void {
 }
 
 /**
- * «Seguir sin el modelo» (8.1, PC-4): cancela `ner`, cierra la fusión con `null` y declara el plan B (`cancelado`).
- * Las ventanas ya incorporadas se conservan.
+ * «Seguir sin el modelo» (8.1, PC-4): cancela `ner`, cierra la fusión con `null` y declara el plan B (`cancelado` por decisión del
+ * abogado o `sin_tiempo` cuando se agota el presupuesto de 6.11.3). Las ventanas ya incorporadas se conservan. Sin sesión de
+ * `detect` (el gancho de pruebas del build de medición), solo se declara el plan B en el estado.
  */
-export function seguirSinModelo(): void {
+export function seguirSinModelo(causa: PlanBCause = 'cancelado'): void {
   const s = sesion;
   const doc = obtenerDocumento();
-  if (s === null || doc === null) return;
+  if (doc === null) return;
+  if (s === null) {
+    const vigente = obtenerRevision();
+    if (vigente !== null && vigente.modelo.kind === 'en_curso') {
+      const r = declararPlanB(vigente, causa, contextoDelReductor(doc, cryptoIds));
+      if (r.ok) ponerRevision(r.state);
+    }
+    return;
+  }
   s.ner?.cancelar();
   s.ner = null;
-  s.cola = s.cola.then(() => cerrarEnPlanB(s, doc, 'cancelado')).then(() => undefined, () => undefined);
+  s.cola = s.cola.then(() => cerrarEnPlanB(s, doc, causa)).then(() => undefined, () => undefined);
 }
 
 // --- Cancelación -----------------------------------------------------------------------------------------------------------

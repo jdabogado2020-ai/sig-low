@@ -193,3 +193,46 @@ test.describe('T-PV-09 «Acerca de»: versión, SHA-256 y dirección oficial', (
     expect(peticiones).toEqual([]);
   });
 });
+
+// T-PV-03 (PC-4, V-29): Ctrl+F y F3 abren la búsqueda de la app con `preventDefault`, y buscar no hace ninguna petición. Es el
+// flujo real (pegar → Procesando → Revisión), sin gancho de prueba ni modelo.
+test.describe('T-PV-03 búsqueda propia en Revisión (V-29)', () => {
+  test.describe.configure({ timeout: 60_000 });
+
+  test('T-PV-03 Ctrl+F y F3 abren la búsqueda de la app (el navegador no las recibe) y buscar no hace peticiones', async ({ page }) => {
+    await abrirInicio(page);
+    await crearAsunto(page);
+    await page.getByRole('button', { name: 'Continuar' }).click();
+    await expect(h1(page, 'Entrada')).toBeVisible();
+    await page.getByRole('textbox', { name: 'Texto del documento' }).fill('La señora Ana Ficticia Rojas firmó el oficio. Su correo es ana.ficticia@ejemplo.test.');
+    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 30_000 });
+
+    const campo = page.getByRole('textbox', { name: 'Buscar en el documento' });
+    await expect(campo).toBeVisible();
+    await page.evaluate(() => {
+      (globalThis as unknown as { __bf: boolean[] }).__bf = [];
+      addEventListener('keydown', (e) => {
+        if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') || e.key === 'F3') (globalThis as unknown as { __bf: boolean[] }).__bf.push(e.defaultPrevented);
+      });
+    });
+    const peticiones: string[] = [];
+    page.on('request', (r) => peticiones.push(r.url()));
+
+    // Ctrl+F con el foco en otro control: abre y enfoca la búsqueda de la app.
+    await page.getByRole('button', { name: 'Leyenda' }).focus();
+    await page.keyboard.press('Control+f');
+    await expect(campo).toBeFocused();
+    await campo.fill('ficticia');
+    await expect(page.locator('[data-prueba="busqueda-estado"]')).toHaveText(/^1 de \d+$/);
+    // F3 desde otro control vuelve a la búsqueda de la app y selecciona lo escrito.
+    await page.getByRole('button', { name: 'Leyenda' }).focus();
+    await page.keyboard.press('F3');
+    await expect(campo).toBeFocused();
+    expect(await campo.evaluate((el) => (el as HTMLInputElement).selectionEnd! - (el as HTMLInputElement).selectionStart!)).toBe('ficticia'.length);
+
+    // Los manejadores de la página corren antes que el de la prueba (captura vs. burbuja): ambos eventos ya llegaron prevenidos.
+    expect(await page.evaluate(() => (globalThis as unknown as { __bf: boolean[] }).__bf)).toEqual([true, true]);
+    expect(peticiones).toEqual([]);
+  });
+});

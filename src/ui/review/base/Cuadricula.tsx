@@ -7,6 +7,7 @@ import { aceptar, aceptarEntidad, rechazar, rechazarEntidad, restablecer } from 
 import {
   alternarExpandida, consumirEnfoque, irAPendiente, pedirEnfoque, seleccionar, seleccionarEntidad, solicitarEdicion, useRevisionUi,
 } from './almacen.ts';
+import { hayFiltros, pasaFiltros, useFiltros, type Filtros } from '../pestanas/herramientas.ts';
 import { IconoDeEstado, Insignia } from './iconos.tsx';
 import {
   abreviaturaDe, categoriaDe, contextoDe, nombreDeFilaEntidad, nombreDeTipo, pendientesDe, textoDeMenciones, textoDePendientes,
@@ -21,17 +22,22 @@ type FilaG =
   | { tipo: 'ent'; clave: string; e: Entity }
   | { tipo: 'men'; clave: string; d: Detection; e: Entity; i: number; n: number };
 
-/** Entidades en orden de lectura (por su primera mención) y, desplegadas, sus menciones. */
-export function aplanar(state: ReviewState, expandidas: ReadonlySet<EntityId>): FilaG[] {
+/**
+ * Entidades en orden de lectura (por su primera mención) y, desplegadas, sus menciones. Los filtros de PC-4 (categoría, estado, confianza y
+ * fuente) dejan solo las menciones que los cumplen y las entidades que conservan alguna; el contador de la Revisión cuenta todo.
+ */
+export function aplanar(state: ReviewState, expandidas: ReadonlySet<EntityId>, filtros?: Filtros): FilaG[] {
+  const activos = filtros !== undefined && hayFiltros(filtros);
+  const pasa = (d: Detection | undefined): d is Detection => d !== undefined && (!activos || pasaFiltros(d, filtros as Filtros));
   const pos = new Map(state.order.map((id, i) => [id, i]));
   const entidades = Object.values(state.entities)
-    .filter((e) => e.mentions.some((m) => state.detections[m] !== undefined))
+    .filter((e) => e.mentions.some((m) => pasa(state.detections[m])))
     .sort((a, b) => (pos.get(a.mentions[0] as DetectionId) ?? 0) - (pos.get(b.mentions[0] as DetectionId) ?? 0));
   const filas: FilaG[] = [];
   for (const e of entidades) {
     filas.push({ tipo: 'ent', clave: `e:${e.id}`, e });
     if (!expandidas.has(e.id)) continue;
-    const ms = e.mentions.map((m) => state.detections[m]).filter((d): d is Detection => d !== undefined);
+    const ms = e.mentions.map((m) => state.detections[m]).filter(pasa);
     ms.forEach((d, i) => { filas.push({ tipo: 'men', clave: `m:${d.id}`, d, e, i: i + 1, n: ms.length }); });
   }
   return filas;
@@ -49,7 +55,8 @@ export function Cuadricula({ singleKey }: { singleKey: boolean }) {
   const aEnfocar = useRef<string | null>(null);
   const raf = useRef(0);
 
-  const filas = useMemo(() => (state === null ? [] : aplanar(state, expandidas)), [state, expandidas]);
+  const filtros = useFiltros();
+  const filas = useMemo(() => (state === null ? [] : aplanar(state, expandidas, filtros)), [state, expandidas, filtros]);
   const offs: number[] = [];
   let total = 0;
   for (const f of filas) { offs.push(total); total += altoDe(f); }
