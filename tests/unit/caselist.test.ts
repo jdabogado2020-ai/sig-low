@@ -410,6 +410,23 @@ describe('T-MO-07 INV-L03 variantes duplicadas y compartidas', () => {
     expect(ms).toHaveLength(1);
     expect(ms[0]?.confidence).toBe('baja');
   });
+  it('INV-L03 PB-3-r1 la variante compartida va a la entidad con más menciones de nombre completo o apellidos; a igualdad, a la más cercana antes', () => {
+    const src = ids();
+    const { list, short } = listOf([persona('Adriana Prueba Torres', 'DEMANDANTE', src), 'ADR'], [persona('Nicolás Prueba Mora', 'PACIENTE', src), 'NIC']);
+    // Nicolás es el protagonista (3 menciones fuertes frente a 1): «Prueba» suelto es suyo aunque Adriana se nombre justo antes.
+    let t = 'Nicolás Prueba Mora, Prueba Mora y NICOLÁS PRUEBA MORA. Así lo dijo Adriana Prueba Torres.\nCabe resaltar que Prueba recibió amenazas.';
+    expect(format(t, list, short).filter((x) => x.startsWith('Prueba|'))).toEqual(['Prueba|NIC|apellido_suelto|baja|alt:ADR']);
+    // Antes (7.9.6 b, la más cercana antes del tramo) era de Adriana: el corpus da 15 de 31 aciertos con esa regla y 26 de 31 con esta.
+    // A igualdad de menciones fuertes decide la más cercana antes (7.9.8 L-B sigue igual).
+    t = 'Nicolás Prueba Mora declaró. Adriana Prueba Torres declaró. Después Prueba firmó.';
+    expect(format(t, list, short).filter((x) => x.startsWith('Prueba|'))).toEqual(['Prueba|ADR|apellido_suelto|baja|alt:NIC']);
+    // El tratamiento con una sola persona entre las candidatas sigue decidiendo primero (7.9.6 a).
+    const o = organizacion('Comercial Prueba S.A.S.', 'EMPRESA', src);
+    const l2 = refreshVariants([persona('Adriana Prueba Torres', 'DEMANDANTE', src), o]);
+    t = 'Comercial Prueba S.A.S. y Comercial Prueba firmaron. Luego la señora Prueba llamó.';
+    const ms = searchCaseList(part(t), l2).filter((m) => t.slice(m.start, m.end) === 'Prueba');
+    expect(ms.map((m) => m.caseEntityId)).toEqual([l2[0]?.id]);
+  });
   it('INV-L03 una variante no compartida conserva su confianza base', () => {
     const src = ids();
     const l = refreshVariants([persona('Ana Ficticia Rojas', 'DEMANDANTE', src), persona('Luis Prueba Rojas', 'TESTIGO', src)]);

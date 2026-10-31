@@ -672,6 +672,12 @@ export function findCaseMentions(part: Part, view: SearchView, caseList: readonl
   acc.sort((a, b) => a.start - b.start);
 
   // 5-6. Ambigüedad y ajustes de confianza (7.9.5).
+  const fuerte = (x: Hit): boolean => x.alternatives.length === 0 && (owners.get(x.key)?.size ?? 0) <= 1
+    && (x.cls === 'exacta' || x.cls === 'mayusculas' || x.cls === 'sin_tildes' || x.cls === 'apellidos');
+  // PB-3-r1 (propuesta al integrador, medida en la entrada): menciones de nombre completo o `apellidos` no ambiguas de cada
+  // entidad en la parte. La variante compartida va a la candidata con más; a igualdad decide la más cercana antes del tramo (b).
+  const fuertes = new Map<CaseEntityId, number>();
+  for (const x of acc) if (fuerte(x)) fuertes.set(x.entity, (fuertes.get(x.entity) ?? 0) + 1);
   for (const a of acc) {
     const prefix = view.text.slice(Math.max(0, a.ns - 40), a.ns);
     const trat = hasTreatment(prefix);
@@ -682,10 +688,14 @@ export function findCaseMentions(part: Part, view: SearchView, caseList: readonl
       const persons = all.filter((id) => byId.get(id)?.kind === 'persona');
       if (trat && persons.length === 1) owner = at(persons, 0);
       if (owner === null) {
+        const max = Math.max(...all.map((id) => fuertes.get(id) ?? 0));
+        const lideres = all.filter((id) => (fuertes.get(id) ?? 0) === max);
+        if (max > 0 && lideres.length === 1) owner = at(lideres, 0);
+      }
+      if (owner === null) {
         let best = -1;
         for (const id of all) {
-          const prev = acc.filter((x) => x.entity === id && x.alternatives.length === 0 && x.end <= a.start &&
-            (x.cls === 'exacta' || x.cls === 'mayusculas' || x.cls === 'sin_tildes' || x.cls === 'apellidos'));
+          const prev = acc.filter((x) => x.entity === id && fuerte(x) && x.end <= a.start);
           const pos = prev.length > 0 ? at(prev, prev.length - 1).end : -1;
           if (pos > best) { best = pos; owner = id; }
         }
