@@ -302,40 +302,69 @@ const CONECTOR_NORMA: ReadonlySet<string> = new Set(['de', 'del', 'la', 'las', '
 const CABEZA_NORMA: ReadonlySet<string> = new Set(['constitucion', 'codigo', 'estatuto', 'convencion', 'pacto', 'carta']);
 /**
  * B-71 (PB-2-r8) · Complementos de la lista que también forman parte de nombres de personas u organizaciones («Protección S.A.»,
- * «Colombiana de …», «Tránsito Ejemplo», «Nacional de …», «Seguridad Ejemplo Ltda.», «Familia …»). Son de la norma cuando les sigue
- * otro complemento que no lo es («Código Nacional de Tránsito Terrestre», «Código General del Proceso»); al final del nombre, si el
+ * «Colombiana de …», «Tránsito Ejemplo», «Nacional de …», «Seguridad Ejemplo Ltda.», «Familia …»). Son de la norma solo dentro de un
+ * nombre de `NOMBRES_CON_AMBIGUO` («Código Nacional de Tránsito Terrestre», «Código General del Proceso»; B-81, PB-2-r9); si no, y el
  * tramo del modelo sigue más allá, van con el resto (`finSeguro`), que pasa por 7.11.2: así no quedan a la vista.
  */
 const COMPLEMENTO_AMBIGUO: ReadonlySet<string> = new Set([
   'proteccion', 'colombiana', 'colombiano', 'nacional', 'transito', 'seguridad', 'familia', 'internacional', 'americana', 'general',
 ]);
+/**
+ * B-81 (PB-2-r9) · Los nombres de norma que llevan un complemento ambiguo, de una lista cerrada (en minúscula y sin tildes, con sus
+ * conectores). Solo dentro de uno de ellos el ambiguo es de la norma con seguridad. En -r8 bastaba con que lo siguiera otro
+ * complemento, pero «social» también es un nombre: «Código de Ética de Protección Social Ejemplo S.A.S.» y «Estatuto de Seguridad
+ * Social Ejemplo Ltda.» dejaban «Protección Social» y «Seguridad Social» dentro de la norma y a la vista. Un ambiguo fuera de esta
+ * lista hace dudoso todo lo que sigue: si el tramo del modelo va más allá, el resto empieza en él (ante la duda, con el nombre).
+ */
+const NOMBRES_CON_AMBIGUO: ReadonlyArray<readonly string[]> = [
+  ['general', 'del', 'proceso'], ['general', 'disciplinario'], ['general', 'de', 'contratacion'],
+  ['nacional', 'de', 'transito'], ['nacional', 'de', 'policia'], ['nacional', 'de', 'seguridad', 'y', 'convivencia'],
+  ['nacional', 'de', 'recursos', 'naturales'],
+  ['internacional', 'de', 'derechos'], ['internacional', 'sobre', 'los', 'derechos'],
+  ['americana', 'sobre', 'derechos'], ['americana', 'de', 'derechos'],
+];
 const OBJETO_VENTANA = 160;
 const OBJETO_MAX_PALABRAS = 10;
 const RE_PALABRA_NORMA = /\p{L}+|\p{N}+|[^\p{L}\p{N}\s]/gu;
 const plegar = (w: string): string => w.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 
+/** Cuántas palabras de `ws` desde `i` forman un nombre de `NOMBRES_CON_AMBIGUO` (0 si ninguno). */
+function nombreConAmbiguo(ws: ReadonlyArray<{ w: string }>, i: number): number {
+  for (const n of NOMBRES_CON_AMBIGUO) if (n.every((x, k) => ws[i + k]?.w === x)) return n.length;
+  return 0;
+}
+
 /**
  * Fin (relativo a `t`) del nombre de la norma que empieza en `t[0]` con una cabeza de la lista: cabeza + complemento + año. `seguro`
- * es el fin sin los complementos ambiguos del final (B-71): el de la cabeza, de un complemento que no es ambiguo o de un año.
+ * es el fin sin los complementos ambiguos (B-71): el de la cabeza, de un complemento que no es ambiguo o de un año, hasta el primer
+ * ambiguo que no está dentro de un nombre de `NOMBRES_CON_AMBIGUO` (B-81). `fin` no cambia: la norma sola se sigue descartando entera.
  */
 function finDelNombreDeNorma(t: string): { fin: number; seguro: number } {
-  let fin = 0;
-  let seguro = 0;
-  let palabras = 0;
-  let previa = '';
+  const ws: Array<{ w: string; fin: number }> = [];
   for (const m of t.matchAll(RE_PALABRA_NORMA)) {
-    const w = plegar(m[0]);
-    const finW = m.index + m[0].length;
-    if (palabras === 0) {
-      if (!CABEZA_NORMA.has(w)) return { fin: 0, seguro: 0 };
+    ws.push({ w: plegar(m[0]), fin: m.index + m[0].length });
+    if (ws.length >= OBJETO_MAX_PALABRAS) break;
+  }
+  const cabeza = ws[0];
+  if (cabeza === undefined || !CABEZA_NORMA.has(cabeza.w)) return { fin: 0, seguro: 0 };
+  let fin = cabeza.fin;
+  let seguro = cabeza.fin;
+  let previa = cabeza.w;
+  let nombre = 0;        // fin (en palabras, exclusivo) del nombre conocido en curso
+  let dudoso = false;    // B-81: hubo un ambiguo fuera de un nombre conocido
+  for (let i = 1; i < ws.length; i++) {
+    const { w, fin: finW } = ws[i] as { w: string; fin: number };
+    const ambiguo = COMPLEMENTO_AMBIGUO.has(w);
+    if (COMPLEMENTO_NORMA.has(w) || ambiguo || (/^(?:19|20)\d{2}$/u.test(w) && previa === 'de')) {
       fin = finW;
-      seguro = finW;
-    } else if (COMPLEMENTO_NORMA.has(w) || COMPLEMENTO_AMBIGUO.has(w) || (/^(?:19|20)\d{2}$/u.test(w) && previa === 'de')) {
-      fin = finW;
-      if (!COMPLEMENTO_AMBIGUO.has(w)) seguro = finW;
+      if (ambiguo && i >= nombre) {
+        const n = nombreConAmbiguo(ws, i);
+        if (n > 0) nombre = i + n;
+        else dudoso = true;
+      }
+      if (!dudoso && (!ambiguo || i < nombre)) seguro = finW;
     } else if (!CONECTOR_NORMA.has(w)) break;
     previa = w;
-    if (++palabras >= OBJETO_MAX_PALABRAS) break;
   }
   return { fin, seguro };
 }

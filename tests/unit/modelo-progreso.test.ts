@@ -1077,6 +1077,35 @@ describe('T-MO-12 · D-14: la parte propia, los verbos de la providencia y las c
       expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text), T).toEqual([]);
     }
   });
+
+  it('B-81 · «Protección Social» y «Seguridad Social» van con el nombre que sigue a la norma; un nombre de norma conocido no', () => {
+    const casos: Array<[string, string, string]> = [
+      ['el artículo 12 del Código de Ética de Protección Social Ejemplo S.A.S. dispone', 'Código de Ética de Protección Social Ejemplo S.A.S.', 'EMPRESA:Protección Social Ejemplo S.A.S.'],
+      ['el artículo 3 del Estatuto de Seguridad Social Ejemplo Ltda. dispone', 'Estatuto de Seguridad Social Ejemplo Ltda.', 'EMPRESA:Seguridad Social Ejemplo Ltda.'],
+      ['EL ARTÍCULO 3 DEL ESTATUTO DE SEGURIDAD SOCIAL EJEMPLO LTDA. DISPONE', 'ESTATUTO DE SEGURIDAD SOCIAL EJEMPLO LTDA.', 'EMPRESA:SEGURIDAD SOCIAL EJEMPLO LTDA.'],
+      ['el artículo 7 del Código de Ética de Protección Social Integral Ejemplo S.A.S. dispone', 'Código de Ética de Protección Social Integral Ejemplo S.A.S.', 'EMPRESA:Protección Social Integral Ejemplo S.A.S.'],
+    ];
+    for (const [t, sub, esperado] of casos) {
+      const conv = candidatesFromNer([tramo(t, sub, 'ORG', 0.95)], { part: documento([t]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+      // Con el código de -r8, «Protección Social» y «Seguridad Social» quedaban dentro de la norma y a la vista.
+      expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}`), t).toEqual([esperado]);
+    }
+    // Controles: con un nombre de norma conocido, el ambiguo es de la norma y el resto es solo el nombre (igual que en -r8).
+    for (const [t, sub, esperado] of [
+      ['el artículo 90 del Código General del Proceso Comercial Ejemplo S.A. dispone', 'Código General del Proceso Comercial Ejemplo S.A.', 'EMPRESA:Comercial Ejemplo S.A.'],
+      ['el artículo 8 de la Convención Americana sobre Derechos Humanos Ejemplo S.A.S. dispone', 'Convención Americana sobre Derechos Humanos Ejemplo S.A.S.', 'EMPRESA:Ejemplo S.A.S.'],
+      ['según el artículo 131 del Código Nacional de Tránsito Terrestre Pedro Ejemplo Gómez pagó', 'Código Nacional de Tránsito Terrestre Pedro Ejemplo Gómez', 'PERSONA:Pedro Ejemplo Gómez'],
+    ] as const) {
+      const label = esperado.startsWith('PERSONA') ? 'PER' : 'ORG';
+      const conv = candidatesFromNer([tramo(t, sub, label, 0.95)], { part: documento([t]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+      expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}`), t).toEqual([esperado]);
+    }
+    // La norma sola, con «Protección Social» o «Seguridad Social» dentro, se sigue descartando.
+    const tn = 'el artículo 12 del Código de Ética de Protección Social y el artículo 3 del Estatuto de Seguridad Social.';
+    const neg = candidatesFromNer(['Código de Ética de Protección Social', 'Estatuto de Seguridad Social'].map((x) => tramo(tn, x, 'ORG', 0.95)),
+      { part: documento([tn]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    expect(neg.candidates).toEqual([]);
+  });
 });
 
 describe('T-MO-12 · cancelación y progreso', () => {

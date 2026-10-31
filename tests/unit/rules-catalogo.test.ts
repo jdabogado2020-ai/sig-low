@@ -801,6 +801,25 @@ describe('T-MO-01 · A-1, M-61 y B-81 (PB-2-r9, D-14): la parte propia, los verb
     expect(propios).toBeGreaterThan(50);
   });
 
+  it('B-81 · un complemento ambiguo fuera de un nombre de norma conocido no es seguro: el resto del tramo del modelo empieza en él', () => {
+    for (const [t, norma, resto] of [
+      ['el artículo 12 del Código de Ética de Protección Social Ejemplo S.A.S. dispone', 'Código de Ética de Protección Social', 'Código de Ética'],
+      ['el artículo 3 del Estatuto de Seguridad Social Ejemplo Ltda. dispone', 'Estatuto de Seguridad Social', 'Estatuto'],
+      ['el artículo 90 del Código General del Proceso Comercial Ejemplo S.A. dispone', 'Código General del Proceso', 'Código General del Proceso'],
+      ['el artículo 131 del Código Nacional de Tránsito Terrestre Pedro Ejemplo Gómez dispone', 'Código Nacional de Tránsito Terrestre', 'Código Nacional de Tránsito Terrestre'],
+      ['el artículo 2 del Código Nacional de Policía y Convivencia Ejemplo S.A. dispone', 'Código Nacional de Policía y Convivencia', 'Código Nacional de Policía y Convivencia'],
+      ['el artículo 1 del Pacto Internacional de Derechos Civiles y Políticos Ejemplo S.A. dispone', 'Pacto Internacional de Derechos Civiles y Políticos', 'Pacto Internacional de Derechos Civiles y Políticos'],
+      ['el artículo 8 de la Convención Americana sobre Derechos Humanos Ejemplo S.A.S. dispone', 'Convención Americana sobre Derechos Humanos', 'Convención Americana sobre Derechos Humanos'],
+    ] as const) {
+      const cx = contextosDelModelo(buildSearchView(t, 'reglas', 'cuerpo'));
+      const s = t.indexOf(norma);
+      // El objeto de la cita (la norma sola) no cambia: el tramo igual a él se sigue descartando.
+      expect(cx.filter((c) => c.inicio === true).map((c) => t.slice(c.start, c.end)), t).toEqual([norma]);
+      expect(exclusionDelModelo(cx, s, s + norma.length)).toBe('suprime');
+      // Con el código de -r8, en los dos primeros el fin seguro era el de la norma entera («… Protección Social», «… Seguridad Social»).
+      expect(finDeNormaAlInicio(cx, s, t.length - 8), t).toBe(s + resto.length);
+    }
+  });
 });
 
 describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas y exclusiones)', () => {
