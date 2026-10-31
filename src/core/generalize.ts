@@ -21,6 +21,8 @@ import type {
 // ===================================================================== utilidades de patrones
 
 const H = '[ \\t]';
+/** Blancos dentro de un lookbehind: con tope, para que su costo en cada posición no crezca con la racha (M-14). */
+const H8 = `${H}{1,8}`;
 /** Separador del nombre de un despacho (R-DESP-01): blancos horizontales, o un salto de línea con blancos alrededor. */
 const HD = `(?:${H}*\\r?\\n${H}*|${H}+)`;
 const SALTO = /\r?\n/g;
@@ -246,6 +248,17 @@ function getPlaceRegexes(): PlaceRegexes {
   return placeRx;
 }
 
+let despNombrePropioRx: RegExp | null = null;
+/**
+ * B-34 (PB-2-r5) · R-DESP-01 con cualquier palabra en el nombre del despacho («Notaría Ejemplo de Ubaté»). Solo se usa dentro de un
+ * tramo ORG del modelo, que ya dice que es una organización, nunca en el barrido. Cada vuelta consume un separador y una palabra
+ * de una sola manera, y la vuelta tiene tope (12), como en R-DESP-01. Se arma aparte y la primera vez que se pide.
+ */
+function getDespNombrePropio(): RegExp {
+  despNombrePropioRx ??= new RegExp(`(?<![\\p{L}\\p{N}])(?<head>${alt(DESP_HEAD)})(?!\\p{L})(?:${HD}[\\p{L}\\p{N}]+(?:[.'’-][\\p{L}\\p{N}]+)*(?:\\.?[ºª])?(?![\\p{L}\\p{N}])){1,12}?${HD}(?:de|del|De|Del|DE|DEL)${HD}(?<mun>${getPlaceRegexes().frag.MUN})(?!\\p{L})`, 'gdu');
+  return despNombrePropioRx;
+}
+
 const grp = (m: RegExpExecArray, name: string): [number, number] => {
   const g = (m.indices?.groups as Record<string, [number, number] | undefined> | undefined)?.[name];
   return g ?? [m.index, m.index + m[0].length];
@@ -411,16 +424,22 @@ interface DespachoMatch {
   prioridad: Prioridad; generico: string;
 }
 
-function scanDespachos(view: ViewLike, docDeps: readonly string[]): DespachoMatch[] {
-  const rx = getPlaceRegexes();
-  return scan(rx.desp, view.text, (m): DespachoMatch | null => {
+/**
+ * R-DESP-01 sobre la vista. Con `nombrePropio` (B-34) usa la forma que admite cualquier palabra en el nombre y exige que alguna
+ * la cumpla. El genérico (o2) se arma solo con la cabeza y las palabras del vocabulario del despacho: el nombre propio no entra
+ * («Notaría Ejemplo de Ubaté» → «una notaría»). En R-DESP-01 todas las palabras ya son del vocabulario, así que no cambia nada.
+ */
+function scanDespachos(view: ViewLike, docDeps: readonly string[], nombrePropio?: (palabra: string) => boolean): DespachoMatch[] {
+  const re = nombrePropio === undefined ? getPlaceRegexes().desp : getDespNombrePropio();
+  return scan(re, view.text, (m): DespachoMatch | null => {
     const [ms] = grp(m, 'mun');
     if ((m[0].match(SALTO) ?? []).length > 1) return null;   // un solo salto de línea en el nombre del despacho
     const r = resolvePlace(m.groups?.['mun'] ?? '', null, docDeps);
     if (r.status === 'no_encontrado') return null;
     const pre = view.text.slice(m.index, ms);
     const words = pre.trim().split(/\s+/).slice(0, -1).map((w) => w.toLowerCase());
-    const body = words.slice(1).filter((w) => !ORD_SET.has(vistaLista(w)) && !/^\d/.test(w));
+    if (nombrePropio !== undefined && !words.slice(1).some((w) => nombrePropio(vistaLista(w)))) return null;
+    const body = words.slice(1).filter((w) => !ORD_SET.has(vistaLista(w)) && !/^\d/.test(w) && VOCABULARIO_DESPACHO.palabras.has(vistaLista(w)));
     while (body.length && /^(de|del|y|para|la|las|los|el)$/.test(body[body.length - 1] ?? '')) body.pop();
     const head = words[0] ?? '';
     const generico = (FEM_HEAD.test(vistaLista(head)) ? 'una ' : 'un ') + [head, ...body].join(' ');
@@ -456,15 +475,19 @@ function sugerenciaDeDespacho(d: DespachoMatch, part: { id: PartId; text: string
  *
  * El tramo de la sugerencia es el despacho hallado (de la autoridad al municipio), que puede ser menor que el ORG. Si el ORG trae
  * más de un despacho, se toma el primero. `docDepCodes` desambigua homónimos como en `generalize`. Usa `ids.next('sug')`.
+ *
+ * Con `nombrePropio` (B-34, PB-2-r5) busca la autoridad nombrada con una palabra propia y con municipio («Notaría Ejemplo de
+ * Ubaté»), que R-DESP-01 no alcanza: alguna palabra del nombre debe cumplir el predicado (sobre la vista `lista` de la palabra).
+ * Las opciones son las de R-DESP-01: o1, el nombre con `un municipio de {m}`; o2, el genérico sin el nombre propio.
  */
 export function despachoDesdeTramo(
   part: { id: PartId; text: string }, view: ViewLike | undefined, start: number, end: number, ids: IdSource,
-  opciones: { docDepCodes?: readonly string[]; ocupadas?: readonly { start: number; end: number }[] } = {},
+  opciones: { docDepCodes?: readonly string[]; ocupadas?: readonly { start: number; end: number }[]; nombrePropio?: (palabra: string) => boolean } = {},
 ): Suggestion | null {
   const v: ViewLike = view ?? { text: part.text };
   const vs = viewIndexAtOrAfter(v, start), ve = viewIndexEndFor(v, end);
   if (ve <= vs) return null;
-  const d = scanDespachos({ text: v.text.slice(vs, ve) }, opciones.docDepCodes ?? [])[0];
+  const d = scanDespachos({ text: v.text.slice(vs, ve) }, opciones.docDepCodes ?? [], opciones.nombrePropio)[0];
   if (!d) return null;
   const rel: DespachoMatch = { ...d, start: d.start + vs, end: d.end + vs, munStart: d.munStart + vs };
   const sug = sugerenciaDeDespacho(rel, part, v);
@@ -543,9 +566,12 @@ function getEdadRegex(): RegExp {
   if (edadRx) return edadRx.re;
   const NW = alt(AGE_WORDS_SRC) + '(?!\\p{L})';
   const NUMPH = `${NW}(?:${H}+(?:y${H}+)?${NW})*`;
+  // M-14 (PB-2-r5): el contexto anterior es un lookbehind que se evalúa en cada posición; con `${H}+` sin tope era cuadrático en
+  // una racha de blancos (la vista `reglas` colapsa los espacios, no los tabuladores: 20.000 tabuladores, 6,5 s). Con a lo sumo
+  // 8 blancos por separador (H8) es lineal y el banco no cambia.
   edadRx = {
     re: new RegExp(
-      `${LB}(?<!(?:m[aá]s|menos|mayor(?:es)?|menor(?:es)?|pena|condena|prisi[oó]n|t[eé]rmino|plazo|per[ií]odo|lapso|vigencia|duraci[oó]n|antig[uü]edad|experiencia|cerca|alrededor|hace|despu[eé]s|antes|dentro|unos|unas)${H}+(?:de${H}+)?)`
+      `${LB}(?<!(?:m[aá]s|menos|mayor(?:es)?|menor(?:es)?|pena|condena|prisi[oó]n|t[eé]rmino|plazo|per[ií]odo|lapso|vigencia|duraci[oó]n|antig[uü]edad|experiencia|cerca|alrededor|hace|despu[eé]s|antes|dentro|unos|unas)${H8}(?:de${H8})?)`
       + `(?:(?<pre>de|con|tiene|ten[ií]a|cumpli[oó]|edad${H}*:|edad${H}+de)${H}+)?(?<n>\\d{1,3}|${NUMPH})(?:${H}*\\(${H}*(?<nd>\\d{1,3})${H}*\\))?${H}+`
       + `(?<u>a[ñn]os(?:${H}+de${H}+edad)?|a[ñn]o${H}+de${H}+edad|meses${H}+de${H}+edad)`
       + `(?!${H}+de${H}+(?:servicio|experiencia|prisi[oó]n|c[aá]rcel|pena|cotizaci[oó]n|antig[uü]edad|labor|trabajo|matrimonio|convivencia|vigencia|duraci[oó]n|casad[oa]s))(?!${H}+(?:atr[aá]s|despu[eé]s|antes))`,

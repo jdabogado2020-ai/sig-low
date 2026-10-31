@@ -21,7 +21,7 @@ import { rules as rRotulados } from './rules/rotulados.ts';
 import { rules as rValores } from './rules/valores.ts';
 import { configurarDivipola, divipolaCodes } from './validators/radicado.ts';
 import { findCaseMentions, variantOwners } from './caselist.ts';
-import { mergeCandidates, mergeIntoFused, PALABRAS_DE_FUNCION, trimFunctionWords } from './merge.ts';
+import { mergeCandidates, mergeIntoFused, PALABRAS_DE_FUNCION, resolveRemainder, trimFunctionWords } from './merge.ts';
 import type { EsVarianteDe } from './merge.ts';
 import { buildDetectionSet, cryptoIds, orgKey, personKey } from './entities.ts';
 import {
@@ -109,26 +109,62 @@ const DESPACHO_COLA = 160;
 /** Nombres de municipio de la DIVIPOLA de hasta 4 palabras («San José del Guaviare»). */
 const MUNICIPIO_MAX_PALABRAS = 4;
 
+/** Palabra propia del nombre de una autoridad (vista `lista`): con letras, de 2 o más, fuera del vocabulario del despacho y de función. */
+const esPalabraPropia = (x: string): boolean => x.length >= 2 && /\p{L}/u.test(x) && !VOCABULARIO_DESPACHO.palabras.has(x)
+  && !VOCABULARIO_DESPACHO.cabezas.has(x) && !PALABRAS_DE_FUNCION.has(x);
+/** B-34 · Lo mismo, y que no sea el nombre de un municipio («Notaría Ejemplo de Ubaté»: «ejemplo» sí, «ubate» no). */
+const esNombrePropioDeAutoridad = (x: string): boolean => esPalabraPropia(x) && municipiosPorNombre(x).length === 0;
+
 /**
- * D-03 C, acotada (7.10.8; ver la reapertura -r4 de PB-2): la autoridad del modelo sin municipio que entra como `ENTIDAD` baja.
- * Es un despacho local (cabeza de R-DESP-01: notaría, juzgado, alcaldía…) nombrado con una palabra propia, que no es del
- * vocabulario del nombre de un despacho, ni de función, ni un número («Notaría Ejemplo»), y sin municipio de la DIVIPOLA.
- * Quedan fuera las corporaciones nacionales («Corte Constitucional»), el despacho genérico («Juzgado Tercero Civil del Circuito»),
- * el número solo («Notaría 999») y el que trae municipio (lo generaliza `DESPACHO_A_GENERICO`; si R-DESP-01 no lo alcanza, nada).
- * Con la regla literal de D-03 C (toda autoridad sin sugerencia), el corpus de desarrollo daba 2 menciones más y 25 detecciones
- * falsas en la vista natural; con esta, las mismas 2 y ninguna falsa.
+ * D-03 C, acotada (7.10.8; ver la reapertura -r4 de PB-2): la autoridad del modelo sin sugerencia de despacho que entra como
+ * `ENTIDAD` baja. Es un despacho local (cabeza de R-DESP-01: notaría, juzgado, alcaldía…) nombrado con una palabra propia, que
+ * no es del vocabulario del nombre de un despacho, ni de función, ni un número, ni parte del nombre de un municipio de la
+ * DIVIPOLA («Notaría Ejemplo»). Quedan fuera las corporaciones nacionales («Corte Constitucional»), el despacho genérico
+ * («Juzgado Tercero Civil del Circuito») y el número solo («Notaría 999»). Con la regla literal de D-03 C (toda autoridad sin
+ * sugerencia), el corpus de desarrollo daba 2 menciones más y 25 detecciones falsas en la vista natural; con esta, las mismas 2
+ * y ninguna falsa.
+ *
+ * B-34 (PB-2-r5, decisión del integrador): un municipio ya no la descarta. La autoridad con nombre propio y municipio recibe antes
+ * la sugerencia de despacho (`despachoDesdeTramo` con `nombrePropio`); si la cabeza y el nombre propio no casan con R-DESP-01
+ * («Notaría Simón Bolívar», «Notaría Ejemplo, Ubaté»), entra aquí como `ENTIDAD` baja, que cubre también el municipio.
  */
 export function autoridadConNombrePropio(texto: string): boolean {
   const w = vistaLista(texto).split(/[^\p{L}\p{N}]+/u).filter((x) => x !== '');
   if (w.length < 2 || !VOCABULARIO_DESPACHO.cabezas.has(w[0] as string)) return false;
-  for (let i = 0; i < w.length; i++) {
+  const deMunicipio = new Set<number>();
+  for (let i = 1; i < w.length; i++) {
     for (let n = 1; n <= MUNICIPIO_MAX_PALABRAS && i + n <= w.length; n++) {
-      if (municipiosPorNombre(w.slice(i, i + n).join(' ')).length > 0) return false;
+      if (municipiosPorNombre(w.slice(i, i + n).join(' ')).length > 0) for (let k = i; k < i + n; k++) deMunicipio.add(k);
     }
   }
-  return w.slice(1).some((x) => x.length >= 2 && /\p{L}/u.test(x) && !VOCABULARIO_DESPACHO.palabras.has(x)
-    && !VOCABULARIO_DESPACHO.cabezas.has(x) && !PALABRAS_DE_FUNCION.has(x));
+  return w.some((x, i) => i > 0 && !deMunicipio.has(i) && esPalabraPropia(x));
 }
+
+/**
+ * B-33 (PB-2-r5) · Lo que el tramo ORG del modelo trae fuera del despacho de su sugerencia («Juzgado Civil Municipal de Ubaté
+ * Pedro Ejemplo Gómez» → «Pedro Ejemplo Gómez») pasa por 7.11.2 como candidato del modelo: recorte R-MOD-03, una palabra con
+ * mayúscula inicial y confianza baja. El tipo sale del mismo mapeo 7.10.8 del resto: EPS, IPS, una autoridad con nombre propio
+ * (`ENTIDAD`) o `EMPRESA`; una autoridad sin nombre propio se descarta (el barrido de generalize.ts ve los otros despachos).
+ */
+function restosFueraDelDespacho(part: Part, s: number, e: number, despacho: { start: number; end: number }, score: number): DetectionCandidate[] {
+  const out: DetectionCandidate[] = [];
+  for (const [a, b] of [[s, Math.min(e, despacho.start)], [Math.max(s, despacho.end), e]] as const) {
+    if (b <= a) continue;
+    const base: DetectionCandidate = { partId: part.id, start: a, end: b, type: 'EMPRESA', source: 'modelo', nerLabel: 'ORG',
+      confidence: 'baja', score, canonicalKey: '' };
+    const r = resolveRemainder(part, base, a, b, SIN_REGLAS);
+    if (r === null) continue;
+    const piece = part.text.slice(r.start, r.end);
+    const lista = vistaLista(piece);
+    const type: DetectionCandidate['type'] | null = RE_EPS.test(lista) ? 'EPS' : RE_IPS.test(lista) ? 'IPS'
+      : RE_AUTORIDAD.test(lista) ? (autoridadConNombrePropio(piece) ? 'ENTIDAD' : null) : 'EMPRESA';
+    if (type === null) continue;
+    out.push({ partId: part.id, start: r.start, end: r.end, type, source: 'modelo', nerLabel: 'ORG', confidence: 'baja', score,
+      canonicalKey: orgKey(piece, part.kind) });
+  }
+  return out;
+}
+const SIN_REGLAS: RuleRegistry = { rerun: () => null };
 
 /**
  * 7.10.7 a 7.10.9: filtros, mapeo de etiquetas y bandas de confianza. PER → PERSONA; ORG → EPS, IPS, despacho o autoridad, o
@@ -174,12 +210,19 @@ export function candidatesFromNer(spans: readonly NerSpan[], c: NerContext): Ner
         if (RE_EPS.test(lista)) nuevo('EPS', orgKey(piece, part.kind), banda);
         else if (RE_IPS.test(lista)) nuevo('IPS', orgKey(piece, part.kind), banda);
         else if (RE_AUTORIDAD.test(lista)) {
-          // R-DESP-01 desde el tramo, con cola hasta el municipio: la sugerencia debe tocar el tramo del modelo.
+          // R-DESP-01 desde el tramo, con cola hasta el municipio: la sugerencia debe tocar el tramo del modelo. Si no la hay, la
+          // autoridad con nombre propio y municipio (B-34). Lo que el tramo trae fuera del despacho entra aparte (B-33).
           vistaReglas ??= buildSearchView(text, 'reglas', part.kind);
-          const sug = despachoDesdeTramo(part, vistaReglas, s, Math.min(text.length, e + DESPACHO_COLA), c.ids, { docDepCodes: c.docDepCodes });
-          const sp = sug?.target.kind === 'tramo' ? sug.target.span : undefined;
-          if (sug !== null && sp !== undefined && sp.start < e && s < sp.end) out.suggestions.push(sug);
-          else if (autoridadConNombrePropio(piece)) nuevo('ENTIDAD', orgKey(piece, part.kind), 'baja');
+          const cola = Math.min(text.length, e + DESPACHO_COLA);
+          const tramoDe = (x: Suggestion | null): { start: number; end: number } | null =>
+            x?.target.kind === 'tramo' && x.target.span.start < e && s < x.target.span.end ? x.target.span : null;
+          let sug = despachoDesdeTramo(part, vistaReglas, s, cola, c.ids, { docDepCodes: c.docDepCodes });
+          if (tramoDe(sug) === null) sug = despachoDesdeTramo(part, vistaReglas, s, cola, c.ids, { docDepCodes: c.docDepCodes, nombrePropio: esNombrePropioDeAutoridad });
+          const despacho = tramoDe(sug);
+          if (sug !== null && despacho !== null) {
+            out.suggestions.push(sug);
+            out.candidates.push(...restosFueraDelDespacho(part, s, e, despacho, sp.score));
+          } else if (autoridadConNombrePropio(piece)) nuevo('ENTIDAD', orgKey(piece, part.kind), 'baja');
         } else nuevo('EMPRESA', orgKey(piece, part.kind), banda);
         break;
       }

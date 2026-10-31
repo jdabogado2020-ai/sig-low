@@ -609,6 +609,16 @@ export function esPropuestaSobreLista(state: ReviewState, d0: Detection): boolea
   return d0.source === 'lista' || Object.values(state.detections).some((o) => o.source === 'lista' && o.id !== d0.id
     && contains(spanOf(d0), spanOf(o)) && o.end - o.start < d0.end - d0.start);
 }
+
+/**
+ * M-12 (PB-2-r5) · La extensión de la lista (D-03 E) pasa sobre una mención de la misma entidad que el usuario rechazó. El
+ * rechazo dice que ese texto no es esa entidad, así que el nombre completo no se le vuelve a atribuir: el reductor descarta la
+ * extensión e `incorporarModelo` la entrega como el tramo del modelo que es, con su propia entidad.
+ */
+export function extensionSobreRechazada(state: ReviewState, d0: Detection): boolean {
+  return d0.source === 'lista' && d0.caseEntityId !== undefined && Object.values(state.detections).some((o) => o.status === 'rechazada'
+    && o.source === 'lista' && o.caseEntityId === d0.caseEntityId && overlaps(spanOf(o), spanOf(d0)));
+}
 const blocks = (state: ReviewState, span: Span): boolean =>
   Object.values(state.detections).some((d) => d.status !== 'rechazada' && overlaps(spanOf(d), span))
   || Object.values(state.spanEdits).some((s) => overlaps(s.span, span));
@@ -818,8 +828,11 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
         if (esPropuestaSobreLista(s, d0)) {
           // INV-R12, única excepción (D-03 B y E): todo lo que la propuesta toca es de la lista, está intacto y cede (o se
           // extiende). Si no, la propuesta no entra (incorporarModelo la vuelve a partir antes, como 7.11.2).
-          const tocadas = Object.values(s.detections).filter((o) => overlaps(spanOf(o), span));
-          if (tocadas.length === 0 || Object.values(s.spanEdits).some((x) => overlaps(x.span, span))
+          // M-12 (PB-2-r5): una detección rechazada no bloquea un tramo distinto (6.4.4), así que no cuenta entre las tocadas y
+          // no se borra; si no queda ninguna, la propuesta sigue el camino de `blocks`.
+          if (extensionSobreRechazada(s, d0)) continue;
+          const tocadas = Object.values(s.detections).filter((o) => o.status !== 'rechazada' && overlaps(spanOf(o), span));
+          if (Object.values(s.spanEdits).some((x) => overlaps(x.span, span))
             || !tocadas.every((o) => cedeAnteModelo(s, o, d0, ctx.caseList))) continue;
           for (const o of tocadas) delete s.detections[o.id];
         } else if (blocks(s, span)) continue;

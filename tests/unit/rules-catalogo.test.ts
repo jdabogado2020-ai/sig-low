@@ -540,6 +540,35 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     expect(mejor).toBeLessThan(10_000);
   }, 90_000);
 
+  // M-14 (PB-2-r5): los lookbehinds de largo variable de src/core/rules llevan tope. Un lookbehind se evalúa en cada posición, y
+  // con `[ \t]*` o `[ ]+` sin tope su retroceso crecía con la racha de blancos: con 20.000 caracteres, de 0,7 a 3,8 s; con
+  // 200.000, minutos. La vista `reglas` colapsa los espacios, no los tabuladores; el caso de «nuip» se mide sobre el texto crudo.
+  // 200.000 caracteres hostiles, mejor de 3, por debajo de 200 ms (aislado tardan menos de 10 ms).
+  const M = 200_000;
+  const lookbehinds: Array<[string, string, readonly string[], 'vista' | 'cruda', string[]]> = [
+    ['NOHC (R-CC-01, R-CE-01, R-DOC-01): tabuladores antes del rótulo', '\t'.repeat(M) + 'cc 1000000001', ['R-CC-01', 'R-CE-01', 'R-DOC-01'], 'vista', ['CC:1000000001']],
+    ['L.CC_D (R-CC-01): «registro civil», espacios y «nuip»', 'registro civil' + ' '.repeat(M) + 'nuip 1000000001', ['R-CC-01'], 'cruda', ['nuip 1000000001']],
+    ['R-VAL-02: «$» y tabuladores antes de la cifra', '$' + '\t'.repeat(M) + '1.000 pesos', ['R-VAL-02'], 'vista', ['VALOR:1000']],
+    ['R-VAL-03: «$» y tabuladores antes de los millones', '$' + '\t'.repeat(M) + '2 millones', ['R-VAL-03'], 'vista', ['VALOR:2000000']],
+  ];
+  it.each(lookbehinds)('M-14 lookbehind acotado, %s: 200.000 caracteres por debajo de 200 ms', async (_n, texto, ids, modo, esperado) => {
+    const reglas = (await reglasDeModulos(MODULOS_REGLAS)).filter((r) => ids.includes(r.id));
+    expect(reglas.map((r) => r.id).sort()).toEqual([...ids].sort());
+    const view = buildSearchView(texto, 'reglas', 'cuerpo');
+    const correr = (): string[] => (modo === 'vista'
+      ? runRules(view, PART, reglas, 2026).map((c) => c.canonicalKey)
+      : reglas.flatMap((r) => [...texto.matchAll(new RegExp(r.source, r.flags))].map((m) => m[0].trim())));
+    let mejor = Infinity;
+    let hallado: string[] = [];
+    for (let i = 0; i < 3; i++) {
+      const t0 = performance.now();
+      hallado = correr();
+      mejor = Math.min(mejor, performance.now() - t0);
+    }
+    expect(hallado).toEqual(esperado);
+    expect(mejor).toBeLessThan(200);
+  }, 90_000);
+
   it('el tope por exclusión corta, conserva lo hallado y avisa solo con el id', () => {
     const texto = 'ley 1 '.repeat(2000);
     const view = buildSearchView(texto, 'reglas', 'cuerpo');

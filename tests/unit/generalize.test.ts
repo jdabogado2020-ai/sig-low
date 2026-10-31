@@ -1264,6 +1264,34 @@ describe('R-EDAD-01 · edad explícita (G-06)', () => {
   it.each(caso.neg.map((c, i) => [i + 1, ...c] as const))('negativo %i «%s» (%s)', (_i, texto) => {
     expect(sugDe(correr(texto, [], { sinLugares: true }).res, 'EDAD_A_RANGO')).toEqual([]);
   });
+
+  // M-14 (P0-6a de PB-2-r4): el lookbehind de contexto de R-EDAD-01 («más de», «hace»…) llevaba `[ \t]+` sin tope y se evalúa en
+  // cada posición: 20.000 tabuladores tardaban 6,5 s en `detectar` y 200.000, minutos. Con a lo sumo 8 blancos por separador es
+  // lineal; el contexto con 1 a 8 blancos sigue excluyendo.
+  it('M-14 R-EDAD-01 en tiempo lineal: 200.000 caracteres hostiles por debajo de 200 ms, y el contexto con hasta 8 blancos sigue excluyendo', () => {
+    const N = 200_000;
+    const hostiles: Array<[string, string]> = [
+      ['tabuladores', '\t'.repeat(N)],
+      ['espacio y tabulador alternados', ' \t'.repeat(N / 2)],
+      ['«más», tabuladores y una edad', 'más' + '\t'.repeat(N - 10) + '30 años'],
+      ['«más de» con 8 tabuladores, repetido', ('más' + '\t'.repeat(8) + 'de' + '\t'.repeat(8) + '1 año ').repeat(N / 26)],
+    ];
+    correr('tiene 30 años', [], { sinLugares: true });   // construye los patrones antes de medir
+    for (const [nombre, t] of hostiles) {
+      let mejor = Infinity;
+      for (let i = 0; i < 3; i++) {
+        const t0 = performance.now();
+        generalize({ part: { id: PID, text: t }, detections: [], options: { referenceDate: REF }, ids: makeIds() });
+        mejor = Math.min(mejor, performance.now() - t0);
+      }
+      expect(mejor, nombre).toBeLessThan(200);
+    }
+    for (const sep of ['\t', '\t'.repeat(8), ' \t \t']) {
+      expect(sugDe(correr(`tiene más${sep}de${sep}30 años de edad`, [], { sinLugares: true }).res, 'EDAD_A_RANGO'), JSON.stringify(sep)).toEqual([]);
+      expect(sugDe(correr(`hace${sep}30 años de edad`, [], { sinLugares: true }).res, 'EDAD_A_RANGO'), JSON.stringify(sep)).toEqual([]);
+    }
+    expect(sugDe(correr('tiene\t30 años de edad', [], { sinLugares: true }).res, 'EDAD_A_RANGO').map((s) => s.originalText)).toEqual(['30 años de edad']);
+  });
 });
 
 const BANDERAS: [string, FlagReason, FlagType][] = [

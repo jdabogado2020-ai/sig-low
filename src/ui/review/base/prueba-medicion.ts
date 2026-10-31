@@ -3,16 +3,18 @@
 // producción (`createDetectHandler`, el de la tubería PB-6) sobre un texto de prueba y abre la Revisión con él. Los ids son
 // deterministas (contador): ningún valor sale del contenido. Cuando PG-3b entregue `window.__siglowMedicion.procesar`, las E2E
 // podrán obtener el mismo conjunto por ahí; esta ranura no lo necesita.
+import { cryptoIds, emptyTable, tableIndexOf } from '../../../core/entities.ts';
 import { createDetectHandler } from '../../../core/pipeline.ts';
+import { incorporarModelo } from '../../../core/review/modelo.ts';
 import { UMBRALES_MODELO } from '../../../core/umbrales.ts';
 import type {
-  CaseEntity, DetectionSet, DetectResult, DocumentModel, DocId, IdSource, ModelProgress, PartId,
+  AsuntoId, CaseEntity, DetectionSet, DetectResult, DocumentModel, DocId, IdSource, ModelProgress, PartId,
 } from '../../../core/types.ts';
 import { ir } from '../../estado.ts';
-import { obtenerListaDelCaso } from '../../sesion.ts';
+import { obtenerListaDelCaso, obtenerTabla } from '../../sesion.ts';
 import { estadoDeConjunto } from '../../analisis.ts';
-import { fijarDocumento, fijarRevision } from '../../documento.ts';
-import { despachar, obtenerInstantanea } from './almacen.ts';
+import { fijarDocumento, fijarRevision, obtenerRevision } from '../../documento.ts';
+import { obtenerInstantanea } from './almacen.ts';
 
 type Modelo = 'en_curso' | 'terminado' | 'plan_b';
 const hex = (n: number): string => n.toString(16).padStart(32, '0');
@@ -85,8 +87,15 @@ async function incorporarVentana(textos: readonly string[], ventana: number, ven
   });
   if (delta === null) throw new Error('SIN_RESULTADO');
   const d: DetectionSet = delta;
-  const r = despachar({ kind: 'incorporar_modelo', ventana, ventanasTotales, delta: d });
-  return r.ok ? d.detections.length : -1;
+  // Como la interfaz (analisis.ts) y la medición (gancho.ts): `incorporarModelo` y no el reductor directo, para que una acción
+  // del usuario antes de la ventana no descarte el tramo entero (restos de 7.11.2; P0-6a de PB-2-r4, PB-2-r5).
+  const actual = obtenerRevision();
+  if (actual === null) return -1;
+  const r = incorporarModelo(actual, ventana, ventanasTotales, d, { table: tableIndexOf(obtenerTabla() ?? emptyTable('asu_' as AsuntoId)),
+    caseList: obtenerListaDelCaso(), doc, ids: cryptoIds });
+  if (!r.ok) return -1;
+  if (r.state !== actual) fijarRevision(r.state);
+  return d.detections.length;
 }
 
 export function instalarPruebaRevision(): void {

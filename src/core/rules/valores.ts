@@ -64,6 +64,11 @@ const NUMANY = `\\d{1,3}(?:,\\d{3})+(?:\\.\\d{1,2})?|${NUMCOP}`;
 const MULT_MILL = '(?:mil' + H + '+millones|Mil' + H + '+Millones|MIL' + H + '+MILLONES|millones|Millones|MILLONES|millón|Millón|MILLÓN|millon|Millon|MILLON)';
 const SUF_PESOS = `(?:(?:(?:de|DE|De)${H}+)?(?:pesos|PESOS|Pesos)(?:${H}+(?:colombianos|COLOMBIANOS|Colombianos))?(?:${H}+(?:m/cte|M/CTE|M/cte|mcte|MCTE|Mcte))?|(?:m/cte|M/CTE|M/cte|mcte|MCTE|Mcte)|m/c|M/C|COP|(?:moneda|MONEDA|Moneda)${H}+(?:corriente|CORRIENTE|Corriente)|(?:moneda|MONEDA|Moneda)${H}+(?:legal|LEGAL|Legal)${H}+(?:colombiana|COLOMBIANA|Colombiana))`;
 export const FR_VALORES = { NUMCOP, NUMANY, MULT_MILL, SUF_PESOS } as const;
+/**
+ * Blancos tras «$» en el lookbehind de R-VAL-02 y R-VAL-03, con tope (M-14, PB-2-r5): un lookbehind se evalúa en cada posición
+ * y, con `${H}*`, su costo crecía con la racha de tabuladores (la vista `reglas` no los colapsa).
+ */
+const H8 = `${H}{0,8}`;
 
 const g = (m: RegExpExecArray, k: string): string => m.groups?.[k] ?? '';
 const fin = (m: RegExpExecArray): number => m.index + m[0].length;
@@ -83,7 +88,7 @@ const rVAL01: RuleSpec = {
 // R-VAL-02 · cifra + pesos, COP o m/cte (sin «$»). El grupo `l` es la palabra de moneda.
 const rVAL02: RuleSpec = {
   id: 'R-VAL-02', type: 'VALOR', flags: 'dgu',
-  source: `(?<![\\p{L}\\p{N}$.,'])(?<!\\$${H}*)(?<num>${NUMCOP})${H}*(?<l>${SUF_PESOS})(?![\\p{L}\\p{N}])`,
+  source: `(?<![\\p{L}\\p{N}$.,'])(?<!\\$${H8})(?<num>${NUMCOP})${H}*(?<l>${SUF_PESOS})(?![\\p{L}\\p{N}])`,
   assess(m, ctx) {
     const v = Math.round(parseCifra(g(m, 'num')));
     return Number.isFinite(v) ? cerrarValor(m.index, fin(m), ctx.view.text, v, 'alta', NOTA_ROT.moneda) : null;
@@ -93,7 +98,7 @@ const rVAL02: RuleSpec = {
 // R-VAL-03 · N millones sin símbolo (alta con «de pesos»; media sin él)
 const rVAL03: RuleSpec = {
   id: 'R-VAL-03', type: 'VALOR', flags: 'dgu',
-  source: `(?<![\\p{L}\\p{N}$.,'])(?<!\\$${H}*)(?<num>\\d{1,3}(?:[.,]\\d{1,3})?)${H}+(?<mult>${MULT_MILL})(?!\\p{L})(?<dp>${H}+(?:de|DE|De)${H}+(?:pesos|PESOS|Pesos)(?:${H}+(?:m/cte|M/CTE|mcte))?)?(?!${H}+(?:de|DE|De)${H}+(?!pesos|PESOS|Pesos)\\p{L})(?![\\p{L}\\p{N}])`,
+  source: `(?<![\\p{L}\\p{N}$.,'])(?<!\\$${H8})(?<num>\\d{1,3}(?:[.,]\\d{1,3})?)${H}+(?<mult>${MULT_MILL})(?!\\p{L})(?<dp>${H}+(?:de|DE|De)${H}+(?:pesos|PESOS|Pesos)(?:${H}+(?:m/cte|M/CTE|mcte))?)?(?!${H}+(?:de|DE|De)${H}+(?!pesos|PESOS|Pesos)\\p{L})(?![\\p{L}\\p{N}])`,
   assess(m, ctx) {
     const v = Math.round(parseCifra(g(m, 'num')) * multiplier(g(m, 'mult')));
     return Number.isFinite(v) ? cerrarValor(m.index, fin(m), ctx.view.text, v, g(m, 'dp') !== '' ? 'alta' : 'media') : null;

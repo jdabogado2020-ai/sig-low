@@ -8,6 +8,7 @@ import { applyReviewAction } from '../../src/core/entities';
 import { candidatesFromNer, createDetectHandler, ProgressLimiter } from '../../src/core/pipeline';
 import { declararPlanB, incorporarModelo, modeloInicial } from '../../src/core/review/modelo';
 import { exportGate } from '../../src/core/review/puerta';
+import { render } from '../../src/core/render';
 import { UMBRALES_MODELO } from '../../src/core/umbrales';
 import type {
   CaseEntity, DetectionSet, DocId, DocumentModel, IdSource, NerSpan, PartId, PlanBCause, ResidueResult, ReviewState, TableIndex,
@@ -285,11 +286,17 @@ describe('T-MO-12 · fusionar por ventana (6.11.2)', () => {
 describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10.7, 7.10.9, 7.10.10; PB-2-r3)', () => {
   const T = 'La demandante Ana Ficticia Rojas presentó la tutela. Declaró Pedro Luis Ficticia Gómez, vecino del sector, y firmó.';
   const NOMBRE = 'Pedro Luis Ficticia Gómez';
-  const letrasALaVista = (st: ReviewState, texto: string, desde: number, largo: number): string[] => {
+  /**
+   * Letras de [desde, desde + largo) de la primera parte que la salida deja a la vista: las de los trozos que `render` copia tal cual
+   * (sin detección ni edición de tramo). Antes de PB-2-r5 miraba solo si alguna detección cubría la letra, y contaba una rechazada
+   * como cobertura (P0-6a de PB-2-r4, M-12).
+   */
+  const letrasALaVista = (doc: DocumentModel, st: ReviewState, desde: number, largo: number): string[] => {
+    const texto = doc.parts[0]!.text;
     const fuera: string[] = [];
-    for (let i = desde; i < desde + largo; i++) {
-      const c = texto[i] as string;
-      if (/\p{L}/u.test(c) && !Object.values(st.detections).some((d) => d.start <= i && i < d.end)) fuera.push(c);
+    for (const g of render(doc, st).sections[0]!.segments) {
+      if (g.detectionId !== undefined || g.spanEditId !== undefined) continue;
+      for (let i = Math.max(g.partStart, desde); i < Math.min(g.partEnd, desde + largo); i++) if (/\p{L}/u.test(texto[i] as string)) fuera.push(texto[i] as string);
     }
     return fuera;
   };
@@ -311,12 +318,12 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
     .map((d) => `${d.text}:${d.confidence}:${d.status}`).sort();
 
   it('INV-R02 INV-R12 D-03 B el nombre del modelo que contiene un apellido suelto de otra persona de la lista: la lista cede y el nombre entra entero (C01, C06)', async () => {
-    const { ctx, st: st0, suelto, w1 } = await conApellidoSuelto();
+    const { doc, ctx, st: st0, suelto, w1 } = await conApellidoSuelto();
     const desde = T.indexOf(NOMBRE);
     // Antes (PB-2-r3), el delta traía «Pedro Luis» y «Gómez» de baja confianza y «Ficticia» seguía como la demandante.
     expect(w1.detections.map((d) => `${d.text}:${d.source}:${d.confidence}`)).toEqual([`${NOMBRE}:modelo:media`]);
     const st = bien(incorporarModelo(st0, 1, 1, w1, ctx));
-    expect(letrasALaVista(st, T, desde, NOMBRE.length)).toEqual([]);
+    expect(letrasALaVista(doc, st, desde, NOMBRE.length)).toEqual([]);
     expect(st.detections[suelto.id]).toBeUndefined();   // la variante débil cedió
     expect(modelo(st)).toEqual([`${NOMBRE}:media:pendiente`]);
     const nombre = Object.values(st.detections).find((d) => d.text === NOMBRE)!;
@@ -328,18 +335,17 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
 
   it('INV-R12 D-03 la excepción ocurre con la detección de la lista intacta y no ocurre tras cualquier acción sobre ella', async () => {
     const base = await conApellidoSuelto();
-    const { ctx, suelto, w1 } = base;
+    const { doc, ctx, suelto, w1 } = base;
     const desde = T.indexOf(NOMBRE);
     const sector = T.indexOf('sector');
+    // `rechazar` y `rechazar_entidad` no están aquí: una rechazada no bloquea un tramo distinto (M-12, prueba siguiente).
     const acciones: Array<[string, (s: ReviewState) => ReviewState]> = [
       ['aceptar', (s) => bien(applyReviewAction(s, { kind: 'aceptar', detectionId: suelto.id }, ctx))],
-      ['rechazar', (s) => bien(applyReviewAction(s, { kind: 'rechazar', detectionId: suelto.id, reason: 'FALSO_POSITIVO' }, ctx))],
       ['editar', (s) => bien(applyReviewAction(s, { kind: 'editar', detectionId: suelto.id, text: 'el testigo' }, ctx))],
       ['cambiar_tipo', (s) => bien(applyReviewAction(s, { kind: 'cambiar_tipo', detectionId: suelto.id, type: 'EMPRESA' }, ctx))],
       ['separar_mencion', (s) => bien(applyReviewAction(s, { kind: 'separar_mencion', detectionId: suelto.id }, ctx))],
       ['cambiar_rol', (s) => bien(applyReviewAction(s, { kind: 'cambiar_rol', entityId: suelto.entityId, role: 'TESTIGO' }, ctx))],
       ['aceptar_entidad', (s) => bien(applyReviewAction(s, { kind: 'aceptar_entidad', entityId: suelto.entityId }, ctx))],
-      ['rechazar_entidad', (s) => bien(applyReviewAction(s, { kind: 'rechazar_entidad', entityId: suelto.entityId }, ctx))],
       ['unir_entidades', (s) => {
         const m = bien(applyReviewAction(s, { kind: 'agregar_manual', span: { partId: PRT(1), start: sector, end: sector + 6 }, type: 'PERSONA', propagate: false }, ctx));
         const manual = Object.values(m.detections).find((d) => d.source === 'manual')!;
@@ -356,7 +362,7 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
       // La detección queda como la dejó el usuario; el tramo del modelo se parte como antes de D-03 (7.11.2) y no se pierde.
       expect(despues.detections[suelto.id], nombre).toEqual(antes.detections[suelto.id]);
       expect(modelo(despues), nombre).toEqual(['Gómez:baja:pendiente', 'Pedro Luis:baja:pendiente']);
-      expect(letrasALaVista(despues, T, desde, NOMBRE.length), nombre).toEqual([]);
+      expect(letrasALaVista(doc, despues, desde, NOMBRE.length), nombre).toEqual([]);
       expect(despues.flags, nombre).toEqual(antes.flags);
       expect(despues.suggestions, nombre).toEqual(antes.suggestions);
       expect(despues.spanEdits, nombre).toEqual(antes.spanEdits);
@@ -368,6 +374,88 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
     const restablecida = bien(applyReviewAction(acciones[0]![1](base.st), { kind: 'restablecer', detectionId: suelto.id }, ctx));
     expect(restablecida.detections[suelto.id]).toEqual(base.st.detections[suelto.id]);
     expect(bien(incorporarModelo(restablecida, 1, 1, w1, ctx)).detections[suelto.id]).toBeUndefined();
+  });
+
+  it('INV-R12 M-12 una detección rechazada no bloquea el nombre completo del modelo: tras rechazar la variante débil o la entidad, el nombre entra entero y sin letras a la vista', async () => {
+    const base = await conApellidoSuelto();
+    const { doc, ctx, suelto, w1 } = base;
+    const desde = T.indexOf(NOMBRE);
+    const acciones: Array<[string, (s: ReviewState) => ReviewState]> = [
+      ['rechazar con motivo', (s) => bien(applyReviewAction(s, { kind: 'rechazar', detectionId: suelto.id, reason: 'FALSO_POSITIVO' }, ctx))],
+      ['rechazar sin motivo', (s) => bien(applyReviewAction(s, { kind: 'rechazar', detectionId: suelto.id }, ctx))],
+      ['rechazar_entidad', (s) => bien(applyReviewAction(s, { kind: 'rechazar_entidad', entityId: suelto.entityId }, ctx))],
+    ];
+    for (const [nombre, accion] of acciones) {
+      const antes = accion(base.st);
+      expect(antes.detections[suelto.id]?.status, nombre).toBe('rechazada');
+      // Por incorporarModelo y por el reductor directo (6.4.4: solo el tramo idéntico a una rechazada se descarta).
+      for (const despues of [bien(incorporarModelo(antes, 1, 1, w1, ctx)),
+        bien(applyReviewAction(antes, { kind: 'incorporar_modelo', ventana: 1, ventanasTotales: 1, delta: w1 }, ctx))]) {
+        // Antes de PB-2-r5: «Pedro Luis» y «Gómez» de baja confianza y «Declaró [PERSONA_1] Ficticia [PERSONA_2]».
+        expect(modelo(despues), nombre).toEqual([`${NOMBRE}:media:pendiente`]);
+        expect(letrasALaVista(doc, despues, desde, NOMBRE.length), nombre).toEqual([]);
+        const pedro = Object.values(despues.detections).find((d) => d.text === NOMBRE)!;
+        expect(render(doc, despues).sections[0]!.text, nombre).toContain(`Declaró ${despues.entities[pedro.entityId]!.marker as string}, vecino`);
+        // Lo decidido no cambia: la rechazada sigue rechazada, con su motivo y en su entidad; banderas, sugerencias y ediciones, igual.
+        for (const [id, d] of Object.entries(antes.detections)) expect(despues.detections[id as keyof typeof despues.detections], nombre).toEqual(d);
+        expect(despues.flags, nombre).toEqual(antes.flags);
+        expect(despues.suggestions, nombre).toEqual(antes.suggestions);
+        expect(despues.spanEdits, nombre).toEqual(antes.spanEdits);
+      }
+    }
+  });
+
+  it('INV-R12 M-12 la extensión de la lista (D-03 E) sobre una mención rechazada de la misma entidad no se le atribuye: entra como tramo del modelo con entidad propia', async () => {
+    const t = 'La demandante Ana Ficticia Rojas Prueba presentó la tutela.';
+    const caseList = refreshVariants([newCaseEntity('Ana Ficticia Rojas', 'persona', 'DEMANDANTE', ids) as CaseEntity]);
+    const doc = documento([t]);
+    const b = banco();
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await b.enviar('detectar', { sessionId: 'ses_1', doc, caseList, table: TABLA, options: OPCIONES }));
+    const ctx: ReviewContext = { table: TABLA, caseList, doc, ids };
+    const st0 = estadoDe(doc, det.set);
+    const ana = Object.values(st0.detections).find((d) => d.text === 'Ana Ficticia Rojas')!;
+    const rechazada = bien(applyReviewAction(st0, { kind: 'rechazar', detectionId: ana.id, reason: 'FALSO_POSITIVO' }, ctx));
+    const w1 = await ventana(b, 1, 1, { [PRT(1)]: [tramo(t, 'Ana Ficticia Rojas Prueba', 'PER', 0.95)] });
+    expect(w1.detections.map((d) => `${d.text}:${d.source}`)).toEqual(['Ana Ficticia Rojas Prueba:lista']);
+    // El reductor solo no se la atribuye a la entidad de la lista: la descarta sin tocar nada.
+    expect(bien(applyReviewAction(rechazada, { kind: 'incorporar_modelo', ventana: 1, ventanasTotales: 1, delta: w1 }, ctx)).detections).toEqual(rechazada.detections);
+    // incorporarModelo la entrega como el tramo del modelo. Antes de PB-2-r5: solo «Prueba», y «Ana Ficticia Rojas» a la vista.
+    const despues = bien(incorporarModelo(rechazada, 1, 1, w1, ctx));
+    expect(despues.detections[ana.id]).toEqual(rechazada.detections[ana.id]);
+    expect(modelo(despues)).toEqual(['Ana Ficticia Rojas Prueba:media:pendiente']);
+    const nuevo = Object.values(despues.detections).find((d) => d.text === 'Ana Ficticia Rojas Prueba')!;
+    expect(nuevo.caseEntityId).toBeUndefined();
+    expect(nuevo.entityId).not.toBe(ana.entityId);
+    expect(despues.entities[nuevo.entityId]).toMatchObject({ canonicalKey: 'PER:ana ficticia rojas prueba', role: 'OTRA_PERSONA' });
+    expect(despues.entities[ana.entityId]?.mentions).toContain(ana.id);
+    expect(letrasALaVista(doc, despues, t.indexOf('Ana'), 'Ana Ficticia Rojas Prueba'.length)).toEqual([]);
+  });
+
+  it('INV-R12 M-13 el tramo del modelo que toca una detección manual o una edición de tramo hecha antes de la ventana se parte en restos (7.11.2), no se descarta entero', async () => {
+    const doc = documento([T]);
+    const b = banco();
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await b.enviar('detectar', { sessionId: 'ses_1', doc, caseList: [], table: TABLA, options: OPCIONES }));
+    const ctx = ctxDe(doc);
+    const st0 = estadoDe(doc, det.set);
+    const desde = T.indexOf(NOMBRE);
+    const fic = T.indexOf('Ficticia', desde);
+    // Sin lista, mientras corre el modelo: el usuario marca «Ficticia» a mano, o una edición de tramo la cubre.
+    const manual = bien(applyReviewAction(st0, { kind: 'agregar_manual', span: { partId: PRT(1), start: fic, end: fic + 8 }, type: 'PERSONA', propagate: false }, ctx));
+    const edicion: ReviewState = { ...st0, spanEdits: { ['edt_' + 'e'.repeat(32)]: { id: 'edt_' + 'e'.repeat(32), span: { partId: PRT(1), start: fic, end: fic + 8 },
+      originalText: 'Ficticia', text: 'un tercero', origin: { kind: 'bandera', flagId: 'flg_' + 'f'.repeat(32) } } } } as unknown as ReviewState;
+    const w1 = await ventana(b, 1, 1, { [PRT(1)]: [tramo(T, NOMBRE, 'PER', 0.95)] });
+    expect(w1.detections.map((d) => `${d.text}:${d.source}`)).toEqual([`${NOMBRE}:modelo`]);   // el worker no conoce lo del usuario
+    for (const [nombre, antes] of [['agregar_manual', manual], ['edición de tramo', edicion]] as const) {
+      // Antes de PB-2-r5: el tramo se descartaba entero y la salida decía «Declaró Pedro Luis [PERSONA_1] Gómez».
+      const despues = bien(incorporarModelo(antes, 1, 1, w1, ctx));
+      expect(modelo(despues), nombre).toEqual(['Gómez:baja:pendiente', 'Pedro Luis:baja:pendiente']);
+      expect(letrasALaVista(doc, despues, desde, NOMBRE.length), nombre).toEqual([]);
+      for (const [id, d] of Object.entries(antes.detections)) expect(despues.detections[id as keyof typeof despues.detections], nombre).toEqual(d);
+      expect(despues.spanEdits, nombre).toEqual(antes.spanEdits);
+    }
+    // Una detección rechazada tampoco bloquea un tramo del modelo que no es propuesta sobre la lista (M-12 y M-13).
+    const manualRechazada = bien(applyReviewAction(manual, { kind: 'rechazar', detectionId: Object.values(manual.detections).find((d) => d.source === 'manual')!.id }, ctx));
+    expect(modelo(bien(incorporarModelo(manualRechazada, 1, 1, w1, ctx)))).toEqual([`${NOMBRE}:media:pendiente`]);
   });
 
   it('INV-R12 D-03 E la detección de la lista intacta toma el nombre completo del modelo por ventana; tras una acción, el resto entra aparte', async () => {
@@ -408,7 +496,7 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
     const w2 = await ventana(b, 2, 2, { [PRT(1)]: [tramo(t, 'Ejemplo Rojas', 'PER', 0.95), tramo(t, 'Luisa Ficticia', 'PER', 0.95)] });
     expect(w2.detections.map((d) => `${d.text}:${d.confidence}`)).toEqual(['Rojas:baja', 'Luisa Ficticia:media']);
     st = bien(incorporarModelo(st, 2, 2, w2, ctx));
-    expect(letrasALaVista(st, t, t.indexOf('Pedro'), 'Pedro Prueba Ejemplo Rojas'.length)).toEqual([]);
+    expect(letrasALaVista(doc, st, t.indexOf('Pedro'), 'Pedro Prueba Ejemplo Rojas'.length)).toEqual([]);
   });
 
   it('M-1 candidatesFromNer recorta R-MOD-03 sin retroceso exponencial: 16 y 200 palabras hostiles en menos de 50 ms', () => {
@@ -448,6 +536,43 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
     expect(conv.suggestions.map((s) => `${s.kind}:${s.originalText}`)).toEqual([
       'DESPACHO_A_GENERICO:Juzgado 003 Civil Municipal de Ubaté', 'DESPACHO_A_GENERICO:Juzgado 3 Civil del Circuito de Ubaté']);
     expect(conv.suggestions[0]?.options.map((o) => o.template)).toEqual(['Juzgado 003 Civil Municipal de un municipio de {m}', 'un juzgado civil municipal']);
+  });
+
+  it('B-33 7.10.8 el ORG del modelo que trae un despacho y algo más: el despacho da su sugerencia y el resto entra como candidato del modelo, confianza baja (7.11.2)', () => {
+    const t = 'Lo firmó el Juzgado Civil Municipal de Ubaté Pedro Ejemplo Gómez y lo notificó el Juzgado 2 de Familia de Cartago, Seguros Ficticios S.A.';
+    const part = documento([t]).parts[0]!;
+    const de = (spans: NerSpan[]): ReturnType<typeof candidatesFromNer> => candidatesFromNer(spans, { part, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    const conv = de([tramo(t, 'Juzgado Civil Municipal de Ubaté Pedro Ejemplo Gómez', 'ORG', 0.95),
+      tramo(t, 'Juzgado 2 de Familia de Cartago, Seguros Ficticios S.A.', 'ORG', 0.9)]);
+    expect(conv.suggestions.map((s) => s.originalText)).toEqual(['Juzgado Civil Municipal de Ubaté', 'Juzgado 2 de Familia de Cartago']);
+    // Antes de PB-2-r5: ningún candidato; «Pedro Ejemplo Gómez» y «Seguros Ficticios S.A.» quedaban a la vista.
+    expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}:${c.confidence}:${c.source}:${c.canonicalKey}`)).toEqual([
+      'EMPRESA:Pedro Ejemplo Gómez:baja:modelo:ORG:pedro ejemplo gomez', 'EMPRESA:Seguros Ficticios S.A.:baja:modelo:ORG:seguros ficticios']);
+    // Si fuera del despacho no queda nada, o solo palabras de función, no hay candidato.
+    expect(de([tramo(t, 'el Juzgado Civil Municipal de Ubaté', 'ORG', 0.95)]).candidates).toEqual([]);
+  });
+
+  it('B-34 7.10.8 la autoridad con nombre propio y municipio recibe la sugerencia de despacho (o1 y o2 de R-DESP-01); si no casa con R-DESP-01, ENTIDAD baja', () => {
+    const t = 'Ante la Notaría Ejemplo de Ubaté, la Notaría Simón Bolívar, la Notaría Ejemplo, Ubaté y el Juzgado 0003 Civil de Ubaté.';
+    const part = documento([t]).parts[0]!;
+    const conv = candidatesFromNer([tramo(t, 'Notaría Ejemplo de Ubaté', 'ORG', 0.95), tramo(t, 'Notaría Simón Bolívar', 'ORG', 0.95),
+      tramo(t, 'Notaría Ejemplo, Ubaté', 'ORG', 0.95), tramo(t, 'Juzgado 0003 Civil de Ubaté', 'ORG', 0.95)],
+    { part, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    // Antes de PB-2-r5: nada para las tres primeras (el municipio descartaba la ENTIDAD y R-DESP-01 no admite el nombre propio).
+    expect(conv.suggestions.map((s) => `${s.originalText} → ${s.options.map((o) => o.template).join(' | ')}`))
+      .toEqual(['Notaría Ejemplo de Ubaté → Notaría Ejemplo de un municipio de {m} | una notaría']);
+    expect(conv.suggestions[0]?.options.map((o) => o.depCode)).toEqual(['25', undefined]);
+    expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}:${c.confidence}`))
+      .toEqual(['ENTIDAD:Notaría Simón Bolívar:baja', 'ENTIDAD:Notaría Ejemplo, Ubaté:baja']);
+    // Sin nombre propio sigue sin nada: «0003» no es un número de despacho (R-DESP-01) ni un nombre.
+  });
+
+  it('las ventanas del modelo entran por incorporarModelo en la interfaz, la medición y el gancho de prueba de la Revisión I (P0-6a de PB-2-r4)', () => {
+    for (const f of ['src/ui/analisis.ts', 'src/medicion/gancho.ts', 'src/ui/review/base/prueba-medicion.ts', 'tests/medicion/lib/motor.ts']) {
+      const fuente = readFileSync(f, 'utf8');
+      expect(fuente, f).toMatch(/\bincorporarModelo\(/u);
+      expect(fuente, f).not.toMatch(/kind:\s*'incorporar_modelo'/u);
+    }
   });
 
   it('D-03 D despachoDesdeTramo cableado en fusionar: el despacho del modelo no es detección y su sugerencia no se duplica con la del barrido', async () => {

@@ -14,14 +14,20 @@ const NL = R`(?<![\p{L}\p{N}_]|\p{N}[.,'\-\/])`;
 const NR = R`(?![\p{L}\p{N}_]|[.,'\-\/]\p{N})`;
 const NUMSIGN = R`(?:n\.?[ ]?º|no\.?|nro\.?|n[úu]m\.?|n[úu]mero|n\.|#)`;
 const GAP = R`[ \t]*[:.]?[ \t]*(?:\n[ \t]*)?(?:${NUMSIGN}[ \t]*[:.]?[ \t]*)?`;
-/** NOHC: el tipo de documento escrito dentro de una historia clínica («HC: CC 1000000001») es de R-HC-01. */
-const NOHC = R`(?<!(?:(?<![\p{L}])h\.?[ ]?c\.?l?|cl[íi]nica)[ \t]*[:.]?[ \t]*(?:(?:n[úu]mero|no\.?)[ \t]*)?)`;
+/**
+ * NOHC: el tipo de documento escrito dentro de una historia clínica («HC: CC 1000000001») es de R-HC-01. Los blancos del
+ * lookbehind llevan tope (M-14, PB-2-r5): con `[ \t]*` sin tope, el retroceso en una racha de tabuladores antes del rótulo era
+ * cuadrático en cada posición (20.000 tabuladores y «cc 1000000001», 1,8 s en R-CC-01 y 2,7 s en R-CE-01).
+ */
+const NOHC = R`(?<!(?:(?<![\p{L}])h\.?[ ]?c\.?l?|cl[íi]nica)[ \t]{0,8}[:.]?[ \t]{0,8}(?:(?:n[úu]mero|no\.?)[ \t]{0,8})?)`;
 export const FR = { BL, NL, NR, NUMSIGN, GAP, NOHC } as const;
 
 // Rótulos (7.2.1)
 export const L = {
   CC_F: R`c[ ]?\.?[ ]?c\.?|c[ée]dula(?:[ ]+de[ ]+ciudadan[íi]a)?|c[ée]d\.(?:[ ]?(?:de[ ]+)?ciud\.)?`,
-  CC_D: R`documento(?:[ ]+de[ ]+identi(?:dad|ficaci[óo]n))?|identificaci[óo]n|identificad[oa]s?[ ]+con(?:[ ]+(?:la|el))?|(?<!registro[ ]+civil(?:[ ]+de[ ]+nacimiento)?[ ]+(?:con[ ]+)?(?:(?:el[ ]+)?n[úu]mero[ ]+)?)n\.?[ ]?u\.?[ ]?i\.?[ ]?p\.?`,
+  // El lookbehind de «nuip» lleva sus espacios con tope (M-14, PB-2-r5): sin él, «registro civil» y una racha de espacios fuera
+  // de la vista `reglas` era cuadrático (20.000 espacios, 3,8 s en R-CC-01).
+  CC_D: R`documento(?:[ ]+de[ ]+identi(?:dad|ficaci[óo]n))?|identificaci[óo]n|identificad[oa]s?[ ]+con(?:[ ]+(?:la|el))?|(?<!registro[ ]{1,8}civil(?:[ ]{1,8}de[ ]{1,8}nacimiento)?[ ]{1,8}(?:con[ ]{1,8})?(?:(?:el[ ]{1,8})?n[úu]mero[ ]{1,8})?)n\.?[ ]?u\.?[ ]?i\.?[ ]?p\.?`,
   TI: R`t\.?[ ]?i\.?|tarjeta[ ]+de[ ]+identidad|n\.?[ ]?i\.?[ ]?p\.?`,
   RC: R`registro[ ]+civil(?:[ ]+de[ ]+nacimiento)?(?:[ ]+(?:con[ ]+)?(?:(?:el[ ]+)?n[úu]mero[ ]+)?(?:nuip|n\.[ ]?u\.[ ]?i\.[ ]?p\.|indicativo[ ]+serial))?|indicativo[ ]+serial`,
   DOCX: R`carn[ée]t?[ ]+diplom[áa]tico|salvoconducto(?:[ ]+de[ ]+permanencia)?`,

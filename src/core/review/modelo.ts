@@ -5,12 +5,14 @@
 // la revisión sin duplicar la numeración de marcadores ni el orden de lectura. Este módulo es la puerta de entrada que usa la
 // interfaz: arma la acción, llama al reductor con `doc` (orden de lectura de las partes) y comprueba el contrato del delta
 // antes de despacharlo.
-import { applyReviewAction, cedeAnteModelo, cryptoIds, esPropuestaSobreLista } from '../entities.ts';
+import {
+  applyReviewAction, cedeAnteModelo, cryptoIds, esPropuestaSobreLista, extensionSobreRechazada, orgKey, personKey,
+} from '../entities.ts';
 import type { ReviewContext } from '../entities.ts';
 import { resolveRemainder } from '../merge.ts';
 import type {
-  Detection, DetectionCandidate, DetectionId, DetectionSet, EntityId, ModelProgress, ModelState, PlanBCause, ReviewOutcome,
-  ReviewState, RuleRegistry, Span,
+  DetectableType, Detection, DetectionCandidate, DetectionId, DetectionSet, EntityId, ModelProgress, ModelState, Part, PlanBCause,
+  ReviewOutcome, ReviewState, Role, RuleRegistry, Span,
 } from '../types.ts';
 
 /** Causas del plan B en palabras (8.5.12, causas de M-172). La plantilla del informe legible las usa tal cual. */
@@ -62,26 +64,50 @@ function libres(d: Detection, fuera: readonly Span[]): Array<[number, number]> {
   return out.filter(([s, e]) => e > s);
 }
 
+/** Tipos del modelo cuyos restos tienen clave propia en 7.11.2 (`remainderKeyFromModel` de merge.ts): nombres y lugares sin DIVIPOLA. */
+const CON_RESTOS: ReadonlySet<DetectableType> = new Set<DetectableType>(['PERSONA', 'EMPRESA', 'EPS', 'IPS', 'ENTIDAD', 'PROVEEDOR', 'LUGAR']);
+
 /**
- * Reemplaza en el delta cada propuesta sobre la lista que el reductor no aceptaría por sus restos como tramos del modelo. Con la
- * ventana ignorada, sin el texto de las partes (`ctx.doc`) o sin propuestas, devuelve el mismo delta.
+ * M-12 · La extensión de la lista sobre una mención rechazada de la misma entidad vuelve a ser el tramo del modelo que la fusión
+ * extendió: misma posición, confianza y puntaje, `source 'modelo'`, clave de persona u organización y entidad propia.
+ */
+function comoTramoDelModelo(d0: Detection, part: Part): Detection {
+  const persona = d0.type === 'PERSONA';
+  const t: Detection = { id: d0.id, docId: d0.docId, partId: d0.partId, start: d0.start, end: d0.end, text: d0.text, type: d0.type,
+    source: 'modelo', precedence: 6, confidence: d0.confidence, score: d0.score,
+    canonicalKey: persona ? personKey(d0.text, part.kind) : orgKey(d0.text, part.kind), status: 'pendiente', entityId: '' as EntityId,
+    replacement: { proposedTemplate: d0.replacement.proposedTemplate }, nerLabel: d0.nerLabel ?? (persona ? 'PER' : 'ORG') };
+  t.role = persona ? 'OTRA_PERSONA' : d0.type as Role;
+  return t;
+}
+
+/**
+ * Reemplaza en el delta cada detección que el reductor no aceptaría por sus restos como tramos del modelo (7.11.2): la propuesta
+ * sobre la lista que no cede y, desde M-13 (PB-2-r5), cualquier tramo del modelo que `blocks` descartaría porque se solapa con una
+ * detección no rechazada (manual, de residuos, de otra ventana) o con una edición de tramo. Una detección rechazada no bloquea un
+ * tramo distinto (M-12, 6.4.4): no cuenta. Con la ventana ignorada, sin el texto de las partes (`ctx.doc`) o sin nada que partir,
+ * devuelve el mismo delta.
  */
 function restosDePropuestas(state: ReviewState, ventana: number, delta: DetectionSet, ctx: ReviewContext): DetectionSet {
   if (state.modelo.kind !== 'en_curso' || ventana <= state.modelo.ventanas || ctx.doc === undefined) return delta;
   const partes = new Map(ctx.doc.parts.map((p) => [p.id, p]));
   const ids = ctx.ids ?? cryptoIds;
-  const existentes = Object.values(state.detections);
+  const vivas = Object.values(state.detections).filter((o) => o.status !== 'rechazada');
+  const rechazadas = Object.values(state.detections).filter((o) => o.status === 'rechazada');
   let cambio = false;
   const detections: Detection[] = [];
-  for (const d0 of delta.detections) {
-    const part = partes.get(d0.partId);
-    if (part === undefined || state.detections[d0.id] !== undefined || !esPropuestaSobreLista(state, d0)) { detections.push(d0); continue; }
-    const tocadas = existentes.filter((o) => tocan(o, d0));
+  for (const dv of delta.detections) {
+    const part = partes.get(dv.partId);
+    // El reductor descarta el tramo idéntico a uno rechazado (6.4.4) y el id repetido: se le deja tal cual.
+    if (part === undefined || state.detections[dv.id] !== undefined
+      || rechazadas.some((r) => r.partId === dv.partId && r.start === dv.start && r.end === dv.end)) { detections.push(dv); continue; }
+    const d0 = extensionSobreRechazada(state, dv) ? comoTramoDelModelo(dv, part) : dv;
+    if (d0 !== dv) cambio = true;
+    const tocadas = vivas.filter((o) => tocan(o, d0));
     const ediciones = Object.values(state.spanEdits).map((x) => x.span).filter((x) => tocan(x, d0));
-    if (tocadas.length > 0 && ediciones.length === 0 && tocadas.every((o) => cedeAnteModelo(state, o, d0, ctx.caseList))) {
-      detections.push(d0);
-      continue;
-    }
+    const propuesta = esPropuestaSobreLista(state, d0);
+    const entra = ediciones.length === 0 && (propuesta ? tocadas.every((o) => cedeAnteModelo(state, o, d0, ctx.caseList)) : tocadas.length === 0);
+    if (entra || !CON_RESTOS.has(d0.type) || (!propuesta && d0.source !== 'modelo')) { detections.push(d0); continue; }
     cambio = true;
     const role = d0.type === 'PERSONA' ? 'OTRA_PERSONA' : undefined;
     const base: DetectionCandidate = { partId: d0.partId, start: d0.start, end: d0.end, type: d0.type, source: 'modelo',
