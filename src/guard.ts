@@ -1,6 +1,7 @@
-// Guardia `src/guard.ts` (3.6; 5.2.1 «Guardia», V-01 a V-03; PD-2 y su reapertura PD-2-r1, decisión D-02). Es el módulo de
-// neutralización de 10.5.5 y un archivo crítico (V-22). Primer import de la entrada (src/main.tsx) y de cada worker propio
-// (`detect`, `ner`, `io`): se instala al evaluarse, antes que el resto de los módulos, y solo en producción (Vite usa
+// Guardia `src/guard.ts` (3.6; 5.2.1 «Guardia», V-01 a V-03; PD-2 y sus reaperturas PD-2-r1 y PD-2-r2, decisiones D-02 y
+// D-04). Es el módulo de neutralización de 10.5.5 y un archivo crítico (V-22). Primer import de la entrada (src/main.tsx) y
+// de cada worker propio (`detect`, `ner`, `io`; tests/unit/guard.test.ts lo exige, B-27): se instala al evaluarse, antes que
+// el resto de los módulos, y solo en producción (Vite usa
 // WebSocket en desarrollo). Defiende del uso no intencional por dependencias; las barreras son la CSP en cabecera y el
 // interruptor del service worker (si la guardia rompe una dependencia, se ajustan las rutas y la CSP sigue como barrera).
 // Cada reemplazo se aplica donde la API existe (un worker no tiene DOM, `window.open`, `sendBeacon` ni `share`) y queda
@@ -8,14 +9,20 @@
 // - `fetch`: solo `GET` al mismo origen, sin query ni cuerpo, a `/`, `/index.html` o bajo `/assets/`, `/ort/` y `/models/`
 //   (en `ner`: ORT-web y el modelo). Lo demás se rechaza con `TypeError`, como un fallo de red. La petición se arma una
 //   sola vez (`new Request`) y es esa la que sale: lo que se comprueba es lo que se pide.
-// - `XMLHttpRequest`, `WebSocket`, `EventSource`, `fetchLater`, `window.open`, `document.open` (con tres argumentos abre una
-//   ventana como `window.open`), `navigator.sendBeacon` y `navigator.share` lanzan `SiglowError('ERROR_INTERNO')`, como
-//   constructor o como función.
+// - `XMLHttpRequest`, `WebSocket`, `WebSocketStream`, `WebTransport` (B-26: al propio origen la CSP lo admite y sale por UDP,
+//   donde el SW no lo ve), `EventSource`, `fetchLater`, `window.open`, `document.open` (con tres argumentos abre una ventana
+//   como `window.open`), `navigator.sendBeacon` y `navigator.share` lanzan `SiglowError('ERROR_INTERNO')`, como constructor
+//   o como función.
 // - WebRTC (V-02: la CSP no lo rige) y voz (B-18: las voces en línea de `speechSynthesis` sintetizan el texto en servidores
 //   del fabricante, y el reconocimiento de voz envía el audio): quedan en `undefined` (9.3: `typeof RTCPeerConnection`).
-// - Realms nuevos (M-4): un iframe `about:blank` trae constructores sin guardia. `createElement` y `createElementNS`
-//   rechazan `iframe`, `frame`, `object` y `embed`; `customElements.define` rechaza extenderlos, y `contentWindow` y
-//   `contentDocument` devuelven `null`. No es completo frente a código inyectado (riesgo residual de V-02 y V-03).
+// - Realms nuevos (M-4): un iframe `about:blank` trae constructores sin guardia. `createElement`, `createElementNS` y
+//   `DOMImplementation.createDocument` (su elemento raíz puede ser un iframe) rechazan `iframe`, `frame`, `object` y
+//   `embed`; `customElements.define` rechaza extenderlos, y `contentWindow` y `contentDocument` devuelven `null`.
+//   `XSLTProcessor` (B-25: una transformación crea el iframe sin pasar por createElement) y `documentPictureInPicture` (abre
+//   una ventana del mismo origen con su propio realm) quedan en `undefined`. No es completo frente a código inyectado
+//   (riesgo residual de V-02 y V-03).
+// - Protected Audience y Topics: `navigator.joinAdInterestGroup`, `navigator.runAdAuction` y `document.browsingTopics`
+//   quedan en `undefined` (la app no los usa; la Permissions-Policy solo apaga los rasgos que el navegador reconoce).
 // Los nombres van en estos arreglos literales, y solo aquí: check-dist los admite únicamente en el chunk de entrada y en
 // los tres workers propios, y exige que estén en cada uno de ellos.
 import { SiglowError } from './core/types.ts';
@@ -25,8 +32,12 @@ type Funcion = (...args: unknown[]) => unknown;
 
 const WEBRTC = ['RTCPeerConnection', 'webkitRTCPeerConnection', 'RTCDataChannel'];
 const VOZ = ['speechSynthesis', 'SpeechSynthesisUtterance', 'SpeechRecognition', 'webkitSpeechRecognition'];
-const RED_GLOBAL = ['XMLHttpRequest', 'WebSocket', 'EventSource', 'fetchLater', 'open'];
+/** Crean un realm sin pasar por createElement (B-25 y PD-2-r2). */
+const REALM_GLOBAL = ['XSLTProcessor', 'documentPictureInPicture'];
+const RED_GLOBAL = ['XMLHttpRequest', 'WebSocket', 'WebSocketStream', 'WebTransport', 'EventSource', 'fetchLater', 'open'];
 const RED_NAVIGATOR = ['sendBeacon', 'share'];
+/** Protected Audience (en `navigator`) y Topics (en `document`). */
+const PUBLICIDAD = ['joinAdInterestGroup', 'runAdAuction', 'browsingTopics'];
 const MARCOS = ['iframe', 'frame', 'object', 'embed'];
 const CON_REALM = ['HTMLIFrameElement', 'HTMLFrameElement', 'HTMLObjectElement'];
 const REALM = ['contentWindow', 'contentDocument'];
@@ -43,8 +54,9 @@ function definir(o: object, nombre: string, d: PropertyDescriptor): void {
 }
 const fijar = (o: object, nombre: string, valor: unknown): void => { definir(o, nombre, { value: valor, writable: false }); };
 
-/** En el global y en su cadena de prototipos, donde la propiedad sea propia (un atributo puede vivir en el prototipo). */
-function fijarEnCadena(g: Global, nombre: string, valor: unknown): void {
+/** En el objeto (el global, `navigator` o `document`) y en su cadena de prototipos, donde la propiedad sea propia (un
+ * atributo o un método puede vivir en el prototipo). */
+function fijarEnCadena(g: object, nombre: string, valor: unknown): void {
   for (let o = Object.getPrototypeOf(g) as object | null; o !== null && o !== Object.prototype; o = Object.getPrototypeOf(o) as object | null) {
     if (Object.prototype.hasOwnProperty.call(o, nombre)) fijar(o, nombre, valor);
   }
@@ -100,13 +112,15 @@ function acotarFetch(g: Global): void {
   });
 }
 
-/** `createElement(nombre, …)` y `createElementNS(ns, nombre, …)`: el nombre se convierte una vez y es ese el que se crea. */
-function envolverCreacion(proto: Global, metodo: string, i: number): void {
+/** `createElement(nombre, …)`, `createElementNS(ns, nombre, …)` y `createDocument(ns, nombre, …)`: el nombre se convierte una
+ * vez y es ese el que se crea. `nuloVacio`: el argumento es `[LegacyNullToEmptyString]` (en createDocument, `null` es «sin
+ * elemento raíz», no el elemento «null»). */
+function envolverCreacion(proto: Global, metodo: string, i: number, nuloVacio = false): void {
   const original = proto[metodo];
   if (typeof original !== 'function') return;
   fijar(proto, metodo, function (this: unknown, ...args: unknown[]): unknown {
     if (args.length > i) {
-      const nombre = String(args[i]);
+      const nombre = nuloVacio && args[i] === null ? '' : String(args[i]);
       if (esMarco(nombre)) bloqueada();
       args[i] = nombre;
     }
@@ -122,6 +136,10 @@ function cerrarRealms(g: Global): void {
     envolverCreacion(documento, 'createElementNS', 1);
     if ('open' in documento) fijar(documento, 'open', bloqueada);
   }
+  // `createDocument(XHTML, 'iframe')` da un documento cuyo elemento raíz es un HTMLIFrameElement, sin pasar por createElement:
+  // al agregarlo a la página, `window[i]` entrega su realm (PD-2-r2, la misma clase que B-25).
+  const implementacion = prototipo(g, 'DOMImplementation');
+  if (implementacion) envolverCreacion(implementacion, 'createDocument', 1, true);
   const registro = prototipo(g, 'CustomElementRegistry');
   const definirOriginal = registro?.['define'];
   if (registro && typeof definirOriginal === 'function') {
@@ -145,6 +163,7 @@ export function instalarGuardia(g: Global = globalThis as unknown as Global): vo
   acotarFetch(g);
   for (const nombre of WEBRTC) fijarEnCadena(g, nombre, undefined);
   for (const nombre of VOZ) fijarEnCadena(g, nombre, undefined);
+  for (const nombre of REALM_GLOBAL) fijarEnCadena(g, nombre, undefined);
   for (const nombre of RED_GLOBAL) if (nombre in g) fijar(g, nombre, bloqueada);
   const nav = g['navigator'];
   if (typeof nav === 'object' && nav !== null) {
@@ -154,6 +173,12 @@ export function instalarGuardia(g: Global = globalThis as unknown as Global): vo
       if (typeof proto === 'object' && proto !== null && nombre in proto) fijar(proto, nombre, bloqueada);
       if (Object.prototype.hasOwnProperty.call(nav, nombre)) fijar(nav, nombre, bloqueada);
     }
+  }
+  // Donde existan: `joinAdInterestGroup` y `runAdAuction` en Navigator.prototype, `browsingTopics` en Document.prototype
+  // (así vale también para los documentos que se creen después).
+  for (const objeto of [nav, g['document']]) {
+    if (typeof objeto !== 'object' || objeto === null) continue;
+    for (const nombre of PUBLICIDAD) if (nombre in objeto) fijarEnCadena(objeto, nombre, undefined);
   }
   cerrarRealms(g);
 }

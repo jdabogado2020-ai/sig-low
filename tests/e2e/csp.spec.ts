@@ -21,6 +21,8 @@ import { guardarOriginales, type Nativo } from './lib/originales';
 const DIST = resolve('dist');
 const CSP_CANONICA = "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; font-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; require-trusted-types-for 'script'; trusted-types default";
 const CSP_RUTAS = "script-src 'wasm-unsafe-eval' *:*/assets/ *:*/ort/ *:*/tt-policy.js; worker-src *:*/assets/ *:*/ort/ *:*/sw.js; connect-src https: http:";
+// Permissions-Policy de 3.6 más `browsing-topics=()` y `private-state-token-issuance=()` (PD-2-r2; T-CS-07).
+const PERMISOS = 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self), browsing-topics=(), private-state-token-issuance=()';
 const GUARDIA = 'lanza SiglowError ERROR_INTERNO';
 
 interface Peticion { t: number; m: string; u: string }
@@ -90,6 +92,10 @@ async function abrir(browser: Browser, origen: string, sw: 'allow' | 'block', ex
     const v: { d: string; u: string }[] = [];
     (globalThis as unknown as { __violaciones: typeof v }).__violaciones = v;
     addEventListener('securitypolicyviolation', (e) => { v.push({ d: e.effectiveDirective, u: e.blockedURI }); });
+    // PD-2-r2: los caminos que dan un realm sin createElement, antes de la guardia (los controles de T-CS-04). Solo en esta
+    // prueba; tests/e2e/lib/originales.ts no es de la tarjeta.
+    const g = globalThis as unknown as Record<string, unknown>;
+    g['__realms'] = { XSLTProcessor: g['XSLTProcessor'], createDocument: DOMImplementation.prototype.createDocument, pip: g['documentPictureInPicture'] };
   });
   await guardarOriginales(ctx);
   const page = await ctx.newPage();
@@ -169,6 +175,9 @@ async function intentosDelDocumento(page: Page, s: string): Promise<Intento[]> {
     await intento('fetch propio permitido', () => pedir(fetch, '/'));
     await intento('XMLHttpRequest', () => { const x = new (g['XMLHttpRequest'] as typeof XMLHttpRequest)(); x.open('GET', `${s}/cs01-xhr`); x.send(); return 'enviado'; });
     await intento('WebSocket', () => { new (g['WebSocket'] as typeof WebSocket)(`ws://${new URL(s).host}/cs01-ws`); return 'creado'; });
+    // B-26: los dos transportes que la guardia no nombraba (T-PV-12 mide el propio origen y los paquetes UDP).
+    await intento('WebSocketStream', () => { new (g['WebSocketStream'] as new (u: string) => unknown)(`ws://${new URL(s).host}/cs01-wss`); return 'creado'; });
+    await intento('WebTransport', () => { new (g['WebTransport'] as new (u: string) => unknown)(`https://${new URL(s).host}/cs01-wt`); return 'creado'; });
     await intento('EventSource', () => { new (g['EventSource'] as typeof EventSource)(`${s}/cs01-es`); return 'creado'; });
     await intento('sendBeacon', () => String((navigator as unknown as Record<string, (u: string, d: string) => boolean>)['sendBeacon']!(`${s}/cs01-beacon`, 'x')));
     await intento('fetchLater', () => existe('fetchLater', () => (g['fetchLater'] as (u: string) => unknown)(`${s}/cs01-fetchlater`)));
@@ -190,6 +199,19 @@ async function intentosDelDocumento(page: Page, s: string): Promise<Intento[]> {
       document.body.append(f);
       return `${String(f.contentWindow)} ${String(f.contentDocument)}`;
     });
+    // PD-2-r2: Protected Audience y Topics, en undefined. `antes de la guardia`: las mismas API en un realm sin guardia (un
+    // iframe creado con el createElement original) muestran que existen en este navegador.
+    const publicidad = (w: Window): string => {
+      const n = w.navigator as unknown as Record<string, unknown>;
+      const d = w.document as unknown as Record<string, unknown>;
+      return [typeof n['joinAdInterestGroup'], typeof n['runAdAuction'], typeof d['browsingTopics']].join(' ');
+    };
+    await intento('publicidad antes de la guardia', () => {
+      const f = N.createElement('iframe') as HTMLIFrameElement;
+      document.body.append(f);
+      return publicidad(N.contentWindow(f)!);
+    });
+    await intento('publicidad', () => publicidad(window));
     // La CSP por debajo de la guardia: las API originales (como las vería un código que corriera antes que la guardia).
     await intento('nativo fetch', () => pedir(N.fetch, `${s}/cs01-n-fetch?d=x`));
     await intento('nativo XMLHttpRequest', () => { const x = new N.XMLHttpRequest(); const r = evento(x); x.open('GET', `${s}/cs01-n-xhr`); x.send(); return r; });
@@ -241,6 +263,8 @@ const ESPERADO_DOCUMENTO: Esperado = {
   'fetch propio permitido': { res: 'respuesta 200', directiva: null },
   XMLHttpRequest: { res: GUARDIA, directiva: null },
   WebSocket: { res: GUARDIA, directiva: null },
+  WebSocketStream: { res: GUARDIA, directiva: null },
+  WebTransport: { res: GUARDIA, directiva: null },
   EventSource: { res: GUARDIA, directiva: null },
   sendBeacon: { res: GUARDIA, directiva: null },
   fetchLater: { res: /^(lanza SiglowError ERROR_INTERNO|no existe)$/, directiva: null },
@@ -256,6 +280,8 @@ const ESPERADO_DOCUMENTO: Esperado = {
   embed: { res: GUARDIA, directiva: null },
   'elemento personalizado que extiende iframe': { res: GUARDIA, directiva: null },
   'realm de un iframe ya creado': { res: 'null null', directiva: null },
+  'publicidad antes de la guardia': { res: 'function function function', directiva: null },
+  publicidad: { res: 'undefined undefined undefined', directiva: null },
   'nativo fetch': { res: 'rechazo TypeError red', directiva: 'connect-src' },
   'nativo XMLHttpRequest': { res: 'error', directiva: 'connect-src' },
   'nativo WebSocket': { res: 'error', directiva: 'connect-src' },
@@ -423,7 +449,7 @@ test.describe('T-CS-01 a T-CS-05 la CSP, la guardia y el interruptor bloquean ca
     await sinCsp.ctx.close();
   });
 
-  test('T-CS-04 @cero-red WebRTC neutralizado al arrancar en la página y en los workers propios: 0 paquetes UDP al STUN falso, también por el camino del iframe about:blank (M-4)', async ({ browser }) => {
+  test('T-CS-04 @cero-red WebRTC neutralizado al arrancar en la página y en los workers propios: 0 paquetes UDP al STUN falso, también por el camino del iframe about:blank (M-4), la transformación XSLT (B-25), createDocument y la ventana Picture-in-Picture', async ({ browser }) => {
     const stun: Socket = createSocket('udp4');
     const paquetes: number[] = [];
     stun.on('message', (m) => { paquetes.push(m.length); });
@@ -462,6 +488,85 @@ test.describe('T-CS-01 a T-CS-05 la CSP, la guardia y el interruptor bloquean ca
         return salida;
       }, p3);
       expect(marco).toEqual(['lanza SiglowError', 'null null']);
+      // B-25 y PD-2-r2: caminos que dan un realm sin createElement (medidos en la revisión y en la sonda de PD-2-r2: 4 paquetes
+      // STUN cada uno). La transformación XSLT de la revisión, un documento cuya raíz es un iframe y una ventana Picture-in-Picture
+      // de documento. Con la guardia, XSLTProcessor y documentPictureInPicture están en undefined y createDocument rechaza el
+      // iframe; si alguno diera un realm, su RTCPeerConnection dejaría paquetes en el STUN falso (la cuenta de abajo).
+      const sinCreateElement = await page.evaluate(async (p3) => {
+        const g = globalThis as unknown as Record<string, unknown>;
+        const n0 = window.length;
+        const webrtc = async (w: Window | null | undefined): Promise<string> => {
+          const P = (w as unknown as Record<string, typeof RTCPeerConnection | undefined> | null | undefined)?.['RTCPeerConnection'];
+          if (!P) return 'sin realm';
+          const pc = new P({ iceServers: [{ urls: `stun:127.0.0.1:${p3}` }] });
+          pc.createDataChannel('x');
+          await pc.setLocalDescription(await pc.createOffer());
+          await new Promise((ok) => { setTimeout(ok, 3000); });
+          pc.close();
+          return 'realm con WebRTC';
+        };
+        const nuevoMarco = (): Promise<string> => webrtc(window.length > n0 ? window[window.length - 1] : null);
+        const intento = async (fn: () => unknown, despues: () => Promise<string> = nuevoMarco): Promise<string> => {
+          try { await fn(); } catch (e) { return `lanza ${(e as Error).name}${(e as { code?: string }).code ? ` ${(e as { code: string }).code}` : ''}`; }
+          return despues();
+        };
+        // Solo lee el descriptor: escribir la propiedad aquí taparía la API que los intentos de abajo deben encontrar si la
+        // guardia faltara (lo vio la mutación sin XSLTProcessor). Que no se pueda reescribir lo prueba tests/unit/guard.test.ts.
+        const fijo = (n: string): string => {
+          const d = Object.getOwnPropertyDescriptor(window, n);
+          return `${typeof g[n]} ${d?.configurable === false && d.writable === false ? 'fijo' : 'libre'}`;
+        };
+        // La hoja de la revisión: <xsl:element name="iframe"> en el espacio de nombres XHTML, armada con elementos XSL.
+        const XSL = 'http://www.w3.org/1999/XSL/Transform';
+        const transformar = (X: unknown): void => {
+          const hoja = document.implementation.createDocument(XSL, 'xsl:stylesheet', null);
+          hoja.documentElement!.setAttribute('version', '1.0');
+          const plantilla = hoja.createElementNS(XSL, 'xsl:template');
+          plantilla.setAttribute('match', '/');
+          const el = hoja.createElementNS(XSL, 'xsl:element');
+          el.setAttribute('name', 'iframe');
+          el.setAttribute('namespace', 'http://www.w3.org/1999/xhtml');
+          plantilla.append(el);
+          hoja.documentElement!.append(plantilla);
+          const p = new (X as new () => XSLTProcessor)();
+          p.importStylesheet(hoja);
+          document.body.append(p.transformToFragment(document.implementation.createDocument(null, 'x', null), document));
+        };
+        return {
+          xslt: fijo('XSLTProcessor'),
+          transformacion: await intento(() => { transformar(g['XSLTProcessor']); }),
+          createDocument: await intento(() => { document.body.append(document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'iframe', null).documentElement!); }),
+          pip: fijo('documentPictureInPicture'),
+          marcos: window.length - n0,
+        };
+      }, p3);
+      expect(sinCreateElement).toEqual({ xslt: 'undefined fijo', transformacion: 'lanza TypeError', createDocument: GUARDIA, pip: 'undefined fijo', marcos: 0 });
+      // La ventana Picture-in-Picture pide un gesto del usuario: un clic real sobre la página.
+      const pip = async (nativo: boolean): Promise<string> => {
+        await page.evaluate(({ p3, nativo }) => {
+          const g = globalThis as unknown as Record<string, unknown> & { __pip?: string; __realms: { pip: unknown } };
+          g.__pip = 'sin clic';
+          addEventListener('click', () => {
+            void (async () => {
+              try {
+                const d = (nativo ? g.__realms.pip : g['documentPictureInPicture']) as { requestWindow(o: object): Promise<Window> };
+                const w = await d.requestWindow({ width: 100, height: 100 });
+                const P = (w as unknown as Record<string, unknown>)['RTCPeerConnection'];
+                // Control (la API original): solo se mira el constructor, sin crear la conexión.
+                if (nativo) { g.__pip = `ventana: RTCPeerConnection ${typeof P}`; w.close(); return; }
+                const pc = new (P as typeof RTCPeerConnection)({ iceServers: [{ urls: `stun:127.0.0.1:${p3}` }] });
+                pc.createDataChannel('x');
+                await pc.setLocalDescription(await pc.createOffer());
+                g.__pip = 'ventana con WebRTC';
+              } catch (e) { g.__pip = `lanza ${(e as Error).name}`; }
+            })();
+          }, { once: true });
+        }, { p3, nativo });
+        await page.mouse.click(1, 1);
+        await expect.poll(() => page.evaluate(() => (globalThis as unknown as { __pip: string }).__pip)).not.toBe('sin clic');
+        return page.evaluate(() => (globalThis as unknown as { __pip: string }).__pip);
+      };
+      expect(await pip(false)).toBe('lanza TypeError');
       // Workers propios: los tres constructores (y la voz) en undefined y fijos.
       for (const ruta of workersPropios()) {
         const w = await arrancarWorker(page, ruta);
@@ -475,6 +580,33 @@ test.describe('T-CS-01 a T-CS-05 la CSP, la guardia y el interruptor bloquean ca
         }), ruta).toEqual(Array<string>(5).fill('undefined fijo'));
       }
       expect(paquetes).toEqual([]);
+      // Controles (B-25, PD-2-r2): con las API originales, guardadas antes de la guardia, los tres caminos sí dan un realm con
+      // WebRTC en este navegador; así los casos de arriba prueban algo. Solo se mira el constructor, sin crear la conexión.
+      const controles = await page.evaluate(() => {
+        const R = (globalThis as unknown as { __realms: { XSLTProcessor: unknown; createDocument: DOMImplementation['createDocument'] } }).__realms;
+        const conWebrtc = (): string => {
+          const w = window[window.length - 1] as unknown as Record<string, unknown> | undefined;
+          return `realm: RTCPeerConnection ${typeof w?.['RTCPeerConnection']}`;
+        };
+        const XSL = 'http://www.w3.org/1999/XSL/Transform';
+        const hoja = document.implementation.createDocument(XSL, 'xsl:stylesheet', null);
+        hoja.documentElement!.setAttribute('version', '1.0');
+        const plantilla = hoja.createElementNS(XSL, 'xsl:template');
+        plantilla.setAttribute('match', '/');
+        const el = hoja.createElementNS(XSL, 'xsl:element');
+        el.setAttribute('name', 'iframe');
+        el.setAttribute('namespace', 'http://www.w3.org/1999/xhtml');
+        plantilla.append(el);
+        hoja.documentElement!.append(plantilla);
+        const p = new (R.XSLTProcessor as new () => XSLTProcessor)();
+        p.importStylesheet(hoja);
+        document.body.append(p.transformToFragment(document.implementation.createDocument(null, 'x', null), document));
+        const xslt = conWebrtc();
+        document.body.append(R.createDocument.call(document.implementation, 'http://www.w3.org/1999/xhtml', 'iframe', null).documentElement!);
+        return { xslt, createDocument: conWebrtc() };
+      });
+      expect(controles).toEqual({ xslt: 'realm: RTCPeerConnection function', createDocument: 'realm: RTCPeerConnection function' });
+      expect(await pip(true)).toBe('ventana: RTCPeerConnection function');
       // Riesgo residual (5.2.1, V-02; S-10.5): el realm de un iframe que ya existe sigue alcanzable por `window[i]`, que no se
       // puede envolver. Se mide y se anota; no bloquea (código inyectado que ya consiguió un iframe).
       const residual = await page.evaluate(async (p3) => {
@@ -577,7 +709,7 @@ test.describe('T-CS-06 y T-CS-07 Trusted Types y CSP de respaldo', () => {
     await ctx.close();
   });
 
-  test('T-CS-07 @cero-red CSP de respaldo: el <meta> es la cabecera menos frame-ancestors, sin report-uri ni report-to, y cabeceras de 3.6 en /, /sw.js, un worker y el .wasm', async ({ browser, request }) => {
+  test('T-CS-07 @cero-red CSP de respaldo: el <meta> es la cabecera menos frame-ancestors, sin report-uri ni report-to, y cabeceras de 3.6 en /, /sw.js, un worker y el .wasm; cada rasgo de la Permissions-Policy reconocido sin aviso', async ({ browser, request }) => {
     const detect = rutaDe(/^\/assets\/detect\.worker-[\w-]+\.js$/);
     const raiz = await request.get(`${app.origen}/`);
     const csp = raiz.headers()['content-security-policy'] ?? '';
@@ -591,7 +723,7 @@ test.describe('T-CS-06 y T-CS-07 Trusted Types y CSP de respaldo', () => {
     const canonicas = {
       'cross-origin-opener-policy': 'same-origin', 'cross-origin-embedder-policy': 'require-corp', 'cross-origin-resource-policy': 'same-origin',
       'referrer-policy': 'no-referrer', 'x-content-type-options': 'nosniff', 'x-dns-prefetch-control': 'off', 'x-frame-options': 'DENY',
-      'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self)',
+      'permissions-policy': PERMISOS,
     };
     const casos: [string, string, string | undefined][] = [
       ['/', 'text/html; charset=utf-8', 'no-cache, no-transform'],
@@ -605,6 +737,29 @@ test.describe('T-CS-06 y T-CS-07 Trusted Types y CSP de respaldo', () => {
       expect({ ruta, csp: h['content-security-policy'], tipo: h['content-type'], cache: h['cache-control'], acao: h['access-control-allow-origin'] })
         .toEqual({ ruta, csp: `${CSP_CANONICA}, ${CSP_RUTAS}`, tipo, cache, acao: undefined });
       for (const [k, v] of Object.entries(canonicas)) expect(h[k], `${ruta}: ${k}`).toBe(v);
+    }
+    // Permissions-Policy (3.6 y PD-2-r2): el navegador reconoce cada rasgo de la cabecera, sin aviso en la consola («Unrecognized
+    // feature»), y los que van con `()` quedan apagados en la página y en un iframe que la herede.
+    const rasgos = PERMISOS.split(/\s*,\s*/).map((r) => /^([a-z-]+)=\((self)?\)$/.exec(r)).map((m) => ({ nombre: m![1]!, propio: m![2] === 'self' }));
+    expect(rasgos.map((r) => r.nombre)).toEqual(expect.arrayContaining(['browsing-topics', 'private-state-token-issuance']));
+    {
+      const { ctx, page } = await abrir(browser, app.origen, 'block');
+      const consola: string[] = [];
+      page.on('console', (m) => { consola.push(m.text()); });
+      await page.reload();
+      await expect(page.locator('[data-prueba="promesa"]')).toBeVisible();
+      const vistos = await page.evaluate((nombres) => {
+        type Fp = { features(): string[]; allowsFeature(f: string): boolean };
+        const N = (globalThis as unknown as { __nativo: Nativo }).__nativo;
+        const f = N.createElement('iframe') as HTMLIFrameElement;
+        document.body.append(f);
+        const fp = (document as unknown as { featurePolicy: Fp }).featurePolicy;
+        const fpMarco = (N.contentWindow(f)!.document as unknown as { featurePolicy: Fp }).featurePolicy;
+        return nombres.map((n) => `${n}: ${fp.features().includes(n) ? 'reconocido' : 'NO reconocido'} ${fp.allowsFeature(n) ? 'permitido' : 'apagado'} ${fpMarco.allowsFeature(n) ? 'permitido' : 'apagado'}`);
+      }, rasgos.map((r) => r.nombre));
+      expect(vistos).toEqual(rasgos.map((r) => `${r.nombre}: reconocido ${r.propio ? 'permitido permitido' : 'apagado apagado'}`));
+      expect(consola.filter((t) => /Permissions-Policy|Unrecognized feature/i.test(t))).toEqual([]);
+      await ctx.close();
     }
     // El <meta> solo también protege el documento: sin la CSP de la cabecera, las dos políticas del <meta> siguen frenando.
     const copia = join(tmp, `sin-cabecera-${Date.now()}`);

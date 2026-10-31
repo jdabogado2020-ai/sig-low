@@ -17,12 +17,14 @@ const RAIZ = mkdtempSync(join(tmpdir(), 'siglow-checkdist-'));
 afterAll(() => { rmSync(RAIZ, { recursive: true, force: true }); });
 
 const ENTRADA = 'assets/index-Cx0Prueba.js';
-// Los arreglos de src/guard.ts tal como los emite el build (PD-2-r1): en el chunk de entrada y en cada worker propio.
+// Los arreglos de src/guard.ts tal como los emite el build (PD-2-r1 y PD-2-r2): en el chunk de entrada y en cada worker propio.
 const LITERALES_GUARDIA = [
   '[`RTCPeerConnection`,`webkitRTCPeerConnection`,`RTCDataChannel`]',
   '[`speechSynthesis`,`SpeechSynthesisUtterance`,`SpeechRecognition`,`webkitSpeechRecognition`]',
-  '[`XMLHttpRequest`,`WebSocket`,`EventSource`,`fetchLater`,`open`]',
+  '[`XSLTProcessor`,`documentPictureInPicture`]',
+  '[`XMLHttpRequest`,`WebSocket`,`WebSocketStream`,`WebTransport`,`EventSource`,`fetchLater`,`open`]',
   '[`sendBeacon`,`share`]',
+  '[`joinAdInterestGroup`,`runAdAuction`,`browsingTopics`]',
 ];
 const CHUNK_ENTRADA = LITERALES_GUARDIA.map((l, i) => `var g${i}=${l};`).join('');
 const ORT = ['ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.wasm'];
@@ -119,6 +121,8 @@ describe.concurrent('T-CD-02 un canario por regla de contenido: check-dist sale 
     ['fetch', 'fetch("/x");'],
     ['XMLHttpRequest', 'new XMLHttpRequest;'],
     ['WebSocket', 'new WebSocket(u);'],
+    ['WebSocketStream', 'new WebSocketStream(u);'],
+    ['WebTransport', 'new WebTransport(u);'],
     ['EventSource', 'new EventSource(u);'],
     ['sendBeacon', 'navigator.sendBeacon(u,d);'],
     ['WebRTC', 'new RTCPeerConnection;'],
@@ -126,6 +130,11 @@ describe.concurrent('T-CD-02 un canario por regla de contenido: check-dist sale 
     ['voz', 'speechSynthesis.speak(u);'],
     ['voz', 'new SpeechSynthesisUtterance(t);'],
     ['voz', 'new webkitSpeechRecognition;'],
+    ['xslt', 'new XSLTProcessor;'],
+    ['pip-documento', 'documentPictureInPicture.requestWindow();'],
+    ['publicidad', 'navigator.joinAdInterestGroup(g);'],
+    ['publicidad', 'navigator.runAdAuction(c);'],
+    ['publicidad', 'document.browsingTopics();'],
     ['fetchLater', 'fetchLater(u);'],
     ['navigator.share', 'navigator.share({text:t});'],
     ['window.open', 'window.open(u);'],
@@ -190,11 +199,15 @@ describe.concurrent('T-CD-02 un canario por regla de contenido: check-dist sale 
     await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA + 'new WebSocket(u);' } }, `${ENTRADA}: WebSocket ×1`);
     await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA + 'speechSynthesis.speak(u);' } }, `${ENTRADA}: voz ×1`);
     await falla({ archivos: { 'assets/ui-Cx0Prueba.js': CHUNK_ENTRADA } },
-      'assets/ui-Cx0Prueba.js: WebRTC ×3', 'assets/ui-Cx0Prueba.js: voz ×4', 'assets/ui-Cx0Prueba.js: XMLHttpRequest ×1', 'assets/ui-Cx0Prueba.js: sendBeacon ×1');
+      'assets/ui-Cx0Prueba.js: WebRTC ×3', 'assets/ui-Cx0Prueba.js: voz ×4', 'assets/ui-Cx0Prueba.js: XMLHttpRequest ×1', 'assets/ui-Cx0Prueba.js: sendBeacon ×1',
+      'assets/ui-Cx0Prueba.js: WebSocketStream ×1', 'assets/ui-Cx0Prueba.js: WebTransport ×1', 'assets/ui-Cx0Prueba.js: xslt ×1',
+      'assets/ui-Cx0Prueba.js: pip-documento ×1', 'assets/ui-Cx0Prueba.js: publicidad ×3');
+    // PD-2-r2: con la guardia en la entrada, un uso de los nombres nuevos fuera de sus literales también es hallazgo.
+    await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA + 'new WebTransport(u);new XSLTProcessor;' } }, `${ENTRADA}: WebTransport ×1`, `${ENTRADA}: xslt ×1`);
     // Un worker que no es propio (pdf.js, los hilos de ORT o uno nuevo) no goza de la excepción.
     await falla({ archivos: { 'assets/otro.worker-Cx0Prueba.js': CHUNK_ENTRADA } }, 'assets/otro.worker-Cx0Prueba.js: WebRTC ×3');
     // Un literal repetido o cambiado anula la excepción entera, y la guardia cuenta como ausente.
-    await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA + `var d=${LITERALES_GUARDIA[3]};` } }, `${ENTRADA}: sendBeacon ×2`, `${ENTRADA}: guardia ausente o alterada`);
+    await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA + `var d=${LITERALES_GUARDIA.find((l) => l.includes('sendBeacon'))!};` } }, `${ENTRADA}: sendBeacon ×2`, `${ENTRADA}: guardia ausente o alterada`);
     await falla({ archivos: { [ENTRADA]: CHUNK_ENTRADA.replace('`open`]', '`open`,`postMessage`]') } }, `${ENTRADA}: WebSocket ×1`, `${ENTRADA}: guardia ausente o alterada`);
   });
 
@@ -280,6 +293,13 @@ describe.concurrent('T-CD-03 _headers (3.6, T-CS-07)', () => {
     await falla({ cabeceras: (h) => h.replace(/\s*Cross-Origin-Embedder-Policy: require-corp/, '') }, '_headers: /* Cross-Origin-Embedder-Policy distinta de la aprobada');
     await falla({ cabeceras: (h) => h.replace('X-Frame-Options: DENY', 'X-Frame-Options: DENY\n  Access-Control-Allow-Origin: *') }, '_headers: /* Access-Control-Allow-Origin no está en la lista aprobada');
     await falla({ cabeceras: (h) => h.replace('Referrer-Policy: no-referrer', 'Referrer-Policy: origin') }, '_headers: /* Referrer-Policy distinta de la aprobada');
+  });
+  it('canario (PD-2-r2): la Permissions-Policy sin browsing-topics=() o sin private-state-token-issuance=(), o con un rasgo más', async () => {
+    await falla({ cabeceras: (h) => h.replace(', browsing-topics=()', '') }, '_headers: /* Permissions-Policy distinta de la aprobada');
+    await falla({ cabeceras: (h) => h.replace(', private-state-token-issuance=()', '') }, '_headers: /* Permissions-Policy distinta de la aprobada');
+    // (con la coma delante: el comentario de _headers también nombra el rasgo, sin ella)
+    await falla({ cabeceras: (h) => h.replace(', private-state-token-issuance=()', ', private-state-token-issuance=(), join-ad-interest-group=()') },
+      '_headers: /* Permissions-Policy distinta de la aprobada');
   });
   it('canario: no se quita Access-Control-Allow-Origin (Cloudflare lo agrega por defecto)', async () => {
     await falla({ cabeceras: (h) => h.replace(/\s*! Access-Control-Allow-Origin/, '') }, '_headers: /* falta «! Access-Control-Allow-Origin»');

@@ -81,17 +81,22 @@ const excepcionPdfjs = (r, t) => {
 };
 const URL_LITERAL = /https?:\/\/[^\s"'`)\\]+/g;
 
-// Guardia (src/guard.ts; 5.2.1, PD-2 y PD-2-r1): nombra las API que neutraliza en estos arreglos literales, una sola vez y
-// solo en el chunk de entrada (el módulo que carga index.html) y en los tres workers propios (`detect`, `io`, `ner`, por
+// Guardia (src/guard.ts; 5.2.1, PD-2, PD-2-r1 y PD-2-r2): nombra las API que neutraliza en estos arreglos literales, una sola
+// vez y solo en el chunk de entrada (el módulo que carga index.html) y en los tres workers propios (`detect`, `io`, `ner`, por
 // nombre). Es el primer import de cada uno: en esos archivos los literales son obligatorios, exactamente una vez cada uno.
 // Fuera de esos literales exactos, los nombres son hallazgos (en cualquier archivo).
 const LITERALES_GUARDIA = [
   '[`RTCPeerConnection`,`webkitRTCPeerConnection`,`RTCDataChannel`]',
   '[`speechSynthesis`,`SpeechSynthesisUtterance`,`SpeechRecognition`,`webkitSpeechRecognition`]',
-  '[`XMLHttpRequest`,`WebSocket`,`EventSource`,`fetchLater`,`open`]',
+  '[`XSLTProcessor`,`documentPictureInPicture`]',
+  '[`XMLHttpRequest`,`WebSocket`,`WebSocketStream`,`WebTransport`,`EventSource`,`fetchLater`,`open`]',
   '[`sendBeacon`,`share`]',
+  '[`joinAdInterestGroup`,`runAdAuction`,`browsingTopics`]',
 ];
-const REGLAS_GUARDIA = new Set(['XMLHttpRequest', 'WebSocket', 'EventSource', 'sendBeacon', 'WebRTC', 'fetchLater', 'voz']);
+const REGLAS_GUARDIA = new Set([
+  'XMLHttpRequest', 'WebSocket', 'WebSocketStream', 'WebTransport', 'EventSource', 'sendBeacon', 'WebRTC', 'fetchLater', 'voz',
+  'xslt', 'pip-documento', 'publicidad',
+]);
 const esWorkerPropio = (r) => /^assets\/(?:detect|io|ner)\.worker-[\w-]+\.js$/.test(r);
 
 const PROHIBIDOS = [
@@ -100,11 +105,20 @@ const PROHIBIDOS = [
   ['fetch', /\bfetch\s*\(/g],
   ['XMLHttpRequest', /\bXMLHttpRequest\b/g],
   ['WebSocket', /\bWebSocket\b/g],
+  // B-26: `\bWebSocket\b` no ve `WebSocketStream`, y `WebTransport` al propio origen lo admite la CSP (sale por UDP).
+  ['WebSocketStream', /\bWebSocketStream\b/g],
+  ['WebTransport', /\bWebTransport\b/g],
   ['EventSource', /\bEventSource\b/g],
   ['sendBeacon', /\bsendBeacon\b/g],
   ['WebRTC', /\b(?:webkit)?RTCPeerConnection\b|\bRTCDataChannel\b/g],
   // B-18: las voces en línea sintetizan en servidores del fabricante y el reconocimiento envía el audio; la app no los usa.
   ['voz', /\b(?:speechSynthesis|SpeechSynthesis\w*|(?:webkit)?SpeechRecognition\w*)\b/g],
+  // Realms sin createElement (M-4): una transformación XSLT crea un iframe (B-25) y una ventana Picture-in-Picture de
+  // documento trae su propio realm (PD-2-r2); los dos dan WebRTC sin guardia.
+  ['xslt', /\bXSLTProcessor\b/g],
+  ['pip-documento', /\bdocumentPictureInPicture\b/g],
+  // Protected Audience y Topics (PD-2-r2): la app no los usa.
+  ['publicidad', /\b(?:joinAdInterestGroup|runAdAuction|browsingTopics)\b/g],
   ['fetchLater', /\bfetchLater\b/g],
   ['navigator.share', /\bnavigator\s*\.\s*share\b/g],
   ['window.open', /\bwindow\s*\.\s*open\s*\(/g],
@@ -161,7 +175,9 @@ const CABECERAS_TODAS = {
   'X-Content-Type-Options': 'nosniff',
   'X-DNS-Prefetch-Control': 'off',
   'X-Frame-Options': 'DENY',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self)',
+  // PD-2-r2: `browsing-topics` y `private-state-token-issuance`, los dos de los cinco pedidos que Chromium reconoce sin aviso
+  // (`join-ad-interest-group`, `run-ad-auction` y `attribution-reporting` dan «Unrecognized feature»; los cubre la guardia).
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), bluetooth=(), display-capture=(), clipboard-read=(), clipboard-write=(self), browsing-topics=(), private-state-token-issuance=()',
 };
 const QUITAR_TODAS = ['Access-Control-Allow-Origin']; // Cloudflare Pages lo agrega por defecto (entrega/despliegues.md)
 const CACHE = {

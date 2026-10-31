@@ -4,6 +4,7 @@
 // escribe sobre el arnés sin cambiar lo que comprueba: ver `bitacora/entradas/*_PD-5a.md`, sección «Cómo pasar una fase al arnés».
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { createSocket } from 'node:dgram';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -347,7 +348,12 @@ test('@cero-red arnés canarios: el perfil persistente relanzado sin conexión c
 // guardia cierra ese camino, M-4, el iframe se crea con el createElement y el contentWindow originales de tests/e2e/lib/originales.ts)
 // y en un worker sin guardia (el de pdf.js; los propios llevan la guardia, T-CS-02). La verdad es el registro de server.mjs; el
 // control, con solo la política canónica, muestra que sí llegaría.
-test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y no llega al servidor; con solo la política canónica, sí (control)', async ({ browser }) => {
+// B-26 (PD-2-r2): los otros dos transportes. `WebSocketStream` lo frena la segunda política como al WebSocket, y la guardia
+// antes. `WebTransport` al propio origen (`https://<host de la app>/…`) no lo frena ninguna otra capa: `'self'` y `https:` lo
+// admiten, sale por UDP (HTTP/3) al puerto de la app y el SW no lo ve; solo la guardia. Una escucha UDP en el puerto de la app
+// cuenta lo que sale: 0 desde la ventana y desde un worker propio, sobre el build real (la guardia actúa solo en producción).
+// El control (el WebTransport original, en el realm sin guardia) muestra que la escucha ve los paquetes.
+test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y no llega al servidor; con solo la política canónica, sí (control); WebSocketStream y WebTransport (B-26): la guardia los frena y no sale ningún paquete UDP al puerto de la app', async ({ browser }) => {
   const raiz = join(process.cwd(), 'test-results', `tpv12-${Date.now()}`);
   const soloCanonica = join(raiz, 'solo-canonica');
   cpSync('dist', soloCanonica, { recursive: true });
@@ -355,10 +361,13 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
   writeFileSync(join(soloCanonica, '_headers'), readFileSync(join(soloCanonica, '_headers'), 'utf8').replace(/^(\s*Content-Security-Policy:[^,\n]*),[^\n]*$/m, '$1'));
   writeFileSync(join(soloCanonica, 'index.html'), readFileSync(join(soloCanonica, 'index.html'), 'utf8').replace(/\s*<meta http-equiv="Content-Security-Policy" content="script-src[^"]*"\s*\/?>/, ''));
   expect(readFileSync(join(soloCanonica, 'index.html'), 'utf8').match(/http-equiv="Content-Security-Policy"/g)).toHaveLength(1);
-  const intentar = (page: Page): Promise<{ ventana: string; marco: string; violacion: string[] }> => page.evaluate(async () => {
-    const W = (globalThis as unknown as Record<string, typeof WebSocket>)['WebSocket']!;
-    let ventana: string;
-    try { new W(`ws://${location.host}/tpv12-ventana?d=x`); ventana = 'creado'; } catch (e) { ventana = `lanza ${(e as Error).name}`; }
+  interface Intentos { ventana: string; ventanaWss: string; ventanaWt: string; marco: string; marcoWss: string; violacion: string[] }
+  const intentar = (page: Page): Promise<Intentos> => page.evaluate(async () => {
+    const g = globalThis as unknown as Record<string, new (u: string) => unknown>;
+    const crear = (clase: string, u: string): string => { try { new g[clase]!(u); return 'creado'; } catch (e) { return `lanza ${(e as Error).name}`; } };
+    const ventana = crear('WebSocket', `ws://${location.host}/tpv12-ventana?d=x`);
+    const ventanaWss = crear('WebSocketStream', `ws://${location.host}/tpv12-ventana-wss?d=x`);
+    const ventanaWt = crear('WebTransport', `https://${location.host}/tpv12-ventana-wt?d=x`);
     const N = (globalThis as unknown as ConNativo).__nativo;
     const f = N.createElement('iframe') as HTMLIFrameElement;
     document.body.append(f);
@@ -371,14 +380,25 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
       s.onopen = () => { ok('abierto'); };
       setTimeout(() => { ok('sin evento'); }, 3000);
     });
+    // WebSocketStream sin guardia: si la CSP lo bloquea, `opened` se rechaza.
+    const MS = (N.contentWindow(f) as unknown as Record<string, new (u: string) => { opened: Promise<unknown> }>)['WebSocketStream']!;
+    const marcoWss = await new Promise<string>((ok) => {
+      try { new MS(`ws://${location.host}/tpv12-marco-wss?d=x`).opened.then(() => { ok('abierto'); }, () => { ok('error'); }); } catch (e) { ok(`lanza ${(e as Error).name}`); }
+      setTimeout(() => { ok('sin evento'); }, 3000);
+    });
     await new Promise((ok) => { setTimeout(ok, 300); });
-    return { ventana, marco, violacion };
+    return { ventana, ventanaWss, ventanaWt, marco, marcoWss, violacion };
   });
   // Puertos libres del sistema (`--port 0`): otros carriles dejan servidores abiertos en puertos fijos.
   const con = await levantarServidor({ dir: 'dist', reporteCsp: false });
   const sin = await levantarServidor({ dir: soloCanonica, reporteCsp: false });
   const rutas = (srv: typeof con): string[] => srv.peticiones().map((q) => q.u).filter((u) => u.startsWith('/tpv12'));
+  // B-26: escucha UDP en el puerto de la app (HTTP/3 de WebTransport); el servidor de la app usa TCP en ese mismo número.
+  const udp = createSocket('udp4');
+  const paquetes: number[] = [];
+  udp.on('message', (m) => { paquetes.push(m.length); });
   try {
+    await new Promise<void>((ok, mal) => { udp.once('error', mal); udp.bind(con.puerto, '127.0.0.1', () => { ok(); }); });
     // Con la CSP de PD-2 y el SW activo.
     const ctx = await browser.newContext({ baseURL: con.origen });
     await guardarOriginales(ctx);
@@ -387,7 +407,9 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
     await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
     const r = await intentar(page);
     expect(r.ventana).toBe('lanza SiglowError'); // la guardia, antes de la CSP
+    expect([r.ventanaWss, r.ventanaWt]).toEqual(['lanza SiglowError', 'lanza SiglowError']); // B-26
     expect(r.marco).toBe('error');
+    expect(r.marcoWss).toBe('error');
     expect(r.violacion).toContain('connect-src');
     // Un worker sin guardia (pdf.js, de terceros): en los propios, la guardia lanza antes que la CSP (T-CS-02).
     const sinGuardia = precache().find((x) => /pdf\.worker/.test(x))!;
@@ -397,23 +419,63 @@ test('T-PV-12 @cero-red un WebSocket al propio origen lo bloquea connect-src y n
       self.addEventListener('securitypolicyviolation', (e) => { v.push((e as SecurityPolicyViolationEvent).effectiveDirective); });
       const res = await new Promise<string>((ok) => { const s = new WebSocket(`ws://${self.location.host}/tpv12-worker?d=x`); s.onerror = () => { ok('error'); }; s.onopen = () => { ok('abierto'); }; setTimeout(() => { ok('sin evento'); }, 3000); });
       await new Promise((ok) => { setTimeout(ok, 300); });
+      const delWs = v.splice(0);
+      // B-26: WebSocketStream, igual que el WebSocket.
+      const MS = (self as unknown as Record<string, new (u: string) => { opened: Promise<unknown> }>)['WebSocketStream']!;
+      const wss = await new Promise<string>((ok) => { new MS(`ws://${self.location.host}/tpv12-worker-wss?d=x`).opened.then(() => { ok('abierto'); }, () => { ok('error'); }); setTimeout(() => { ok('sin evento'); }, 3000); });
+      await new Promise((ok) => { setTimeout(ok, 300); });
+      return { res, v: delWs, wss, vWss: [...new Set(v)] };
+    })).toEqual({ res: 'error', v: ['connect-src'], wss: 'error', vWss: ['connect-src'] });
+    // B-26: un worker propio (detect) lleva la guardia: WebSocketStream y WebTransport lanzan.
+    const propio = precache().find((x) => /^\/assets\/detect\.worker-/.test(x))!;
+    const [conGuardia] = await Promise.all([
+      page.waitForEvent('worker', (w) => new URL(w.url()).pathname === propio),
+      page.evaluate((u) => { (globalThis as unknown as { w2: Worker }).w2 = new Worker(u, { type: 'module' }); }, propio),
+    ]);
+    expect(await conGuardia.evaluate(() => [['WebSocketStream', 'ws'], ['WebTransport', 'https']].map(([clase, esquema]) => {
+      try { new (self as unknown as Record<string, new (u: string) => unknown>)[clase!]!(`${esquema!}://${self.location.host}/tpv12-detect?d=x`); return 'creado'; } catch (e) { return `lanza ${(e as Error).name}`; }
+    }))).toEqual(['lanza SiglowError', 'lanza SiglowError']);
+    await page.waitForTimeout(1500);
+    expect(rutas(con)).toEqual([]);
+    expect(paquetes).toEqual([]); // ningún paquete UDP al puerto de la app
+    // Control (B-26): el WebTransport original, en el realm sin guardia (que hereda la CSP), sí sale: ninguna violación y
+    // paquetes en la escucha. Así el 0 de arriba prueba algo.
+    const control = await page.evaluate(async () => {
+      const N = (globalThis as unknown as ConNativo).__nativo;
+      const f = N.createElement('iframe') as HTMLIFrameElement;
+      document.body.append(f);
+      const v: string[] = [];
+      (N.contentWindow(f) as Window).addEventListener('securitypolicyviolation', (e) => { v.push((e as SecurityPolicyViolationEvent).effectiveDirective); });
+      const T = (N.contentWindow(f) as unknown as Record<string, new (u: string) => unknown>)['WebTransport']!;
+      let res: string;
+      try { new T(`https://${location.host}/tpv12-marco-wt?d=x`); res = 'creado'; } catch (e) { res = `lanza ${(e as Error).name}`; }
+      await new Promise((ok) => { setTimeout(ok, 500); });
       return { res, v };
-    })).toEqual({ res: 'error', v: ['connect-src'] });
-    await page.waitForTimeout(500);
+    });
+    expect(control).toEqual({ res: 'creado', v: [] });
+    await expect.poll(() => paquetes.length, { timeout: 10_000 }).toBeGreaterThan(0);
+    const delControl = paquetes.length;
+    // Riesgo residual (V-01: la guardia no corre en workers de terceros): el WebTransport del worker de pdf.js. Se mide y se
+    // anota; check-dist prohíbe el nombre en el build (regla `WebTransport`).
+    await worker.evaluate(() => { new (self as unknown as Record<string, new (u: string) => unknown>)['WebTransport']!(`https://${self.location.host}/tpv12-worker-wt?d=x`); });
+    await page.waitForTimeout(1500);
+    test.info().annotations.push({ type: 'riesgo residual (B-26, V-01)', description: `WebTransport al propio origen sin guardia: ${delControl} paquetes UDP desde un iframe about:blank (control) y ${paquetes.length - delControl} desde el worker de pdf.js, sin violación de CSP` });
     expect(rutas(con)).toEqual([]);
     await ctx.close();
-    // Control: solo la política canónica (`connect-src 'self'`). El WebSocket del realm sin guardia llega al servidor, query incluida.
+    // Control: solo la política canónica (`connect-src 'self'`). El WebSocket y el WebSocketStream del realm sin guardia llegan
+    // al servidor, query incluida.
     const ctx2 = await browser.newContext({ baseURL: sin.origen, serviceWorkers: 'block' });
     await guardarOriginales(ctx2);
     const page2 = await ctx2.newPage();
     await page2.goto('/');
     const r2 = await intentar(page2);
     expect(r2.violacion).toEqual([]);
-    await expect.poll(() => rutas(sin)).toEqual(['/tpv12-marco?d=x']);
+    await expect.poll(() => rutas(sin).sort()).toEqual(['/tpv12-marco-wss?d=x', '/tpv12-marco?d=x']);
     await ctx2.close();
   } finally {
     await con.parar();
     await sin.parar();
+    await new Promise<void>((ok) => { try { udp.close(() => { ok(); }); } catch { ok(); } });
     rmSync(raiz, { recursive: true, force: true });
   }
 });
