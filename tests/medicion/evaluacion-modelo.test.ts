@@ -225,16 +225,22 @@ describe('T-AB-03 · calibración con las salidas guardadas de x-large (vista na
     expect(conf.desarrollo.seleccion.umbral).toBe(cal.seleccion.umbral);
   });
 
-  it('T-AB-03 (b) con el texto final, nerHighThreshold sigue siendo el menor valor con precisión >= 0,90 entre los tramos media de desarrollo y el anterior (0,01 menos) no la alcanza', () => {
+  it('T-AB-03 (b) con el gold final (RG-r1), el menor valor con precisión >= 0,90 en el desarrollo es 0,38; la banda del producto se queda en 0,37 por D-06 y queda 0,002 por debajo', () => {
     expect(cal.altoAlcanzable).toBe(true);
     const alto = cal.nerHighThreshold as number;
+    expect(alto).toBe(0.37); // D-06, decisión 2: la banda no se mueve (cambiarla sería ajustarla con lo medido después de elegirla)
     expect(alto).toBeGreaterThanOrEqual(cal.nerMinScore);
     const candidatos = Array.from({ length: Math.round((0.99 - cal.nerMinScore) * 100) + 1 }, (_, i) => Math.round((cal.nerMinScore + i * 0.01) * 100) / 100);
     const filas = barridoAlto(cache, GOLDS, cal.nerMinScore, candidatos, DESARROLLO);
-    const fila = filas.find((f) => f.umbral === alto) as FilaAlto;
-    expect(fila.precision).toBeGreaterThanOrEqual(0.9);
-    expect(elegirAlto(filas, 0.9)?.umbral).toBe(alto);
-    for (const f of filas.filter((x) => x.umbral < alto)) expect(f.precision).toBeLessThan(0.9);
+    // Con el gold anterior a RG-r1 el menor valor era 0,37 (precisión 0,907). Con el final es 0,38, y 0,37 da 952 de 1.060 = 0,898.
+    const elegido = elegirAlto(filas, 0.9);
+    expect(elegido?.umbral).toBe(0.38);
+    for (const f of filas.filter((x) => x.umbral < 0.38)) expect(f.precision).toBeLessThan(0.9);
+    const enLaBanda = filas.find((f) => f.umbral === alto) as FilaAlto;
+    expect([enLaBanda.verdaderas, enLaBanda.tramos]).toEqual([952, 1060]);
+    expect(enLaBanda.precision).toBeGreaterThanOrEqual(0.89);
+    expect(enLaBanda.precision).toBeLessThan(0.9);
+    expect(0.9 - enLaBanda.precision).toBeLessThan(0.0025);
   });
 });
 
@@ -299,8 +305,17 @@ describe('T-AB-03 · confirmación de la calibración en la reserva con las sali
       expect(x.enLaBanda.umbral).toBe(cal.nerHighThreshold);
       expect(x.confirmaBanda).toBe(x.enLaBanda.tramos > 0 && x.enLaBanda.precision >= 0.9);
     }
-    expect(conf.desarrollo.confirmaUmbral && conf.desarrollo.confirmaBanda).toBe(true); // el desarrollo con el texto final sí la confirma
+    // Con el gold final (RG-r1) el desarrollo ya no confirma la banda de 0,37 (0,898); la reserva tampoco (0,859). El piso se confirma en los dos.
+    // D-06 mantiene la banda: la confirmación queda declarada como «no confirmada» y no cambia el producto (prueba siguiente).
+    expect(conf.desarrollo.confirmaUmbral && conf.reserva.confirmaUmbral).toBe(true);
+    expect(conf.desarrollo.confirmaBanda).toBe(false);
+    expect(conf.desarrollo.enLaBanda).toMatchObject({ tramos: 1060, verdaderas: 952 });
+    expect(conf.desarrollo.alto?.umbral).toBe(0.38);
+    expect(conf.reserva.confirmaBanda).toBe(false);
+    expect(conf.reserva.enLaBanda).toMatchObject({ tramos: 548, verdaderas: 471 });
+    expect(conf.reserva.alto?.umbral).toBe(0.44);
     expect(conf.confirmada).toBe(conf.reserva.confirmaUmbral && conf.reserva.confirmaBanda);
+    expect(conf.confirmada).toBe(false);
   });
 
   it('T-AB-03 la reserva no cambia el umbral ni la banda del producto: siguen siendo los de PF-3', async () => {
