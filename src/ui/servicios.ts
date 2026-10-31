@@ -30,6 +30,14 @@ export interface BovedaPuerto {
   pasarAGuardar(codigo: string, frase: string, datos: InstantaneaAsunto): Promise<{ asuntoId: AsuntoId; persisted: boolean | null }>;
   /** Vacía la clave en memoria (bloqueo, cerrar asunto, pagehide). */
   cerrar(): void;
+  /** Pantalla Bóveda (PC-6). Pasos 1 a 12 de 6.7.6. Sin opción y con conflicto → ASUNTO_EXISTENTE (M-113): «Reemplazar» o «Importar con otro código». */
+  importar(archivo: ArrayBuffer | Uint8Array, frase: string, opcion?: { reemplazar: true } | { codigoNuevo: string }): Promise<{ asuntoId: AsuntoId; codigo: string; persisted: boolean | null }>;
+  /** «Borrar» un asunto (M-109). */
+  borrarAsunto(asuntoId: AsuntoId): Promise<void>;
+  /** «Borrar todo» (M-111); 'bloqueado' → M-112. Quien llama vacía el estado en claro. */
+  borrarTodo(): Promise<'borrado' | 'bloqueado'>;
+  /** Resultado vigente de persist() (M-107); null si el navegador no lo ofrece. */
+  persistencia(): Promise<boolean | null>;
 }
 
 export interface EstadoModeloPuerto { state: ModelUiState; variant?: ModelVariant; mb: number | null }
@@ -76,6 +84,10 @@ const sinBoveda: BovedaPuerto = {
   exportar: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
   pasarAGuardar: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
   cerrar: () => undefined,
+  importar: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
+  borrarAsunto: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
+  borrarTodo: () => Promise.reject(new SiglowError('IDB_NO_DISPONIBLE')),
+  persistencia: () => Promise.resolve(null),
 };
 
 const sinModelo: ModeloPuerto = {

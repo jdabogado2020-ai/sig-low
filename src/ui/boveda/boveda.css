@@ -1,0 +1,13 @@
+/* Pantalla Bóveda (PC-6). Solo clases: la CSP (style-src 'self') no admite atributos style. */
+.boveda { display: block; }
+.boveda section { margin: 1rem 0; }
+.boveda h2 { margin-top: 1.25rem; }
+.lista-asuntos { list-style: none; padding: 0; margin: 0.5rem 0; display: grid; gap: 0.75rem; }
+.asunto-guardado p { margin: 0.2rem 0; }
+.asunto-codigo { overflow-wrap: anywhere; }
+.boveda .confirmacion { margin: 0.75rem 0; }
+.avisos-boveda p { margin: 0.35rem 0; }
+
+@media (forced-colors: active) {
+  .asunto-guardado { border-color: CanvasText; background: Canvas; }
+}

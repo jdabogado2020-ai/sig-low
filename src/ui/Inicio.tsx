@@ -5,7 +5,9 @@ import type { AsuntoId } from '../core/types.ts';
 import { CampoFrase, CampoTexto, Casilla, Grupo, Seleccion } from './campos.tsx';
 import { actualizar, fijarAvisoInicio, ir, obtenerAvisoInicio, suscribir, useShell, type SaveMode } from './estado.ts';
 import { evaluarFrase } from './frase.ts';
-import { mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
+import { alterno, mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
+import { tomarPreseleccion } from './boveda/preseleccion.ts';
+import { persistenciaDelModelo } from './modelo-puerto.ts';
 import { agregarAvisoAsunto, fijarListaDelCaso, fijarTabla, tablaVacia } from './sesion.ts';
 import { codigoDeError, puertos, type AsuntoListado } from './servicios.ts';
 
@@ -46,6 +48,8 @@ function TarjetaModelo() {
   const reducido = (memoriaDelEquipo() ?? 8) < 8;
   const mb = puertos.modelo.estado().mb ?? (model.variant === 'respaldo' || reducido ? 303 : 626);
   const descargable = model.state === 'no_descargado' || model.state === 'fallo';
+  // Resultado de `navigator.storage.persist()` tras la descarga (PF-2, 3.3: «resultado visible»); null si no se pidió o no existe.
+  const persistente = persistenciaDelModelo();
   const [error, setError] = useState<string | undefined>(undefined);
   const [quitar, setQuitar] = useState(false);
   const lanzar = async (): Promise<void> => {
@@ -64,6 +68,9 @@ function TarjetaModelo() {
       {model.state === 'verificando' ? <p role="status">{t('M-28')}</p> : null}
       {model.state === 'listo' ? <p role="status">{t('M-29')}</p> : null}
       {model.state === 'listo' && model.variant === 'respaldo' ? <p>{t('M-170')}</p> : null}
+      {model.state === 'listo' && persistente !== null ? (
+        <p data-prueba="persistencia-modelo" data-persistente={persistente ? 'si' : 'no'}>{persistente ? t('M-107') : alterno('M-107', 0)}</p>
+      ) : null}
       {model.state === 'fallo' ? <p role="alert">{t('M-30')}</p> : null}
       {model.state === 'sin_espacio' ? <p role="alert">{t('M-32')}</p> : null}
       {model.state === 'sin_memoria' ? <p role="alert">{t('M-169')}</p> : null}
@@ -218,11 +225,12 @@ function CrearAsunto({ existentes, ocupado, setOcupado }: { existentes: readonly
 }
 
 function AbrirAsunto({ asuntos, ocupado, setOcupado }: { asuntos: readonly AsuntoListado[]; ocupado: boolean; setOcupado: (b: boolean) => void }) {
-  const [elegido, setElegido] = useState('');
+  // «Abrir» en la Bóveda lleva aquí con el asunto ya elegido (8.2.9); solo se usa si el asunto sigue en la lista.
+  const [elegido, setElegido] = useState(() => tomarPreseleccion() ?? '');
   const [frase, setFrase] = useState('');
   const [mostrar, setMostrar] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
-  const puede = !ocupado && elegido !== '' && frase !== '';
+  const puede = !ocupado && elegido !== '' && frase !== '' && asuntos.some((a) => a.asuntoId === elegido);
 
   const abrir = async (destino: 'lista' | 'reinsercion'): Promise<void> => {
     if (!puede) return;

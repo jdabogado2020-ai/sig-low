@@ -1,12 +1,14 @@
 // Registro de pantallas (8.1). Cada tarea PC-n sustituye su entrada por su componente; las que aún no existen
-// muestran solo el título (marcador de A2: PC-2 a PC-6 reemplazan estas entradas).
+// muestran solo el título (marcador de A2: PC-2 a PC-6 reemplazaron estas entradas; con PC-6 solo queda `sin_sw`, que arma App).
 import type { ComponentType } from 'preact';
 import { Inicio } from './Inicio.tsx';
 import { Entrada } from './Entrada.tsx';
 import { Listo } from './Listo.tsx';
 import { BandaResiduos } from './listo/BandaResiduos.tsx';
+import { Boveda } from './Boveda.tsx';
 import { ListaCaso } from './ListaCaso.tsx';
 import { Procesando } from './Procesando.tsx';
+import { Reinsercion } from './Reinsercion.tsx';
 import { RevisionBase } from './review/base/RevisionBase.tsx';
 import { useShell, type Screen } from './estado.ts';
 import { NOMBRE_PANTALLA } from './Armazon.tsx';
@@ -34,6 +36,8 @@ export const PANTALLAS: Partial<Record<Screen, ComponentType>> = {
   procesando: Procesando,
   revision: RevisionConResiduos,
   listo: Listo,
+  reinsercion: Reinsercion,
+  boveda: Boveda,
 };
 
 export function componenteDe(pantalla: Screen): ComponentType {
