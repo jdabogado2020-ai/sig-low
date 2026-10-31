@@ -41,14 +41,44 @@
   ],
   "archivos": [
     {
+      "ruta": "corpus/docs/C02.docx",
+      "sha256": "844e2cc4065b7d918f43b6d50bbc819f386003efbafbf58a0d5493b22aff0ad3",
+      "bytes": 8607
+    },
+    {
+      "ruta": "corpus/docs/C03.pdf",
+      "sha256": "10f9827309146e5cb03c0c6d8292e6c85b2b740c80bd0307ee45e72b3315c50c",
+      "bytes": 15937
+    },
+    {
+      "ruta": "corpus/docs/C04.pdf",
+      "sha256": "9313128e1ef2d9c298a76ee94167e37862c614ae3d56759a6062ae1e8f5c9880",
+      "bytes": 347131
+    },
+    {
       "ruta": "corpus/docs/C05.txt",
       "sha256": "57187e5aa57786c03cffa3b4c2f3ad920cbdb3f85d33934be1bae037b4aacda9",
       "bytes": 10059
     },
     {
+      "ruta": "corpus/docs/C06.docx",
+      "sha256": "f653e967576567be7fc14b8a542e9491e74b8ae3115b9a8e071eddfd2e8365d1",
+      "bytes": 9490
+    },
+    {
+      "ruta": "corpus/docs/C07.docx",
+      "sha256": "759f88f1d3838af496263dedfcff15cedbc3a005ea60c8300ab8a730ac990113",
+      "bytes": 9007
+    },
+    {
       "ruta": "corpus/docs/C08.txt",
       "sha256": "c80acd552b4fb76bbe4aab3f5e8f9ed35d39a364d3bb4b26115cbe06673284b1",
       "bytes": 10158
+    },
+    {
+      "ruta": "corpus/docs/C09.pdf",
+      "sha256": "18951849f0ab939264dad7e9bf8444efc61749b1aa366844fe597e9ca7bff6e5",
+      "bytes": 16431
     },
     {
       "ruta": "corpus/docs/C10.txt",
@@ -64,6 +94,41 @@
       "ruta": "corpus/docs/C12.txt",
       "sha256": "3ee2bf8bb61719e1e74e86742fa5a558ca9c7cf2986f1e2245171c82d3dc2a63",
       "bytes": 4989
+    },
+    {
+      "ruta": "corpus/docs/C13.docx",
+      "sha256": "9ba8e19a6c48219e353efd46b89ba637766f060f0dc3e52eacde1d66428249e3",
+      "bytes": 5637
+    },
+    {
+      "ruta": "corpus/docs/C14.docx",
+      "sha256": "0977ba204ba9708e402f939b132f51829114b21493713ef3ea23bc8d015887b4",
+      "bytes": 5489
+    },
+    {
+      "ruta": "corpus/docs/C15.pdf",
+      "sha256": "94ab448ab0af85ef7b3b9f311c9c2ab9196cf1ad325ed4703287f4871ad634f7",
+      "bytes": 5256
+    },
+    {
+      "ruta": "corpus/docs/C17.docx",
+      "sha256": "77f0ac82cf615159c84e271d925f987b9317a0bdd53625dc6584d2a916298851",
+      "bytes": 6863
+    },
+    {
+      "ruta": "corpus/docs/C18.docx",
+      "sha256": "2740bde80cac1b780eade98d6defdacc1853079413e223bef201506db21e1e1d",
+      "bytes": 6914
+    },
+    {
+      "ruta": "corpus/docs/C19.docx",
+      "sha256": "7d49b6d937db022fc2b8a81387f08d4c741ec4ab4f67e39fcd0e58dfc2993112",
+      "bytes": 5679
+    },
+    {
+      "ruta": "corpus/docs/C20.pdf",
+      "sha256": "f0ad057fd7034687bee811291c79496779f42e511322707c7999728905c364ba",
+      "bytes": 9022
     },
     {
       "ruta": "corpus/docs/C21.txt",
@@ -94,6 +159,21 @@
       "ruta": "corpus/docs/C26.txt",
       "sha256": "c270ce3e126c4e9455e009fe8fe353a2e1774b2050b0a06cd2421e98f4f49c9d",
       "bytes": 1706
+    },
+    {
+      "ruta": "corpus/docs/C27.docx",
+      "sha256": "e7268c9fe3fe215bc5dd29e12ef3e50f422a4658854c69a2cc10b0b0cf883584",
+      "bytes": 5755
+    },
+    {
+      "ruta": "corpus/docs/C28.docx",
+      "sha256": "6c9976c43a2fe03a33b0ce936c9f823f98969f8d58e69632b2e5cbc21c35e64b",
+      "bytes": 6367
+    },
+    {
+      "ruta": "corpus/docs/C29.pdf",
+      "sha256": "b6c2868b558d4d2590057168d893f0e03c77819d5a6751dadfd68e29e7b5e6ef",
+      "bytes": 6984
     },
     {
       "ruta": "corpus/docs/C30.txt",
@@ -399,6 +479,17 @@
       "ruta": "corpus/gold/C30.texto.json",
       "sha256": "07254775558bb6a97a4c6f91f2346ada5614edf16af1cc6f56fd31f0e71f249c",
       "bytes": 7601
+    }
+  ],
+  "versionBinarios": "1.0.0",
+  "pendientes": [
+    {
+      "ruta": "corpus/docs/C01.docx",
+      "motivo": "Docx real de Word con un comentario y un cambio controlado (H0-13, 10.1.5): lo hace el dueño; no se genera."
+    },
+    {
+      "ruta": "corpus/docs/C16.docx",
+      "motivo": "Docx real de Word con un comentario y un cambio controlado (H0-13, 10.1.5): lo hace el dueño; no se genera."
     }
   ]
 }

@@ -5,6 +5,8 @@ import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { DOMParser } from '@xmldom/xmldom';
+import { strFromU8, unzipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import { DATA_TYPES, FLAG_TYPES, ROLES } from '../../src/core/types.ts';
 
@@ -29,7 +31,7 @@ interface Gold {
 interface TextoJson {
   formato: string; v: number; docId: string;
   partes: Array<{ kind: string; index: number; page?: number; texto: string }>;
-  estructura?: Array<{ parte: { kind: string; index: number }; bloques: Array<{ tipo: string; variante?: string; instr?: string; start: number; end: number }> }>;
+  estructura?: Array<{ parte: { kind: string; index: number }; bloques: Array<{ tipo: string; variante?: string; instr?: string; campo?: string; texto?: string; filas?: number; columnas?: number; start: number; end: number }> }>;
   pdf?: { dosColumnas: boolean };
   paginasEscaneadas?: Array<{ page: number; lineas: string[] }>;
 }
@@ -535,7 +537,7 @@ describe('corpus · T-CO-05 partes y rasgos de cada formato', () => {
     const bin = join(CORPUS, 'docs', 'C04.pdf');
     if (existsSync(bin)) {
       const s = readFileSync(bin).toString('latin1');
-      expect(/\bBT\b/.test(s) || /\bTj\b/.test(s)).toBe(false);
+      expect(/\bBT\b|\bTj\b/.test(sinFlujosDeImagen(s))).toBe(false);
       expect(s).toContain('/DCTDecode');
     }
   });
@@ -668,6 +670,341 @@ describe('corpus · T-CO-05 partes y rasgos de cada formato', () => {
       if (g.fuente === 'pdf') expect(s).toMatch(/Autor|Author/);
       expect(g.esperado.metadatos.length).toBeGreaterThan(0);
     }
+  });
+});
+
+// ---------- PG-2: los binarios .docx y .pdf (T-CO-01 a T-CO-05) ----------
+// Los .docx y .pdf de corpus/docs/ los escribe el generador privado (corpus/gen/binarios.ts) con fflate.zipSync y corpus/gen/pdf.ts.
+// Estas pruebas no ejecutan el generador: leen los binarios, reconstruyen el texto canónico de 6.1.1 con un lector independiente y lo comparan
+// con Cxx.texto.json. C01 y C16 son .docx de Word que hace el dueño (H0-13): mientras falten, figuran en `pendientes` del manifiesto.
+const PENDIENTES_PERMITIDOS = ['C01', 'C16'];
+const W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+const R_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+
+interface ManifiestoBin { archivos: Array<{ ruta: string; sha256: string; bytes: number }>; pendientes?: Array<{ ruta: string; motivo: string }>; versionBinarios?: string }
+const manifiesto = (): ManifiestoBin => leerJson<ManifiestoBin>(join(CORPUS, 'MANIFIESTO.json'));
+const rutaBin = (id: string, ext: string): string => join(CORPUS, 'docs', `${id}.${ext}`);
+const idsDe = (fuente: string): string[] => IDS.filter((id) => golds.get(id)?.fuente === fuente);
+const docxPresentes = (): string[] => idsDe('docx').filter((id) => existsSync(rutaBin(id, 'docx')));
+const pdfPresentes = (): string[] => idsDe('pdf').filter((id) => existsSync(rutaBin(id, 'pdf')));
+
+const parsear = (xml: string): Document => new DOMParser().parseFromString(xml, 'text/xml') as unknown as Document;
+const hijos = (n: Node): Element[] => { const o: Element[] = []; for (let c = n.firstChild; c; c = c.nextSibling) if (c.nodeType === 1) o.push(c as Element); return o; };
+const todos_ = (n: Node, ln: string): Element[] => Array.from((n as Element).getElementsByTagNameNS('*', ln)) as Element[];
+const SALTAR = new Set(['del', 'moveFrom', 'instrText', 'delText', 'Fallback', 'pPr', 'rPr', 'sdtPr']);
+
+/** Texto de un párrafo según 6.1.1: todo w:t descendiente salvo w:del, w:moveFrom, w:instrText y mc:Fallback. */
+function textoParrafo(p: Element): string {
+  let s = '';
+  const rec = (n: Node): void => {
+    for (const e of hijos(n)) {
+      const ln = e.localName;
+      if (SALTAR.has(ln)) continue;
+      if (ln === 't') { s += e.textContent ?? ''; continue; }
+      if (ln === 'tab') { s += '\t'; continue; }
+      if (ln === 'br' || ln === 'cr') { s += '\n'; continue; }
+      if (ln === 'noBreakHyphen') { s += '‑'; continue; }
+      if (ln === 'softHyphen') continue;
+      if (ln === 'textpath') { s += e.getAttribute('string') ?? ''; continue; }
+      rec(e);
+    }
+  };
+  rec(p);
+  return s;
+}
+/** Líneas de un contenedor de bloques (cuerpo, encabezado, celda, nota…): un párrafo por línea; las tablas, celda por celda. */
+function lineasDeBloques(c: Node): string[] {
+  const out: string[] = [];
+  for (const e of hijos(c)) {
+    if (e.localName === 'p') out.push(textoParrafo(e));
+    else if (e.localName === 'tbl') {
+      for (const tr of hijos(e)) if (tr.localName === 'tr') for (const tc of hijos(tr)) if (tc.localName === 'tc') out.push(...lineasDeBloques(tc));
+    } else if (e.localName === 'sdt') {
+      for (const sc of hijos(e)) if (sc.localName === 'sdtContent') out.push(...lineasDeBloques(sc));
+    }
+  }
+  return out;
+}
+
+interface Relacion { id: string; tipo: string; destino: string; externo: boolean }
+function leerRels(xml: string | undefined): Relacion[] {
+  if (xml === undefined) return [];
+  return hijos(parsear(xml).documentElement).map((r) => ({
+    id: r.getAttribute('Id') ?? '', tipo: (r.getAttribute('Type') ?? '').split('/').pop() ?? '', destino: r.getAttribute('Target') ?? '', externo: r.getAttribute('TargetMode') === 'External',
+  }));
+}
+interface DocxLeido { entradas: Record<string, string>; partes: Array<{ kind: string; index: number; texto: string }>; rels: Relacion[]; relsRaiz: Relacion[] }
+function leerDocx(bytes: Uint8Array): DocxLeido {
+  const crudo = unzipSync(bytes);
+  const entradas: Record<string, string> = {};
+  for (const [k, v] of Object.entries(crudo)) entradas[k] = strFromU8(v);
+  const relsRaiz = leerRels(entradas['_rels/.rels']);
+  const rel = relsRaiz.find((r) => r.tipo === 'officeDocument');
+  const rutaDoc = rel?.destino ?? 'word/document.xml';
+  const rels = leerRels(entradas['word/_rels/document.xml.rels']);
+  const doc = parsear(entradas[rutaDoc] as string);
+  const partes: DocxLeido['partes'] = [];
+  const porId = (id: string): Relacion | undefined => rels.find((r) => r.id === id);
+  const ruta = (r: Relacion): string => `word/${r.destino}`;
+  const cargar = (r: Relacion | undefined): Element | undefined => (r && entradas[ruta(r)] !== undefined ? parsear(entradas[ruta(r)] as string).documentElement : undefined);
+  const sumar = (kind: string, textos: string[]): void => { textos.forEach((t) => { if (t.trim() !== '') partes.push({ kind, index: partes.filter((p) => p.kind === kind).length + 1, texto: t.normalize('NFC') }); }); };
+
+  const refs = (ln: string): Relacion[] => todos_(doc, ln).map((e) => porId(e.getAttributeNS(R_NS, 'id') ?? '')).filter((r): r is Relacion => r !== undefined);
+  for (const r of refs('headerReference')) { const raiz = cargar(r); if (raiz) sumar('encabezado', [lineasDeBloques(raiz).join('\n')]); }
+  const cuerpo = todos_(doc, 'body')[0] as Element;
+  sumar('cuerpo', [lineasDeBloques(cuerpo).join('\n')]);
+  for (const r of refs('footerReference')) { const raiz = cargar(r); if (raiz) sumar('pie', [lineasDeBloques(raiz).join('\n')]); }
+  const notas = (tipoRel: string, ln: string, kind: string): void => {
+    const raiz = cargar(rels.find((r) => r.tipo === tipoRel));
+    if (!raiz) return;
+    sumar(kind, hijos(raiz).filter((n) => n.localName === ln && !n.hasAttributeNS(W_NS, 'type')).map((n) => lineasDeBloques(n).join('\n')));
+  };
+  notas('footnotes', 'footnote', 'nota_pie');
+  notas('endnotes', 'endnote', 'nota_final');
+  notas('comments', 'comment', 'comentario');
+  return { entradas, partes, rels, relsRaiz };
+}
+
+const FECHA_ZIP_FIJA = 0x0022; // 1980-01-02
+/** Fecha y hora DOS de cada entrada local del ZIP (offsets 10 y 12). */
+function fechasZip(b: Uint8Array): Array<{ hora: number; fecha: number }> {
+  const out: Array<{ hora: number; fecha: number }> = [];
+  const dv = new DataView(b.buffer, b.byteOffset, b.byteLength);
+  for (let i = 0; i + 30 < b.length; i++) if (dv.getUint32(i, true) === 0x04034b50) out.push({ hora: dv.getUint16(i + 10, true), fecha: dv.getUint16(i + 12, true) });
+  return out;
+}
+
+/** El PDF sin los objetos que llevan datos JPEG (los bytes de una imagen pueden contener cualquier secuencia). */
+const sinFlujosDeImagen = (s: string): string => s.split('endobj').filter((o) => !o.includes('/DCTDecode')).join('endobj');
+
+describe('corpus · PG-2 binarios · T-CO-01 formatos y sumas', () => {
+  it('T-CO-01 cada documento .docx/.pdf existe y figura en el manifiesto; faltan solo C01 y C16 (Word, H0-13), declarados como pendientes', () => {
+    const man = manifiesto();
+    const rutas = new Set(man.archivos.map((a) => a.ruta));
+    const pend = new Set((man.pendientes ?? []).map((p) => p.ruta));
+    for (const id of IDS) {
+      const g = golds.get(id) as Gold;
+      if (g.fuente === 'txt') continue;
+      const rel = `corpus/docs/${id}.${g.fuente}`;
+      if (existsSync(join(RAIZ, rel))) { expect(rutas.has(rel), `${rel} en el manifiesto`).toBe(true); expect(pend.has(rel), `${rel} no es pendiente`).toBe(false); }
+      else { expect(PENDIENTES_PERMITIDOS, `${rel} falta`).toContain(id); expect(pend.has(rel), `${rel} declarado pendiente`).toBe(true); }
+    }
+    for (const p of man.pendientes ?? []) expect(PENDIENTES_PERMITIDOS).toContain(p.ruta.slice(-8, -5));
+  });
+
+  it('T-CO-01 con los 30 documentos: 12 .txt, 6 .pdf y los .docx presentes (12 menos los pendientes de Word)', () => {
+    if (!COMPLETO) return;
+    const man = manifiesto();
+    const archivos = readdirSync(join(CORPUS, 'docs'));
+    const cuenta = (ext: string): number => archivos.filter((f) => f.endsWith(`.${ext}`)).length;
+    expect(cuenta('txt')).toBe(12);
+    expect(cuenta('pdf')).toBe(6);
+    expect(cuenta('docx') + (man.pendientes ?? []).length).toBe(12);
+    expect(man.versionBinarios).toMatch(/^\d+\.\d+\.\d+$/);
+  });
+
+  it('T-CO-01 los .docx son ZIP reproducibles: fecha fija 1980-01-02, [Content_Types].xml primero y sin DOCTYPE', () => {
+    for (const id of docxPresentes()) {
+      const b = new Uint8Array(readFileSync(rutaBin(id, 'docx')));
+      const f = fechasZip(b);
+      expect(f.length, `${id} entradas`).toBeGreaterThanOrEqual(4);
+      for (const x of f) { expect(x.fecha, `${id} fecha`).toBe(FECHA_ZIP_FIJA); expect(x.hora, `${id} hora`).toBe(0); }
+      expect(Object.keys(unzipSync(b))[0], `${id} primera entrada`).toBe('[Content_Types].xml');
+      for (const [k, v] of Object.entries(unzipSync(b))) expect(/<!DOCTYPE/i.test(strFromU8(v)), `${id} ${k} sin DOCTYPE`).toBe(false);
+    }
+  });
+
+  it('T-CO-01 los .pdf son PDF 1.4 sin fecha (determinismo), sin cifrado y terminan en %%EOF', () => {
+    for (const id of pdfPresentes()) {
+      const s = readFileSync(rutaBin(id, 'pdf')).toString('latin1');
+      expect(s.startsWith('%PDF-1.4'), `${id} versión`).toBe(true);
+      expect(s.trimEnd().endsWith('%%EOF'), `${id} fin`).toBe(true);
+      expect(/\/CreationDate|\/ModDate/.test(s), `${id} sin fechas`).toBe(false);
+      expect(s.includes('/Encrypt'), `${id} sin cifrado`).toBe(false);
+    }
+  });
+});
+
+describe('corpus · PG-2 binarios · T-CO-05 .docx', () => {
+  it('T-CO-05 el texto canónico de cada .docx (partes y orden de 6.3.1) coincide con Cxx.texto.json', () => {
+    for (const id of docxPresentes()) {
+      const leido = leerDocx(new Uint8Array(readFileSync(rutaBin(id, 'docx'))));
+      const esperado = (textos.get(id) as TextoJson).partes.map((p) => ({ kind: p.kind, index: p.index, texto: p.texto }));
+      expect(leido.partes.map((p) => `${p.kind}/${p.index}`), `${id} partes`).toEqual(esperado.map((p) => `${p.kind}/${p.index}`));
+      for (const [i, p] of leido.partes.entries()) expect(p.texto, `${id} ${p.kind} ${p.index}`).toBe((esperado[i] as { texto: string }).texto);
+    }
+  });
+
+  it('T-CO-05 los rasgos de estructura de 10.1.2 están en el XML (tablas, cuadros de texto, cambios controlados, campos, controles, texto oculto, marca de agua, runs partidos)', () => {
+    for (const id of docxPresentes()) {
+      const { entradas } = leerDocx(new Uint8Array(readFileSync(rutaBin(id, 'docx'))));
+      const doc = parsear(entradas['word/document.xml'] as string);
+      const bl = (textos.get(id)?.estructura ?? []).flatMap((e) => e.bloques.map((b) => ({ ...b, parte: e.parte })));
+      const de = (t: string): typeof bl => bl.filter((b) => b.tipo === t);
+      const tablas = todos_(doc, 'tbl');
+      expect(tablas.length, `${id} tablas`).toBe(de('tabla').length);
+      for (const [i, t] of de('tabla').entries()) {
+        const x = tablas[i] as Element;
+        const filas = hijos(x).filter((e) => e.localName === 'tr');
+        expect(filas.length, `${id} filas`).toBe(t.filas);
+        expect(hijos(filas[0] as Element).filter((e) => e.localName === 'tc').length, `${id} columnas`).toBe(t.columnas);
+      }
+      const alt = todos_(doc, 'AlternateContent');
+      expect(alt.length, `${id} cuadros de texto`).toBe(de('cuadro_texto').length);
+      for (const [i, c] of de('cuadro_texto').entries()) {
+        const a = alt[i] as Element;
+        expect(todos_(a, 'Choice').length, `${id} Choice`).toBe(1);
+        expect(todos_(a, 'Fallback').length, `${id} Fallback`).toBe(c.variante === 'choice_fallback' ? 1 : 0);
+        expect(todos_(a, 'txbxContent').length).toBe(c.variante === 'choice_fallback' ? 2 : 1);
+      }
+      expect(todos_(doc, 'del').map((d) => todos_(d, 'delText').map((x) => x.textContent).join('')), `${id} eliminados`).toEqual(de('eliminado').map((b) => b.texto ?? ''));
+      expect(todos_(doc, 'ins').length, `${id} insertados`).toBeGreaterThanOrEqual(de('insertado').length);
+      expect(todos_(doc, 'fldSimple').length, `${id} fldSimple`).toBe(de('campo').filter((b) => b.campo === 'fldSimple').length);
+      expect(todos_(doc, 'instrText').map((x) => (x.textContent ?? '').trim()), `${id} fldChar`).toEqual(de('campo').filter((b) => b.campo === 'fldChar').map((b) => b.instr));
+      expect(todos_(doc, 'sdt').length, `${id} controles`).toBe(de('control_contenido').length);
+      expect(todos_(doc, 'vanish').length, `${id} texto oculto`).toBeGreaterThanOrEqual(de('oculto').length);
+      for (const m of de('marca_agua')) {
+        const encs = Object.entries(entradas).filter(([k]) => /^word\/header\d+\.xml$/.test(k));
+        const cadenas = encs.flatMap(([, x]) => todos_(parsear(x), 'textpath').filter((t) => t.hasAttribute('string')).map((t) => t.getAttribute('string')));
+        expect(cadenas.length, `${id} marca de agua`).toBe(1);
+        expect(m.parte.kind).toBe('encabezado');
+      }
+      const partidos = de('runs_partidos');
+      if (partidos.length) {
+        const runsConTexto = todos_(doc, 'r').filter((r) => todos_(r, 't').length > 0).length;
+        const lineas = lineasDeBloques(todos_(doc, 'body')[0] as Element).length;
+        expect(runsConTexto, `${id} runs partidos`).toBeGreaterThan(lineas + partidos.length);
+      }
+    }
+  });
+
+  it('T-CO-05 notas, comentarios y encabezados de cada .docx se declaran por tipo de relación', () => {
+    for (const id of docxPresentes()) {
+      const { rels, partes } = leerDocx(new Uint8Array(readFileSync(rutaBin(id, 'docx'))));
+      const n = (k: string): number => partes.filter((p) => p.kind === k).length;
+      const tipos = rels.map((r) => r.tipo);
+      expect(tipos.filter((t) => t === 'header').length, `${id} encabezados`).toBe(n('encabezado'));
+      expect(tipos.filter((t) => t === 'footer').length, `${id} pies`).toBe(n('pie'));
+      expect(tipos.includes('footnotes'), `${id} notas al pie`).toBe(n('nota_pie') > 0);
+      expect(tipos.includes('endnotes'), `${id} notas al final`).toBe(n('nota_final') > 0);
+      expect(tipos.includes('comments'), `${id} comentarios`).toBe(n('comentario') > 0);
+    }
+  });
+
+  it('T-CO-05 / T-CO-02 (F48) los metadatos de cada .docx son ficticios y su inventario coincide con esperado.metadatos del gold', () => {
+    for (const id of docxPresentes()) {
+      const { entradas, relsRaiz, rels } = leerDocx(new Uint8Array(readFileSync(rutaBin(id, 'docx'))));
+      const cat = new Set<string>();
+      const hay = (tipo: string): string | undefined => relsRaiz.find((r) => r.tipo === tipo)?.destino;
+      const core = hay('core-properties'); const app = hay('extended-properties'); const custom = hay('custom-properties');
+      if (core) { cat.add('propiedades_documento'); expect(entradas[core]).toContain('Autora Ejemplo'); expect(entradas[core]).toContain('Revisor Ficticio'); }
+      if (app) { cat.add('propiedades_aplicacion'); expect(entradas[app]).toContain('Despacho Ficticio S.A.S.'); }
+      if (custom) cat.add('propiedades_personalizadas');
+      const xmls = Object.entries(entradas).filter(([k]) => /^word\/[^/]+\.xml$/.test(k)).map(([, v]) => parsear(v));
+      const autores = new Set<string>();
+      for (const d of xmls) {
+        for (const e of Array.from(d.getElementsByTagName('*')) as Element[]) { const a = e.getAttributeNS(W_NS, 'author'); if (a) autores.add(a); }
+        if (todos_(d, 'delText').length) cat.add('texto_eliminado');
+        if (todos_(d, 'instrText').length || todos_(d, 'fldSimple').length) cat.add('codigos_campo');
+        if (todos_(d, 'sdtPr').length) cat.add('propiedades_controles');
+        if (todos_(d, 'docPr').some((x) => x.hasAttribute('descr') || x.hasAttribute('title')) || todos_(d, 'shape').some((x) => x.hasAttribute('alt'))) cat.add('texto_alternativo');
+      }
+      if (autores.size) cat.add('autores_revisiones');
+      for (const a of autores) expect(['Autor Ficticio', 'Revisor Ficticio'], `${id} autor`).toContain(a);
+      if (rels.some((r) => r.externo)) cat.add('vinculos_externos');
+      if (rels.some((r) => r.tipo === 'settings')) cat.add('configuracion');
+      if (rels.some((r) => r.tipo === 'image' || r.tipo === 'thumbnail')) cat.add('imagenes_y_miniatura');
+      const esperado = ((golds.get(id) as Gold).esperado.metadatos as string[]).filter((c) => c !== 'personas').sort();
+      expect([...cat].sort(), `${id} inventario de metadatos`).toEqual(esperado);
+    }
+  });
+
+  it('T-CO-04 los .docx no traen correos fuera de .test ni rutas ni nombres reales de equipo (todo el XML)', () => {
+    const ER = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b/g;
+    for (const id of docxPresentes()) {
+      const { entradas } = leerDocx(new Uint8Array(readFileSync(rutaBin(id, 'docx'))));
+      for (const [k, v] of Object.entries(entradas)) {
+        for (const m of v.match(ER) ?? []) expect(/\.test$/i.test(m), `${id} ${k} ${m}`).toBe(true);
+        expect(/[A-Za-z]:\\|\/Users\//.test(v), `${id} ${k} sin rutas`).toBe(false);
+      }
+    }
+  });
+});
+
+describe('corpus · PG-2 binarios · T-CO-05 .pdf', () => {
+  async function abrir(bytes: Uint8Array): Promise<{ numPages: number; getPage: (n: number) => Promise<any>; getMetadata: () => Promise<any>; loadingTask: { destroy: () => Promise<void> } }> {
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const tarea = pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: false, disableFontFace: true, verbosity: 0 });
+    return (await tarea.promise) as never;
+  }
+  async function textoDe(doc: Awaited<ReturnType<typeof abrir>>, n: number): Promise<string> {
+    const tc = await (await doc.getPage(n)).getTextContent();
+    let s = '';
+    for (const it of tc.items as Array<{ str: string; hasEOL: boolean }>) { s += it.str; if (it.hasEOL) s += '\n'; }
+    return s.replace(/\n$/, '').normalize('NFC');
+  }
+
+  it('T-CO-05 el texto de cada página y de cada anotación de los PDF con capa de texto coincide con Cxx.texto.json', async () => {
+    for (const id of pdfPresentes().filter((x) => x !== 'C04')) {
+      const t = textos.get(id) as TextoJson;
+      const doc = await abrir(new Uint8Array(readFileSync(rutaBin(id, 'pdf'))));
+      try {
+        const pags = t.partes.filter((p) => p.kind === 'pagina_pdf');
+        expect(doc.numPages, `${id} páginas`).toBe(pags.length);
+        for (const p of pags) expect(await textoDe(doc, p.page as number), `${id} página ${p.page}`).toBe(p.texto);
+        const esperadas = t.partes.filter((p) => p.kind === 'anotacion_pdf');
+        const halladas: Array<{ page: number; texto: string; autor: string; subtipo: string }> = [];
+        for (let n = 1; n <= doc.numPages; n++) {
+          for (const a of (await (await doc.getPage(n)).getAnnotations()) as Array<{ subtype: string; contentsObj?: { str: string }; titleObj?: { str: string } }>) {
+            if (a.contentsObj?.str) halladas.push({ page: n, texto: a.contentsObj.str.normalize('NFC'), autor: a.titleObj?.str ?? '', subtipo: a.subtype });
+          }
+        }
+        expect(halladas.map((a) => [a.page, a.texto]), `${id} anotaciones`).toEqual(esperadas.map((a) => [a.page, a.texto]));
+        for (const a of halladas) expect(a.autor, `${id} autor de anotación`).toMatch(/Fictici/);
+        if (id === 'C29') expect(halladas[0]?.subtipo).toBe('FreeText');
+        if (id === 'C03') expect(halladas[0]?.subtipo).toBe('Text');
+        const meta = await doc.getMetadata();
+        expect(String(meta.info?.Author), `${id} autor`).toBe('Autora Ejemplo');
+      } finally { await doc.loadingTask.destroy(); }
+    }
+  }, 60_000);
+
+  it('T-CO-05 C09 repite el mismo encabezado y pie en cada página y C20 se lee de columna en columna', async () => {
+    if (pdfPresentes().includes('C09')) {
+      const t = textos.get('C09') as TextoJson;
+      const pags = t.partes.filter((p) => p.kind === 'pagina_pdf');
+      const marco = (txt: string): { cab: string; pie: string } => { const l = txt.split('\n'); return { cab: (l[0] as string), pie: l.slice(-1)[0] as string }; };
+      const primero = marco(pags[0]?.texto ?? '');
+      for (const p of pags) { const m = marco(p.texto); expect(m.cab).toBe(primero.cab); expect(m.pie.length).toBeGreaterThan(0); }
+    }
+    if (pdfPresentes().includes('C20')) {
+      const doc = await abrir(new Uint8Array(readFileSync(rutaBin('C20', 'pdf'))));
+      try {
+        const esperado = (textos.get('C20') as TextoJson).partes.filter((p) => p.kind === 'pagina_pdf')[0]?.texto ?? '';
+        expect(await textoDe(doc, 1)).toBe(esperado);
+      } finally { await doc.loadingTask.destroy(); }
+    }
+  }, 60_000);
+
+  it('T-CO-05 C04 es un PDF escaneado: una imagen JPEG por página, sin operadores de texto ni capa de texto', async () => {
+    if (!pdfPresentes().includes('C04')) return;
+    const bytes = new Uint8Array(readFileSync(rutaBin('C04', 'pdf')));
+    const s = Buffer.from(bytes).toString('latin1');
+    const esperadas = (textos.get('C04') as TextoJson).paginasEscaneadas ?? [];
+    expect(esperadas.length).toBeGreaterThanOrEqual(3);
+    expect(s.match(/\/DCTDecode/g)?.length, 'una imagen por página').toBe(esperadas.length);
+    expect(sinFlujosDeImagen(s).match(/\bBT\b|\bTj\b|\bTJ\b/), 'operadores de texto fuera de las imágenes').toBeNull();
+    expect(s).toMatch(/Autora Ejemplo/);
+    const doc = await abrir(bytes);
+    try {
+      expect(doc.numPages).toBe(esperadas.length);
+      for (let n = 1; n <= doc.numPages; n++) expect((await textoDe(doc, n)).trim(), `página ${n} sin texto`).toBe('');
+    } finally { await doc.loadingTask.destroy(); }
+  }, 60_000);
+
+  it('T-CO-04 los PDF no traen correos fuera de .test', () => {
+    const ER = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b/g;
+    for (const id of pdfPresentes()) for (const m of readFileSync(rutaBin(id, 'pdf')).toString('latin1').match(ER) ?? []) expect(/\.test$/i.test(m), `${id} ${m}`).toBe(true);
   });
 });
 
