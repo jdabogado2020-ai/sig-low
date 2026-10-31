@@ -4,8 +4,7 @@
 // las partes, el `DetectionSet`, el `NerLoadResult` y los tiempos por etapa. Playwright pasa los bytes con `page.evaluate`, sin ninguna
 // petición. Nada de esto toca el estado de la interfaz ni persiste: el resultado vive solo en la respuesta de la llamada.
 import { leerArchivo } from '../io/io-client';
-import { applyReviewAction } from '../core/entities';
-import { modeloInicial } from '../core/review/modelo';
+import { incorporarModelo, modeloInicial } from '../core/review/modelo';
 import { randomIds } from '../io/txt-read';
 import { SiglowError } from '../core/types';
 import type {
@@ -107,7 +106,7 @@ export async function procesar(
         pendientes.push(pedir<DetectResult & { kind: 'fusionar' }>(detect, 'fusionar', {
           sessionId, ner: { [p.window.partId]: p.window.spans }, nerEngineId: carga?.engineId ?? 'nulo', ventana: n, ventanasTotales: total,
         }).then((r) => {
-          const o = applyReviewAction(estado, { kind: 'incorporar_modelo', ventana: n, ventanasTotales: total, delta: r.set }, { table: tabla, caseList: listaDelCaso, doc, ids });
+          const o = incorporarModelo(estado, n, total, r.set, { table: tabla, caseList: listaDelCaso, doc, ids });
           if (o.ok) estado = o.state;
           fusionMs += ahora() - tf;
         }));

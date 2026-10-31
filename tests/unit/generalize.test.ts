@@ -487,6 +487,39 @@ export const CASOS: Record<string, { pos: [string, string, Record<string, unknow
      ],
      "prioridad": "recomendada"
     }
+   ],
+   [
+    "remitido al Juzgado 991 Laboral\ndel Circuito de Bogotá",
+    "Juzgado 991 Laboral\ndel Circuito de Bogotá",
+    {
+     "options": [
+      "Juzgado 991 Laboral\ndel Circuito de {m} [DEP:11]",
+      "un juzgado laboral del circuito"
+     ],
+     "prioridad": "opcional_ciudad_grande"
+    }
+   ],
+   [
+    "el Juzgado\n997 Civil Municipal de Ubaté",
+    "Juzgado\n997 Civil Municipal de Ubaté",
+    {
+     "options": [
+      "Juzgado\n997 Civil Municipal de un municipio de {m} [DEP:25]",
+      "un juzgado civil municipal"
+     ],
+     "prioridad": "recomendada"
+    }
+   ],
+   [
+    "la Notaría 999 del Círculo de \r\n  Cartago",
+    "Notaría 999 del Círculo de \r\n  Cartago",
+    {
+     "options": [
+      "Notaría 999 del Círculo de \r\n  un municipio de {m} [DEP:76]",
+      "una notaría del círculo"
+     ],
+     "prioridad": "recomendada"
+    }
    ]
   ],
   "neg": [
@@ -513,6 +546,18 @@ export const CASOS: Record<string, { pos: [string, string, Record<string, unknow
    [
     "Juzgado 1234 Civil Municipal de Ubaté",
     "número de 4 cifras (D-03 D: de 1 a 3)"
+   ],
+   [
+    "Juzgado 991 Laboral\n\ndel Circuito de Bogotá",
+    "dos saltos de línea seguidos (párrafo aparte)"
+   ],
+   [
+    "Juzgado 991\nLaboral\ndel Circuito de Bogotá",
+    "dos saltos de línea en el nombre"
+   ],
+   [
+    "Juzgado 991 Laboral del Circuito\n\nde Bogotá",
+    "línea en blanco antes del municipio"
    ]
   ]
  },
@@ -1187,7 +1232,7 @@ describe('R-DESP-01 · despacho o autoridad con municipio (G-04)', () => {
     expect(s, 'sugerencia DESPACHO_A_GENERICO').toBeDefined();
     if (!s) return;
     const esperadas = (exp['options'] as string[]).map((o) => {
-      const m = /^(.*) \[DEP:(\d{2})\]$/.exec(o);
+      const m = /^(.*) \[DEP:(\d{2})\]$/su.exec(o);   // `s`: el nombre del despacho puede traer un salto de línea
       return m ? { template: m[1], depCode: m[2] } : { template: o, depCode: undefined };
     });
     expect(s.options.map((o) => ({ template: o.template, depCode: o.depCode }))).toEqual(esperadas);
