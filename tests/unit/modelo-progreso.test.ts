@@ -5,8 +5,9 @@ import { describe, expect, it } from 'vitest';
 import { applyReviewAction } from '../../src/core/entities';
 import { createDetectHandler, ProgressLimiter } from '../../src/core/pipeline';
 import { declararPlanB, incorporarModelo, modeloInicial } from '../../src/core/review/modelo';
+import { exportGate } from '../../src/core/review/puerta';
 import type {
-  DetectionSet, DocId, DocumentModel, IdSource, NerSpan, PartId, PlanBCause, ReviewState, TableIndex,
+  DetectionSet, DocId, DocumentModel, IdSource, NerSpan, PartId, PlanBCause, ResidueResult, ReviewState, TableIndex,
 } from '../../src/core/types';
 import type { ReviewContext } from '../../src/core/entities';
 
@@ -332,5 +333,57 @@ describe('T-MO-12 · cancelación y progreso', () => {
     for (t = 0; t < 3000; t += 7) if (lim.take()) pasan++;
     expect(pasan).toBeLessThanOrEqual(30);
     expect(pasan).toBeGreaterThanOrEqual(25);
+  });
+});
+
+describe('T-MO-12 · exportGate con el avance del modelo (INV-R11, PC-5)', () => {
+  const todas = { biometricos: true, reservaLegal: true, estrategia: true };
+  const residuoDe = (s: ReviewState): ResidueResult => ({ revision: s.revision, ranAt: '2026-10-30T10:00:00-05:00', valuesSearched: 3,
+    modes: ['literal', 'normalizado', 'digitos', 'variante'], hits: [], newDetections: 0 });
+
+  it('INV-R11 MODELO_EN_CURSO mientras el modelo sigue en curso, aunque no haya pendientes; con terminado o plan_b desaparece', async () => {
+    const { b, doc, set } = await arrancar();
+    const ctx = ctxDe(doc);
+    let st = estadoDe(doc, set);
+    // Se deciden todas las detecciones de reglas y se confirman las banderas: la única razón que queda es el modelo.
+    for (const d of Object.values(st.detections)) st = bien(applyReviewAction(st, { kind: 'aceptar', detectionId: d.id }, ctx));
+    for (const f of Object.values(st.flags)) st = bien(applyReviewAction(st, { kind: 'resolver_bandera', flagId: f.id, resolution: 'mantener' }, ctx));
+    expect(st.modelo.kind).toBe('en_curso');
+    expect(exportGate(st, residuoDe(st), todas).reasons).toEqual(['MODELO_EN_CURSO']);
+
+    // Una ventana sin detecciones nuevas: la revisión sube y el modelo sigue en curso.
+    const w1 = await ventana(b, 1, 3, {});
+    st = bien(incorporarModelo(st, 1, 3, w1, ctx));
+    expect(st.modelo.kind).toBe('en_curso');
+    expect(exportGate(st, residuoDe(st), todas).reasons).toEqual(['MODELO_EN_CURSO']);
+
+    // Plan B declarado en mitad del documento: la razón desaparece y la puerta se abre.
+    const planB = bien(declararPlanB(st, 'cancelado', ctx));
+    expect(planB.modelo.kind).toBe('plan_b');
+    expect(exportGate(planB, residuoDe(planB), todas)).toEqual({ ok: true, reasons: [] });
+
+    // Modelo terminado (última ventana): igual.
+    const w2 = await ventana(b, 2, 3, {});
+    const w3 = await ventana(b, 3, 3, {});
+    let fin = bien(incorporarModelo(st, 2, 3, w2, ctx));
+    expect(exportGate(fin, residuoDe(fin), todas).reasons).toEqual(['MODELO_EN_CURSO']);
+    fin = bien(incorporarModelo(fin, 3, 3, w3, ctx));
+    expect(fin.modelo).toEqual({ kind: 'terminado', ventanas: 3, respaldo: false });
+    expect(exportGate(fin, residuoDe(fin), todas)).toEqual({ ok: true, reasons: [] });
+  });
+
+  it('INV-R11 una ventana con detecciones del modelo deja PENDIENTES además de MODELO_EN_CURSO, y decidirlas no quita la segunda', async () => {
+    const { b, doc, set } = await arrancar();
+    const ctx = ctxDe(doc);
+    let st = estadoDe(doc, set);
+    for (const d of Object.values(st.detections)) st = bien(applyReviewAction(st, { kind: 'aceptar', detectionId: d.id }, ctx));
+    for (const f of Object.values(st.flags)) st = bien(applyReviewAction(st, { kind: 'resolver_bandera', flagId: f.id, resolution: 'mantener' }, ctx));
+    const w1 = await ventana(b, 1, 3, { [PRT(1)]: [tramo(TEXTO, 'Luisa Ejemplo Prueba', 'PER', 0.97)] });
+    st = bien(incorporarModelo(st, 1, 3, w1, ctx));
+    expect(exportGate(st, residuoDe(st), todas).reasons).toEqual(['PENDIENTES', 'MODELO_EN_CURSO']);
+    for (const d of Object.values(st.detections)) {
+      if (d.status === 'pendiente') st = bien(applyReviewAction(st, { kind: 'aceptar', detectionId: d.id }, ctx));
+    }
+    expect(exportGate(st, residuoDe(st), todas).reasons).toEqual(['MODELO_EN_CURSO']);
   });
 });

@@ -408,3 +408,57 @@ if (typeof document !== 'undefined') {
     if (document.visibilityState === 'hidden' && vista.activo && !vista.estuvoOculta) cambiarVista({ estuvoOculta: true });
   });
 }
+
+// --- Cliente mínimo de la pasada 3 de residuos (7.13.5; acuerdo F-13 aprobado por el integrador, PC-5) ----------------------------
+// La pantalla Listo necesita `ctx.detect` de `runResidueCheck`: ida y vuelta al worker `detect` con las secciones de la salida como
+// partes de un documento temporal. Reutiliza el worker de la sesión de análisis si sigue vivo (INV-G09: se libera con el documento)
+// y, si ya no existe, abre uno propio que termina al acabar. Cada llamada usa su propio `sessionId`: `detectar` → `fusionar` con
+// `ner: null` → `liberar`. Solo viajan las secciones de la salida (marcadores y texto no reemplazado) y la lista del caso; los
+// errores salen únicamente como `ErrorCode`.
+const ESPERA_RESIDUOS_MS = 60_000;
+
+export function detectarEnSalida(tmp: DocumentModel): Promise<DetectionSet> {
+  const existente = sesion;
+  let propio: WorkerIo | null = null;
+  let s: Sesion;
+  if (existente !== null) {
+    s = existente;
+  } else {
+    const worker = crearWorkerDetect();
+    propio = worker;
+    const temporal: Sesion = {
+      worker, sessionId: cryptoIds.next('req'), ids: cryptoIds, esperas: new Map(), reqDetectar: null, ner: null, temporizador: undefined, cola: Promise.resolve(),
+    };
+    const fallar = (): void => {
+      for (const [id, espera] of [...temporal.esperas]) { temporal.esperas.delete(id); espera({ kind: 'error', code: 'ERROR_INTERNO' }); }
+    };
+    worker.onmessage = (ev): void => {
+      const d = ev.data as unknown;
+      if (!esObjeto(d) || d.v !== 1 || typeof d.reqId !== 'string') return;
+      const espera = temporal.esperas.get(d.reqId);
+      if (espera !== undefined && (d.kind === 'resultado' || d.kind === 'error' || d.kind === 'cancelado')) espera(d);
+    };
+    worker.onerror = (ev): void => { ev.preventDefault(); fallar(); };
+    worker.onmessageerror = (ev): void => { ev.preventDefault(); fallar(); };
+    s = temporal;
+  }
+  const sessionId = s.ids.next('req');
+  const terminar = (): void => {
+    if (propio !== null) { propio.onmessage = null; propio.onerror = null; propio.onmessageerror = null; propio.terminate(); propio = null; }
+  };
+  const trabajo = (async (): Promise<DetectionSet> => {
+    const options: DetectOptions = { referenceDate: fechaDeReferencia(), ...OPCIONES_DETECCION };
+    try {
+      await esperar(s, 'detectar', { sessionId, doc: tmp, caseList: [...obtenerListaDelCaso()], table: tableIndexOf(tablaDelAsunto()), options });
+      const m = await esperar(s, 'fusionar', { sessionId, ner: null, nerEngineId: 'nulo' });
+      const p = m.payload;
+      if (!esObjeto(p) || p.kind !== 'fusionar' || !esObjeto(p.set)) throw new Error('ERROR_INTERNO');
+      return p.set as unknown as DetectionSet;
+    } finally {
+      await esperar(s, 'liberar', { sessionId }).then(() => undefined, () => undefined);
+    }
+  })();
+  let reloj: ReturnType<typeof setTimeout> | undefined;
+  const limite = new Promise<never>((_, rechazar) => { reloj = setTimeout(() => { rechazar(new Error('TIEMPO_AGOTADO')); }, ESPERA_RESIDUOS_MS); });
+  return Promise.race([trabajo, limite]).finally(() => { if (reloj !== undefined) clearTimeout(reloj); terminar(); });
+}

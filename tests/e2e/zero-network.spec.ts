@@ -1,5 +1,5 @@
-import { spawn, type ChildProcess } from 'node:child_process';
-import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { test, expect } from '@playwright/test';
@@ -324,5 +324,105 @@ test.describe('fase pdf', () => {
     await page.evaluate(() => { new Worker('/assets/canario-worker.js'); });
     const vistas = (): string[] => readFileSync(REGISTRO, 'utf8').trim().split('\n').map((l) => (JSON.parse(l) as { u: string }).u);
     await expect.poll(() => vistas().includes('/csp-report'), { timeout: 10_000 }).toBe(true);
+  });
+});
+
+// Fase «exportar» (PC-5, 10.5.1, B6): pegar → Revisión → Listo → copiar → descargar .txt, .docx e informe, sin peticiones fuera del origen,
+// sin violaciones de CSP, sin mensajes de consola y sin que el texto del documento viaje en ninguna URL ni cuerpo. Llega a Listo con el
+// gancho del build de medición (nunca existe en `dist/`): el botón «Continuar» de Revisión es de PC-4. La descarga se hace con un
+// `<a download>` sobre una URL `blob:` bajo la misma CSP que `dist/`.
+const PUERTO_EXPORTAR = Number(process.env.PORT ?? 4173) + 300;
+/** Mtime más reciente bajo `dir`: el build de medición se reconstruye si algo de `src/` es más nuevo. */
+function masNuevo(dir: string): number {
+  let m = 0;
+  for (const n of readdirSync(dir)) {
+    const p = join(dir, n);
+    const s = statSync(p);
+    m = Math.max(m, s.isDirectory() ? masNuevo(p) : s.mtimeMs);
+  }
+  return m;
+}
+let servidorExportar: ChildProcess | undefined;
+
+test.describe('@cero-red fase exportar', () => {
+  test.describe.configure({ timeout: 180_000 });
+  test.use({ baseURL: `http://127.0.0.1:${PUERTO_EXPORTAR}`, permissions: ['clipboard-write'] });
+  test.beforeAll(async () => {
+    const indice = join('dist-medicion', 'index.html');
+    if (!existsSync(indice) || statSync(indice).mtimeMs < masNuevo('src')) {
+      const r = spawnSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build', '--mode', 'medicion'], { stdio: 'ignore' });
+      if (r.status !== 0) throw new Error('No se pudo construir el build de medición');
+    }
+    servidorExportar = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', 'dist-medicion', '--port', String(PUERTO_EXPORTAR)], { stdio: 'ignore' });
+    for (let i = 0; i < 50; i++) {
+      try { if ((await fetch(`http://127.0.0.1:${PUERTO_EXPORTAR}/`)).ok) return; } catch { /* aún no escucha */ }
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    throw new Error('El servidor de la fase exportar no respondió');
+  });
+  test.afterAll(() => { servidorExportar?.kill(); });
+
+  test('@cero-red fase exportar: Listo → copiar y descargar .txt, .docx e informe sin peticiones ajenas, sin violaciones de CSP ni texto en la red', async ({ page, baseURL }) => {
+    const origen = new URL(baseURL!).origin;
+    const ajenas: string[] = [];
+    const peticiones: Array<{ url: string; cuerpo: string }> = [];
+    const consola: string[] = [];
+    page.on('request', (r) => {
+      const u = new URL(r.url());
+      if (u.origin !== origen && u.protocol !== 'blob:' && u.protocol !== 'data:') ajenas.push(u.origin);
+      peticiones.push({ url: r.url(), cuerpo: r.postData() ?? '' });
+    });
+    page.on('console', (m) => { consola.push(m.type()); });
+    page.on('pageerror', () => { consola.push('pageerror'); });
+    await page.addInitScript(() => {
+      (globalThis as unknown as { __violaciones: string[] }).__violaciones = [];
+      addEventListener('securitypolicyviolation', (e) => {
+        (globalThis as unknown as { __violaciones: string[] }).__violaciones.push(e.violatedDirective);
+      });
+    });
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await page.getByLabel('Código del asunto').fill('PRUEBA-EXPORTAR');
+    await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
+    await page.getByRole('button', { name: 'Crear asunto' }).click();
+    await page.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante');
+    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
+    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
+    await page.getByRole('button', { name: 'Continuar' }).click();
+    const texto = 'Ana Ficticia Rojas, C.C. 1.000.000.017, vive en la Calle 00 n.º 00-00. Correo: ana.ficticia@ejemplo.test.';
+    await page.getByRole('textbox', { name: 'Texto del documento' }).fill(texto);
+    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 20_000 });
+    await page.waitForFunction(() => '__siglowListoPrueba' in globalThis);
+    await page.evaluate(() => {
+      const g = (globalThis as unknown as Record<string, { decidirUnoAUno(): number; irAListo(): void; fijarCompilacion(h: string): void }>)['__siglowListoPrueba']!;
+      g.decidirUnoAUno();
+      g.irAListo();
+      g.fijarCompilacion('ab'.repeat(32));
+    });
+    await expect(page.getByRole('heading', { level: 1, name: 'Listo' })).toBeVisible();
+    await expect(page.locator('[data-prueba="residuos-estado"]')).toContainText('Búsqueda de residuos: ninguno de los', { timeout: 30_000 });
+    for (const n of ['^Datos biométricos', '^Documentos con reserva legal', '^La estrategia reservada']) {
+      await page.getByRole('checkbox', { name: new RegExp(n) }).check();
+    }
+    await page.getByRole('button', { name: 'Copiar texto anonimizado' }).click();
+    await expect(page.locator('[data-aviso="M-84"]')).toBeVisible();
+    for (const [boton, patron] of [
+      ['Descargar .txt', /\.txt$/], ['Descargar .docx', /\.docx$/], ['Descargar informe (.txt)', /\.txt$/], ['Descargar informe (.json)', /\.json$/],
+    ] as const) {
+      const [d] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: boton }).click()]);
+      expect(d.suggestedFilename()).toMatch(patron);
+      expect(d.suggestedFilename()).toMatch(/^sig-low-(anonimizado|informe)-\d{8}-\d{4}\./);
+    }
+    const violaciones = await page.evaluate(() => (globalThis as unknown as { __violaciones: string[] }).__violaciones);
+    expect(ajenas).toEqual([]);
+    expect(violaciones).toEqual([]);
+    expect(consola.filter((c) => c === 'error' || c === 'warning' || c === 'pageerror')).toEqual([]);
+    for (const p of peticiones) {
+      expect(decodeURIComponent(p.url)).not.toContain('Ficticia');
+      expect(p.cuerpo).not.toContain('Ficticia');
+      expect(p.cuerpo).not.toContain('1.000.000.017');
+      expect(decodeURIComponent(p.url)).not.toContain('PRUEBA-EXPORTAR');
+    }
   });
 });

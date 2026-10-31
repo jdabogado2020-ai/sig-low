@@ -3,6 +3,8 @@
 import type { ComponentType } from 'preact';
 import { Inicio } from './Inicio.tsx';
 import { Entrada } from './Entrada.tsx';
+import { Listo } from './Listo.tsx';
+import { BandaResiduos } from './listo/BandaResiduos.tsx';
 import { ListaCaso } from './ListaCaso.tsx';
 import { Procesando } from './Procesando.tsx';
 import { RevisionBase } from './review/base/RevisionBase.tsx';
@@ -15,12 +17,23 @@ function PantallaPendiente() {
   return <h1 tabIndex={-1}>{t(NOMBRE_PANTALLA[screen])}</h1>;
 }
 
+/** Revisión I (PC-3) con la banda de residuos incorporados de Listo (8.2.6, PC-5) encima: aparece solo al volver de Listo con hallazgos. */
+function RevisionConResiduos() {
+  return (
+    <>
+      <BandaResiduos />
+      <RevisionBase />
+    </>
+  );
+}
+
 export const PANTALLAS: Partial<Record<Screen, ComponentType>> = {
   inicio: Inicio,
   lista: ListaCaso,
   entrada: Entrada,
   procesando: Procesando,
-  revision: RevisionBase,
+  revision: RevisionConResiduos,
+  listo: Listo,
 };
 
 export function componenteDe(pantalla: Screen): ComponentType {

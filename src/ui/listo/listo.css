@@ -1,0 +1,28 @@
+/* Pantalla Listo (PC-5). Solo clases y propiedades CSSOM: la CSP (style-src 'self') no admite atributos style. Los colores de las
+   fichas de marcador son los de 8.4.2 (revision-base.css); aquí solo hay estructura y estados. */
+.listo { display: block; }
+.listo section { margin: 1rem 0; }
+.listo h2 { margin-top: 1.25rem; }
+
+.vista-salida {
+  max-height: 26rem; overflow: auto; padding: 0.6rem 0.75rem;
+  background: var(--sl-fondo-2); border: 1px solid var(--sl-borde-suave); border-radius: 0.375rem;
+}
+.vista-salida.cerrada { user-select: none; -webkit-user-select: none; }
+.linea-salida { min-height: 1.6rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.motivos { border: 2px solid var(--sl-aviso-borde); background: var(--sl-aviso-fondo); border-radius: 0.375rem; padding: 0.5rem 0.9rem; }
+.motivos ul { margin: 0.3rem 0; }
+.listo button[aria-disabled='true'] { cursor: not-allowed; opacity: 0.55; }
+.hallazgos { list-style: none; padding: 0; }
+.hallazgos li { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.35rem 0; }
+.avisos-listo p { margin: 0.35rem 0; }
+.respaldo-copia textarea { width: 100%; min-height: 8rem; }
+
+@media (forced-colors: active) {
+  .vista-salida, .motivos { border-color: CanvasText; background: Canvas; }
+  .listo button[aria-disabled='true'] { opacity: 1; border-style: dashed; color: GrayText; }
+}
+
+.banda-residuos { border: 2px solid var(--sl-aviso-borde); background: var(--sl-aviso-fondo); border-radius: 0.375rem; padding: 0.5rem 0.9rem; margin: 0.75rem 0; }
+.banda-residuos .hallazgos { margin: 0.3rem 0; }

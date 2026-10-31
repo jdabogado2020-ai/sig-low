@@ -1,7 +1,7 @@
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type BrowserContext, type Page } from '@playwright/test';
 import {
   configurarSimulador, DOCUMENTO_DE_TRES_PARTES, instalarSimulador, leerSimulador, soltarRetenidos,
 } from './ayudas-entrada';
@@ -1104,5 +1104,418 @@ test.describe('T-PV-05 PDF de punta a punta en la app (PE-4-r2)', () => {
     await expect(page.getByLabel(/contraseña/i)).toHaveCount(0);
     await expect(page.locator('body')).not.toContainText('de Prueba.');
     await expect(analizar(page)).toBeDisabled();
+  });
+});
+
+// ===== PC-5 · Listo (8.2.7): puerta de copia, residuos, recordatorio, copiar y exportar =====
+// Mismo build de medición que la Revisión I, en su propio puerto para no pelear por el servidor de PC-3. Para llegar a Listo sin el
+// botón «Continuar» (de PC-4) se usa el gancho `__siglowListoPrueba` (solo en el build de medición): decide las detecciones UNA POR
+// UNA con el reductor, fija el avance del modelo y fija un resultado de residuos. Datos ficticios (10.1.5).
+
+const PUERTO_LISTO = Number(process.env.PORT ?? 4173) + 200;
+const URL_LISTO = `http://127.0.0.1:${PUERTO_LISTO}`;
+let servidorListo: ChildProcess | undefined;
+
+async function levantarListo(): Promise<void> {
+  const indice = join('dist-medicion', 'index.html');
+  if (!existsSync(indice) || statSync(indice).mtimeMs < masNuevo('src')) {
+    const r = spawnSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build', '--mode', 'medicion'], { stdio: 'ignore' });
+    if (r.status !== 0) throw new Error('No se pudo construir el build de medición');
+  }
+  servidorListo = spawn(process.execPath, ['tests/e2e/server.mjs', '--dir', 'dist-medicion', '--port', String(PUERTO_LISTO)], { stdio: 'ignore' });
+  for (let i = 0; i < 50; i++) {
+    try { if ((await fetch(URL_LISTO + '/')).ok) return; } catch { /* aún no escucha */ }
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  throw new Error('El servidor de Listo no respondió');
+}
+
+type GanchoListo = {
+  irAListo(): void;
+  decidirUnoAUno(): number;
+  restablecerPrimera(): boolean;
+  editarPorTexto(original: string, nuevo: string): boolean;
+  fijarModelo(m: unknown): void;
+  fijarResiduo(hits: number, nuevas: number, revision?: number): void;
+  fijarCompilacion(hex: string): void;
+  estado(): { revision: number; ok: boolean; motivos: string[]; residuoRevision: number | null; buscando: boolean; committed: boolean; copiado: boolean; banderas: number };
+};
+const GL = '__siglowListoPrueba';
+/**
+ * Lee el portapapeles del sistema desde una página auxiliar de otro origen (la política de permisos de la app bloquea `clipboard-read`,
+ * V-33): devuelve los tipos de cada elemento y el texto plano. Es el «navigator.clipboard.read() en la página auxiliar» de T-IU-10.
+ */
+async function leerPortapapeles(context: BrowserContext): Promise<{ tipos: string[]; texto: string }> {
+  const origen = 'https://auxiliar.ejemplo.test';
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: origen });
+  await context.route(`${origen}/**`, (r) => r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>auxiliar</title><p>auxiliar</p>' }));
+  const aux = await context.newPage();
+  try {
+    await aux.goto(`${origen}/`);
+    await aux.bringToFront();
+    return await aux.evaluate(async () => {
+      const items = await navigator.clipboard.read();
+      const tipos = items.flatMap((i) => [...i.types]);
+      const plano = items.find((i) => i.types.includes('text/plain'));
+      return { tipos, texto: plano === undefined ? '' : await (await plano.getType('text/plain')).text() };
+    });
+  } finally {
+    await aux.close();
+  }
+}
+const ganchoListo = (page: Page) => ({
+  estado: () => page.evaluate((g) => (globalThis as unknown as Record<string, GanchoListo>)[g]!.estado(), GL),
+  decidir: () => page.evaluate((g) => (globalThis as unknown as Record<string, GanchoListo>)[g]!.decidirUnoAUno(), GL),
+  restablecer: () => page.evaluate((g) => (globalThis as unknown as Record<string, GanchoListo>)[g]!.restablecerPrimera(), GL),
+  editar: (o: string, n: string) => page.evaluate(([g, a, b]) => (globalThis as unknown as Record<string, GanchoListo>)[g as string]!.editarPorTexto(a as string, b as string), [GL, o, n]),
+  modelo: (m: unknown) => page.evaluate(([g, x]) => (globalThis as unknown as Record<string, GanchoListo>)[g as string]!.fijarModelo(x), [GL, m] as const),
+  residuo: (h: number, n: number) => page.evaluate(([g, a, b]) => (globalThis as unknown as Record<string, GanchoListo>)[g as string]!.fijarResiduo(a as number, b as number), [GL, h, n] as const),
+  ir: () => page.evaluate((g) => (globalThis as unknown as Record<string, GanchoListo>)[g]!.irAListo(), GL),
+  compilacion: (hex: string) => page.evaluate(([g, h]) => (globalThis as unknown as Record<string, GanchoListo>)[g as string]!.fijarCompilacion(h as string), [GL, hex] as const),
+});
+
+const TEXTO_LISTO = [
+  'Señora Ana Ficticia Rojas, identificada con cédula de ciudadanía número 1.000.000.001, correo ana.ficticia@ejemplo.test, teléfono 3000000000.',
+  'El demandado Pedro Ejemplo Prueba, con cédula 1.000.000.002, vive en la Calle 100 # 00-00 de Bogotá.',
+  'La señora Ana Ficticia Rojas solicitó el reemplazo.',
+].join('\n');
+const ORIGINALES = ['Ana Ficticia', 'Pedro Ejemplo', '1.000.000.001', '1000000001', '1.000.000.002', '1000000002', 'ana.ficticia', '3000000000', 'Calle 100'];
+const LISTA_LISTO = 'Ana Ficticia Rojas; demandante\nPedro Ejemplo Prueba; demandado';
+
+/** Abre la Revisión con el gancho de PC-3 y entra a Listo con el estado del modelo pedido y, si se pide, todo decidido. */
+async function abrirListo(page: Page, o: { modelo?: 'en_curso' | 'terminado' | 'plan_b'; decidir?: boolean; texto?: string; lista?: string } = {}): Promise<void> {
+  await abrirInicio(page);
+  await crearAsunto(page);
+  const lista = o.lista ?? LISTA_LISTO;
+  if (lista !== '') {
+    await pegarLista(page, lista);
+    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
+  }
+  await page.waitForFunction(() => '__siglowRevisionPrueba' in globalThis && '__siglowListoPrueba' in globalThis);
+  await page.evaluate(([t, m]) => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.cargar(t as string, m as string), [o.texto ?? TEXTO_LISTO, o.modelo ?? 'plan_b']);
+  await expect(h1(page, 'Revisión')).toBeVisible();
+  if (o.decidir !== false) await ganchoListo(page).decidir();
+  await ganchoListo(page).ir();
+  await expect(h1(page, 'Listo')).toBeVisible();
+}
+const casilla = (page: Page, n: 1 | 2 | 3) => page.getByRole('checkbox', { name: new RegExp(n === 1 ? '^Datos biométricos' : n === 2 ? '^Documentos con reserva legal' : '^La estrategia reservada') });
+async function marcarRecordatorio(page: Page): Promise<void> {
+  for (const n of [1, 2, 3] as const) await casilla(page, n).check();
+}
+const vistaSalida = (page: Page) => page.getByRole('region', { name: 'Documento anonimizado con los marcadores como fichas' });
+const botones = (page: Page) => ({
+  copiar: page.getByRole('button', { name: 'Copiar texto anonimizado' }),
+  vaciar: page.getByRole('button', { name: 'Vaciar portapapeles' }),
+  txt: page.getByRole('button', { name: 'Descargar .txt' }),
+  docx: page.getByRole('button', { name: 'Descargar .docx' }),
+  informeTxt: page.getByRole('button', { name: 'Descargar informe (.txt)' }),
+  informeJson: page.getByRole('button', { name: 'Descargar informe (.json)' }),
+});
+const motivos = (page: Page) => page.locator('[data-motivo]').evaluateAll((els) => els.map((e) => e.getAttribute('data-motivo')));
+async function esperarBusqueda(page: Page): Promise<void> {
+  await expect(page.locator('[data-prueba="residuos-estado"]')).toContainText('Búsqueda de residuos: ninguno de los', { timeout: 30_000 });
+}
+async function textoDeLaVista(page: Page): Promise<string> {
+  return page.locator('[data-prueba="vista-salida"] .linea-salida').evaluateAll((ls) => ls.map((l) => l.textContent ?? '').join('\n'));
+}
+
+test.describe('Listo (PC-5)', () => {
+  test.describe.configure({ timeout: 120_000 });
+  test.use({ baseURL: URL_LISTO, permissions: ['clipboard-read', 'clipboard-write'] });
+  test.beforeAll(async () => { await levantarListo(); });
+  test.afterAll(() => { servidorListo?.kill(); });
+
+  test('T-IU-01 INV-G06 INV-R11: la puerta tiene un estado visible por cada GateReason y se abre solo con los ocho resueltos', async ({ page }) => {
+    // Estado 1: nada decidido y el modelo en curso → PENDIENTES, MODELO_EN_CURSO, RESIDUOS_NO_EJECUTADA (no se busca con pendientes) y RECORDATORIO.
+    await abrirListo(page, { modelo: 'en_curso', decidir: false });
+    const g = ganchoListo(page);
+    await g.modelo({ kind: 'en_curso', ventanas: 2, ventanasTotales: 9 });
+    const b = botones(page);
+    const lista = page.locator('[data-prueba="motivos-puerta"]');
+    await expect(lista.locator('[data-motivo="PENDIENTES"]')).toHaveText(/^Quedan \d+ detecciones pendientes\.$/);
+    await expect(lista.locator('[data-motivo="MODELO_EN_CURSO"]')).toHaveText('El modelo de apoyo todavía está revisando el documento: faltan 7 de 9 bloques. Espere a que termine o elija seguir sin él.');
+    await expect(lista.locator('[data-motivo="RESIDUOS_NO_EJECUTADA"]')).toHaveText('Falta la búsqueda de residuos.');
+    await expect(lista.locator('[data-motivo="RECORDATORIO"]')).toHaveText('Falta confirmar las 3 casillas del recordatorio.');
+    for (const x of [b.copiar, b.txt, b.docx, b.informeTxt, b.informeJson]) {
+      await expect(x).toHaveAttribute('aria-disabled', 'true');
+      await expect(x).toHaveAttribute('aria-describedby', 'motivos-puerta');
+    }
+    await expect(b.vaciar).toBeDisabled();
+    // Estado 2: se deciden las detecciones y las banderas una por una; la búsqueda corre sola y pasa. Quedan el modelo y el recordatorio.
+    await g.decidir();
+    await esperarBusqueda(page);
+    expect((await motivos(page)).sort()).toEqual(['MODELO_EN_CURSO', 'RECORDATORIO']);
+    // Estado 3 (INV-R11): con las tres casillas solo queda MODELO_EN_CURSO, aunque no haya pendientes.
+    await marcarRecordatorio(page);
+    expect(await motivos(page)).toEqual(['MODELO_EN_CURSO']);
+    await expect(b.copiar).toHaveAttribute('aria-disabled', 'true');
+    // Con el modelo terminado, o en plan B declarado, la puerta se abre y los botones se habilitan.
+    await g.modelo({ kind: 'terminado', ventanas: 9, respaldo: false });
+    await expect(page.locator('[data-prueba="motivos"]')).toHaveCount(0);
+    for (const x of [b.copiar, b.txt, b.docx]) await expect(x).not.toHaveAttribute('aria-disabled', 'true');
+    await g.modelo({ kind: 'plan_b', causa: 'cancelado', ventanas: 2, ventanasTotales: 9 });
+    await expect(page.locator('[data-prueba="motivos"]')).toHaveCount(0);
+    // Estados 4 y 5: un resultado con hallazgos y uno con detecciones nuevas, para la revisión vigente.
+    await g.residuo(2, 0);
+    expect(await motivos(page)).toEqual(['RESIDUOS_ENCONTRADOS']);
+    await expect(lista.locator('[data-motivo="RESIDUOS_ENCONTRADOS"]')).toHaveText('La búsqueda encontró 2 valores originales en la salida.');
+    await expect(b.copiar).toHaveAttribute('aria-disabled', 'true');
+    await g.residuo(0, 3);
+    expect(await motivos(page)).toEqual(['DETECCIONES_NUEVAS']);
+    await expect(lista.locator('[data-motivo="DETECCIONES_NUEVAS"]')).toHaveText('La búsqueda de residuos encontró 3 datos nuevos que no estaban detectados.');
+    // Estado 6 (INV-R07): una acción de revisión después de la búsqueda deja el resultado desactualizado y reaparece PENDIENTES (M-79).
+    await g.residuo(0, 0);
+    await expect(page.locator('[data-prueba="motivos"]')).toHaveCount(0);
+    expect(await g.restablecer()).toBe(true);
+    await expect(lista.locator('[data-motivo="RESIDUOS_DESACTUALIZADA"]')).toHaveText('Hubo cambios después de la búsqueda de residuos.');
+    await expect(lista.locator('[data-motivo="PENDIENTES"]')).toHaveText('Quedan 1 detecciones pendientes.');
+    await expect(page.locator('[data-prueba="residuos-estado"]')).toContainText('Hubo cambios después de la búsqueda de residuos. Se buscará de nuevo.');
+    // Al decidir de nuevo la búsqueda vuelve a correr sola y, con las casillas aún marcadas, la puerta se abre otra vez.
+    await g.decidir();
+    await esperarBusqueda(page);
+    await expect(page.locator('[data-prueba="motivos"]')).toHaveCount(0);
+    expect((await g.estado()).ok).toBe(true);
+    // Estado 8: desmarcar una casilla cierra la puerta con RECORDATORIO.
+    await casilla(page, 2).uncheck();
+    expect(await motivos(page)).toEqual(['RECORDATORIO']);
+    await expect(b.copiar).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  test('T-IU-01 BANDERAS: con una bandera sin confirmar aparece su motivo y la puerta no se abre', async ({ page }) => {
+    await abrirListo(page, { decidir: false, texto: 'La gerente general de la empresa, Ana Ficticia Rojas, firmó el contrato con Pedro Ejemplo Prueba. El menor Luis Ejemplo tiene 7 años.' });
+    const g = ganchoListo(page);
+    const e = await g.estado();
+    expect(e.banderas).toBeGreaterThan(0);
+    await expect(page.locator('[data-motivo="BANDERAS"]')).toHaveText(/^Quedan \d+ banderas sin confirmar\.$/);
+    await g.decidir();
+    await esperarBusqueda(page);
+    await marcarRecordatorio(page);
+    expect((await g.estado()).ok).toBe(true);
+  });
+
+  test('T-IU-04 INV-X05 (a) con la puerta cerrada, copiar la vista no cambia el portapapeles y muestra M-73', async ({ page, context }) => {
+    await abrirListo(page);
+    await page.evaluate(() => navigator.clipboard.writeText('SENTINELA-DE-PRUEBA'));
+    const b = botones(page);
+    await expect(b.copiar).toHaveAttribute('aria-disabled', 'true');
+    const r = await page.evaluate(() => {
+      const panel = document.querySelector('[data-prueba="vista-salida"]') as HTMLElement;
+      const dt = new DataTransfer();
+      const ev = new ClipboardEvent('copy', { clipboardData: dt, bubbles: true, cancelable: true });
+      panel.dispatchEvent(ev);
+      const corte = new ClipboardEvent('cut', { clipboardData: new DataTransfer(), bubbles: true, cancelable: true });
+      panel.dispatchEvent(corte);
+      const drag = new DragEvent('dragstart', { bubbles: true, cancelable: true });
+      panel.dispatchEvent(drag);
+      return { tipos: [...dt.types], prevenido: ev.defaultPrevented, corte: corte.defaultPrevented, drag: drag.defaultPrevented, sel: getComputedStyle(panel).userSelect };
+    });
+    expect(r).toEqual({ tipos: [], prevenido: true, corte: true, drag: true, sel: 'none' });
+    await expect(page.locator('[data-aviso="M-73"]')).toContainText('La salida se puede copiar cuando se cumplan las condiciones del paso Listo');
+    await b.copiar.click({ force: true });
+    await b.txt.click({ force: true });
+    expect((await leerPortapapeles(context)).texto).toBe('SENTINELA-DE-PRUEBA');
+    expect((await ganchoListo(page).estado()).committed).toBe(false);
+    // Ctrl+C real sobre la vista, también cerrada, no escribe nada.
+    await page.bringToFront();
+    await vistaSalida(page).focus();
+    await page.keyboard.press('Control+C');
+    expect((await leerPortapapeles(context)).texto).toBe('SENTINELA-DE-PRUEBA');
+  });
+
+  test('T-IU-04 INV-G06 (b) flujo completo: pegar → revisión → residuos → recordatorio → copiar en verde, con M-84, M-85 y «Vaciar portapapeles» (M-86)', async ({ page, context }) => {
+    await abrirInicio(page);
+    await crearAsunto(page, 'PRUEBA-FLUJO');
+    await pegarLista(page, LISTA_LISTO);
+    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
+    await page.getByRole('button', { name: 'Continuar' }).click();
+    await expect(h1(page, 'Entrada')).toBeVisible();
+    await areaTexto(page).fill(TEXTO_LISTO);
+    await analizar(page).click();
+    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 20_000 });
+    await page.waitForFunction(() => '__siglowListoPrueba' in globalThis);
+    const g = ganchoListo(page);
+    expect(await g.decidir()).toBeGreaterThan(0);
+    await g.ir();
+    await expect(h1(page, 'Listo')).toBeVisible();
+    await esperarBusqueda(page);
+    await expect(page.locator('[data-prueba="residuos-estado"]')).toContainText(/ninguno de los \d+ valores buscados aparece en la salida\./);
+    await expect(page.locator('body')).toContainText('La búsqueda compara la salida con los datos detectados y con la lista del caso.');
+    await expect(page.locator('[data-prueba="prueba-final"]')).toContainText('Antes de copiar, pregúntese');
+    const b = botones(page);
+    await expect(b.copiar).toHaveAttribute('aria-disabled', 'true');
+    await marcarRecordatorio(page);
+    await expect(b.copiar).not.toHaveAttribute('aria-disabled', 'true');
+    await expect(page.locator('[data-prueba="motivos"]')).toHaveCount(0);
+    const esperado = await textoDeLaVista(page);
+    for (const o of ORIGINALES) expect(esperado).not.toContain(o);
+    expect(esperado).toMatch(/\[[A-ZÁÉÍÓÚÑ_]+_1\]/);
+    expect((await g.estado()).committed).toBe(false);
+    await b.copiar.click();
+    await expect(page.locator('[data-aviso="M-84"]')).toHaveText('Texto anonimizado copiado. Péguelo solo en una herramienta autorizada por la política de uso de IA de su organización.');
+    await expect(page.locator('[data-aviso="M-85"]')).toContainText('ese botón no borra el historial');
+    // `writeText` en Windows entrega los saltos de línea del sistema (CRLF): se compara con el texto de la vista normalizado.
+    expect((await leerPortapapeles(context)).texto.replace(/\r\n/g, '\n')).toBe(esperado);
+    await page.bringToFront();
+    expect((await g.estado()).committed).toBe(true);
+    // «No guardar»: el recordatorio de exportar la tabla cifrada (M-90) queda visible.
+    await expect(page.locator('[data-prueba="respaldo-tabla"]')).toContainText('La tabla está solo en memoria');
+    await expect(b.vaciar).toBeEnabled();
+    await b.vaciar.click();
+    await expect(page.locator('[data-aviso="M-86"]')).toBeVisible();
+    expect((await leerPortapapeles(context)).texto).toBe('');
+    await page.bringToFront();
+    await expect(page.locator('[data-aviso="M-86"]')).toContainText('conserva lo que copió antes');
+  });
+
+  test('T-IU-04 (b) si writeText falla aparece el área de respaldo con el texto anonimizado seleccionado (M-87)', async ({ page }) => {
+    await abrirListo(page);
+    await esperarBusqueda(page);
+    await marcarRecordatorio(page);
+    const esperado = await textoDeLaVista(page);
+    await page.evaluate(() => { navigator.clipboard.writeText = () => Promise.reject(new Error('bloqueado')); });
+    await botones(page).copiar.click();
+    await expect(page.locator('[data-aviso="M-87"]')).toHaveText('El navegador no permitió copiar automáticamente. El texto está seleccionado abajo: cópielo con Ctrl + C.');
+    const area = page.getByRole('textbox', { name: 'Texto anonimizado' });
+    await expect(area).toHaveValue(esperado);
+    await expect(area).toBeFocused();
+    expect(await area.evaluate((a: HTMLTextAreaElement) => [a.selectionStart, a.selectionEnd, a.value.length, a.getAttribute('spellcheck'), a.getAttribute('autocomplete'), a.getAttribute('translate')]))
+      .toEqual([0, esperado.length, esperado.length, 'false', 'off', 'no']);
+  });
+
+  test('T-IU-10 copia-dom-salida INV-X05: con la puerta abierta, seleccionar toda la vista y Control+C escribe solo text/plain y 0 originales', async ({ page, context }) => {
+    await abrirListo(page);
+    await esperarBusqueda(page);
+    await marcarRecordatorio(page);
+    const esperado = await textoDeLaVista(page);
+    await vistaSalida(page).focus();
+    await page.evaluate(() => {
+      const p = document.querySelector('[data-prueba="vista-salida"]') as HTMLElement;
+      const r = document.createRange();
+      r.selectNodeContents(p);
+      const s = getSelection() as Selection;
+      s.removeAllRanges();
+      s.addRange(r);
+    });
+    await page.keyboard.press('Control+C');
+    const leido = await leerPortapapeles(context);
+    await page.bringToFront();
+    expect(leido.tipos).toEqual(['text/plain']);
+    expect(leido.texto).toBe(esperado);
+    for (const o of ORIGINALES) expect(leido.texto).not.toContain(o);
+    // La copia atendida por Ctrl+C consolida igual que el botón y muestra M-84 y M-85.
+    await expect(page.locator('[data-aviso="M-84"]')).toBeVisible();
+    expect((await ganchoListo(page).estado()).committed).toBe(true);
+    // Barrido del DOM: ningún atributo ni nodo de texto de la vista de salida contiene originales; las fichas se llaman solo «Marcador …».
+    const barrido = await page.evaluate((originales) => {
+      const p = document.querySelector('[data-prueba="vista-salida"]') as HTMLElement;
+      const hallazgos: string[] = [];
+      const revisar = (s: string, donde: string): void => { for (const o of originales) if (s.includes(o)) hallazgos.push(`${donde}:${o}`); };
+      const recorrer = (n: Node): void => {
+        if (n.nodeType === Node.TEXT_NODE) revisar(n.textContent ?? '', 'texto');
+        if (n instanceof Element) for (const a of Array.from(n.attributes)) revisar(a.value, `@${a.name}`);
+        n.childNodes.forEach(recorrer);
+      };
+      recorrer(p);
+      const fichas = [...p.querySelectorAll('[role="img"]')].map((f) => f.getAttribute('aria-label'));
+      return { hallazgos, fichas, hayFichas: p.querySelector('[class~="ficha-marcador"]') !== null };
+    }, ORIGINALES);
+    expect(barrido.hallazgos).toEqual([]);
+    expect(barrido.hayFichas).toBe(true);
+    for (const f of barrido.fichas) expect(f).toMatch(/^Marcador \[[A-ZÁÉÍÓÚÑ_]+_\d+\]$/);
+    // Una selección parcial se copia desde el modelo: una ficha cuenta como su marcador completo.
+    await page.evaluate(() => {
+      const p = document.querySelector('[data-prueba="vista-salida"]') as HTMLElement;
+      const ficha = p.querySelector('[data-ficha]') as HTMLElement;
+      const r = document.createRange();
+      r.setStart(ficha.firstChild as Text, 2);
+      r.setEnd(ficha.firstChild as Text, 3);
+      const s = getSelection() as Selection;
+      s.removeAllRanges();
+      s.addRange(r);
+    });
+    await page.keyboard.press('Control+C');
+    const parcial = (await leerPortapapeles(context)).texto;
+    expect(parcial).toMatch(/^\[[A-ZÁÉÍÓÚÑ_]+_\d+\]$/);
+  });
+
+  test('T-LE-10 T-PV-13 INV-X05 INV-X06: los botones llaman a exportarTxt y exportarDocx, el nombre es neutro y no queda ninguna URL blob: viva', async ({ page }) => {
+    await page.addInitScript(() => {
+      const vivas = new Set<string>();
+      const crear = URL.createObjectURL.bind(URL);
+      const revocar = URL.revokeObjectURL.bind(URL);
+      URL.createObjectURL = (o: Blob | MediaSource): string => { const u = crear(o); vivas.add(u); return u; };
+      URL.revokeObjectURL = (u: string): void => { vivas.delete(u); revocar(u); };
+      (globalThis as unknown as { __blobsVivos: () => number }).__blobsVivos = () => vivas.size;
+    });
+    await abrirListo(page);
+    await esperarBusqueda(page);
+    const b = botones(page);
+    await b.txt.click({ force: true });
+    await expect(page.locator('[data-aviso="M-88"]')).toHaveCount(0);       // con la puerta cerrada no actúa
+    await marcarRecordatorio(page);
+    const esperado = await textoDeLaVista(page);
+    const [dTxt] = await Promise.all([page.waitForEvent('download'), b.txt.click()]);
+    expect(dTxt.suggestedFilename()).toMatch(/^sig-low-anonimizado-\d{8}-\d{4}\.txt$/);
+    const bytesTxt = readFileSync((await dTxt.path()) as string);
+    expect([...bytesTxt.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+    const txt = bytesTxt.toString('utf8').slice(1);
+    expect(txt).toBe(esperado.replace(/\n/g, '\r\n') + '\r\n');
+    for (const o of ORIGINALES) expect(txt).not.toContain(o);
+    await expect(page.locator('[data-aviso="M-88"]')).toContainText('Es un archivo nuevo: no conserva el formato ni los metadatos del original.');
+    const [dDocx] = await Promise.all([page.waitForEvent('download'), b.docx.click()]);
+    expect(dDocx.suggestedFilename()).toMatch(/^sig-low-anonimizado-\d{8}-\d{4}\.docx$/);
+    const docx = readFileSync((await dDocx.path()) as string);
+    expect([...docx.subarray(0, 2)]).toEqual([0x50, 0x4b]);
+    await page.waitForTimeout(1100);
+    expect(await page.evaluate(() => (globalThis as unknown as { __blobsVivos: () => number }).__blobsVivos())).toBe(0);
+    expect((await ganchoListo(page).estado()).committed).toBe(true);
+    // Bloquear vacía todo y tampoco deja URL blob: vivas.
+    await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+    await expect(h1(page, 'Inicio')).toBeVisible();
+    expect(await page.evaluate(() => (globalThis as unknown as { __blobsVivos: () => number }).__blobsVivos())).toBe(0);
+  });
+
+  test('INV-I01 INV-I03 el informe se descarga en .txt y .json solo con la puerta abierta, sin originales y con el código del asunto solo si se pide', async ({ page }) => {
+    await abrirListo(page);
+    await esperarBusqueda(page);
+    const b = botones(page);
+    await expect(b.informeJson).toHaveAttribute('aria-disabled', 'true');
+    await marcarRecordatorio(page);
+    // Sin la huella de la aplicación (caché del service worker) el informe no se puede generar: M-1417; el build de medición no la trae.
+    await expect(page.getByText('No se puede generar el informe')).toBeVisible();
+    await expect(b.informeJson).toHaveAttribute('aria-disabled', 'true');
+    await ganchoListo(page).compilacion('ab'.repeat(32));
+    await expect(b.informeJson).not.toHaveAttribute('aria-disabled', 'true');
+    const [dJson] = await Promise.all([page.waitForEvent('download'), b.informeJson.click()]);
+    expect(dJson.suggestedFilename()).toMatch(/^sig-low-informe-\d{8}-\d{4}\.json$/);
+    const json = readFileSync((await dJson.path()) as string, 'utf8');
+    const informe = JSON.parse(json) as { formato: string; residuos: { resultado: string }; asunto?: unknown; motor: { modelo: { planB: boolean } } };
+    expect(informe.formato).toBe('sig-low/informe');
+    expect(informe.residuos.resultado).toBe('sin_residuos');
+    expect(informe.motor.modelo.planB).toBe(true);
+    expect(informe.asunto).toBeUndefined();
+    for (const o of ORIGINALES) expect(json).not.toContain(o);
+    await expect(page.locator('[data-aviso="M-89"]')).toContainText('No contiene los datos originales.');
+    await page.getByRole('checkbox', { name: 'Incluir el código del asunto en el informe' }).check();
+    const [dTxt] = await Promise.all([page.waitForEvent('download'), b.informeTxt.click()]);
+    expect(dTxt.suggestedFilename()).toMatch(/^sig-low-informe-\d{8}-\d{4}\.txt$/);
+    const bytes = readFileSync((await dTxt.path()) as string);
+    expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+    const txt = bytes.toString('utf8');
+    expect(txt).toContain('Código del asunto: PRUEBA-001');
+    expect(txt).toContain('\r\n');
+    for (const o of ORIGINALES) expect(txt).not.toContain(o);
+  });
+
+  test('INV-R07 un original que quedó dentro de un reemplazo editado: la búsqueda no pasa, vuelve a Revisión con M-78 y la banda de ubicaciones', async ({ page }) => {
+    await abrirListo(page, { decidir: false });
+    const g = ganchoListo(page);
+    await g.decidir();
+    // El abogado edita un reemplazo y deja en él un valor original: la búsqueda lo encuentra y la puerta no se abre.
+    expect(await g.editar('Pedro Ejemplo Prueba', 'el señor Pedro Ejemplo Prueba')).toBe(true);
+    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('[data-prueba="aviso-M-78"]')).toContainText('La búsqueda de residuos encontró');
+    await expect(page.locator('[data-prueba="banda-residuos"]')).toBeVisible();
+    await expect(page.locator('[data-prueba="banda-residuos"]')).not.toContainText('Pedro Ejemplo');
   });
 });
