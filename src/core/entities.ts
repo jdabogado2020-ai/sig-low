@@ -8,7 +8,7 @@ import type {
 } from './types.ts';
 import { FLAG_TYPES, MARKER_LABEL, ORG_CLASSES } from './types.ts';
 import { buildAlnumSearchView, buildSearchView, toCanonicalSpan } from './normalize.ts';
-import { esVarianteDeOtraPersona, palabrasDeLaPersona, personasDeLaVariante } from './caselist.ts';
+import { entidadesAmbiguasDeLaVariante, esVarianteDeOtraPersona, palabrasDeLaPersona, personasDeLaVariante } from './caselist.ts';
 
 // ---------------------------------------------------------------------------------------------
 // 6.2.1 · Familia del marcador
@@ -216,13 +216,21 @@ const claveAmbigua = (s: Span): string => `${CLAVE_AMBIGUA}${s.partId}:${s.start
  * la variante del tramo (`personasDeLaVariante` de caselist.ts), o [] si no es ambiguo. Solo una persona como dueña provisional:
  * con una organización entre las candidatas decide 7.9.6, paso 5. Un tramo que el modelo extendió (D-03 E) ya no es la variante
  * compartida: la fusión solo lo extiende si el nombre largo es variante de esa persona.
+ * A-6 (CIERRE-1, ampliación de D-19): también la variante que comparten una persona y una organización de la lista, o dos
+ * organizaciones, si no es el nombre exacto de una sola (`entidadesAmbiguasDeLaVariante`): ya no la decide la cuenta de menciones.
  */
 export function candidatasAmbiguas(c: Pick<DetectionCandidate, 'source' | 'caseEntityId' | 'type'> & { extended?: boolean },
   texto: string, caseList: readonly CaseEntity[]): CaseEntityId[] {
-  if (c.source !== 'lista' || c.caseEntityId === undefined || c.type !== 'PERSONA' || c.extended === true) return [];
-  const ps = personasDeLaVariante(texto, caseList);
-  return ps.length >= 2 && ps.includes(c.caseEntityId) ? ps : [];
+  if (c.source !== 'lista' || c.caseEntityId === undefined || c.extended === true) return [];
+  if (c.type === 'PERSONA') {
+    const ps = personasDeLaVariante(texto, caseList);
+    if (ps.length >= 2 && ps.includes(c.caseEntityId)) return ps;
+  }
+  const mixtas = entidadesAmbiguasDeLaVariante(texto, caseList);
+  return mixtas.length >= 2 && mixtas.includes(c.caseEntityId) ? mixtas : [];
 }
+/** El rol de una mención ambigua: `OTRA_PERSONA` si es una persona; la clase de organización si es una organización (A-6). */
+const rolAmbiguo = (t: DataType): Role => (t === 'PERSONA' ? 'OTRA_PERSONA' : t as Role);
 
 /** D-16 · ¿La detección es una mención ambigua de la lista sin decidir? Sigue en su entidad propia y no está rechazada. */
 export function esAmbigua(state: ReviewState, d: Detection): boolean {
@@ -477,7 +485,7 @@ export function buildDetectionSet(doc: DocumentModel, merged: readonly MergedCan
       e = { id: ctx.ids.next('ent') as EntityId, canonicalKey: key, type: c.type as DetectableType, family: 'PERSONA',
         marcadorEspecifico: false, mentions: [], sameHolderAs: [], display: ce?.name ?? part.text.slice(c.start, c.end) };
       if (ce !== undefined) { e.caseEntityId = ce.id; e.role = ce.role; }
-      if (ambigua) e.role = 'OTRA_PERSONA';
+      if (ambigua) e.role = rolAmbiguo(c.type);
       byKey.set(key, e); state.entities[e.id] = e;
     }
     const det: Detection = {
@@ -489,7 +497,7 @@ export function buildDetectionSet(doc: DocumentModel, merged: readonly MergedCan
     for (const f of ['role', 'ruleId', 'caseEntityId', 'variantClass', 'nerLabel', 'label', 'validator'] as const) {
       if (c[f] !== undefined) (det as unknown as Record<string, unknown>)[f] = c[f];
     }
-    if (ambigua) { delete det.caseEntityId; det.role = 'OTRA_PERSONA'; det.confidence = 'baja'; det.score = Math.min(det.score, 0.3); }
+    if (ambigua) { delete det.caseEntityId; det.role = rolAmbiguo(c.type); det.confidence = 'baja'; det.score = Math.min(det.score, 0.3); }
     if (c.type === 'NIT' && c.holderDigits !== undefined) naturalNit.add(e.id);
     state.detections[det.id] = det; e.mentions.push(det.id); state.order.push(det.id);
   }
@@ -1095,30 +1103,41 @@ function correferir(state: ReviewState, cx: Correferencia): void {
   const conTipo = (e: Entity): boolean => e.type === 'PERSONA' || isOrg(e.type) || e.type === 'LUGAR';
   const ordenTipo = (t: DetectableType): number => { const i = ORDEN_C3.indexOf(t); return i < 0 ? ORDEN_C3.length : i; };
   const COMPLETAS: ReadonlySet<string> = new Set(['exacta', 'sin_tildes', 'mayusculas']);
+  // A-5 (CIERRE-1, ampliación de D-19) · El nombre completo de una anfitriona es el de su entidad: el nombre en la lista, o el texto
+  // de sus menciones con su propia clave, **con el sufijo**: si alguna mención (o el nombre de la lista) lleva sufijo societario, la
+  // forma sin él no es su nombre completo («La sociedad Pedro Ejemplo Gómez», de «Pedro Ejemplo Gómez S.A.S.»). Una forma corta que
+  // S-7.11 unió a una persona tampoco lo es: ya no hay índice por cualquier mención (`porForma` de PB-3-r3). `conSufijo` guarda, por
+  // la forma sin el sufijo, las entidades que la llevan con él: una sociedad que lleva el nombre de la forma impide la unión.
   const porNombre = new Map<string, Set<Entity>>();   // nombre completo → entidades
-  const porForma = new Map<string, Set<Entity>>();    // texto de cualquier mención → entidades
+  const conSufijo = new Map<string, Set<Entity>>();   // forma sin el sufijo final → entidades con una mención (o nombre) con sufijo
   const anotar = (mapa: Map<string, Set<Entity>>, f: string, e: Entity): void => {
     const s = mapa.get(f);
     if (s === undefined) mapa.set(f, new Set([e])); else s.add(e);
   };
+  const sinSufijo = (f: string): string | null => { const b = f.replace(RE_SUFIJO_FINAL, '').trim(); return b !== f && b !== '' ? b : null; };
   for (const e of vivas()) {
     if (!conTipo(e) || esClaveAmbigua(e.canonicalKey)) continue;
     const ce = e.caseEntityId === undefined ? undefined : cx.caseList.find((c) => c.id === e.caseEntityId);
-    if (ce !== undefined) anotar(porNombre, fold(ce.name, 'cuerpo').replace(/\s+/gu, ' ').trim(), e);
+    const nombres: string[] = [];
+    if (ce !== undefined) nombres.push(fold(ce.name, 'cuerpo').replace(/\s+/gu, ' ').trim());
     for (const m of e.mentions) {
       const d = det(m);
       if (d.status === 'rechazada') continue;
-      const f = formaDe(d);
-      anotar(porForma, f, e);
       const propia = ce !== undefined ? d.source === 'lista' && COMPLETAS.has(d.variantClass ?? '') : claveBase(d.canonicalKey) === e.canonicalKey;
-      if (propia) anotar(porNombre, f, e);
+      if (propia) nombres.push(formaDe(d));
+      const b = sinSufijo(formaDe(d));
+      if (b !== null) anotar(conSufijo, b, e);
     }
+    const bases = nombres.map(sinSufijo);
+    for (const b of bases) if (b !== null) anotar(conSufijo, b, e);
+    const algunoConSufijo = bases.some((b) => b !== null) || conSufijoEn(e);
+    for (const n of nombres) if (!algunoConSufijo || sinSufijo(n) !== null) anotar(porNombre, n, e);
   }
-  const anfitrionas = (g: Entity, f: string): Entity[] => {
-    const out = new Set<Entity>(porNombre.get(f) ?? []);
-    if (palabrasDeNombre(f).length >= 2) for (const e of porForma.get(f) ?? []) out.add(e);
-    return [...out].filter((o) => o !== g && o.mentions.length > 0);
-  };
+  /** ¿Alguna mención de la entidad lleva un sufijo societario (en cualquier lugar)? */
+  function conSufijoEn(e: Entity): boolean {
+    return e.mentions.some((m) => RE_SUFIJO_SUELTO.test(formaDe(det(m))));
+  }
+  const anfitrionas = (g: Entity, f: string): Entity[] => [...(porNombre.get(f) ?? [])].filter((o) => o !== g && o.mentions.length > 0);
   /** La forma única de un huésped posible (entidad del modelo movible con todas sus menciones iguales), o null. */
   const huesped = (e: Entity): string | null => {
     if (!conTipo(e) || !delModelo(e)) return null;
@@ -1134,7 +1153,7 @@ function correferir(state: ReviewState, cx: Correferencia): void {
     return ds.every((d) => {
       const p = cx.parts.get(d.partId);
       return p !== undefined && !marcaOtroTitular(p.text, d.start, d.end, p.kind) && !tocaMarcador(p.text, d.start, d.end)
-        && (!lugar || !lugarIntroducido(p.text, d.start, p.kind));
+        && (!lugar || !lugarIntroducido(p.text, d.start, p.kind, d.end));
     });
   };
   let indice5: ReturnType<typeof indice0> | null = null;
@@ -1143,6 +1162,8 @@ function correferir(state: ReviewState, cx: Correferencia): void {
     if (f === null) continue;
     const otras = anfitrionas(e0, f);
     if (otras.length !== 1) continue;   // ninguna o dos anfitrionas: no se une
+    // A-5: otra entidad que lleva esa forma con un sufijo societario (la sociedad del nombre) también es una anfitriona posible.
+    if ([...(conSufijo.get(f) ?? [])].some((o) => o !== e0 && o.mentions.length > 0)) continue;
     let g = e0; let h = otras[0] as Entity;
     if (tipoC3(g.type) === tipoC3(h.type)) continue;
     // Las dos pueden ser huéspedes: la anfitriona es la de más menciones; a igualdad, la primera en el orden de 7.11.3.
@@ -1186,8 +1207,20 @@ function tocaMarcador(text: string, start: number, end: number): boolean {
 /** D-15 · Un lugar introducido justo antes de la mención («vive en…», «hacia la…», «del barrio…»). Vista `lista`, ventana fija. */
 const RE_LUGAR_ANTES = new RegExp(String.raw`(?:^|[^\p{L}\p{N}])(?:en|hacia|desde|hasta|barrio|vereda|municipio|ciudad|corregimiento|departamento|localidad|sector)`
   + String.raw`(?: (?:de|del))?(?: (?:el|la|los|las))? ?$`, 'u');
-function lugarIntroducido(text: string, start: number, kind: PartKind): boolean {
-  return RE_LUGAR_ANTES.test(fold(text.slice(Math.max(0, start - 32), start), kind).replace(/\s+/gu, ' '));
+/** A-5 (CIERRE-1, ampliación de D-19) · Un lugar presentado justo antes con «a», «para» o «de» («Llegó a Ficticio Rojas»). */
+const RE_LUGAR_ANTES_CORTO = /(?:^|[^\p{L}\p{N}])(?:a|al|para|de)(?: (?:el|la|los|las))? ?$/u;
+/** A-5 · Un lugar presentado justo después: un departamento tras la coma («…, Nariño») o «es un municipio», «queda en…». */
+const RE_LUGAR_DESPUES = /^ ?(?:, ?(\p{L}+)|(?:es|era|fue|queda|quedaba) (?:un|una|el|la|en) (?:municipio|ciudad|vereda|corregimiento|pueblo|barrio|departamento|region|poblacion|localidad|caserio|el|la))/u;
+/**
+ * D-15 · ¿El texto presenta la mención como un lugar? Una palabra de lugar justo antes («vive en…», «del barrio…»). A-5 (ampliación de
+ * D-19): también «a», «para» o «de» justo antes, y un departamento tras la coma o «es un municipio» justo después. Ventanas fijas.
+ * Ante la duda no se une (D-15): «demandó a Ficticio Rojas» cuenta como lugar para unir a una persona con un LUGAR.
+ */
+function lugarIntroducido(text: string, start: number, kind: PartKind, end = start): boolean {
+  const antes = fold(text.slice(Math.max(0, start - 32), start), kind).replace(/\s+/gu, ' ');
+  if (RE_LUGAR_ANTES.test(antes) || RE_LUGAR_ANTES_CORTO.test(antes)) return true;
+  const m = RE_LUGAR_DESPUES.exec(fold(text.slice(end, end + 40), kind).replace(/\s+/gu, ' '));
+  return m !== null && (m[1] === undefined || PALABRAS_DE_LUGAR.has(m[1]));
 }
 
 function esSubsecuencia(sub: readonly string[], seq: readonly string[]): boolean {
@@ -1821,9 +1854,9 @@ function fromCandidate(s: ReviewState, c: DetectionCandidate, part: Part, ids: I
   s.detections[d.id] = d;
   // D-16: la búsqueda de residuos tampoco asigna una variante que comparten dos o más personas de la lista.
   if (candidatasAmbiguas(c, d.text, caseList).length > 0) {
-    delete d.caseEntityId; d.role = 'OTRA_PERSONA'; d.confidence = 'baja'; d.score = Math.min(d.score, 0.3);
+    delete d.caseEntityId; d.role = rolAmbiguo(d.type); d.confidence = 'baja'; d.score = Math.min(d.score, 0.3);
     d.canonicalKey = claveAmbigua(d);
-    attach(s, d, entityByKey(s, d.canonicalKey) ?? newEntity(s, ids, d.canonicalKey, d, 'OTRA_PERSONA'));
+    attach(s, d, entityByKey(s, d.canonicalKey) ?? newEntity(s, ids, d.canonicalKey, d, rolAmbiguo(d.type)));
     return d;
   }
   const ce = c.caseEntityId === undefined ? undefined : entityByKey(s, `LISTA:${c.caseEntityId}`);

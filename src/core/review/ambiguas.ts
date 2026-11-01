@@ -11,7 +11,7 @@
 // No devuelve texto del documento: solo estados, claves e ids. Las candidatas salen de la lista del caso; para las opciones fuera
 // de la lista se compara el texto de las detecciones (entities.ts, `otrasPersonasDelApellido` y `anfitrionasPosibles`).
 import { anfitrionasPosibles, esAmbigua, esClaveAmbigua, otrasPersonasDelApellido } from '../entities.ts';
-import { personasDeLaVariante } from '../caselist.ts';
+import { entidadesAmbiguasDeLaVariante, personasDeLaVariante } from '../caselist.ts';
 import type { CaseEntity, CaseEntityId, Detection, DetectionId, DocumentModel, EntityId, Part, PartId, ReviewState } from '../types.ts';
 
 /** Mensaje del catálogo para una mención ambigua (8.5, rango M-20xx de PB-3-r3): «elija a quién corresponde». */
@@ -60,7 +60,10 @@ export function decisionesAmbiguas(state: ReviewState, caseList: readonly CaseEn
     let candidatas: CaseEntityId[];
     let fuera: EntityId[];
     if (d.source === 'lista') {
-      candidatas = personasDeLaVariante(d.text, caseList);
+      // A-6 (CIERRE-1): entre una persona y una organización de la lista, o entre dos organizaciones, son esas entidades.
+      const personas = personasDeLaVariante(d.text, caseList);
+      const mixtas = entidadesAmbiguasDeLaVariante(d.text, caseList);
+      candidatas = personas.length >= 2 || mixtas.length < 2 ? personas : mixtas;
       fuera = otrasPersonasDelApellido(state, d, caseList, parts.get(d.partId)?.kind);
     } else {
       const hosts = anfitrionasPosibles(state, d, caseList, parts);

@@ -690,60 +690,10 @@ export function findCaseMentions(part: Part, view: SearchView, caseList: readonl
     nameTokens.set(e.id, new Set(fold(nucleo).split(/[^\p{L}\p{N}]+/u).filter((t) => t.length >= 3 && !FUNCION_SET.has(t))));
   }
 
-  // 1-3. Un patrón por variante activa; posiciones canónicas; filtro de forma.
-  const raw: Hit[] = [];
-  for (const e of caseList) {
-    for (const vr of e.variants) {
-      if (!vr.enabled) continue;
-      const mt = makeMatcher(e, vr);
-      if (mt === null) continue;
-      const key = variantKey(e, vr);
-      for (const m of view.text.matchAll(mt.re)) {
-        const ns = m.index;
-        const ne = ns + m[0].length;
-        if (ne <= ns) continue;
-        const c = toCanonicalSpan(view, ns, ne);
-        const slice = text.slice(c.start, c.end);
-        const suf = mt.org ? m[1] : undefined;
-        // Tramo sin la cola de sufijo (para el filtro de forma y para refinar la clase).
-        let coreSlice = slice;
-        if (suf !== undefined && suf !== '') {
-          let ce = ne - suf.length;
-          while (ce > ns && /[ ,]/u.test(view.text.charAt(ce - 1))) ce--;
-          if (ce > ns) { const cc = toCanonicalSpan(view, ns, ce); coreSlice = text.slice(cc.start, cc.end); }
-        }
-        let cls: VariantClass = vr.class;
-        let conf: Confidence = vr.confidence;
-        if (mt.fullOrg) {
-          if (suf !== undefined && suf !== '' && mt.family !== null && suffixFamily(suf) !== mt.family) { cls = 'razon_social_sin_sufijo'; conf = 'media'; }
-          else if ((suf === undefined || suf === '') && mt.family !== null) { cls = 'razon_social_sin_sufijo'; conf = 'media'; }
-          else cls = refineFullClass(mt.family === null ? coreSlice : slice, mt.refText);
-        } else if (cls === 'exacta' || cls === 'sin_tildes' || cls === 'mayusculas') {
-          cls = refineFullClass(slice, mt.refText);
-        }
-        if (mt.needsCase && !caseOk(mt.initials, mt.initials ? slice : coreSlice)) continue;
-        raw.push({ start: c.start, end: c.end, ns, ne, entity: e.id, cls, conf, key, alternatives: [], classBy: new Map() });
-      }
-    }
-  }
+  const raw = coincidenciasDeLaLista(text, view, caseList);
 
   // 4. Resolución interna: longitud descendente, confianza, posición; idéntico de otra entidad = alternativa.
-  raw.sort((a, b) => (b.end - b.start) - (a.end - a.start) || RANGO[b.conf] - RANGO[a.conf] || a.start - b.start);
-  const acc: Hit[] = [];
-  for (const r of raw) {
-    const same = acc.find((a) => a.start === r.start && a.end === r.end);
-    if (same !== undefined) {
-      if (same.entity !== r.entity && !same.alternatives.includes(r.entity)) {
-        same.alternatives.push(r.entity);
-        if (!same.classBy.has(r.entity)) same.classBy.set(r.entity, r.cls);
-      }
-      continue;
-    }
-    if (acc.some((a) => r.start < a.end && a.start < r.end)) continue;
-    r.classBy.set(r.entity, r.cls);
-    acc.push(r);
-  }
-  acc.sort((a, b) => a.start - b.start);
+  const acc = resolverIdenticos(raw);
 
   // 5-6. Ambigüedad y ajustes de confianza (7.9.5).
   const fuerte = (x: Hit): boolean => x.alternatives.length === 0 && (owners.get(x.key)?.size ?? 0) <= 1
@@ -752,8 +702,11 @@ export function findCaseMentions(part: Part, view: SearchView, caseList: readonl
   // entidad en la parte. La variante compartida va a la candidata con más; a igualdad decide la más cercana antes del tramo (b).
   // D-16 (PB-3-r3): si la comparten dos o más PERSONAS de la lista, la dueña que sale de aquí es solo provisional. La fusión la
   // necesita (D-03 B y E de merge.ts miran el `caseEntityId` para ceder o extender), pero `buildDetectionSet` deja la detección
-  // sin entidad de la lista y con una decisión obligatoria del revisor (`personasDeLaVariante`). Entre una persona y una
-  // organización la regla sigue decidiendo.
+  // sin entidad de la lista y con una decisión obligatoria del revisor (`personasDeLaVariante`).
+  // A-6 (CIERRE-1, ampliación de D-19): entre una persona y una organización de la lista, o entre dos organizaciones, la variante va
+  // a la entidad cuyo nombre exacto es (clase `exacta`, `mayusculas` o `sin_tildes`); si no es el nombre exacto de ninguna, la dueña
+  // de aquí también es provisional y `buildDetectionSet` la deja ambigua (`entidadesAmbiguasDeLaVariante`). Ya no decide la cuenta de
+  // menciones fuertes.
   const fuertes = new Map<CaseEntityId, number>();
   for (const x of acc) if (fuerte(x)) fuertes.set(x.entity, (fuertes.get(x.entity) ?? 0) + 1);
   for (const a of acc) {
@@ -762,6 +715,14 @@ export function findCaseMentions(part: Part, view: SearchView, caseList: readonl
     const sharers = owners.get(a.key);
     if (a.alternatives.length > 0 || (sharers !== undefined && sharers.size > 1)) {
       const all = [a.entity, ...a.alternatives];
+      const exacta = nombreExactoEntre(a, all, byId);
+      if (exacta !== null) {
+        a.alternatives = all.filter((id) => id !== exacta);
+        a.cls = a.classBy.get(exacta) ?? a.cls;
+        a.entity = exacta;
+        if (isPossessive(view.text.slice(a.ne, a.ne + 3))) a.cls = 'posesivo';
+        continue;
+      }
       let owner: CaseEntityId | null = null;
       const persons = all.filter((id) => byId.get(id)?.kind === 'persona');
       if (trat && persons.length === 1) owner = at(persons, 0);
@@ -816,6 +777,101 @@ export function findCaseMentions(part: Part, view: SearchView, caseList: readonl
     });
   }
   return out;
+}
+
+const CLASES_COMPLETAS: ReadonlySet<string> = new Set(['exacta', 'mayusculas', 'sin_tildes']);
+
+/**
+ * A-6 (CIERRE-1, ampliación de D-19) · Entre las entidades `all` que comparten el tramo `a`, si alguna es una organización: la única
+ * cuyo nombre exacto es el tramo (clase `exacta`, `mayusculas` o `sin_tildes`), o null si no hay una sola. Solo personas: null
+ * (lo decide D-16).
+ */
+function nombreExactoEntre(a: Hit, all: readonly CaseEntityId[], byId: ReadonlyMap<CaseEntityId, CaseEntity>): CaseEntityId | null {
+  if (!all.some((id) => byId.get(id)?.kind === 'organizacion')) return null;
+  const completas = all.filter((id) => CLASES_COMPLETAS.has(a.classBy.get(id) ?? ''));
+  return completas.length === 1 ? (completas[0] as CaseEntityId) : null;
+}
+
+/**
+ * A-6 (CIERRE-1, ampliación de D-19) · Entidades de la lista entre las que el revisor tiene que elegir para el texto de una mención
+ * de la lista, cuando entre ellas hay una organización: las dos o más (una persona y una organización, o dos organizaciones) cuyas
+ * variantes casan con el texto entero, si no es el nombre exacto de una sola. [] si no es ambigua así (entre personas decide D-16,
+ * `personasDeLaVariante`). Un tratamiento pegado delante no cuenta. Lee la lista; no la modifica.
+ */
+export function entidadesAmbiguasDeLaVariante(texto: string, caseList: readonly CaseEntity[]): CaseEntityId[] {
+  if (!caseList.some((e) => e.kind === 'organizacion')) return [];
+  let t = texto.trim();
+  const v0 = buildSearchView(t, 'lista', 'cuerpo');
+  const tr = reTratamientoInicial.exec(v0.text);
+  if (tr !== null && tr[0].length < v0.text.length) t = t.slice(v0.startMap[tr[0].length]).trim();
+  const view = buildSearchView(t, 'lista', 'cuerpo');
+  const hits = coincidenciasDeLaLista(t, view, caseList).filter((h) => h.start === 0 && h.end === t.length);
+  const ids = [...new Set(hits.map((h) => h.entity))];
+  const byId = new Map(caseList.map((e) => [e.id, e]));
+  if (ids.length < 2 || !ids.some((id) => byId.get(id)?.kind === 'organizacion')) return [];
+  const completas = ids.filter((id) => hits.some((h) => h.entity === id && CLASES_COMPLETAS.has(h.cls)));
+  return completas.length === 1 ? [] : caseList.filter((e) => ids.includes(e.id)).map((e) => e.id);
+}
+
+/** 1-3 · Un patrón por variante activa; posiciones canónicas; filtro de forma (findCaseMentions). */
+function coincidenciasDeLaLista(text: string, view: SearchView, caseList: readonly CaseEntity[]): Hit[] {
+  const raw: Hit[] = [];
+  for (const e of caseList) {
+    for (const vr of e.variants) {
+      if (!vr.enabled) continue;
+      const mt = makeMatcher(e, vr);
+      if (mt === null) continue;
+      const key = variantKey(e, vr);
+      for (const m of view.text.matchAll(mt.re)) {
+        const ns = m.index;
+        const ne = ns + m[0].length;
+        if (ne <= ns) continue;
+        const c = toCanonicalSpan(view, ns, ne);
+        const slice = text.slice(c.start, c.end);
+        const suf = mt.org ? m[1] : undefined;
+        // Tramo sin la cola de sufijo (para el filtro de forma y para refinar la clase).
+        let coreSlice = slice;
+        if (suf !== undefined && suf !== '') {
+          let ce = ne - suf.length;
+          while (ce > ns && /[ ,]/u.test(view.text.charAt(ce - 1))) ce--;
+          if (ce > ns) { const cc = toCanonicalSpan(view, ns, ce); coreSlice = text.slice(cc.start, cc.end); }
+        }
+        let cls: VariantClass = vr.class;
+        let conf: Confidence = vr.confidence;
+        if (mt.fullOrg) {
+          if (suf !== undefined && suf !== '' && mt.family !== null && suffixFamily(suf) !== mt.family) { cls = 'razon_social_sin_sufijo'; conf = 'media'; }
+          else if ((suf === undefined || suf === '') && mt.family !== null) { cls = 'razon_social_sin_sufijo'; conf = 'media'; }
+          else cls = refineFullClass(mt.family === null ? coreSlice : slice, mt.refText);
+        } else if (cls === 'exacta' || cls === 'sin_tildes' || cls === 'mayusculas') {
+          cls = refineFullClass(slice, mt.refText);
+        }
+        if (mt.needsCase && !caseOk(mt.initials, mt.initials ? slice : coreSlice)) continue;
+        raw.push({ start: c.start, end: c.end, ns, ne, entity: e.id, cls, conf, key, alternatives: [], classBy: new Map() });
+      }
+    }
+  }
+  return raw;
+}
+
+/** 4 · Resolución interna: longitud descendente, confianza, posición; idéntico de otra entidad = alternativa. */
+function resolverIdenticos(raw: Hit[]): Hit[] {
+  raw.sort((a, b) => (b.end - b.start) - (a.end - a.start) || RANGO[b.conf] - RANGO[a.conf] || a.start - b.start);
+  const acc: Hit[] = [];
+  for (const r of raw) {
+    const same = acc.find((a) => a.start === r.start && a.end === r.end);
+    if (same !== undefined) {
+      if (same.entity !== r.entity && !same.alternatives.includes(r.entity)) {
+        same.alternatives.push(r.entity);
+        if (!same.classBy.has(r.entity)) same.classBy.set(r.entity, r.cls);
+      }
+      continue;
+    }
+    if (acc.some((a) => r.start < a.end && a.start < r.end)) continue;
+    r.classBy.set(r.entity, r.cls);
+    acc.push(r);
+  }
+  acc.sort((a, b) => a.start - b.start);
+  return acc;
 }
 
 /** Comodidad: construye la vista 'lista' de la parte y busca. */

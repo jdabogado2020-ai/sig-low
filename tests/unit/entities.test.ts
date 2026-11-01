@@ -551,8 +551,10 @@ describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1
     // D-15 (PB-3-r3, C5): el mismo texto exacto con otra etiqueta sí se une; por el núcleo (C3) entre tipos, nunca.
     let doc = mkDoc([['cuerpo', 'la ambulancia de Papelería Ficticia no llegó; Papelería Ficticia Ltda. cotizó y la Papelería Ficticia respondió.']]);
     let s = con(doc, [org(doc, 'Papelería Ficticia'), org(doc, 'Papelería Ficticia Ltda.'), per(doc, 'Papelería Ficticia', 2)]);
-    expect(grupos(s)).toEqual([['Papelería Ficticia', 'Papelería Ficticia Ltda.', 'Papelería Ficticia']]);
-    expect(dets(s).map((d) => d.type)).toEqual(['EMPRESA', 'EMPRESA', 'EMPRESA']);
+    // A-5 (CIERRE-1, ampliación de D-19): la sociedad lleva sufijo, así que «Papelería Ficticia» sin él no es su nombre completo, y
+    // una persona nunca se une a la sociedad de su nombre. Antes: un solo grupo.
+    expect(grupos(s)).toEqual([['Papelería Ficticia', 'Papelería Ficticia Ltda.'], ['Papelería Ficticia']]);
+    expect(dets(s).map((d) => d.type)).toEqual(['EMPRESA', 'EMPRESA', 'PERSONA']);
     doc = mkDoc([['cuerpo', 'cuando Ficticio negó la atención y luego Ficticio volvió a negarla']]);
     s = con(doc, [loc(doc, 'Ficticio'), org(doc, 'Ficticio', 1)]);
     expect(grupos(s)).toEqual([['Ficticio', 'Ficticio']]);
@@ -576,10 +578,10 @@ describe('T-MO-06 · correferencia de PB-3-r1: mismo dato, mismo marcador (6.6.1
     const s = con(doc, [lst(doc, 'Santiago Prueba Rojas', CAS_S, 'exacta', 0, { extended: true, confidence: 'media' }), per(doc, 'Prueba Rojas'),
       mc(doc, 0, 'Prueba Rojas', { type: 'EMPRESA', source: 'modelo', nerLabel: 'ORG', canonicalKey: orgKey('Prueba Rojas') }, 1)],
     [persona(CAS_S, 'Santiago Prueba')]);
-    // La misma forma de dos palabras que el modelo etiquetó ORG es la forma corta que ya es de la persona (D-15, C5; antes D-14 la
-    // dejaba aparte): pasa a persona, con confianza baja.
-    expect(grupos(s)).toEqual([['Santiago Prueba Rojas', 'Prueba Rojas', 'Prueba Rojas']]);
-    expect(dets(s).map((d) => `${d.type}:${d.confidence}`)).toEqual(['PERSONA:media', 'PERSONA:baja', 'PERSONA:baja']);
+    // A-5 (CIERRE-1, ampliación de D-19): la misma forma de dos palabras que el modelo etiquetó ORG es la forma corta que S-7.11 unió
+    // a la persona, no su nombre completo: queda aparte, como antes de PB-3-r3 (D-14). La forma corta PER sí es de la persona.
+    expect(grupos(s)).toEqual([['Santiago Prueba Rojas', 'Prueba Rojas'], ['Prueba Rojas']]);
+    expect(dets(s).map((d) => `${d.type}:${d.confidence}`)).toEqual(['PERSONA:media', 'PERSONA:baja', 'EMPRESA:media']);
     // Una forma hecha solo de palabras del nombre de la lista es una variante: la busca la lista, no la correferencia.
     const d2 = mkDoc([['cuerpo', 'Ana Ficticia Rojas declaró. Rojas (otra persona) no vino.']]);
     const s2 = con(d2, [mc(d2, 0, 'Ana Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'exacta', canonicalKey: `LISTA:${CAS_A}` }),
@@ -1236,25 +1238,27 @@ describe('T-MO-06 · PB-3-r3: la variante ambigua la decide el revisor (D-16) y 
     return s;
   }
 
-  it('INV-R12 D-15 C5 la misma forma con otra etiqueta se une: C07-E58, C09-E22, C18-E06, C03-E49 y la lista (C11-E08), al construir y por ventana', () => {
-    // C07-E58 · «Papelería Ficticia» etiquetada PER es la ORG del mismo texto.
+  it('INV-R12 D-15 C5 tras A-5: la misma forma con otra etiqueta solo se une al nombre completo exacto de una sola anfitriona (C03-E49); C07-E58, C09-E22, C18-E06 y C11-E08 quedan aparte, al construir y por ventana', () => {
+    // A-5 (CIERRE-1, ampliación de D-19): antes las cinco se unían. Ahora C07-E58 no (la sociedad lleva sufijo: una persona nunca se
+    // une a la sociedad de su nombre), ni C09-E22, C18-E06 y C11-E08 (la forma corta que S-7.11 unió a la persona no es su nombre).
+    // C07-E58 · «Papelería Ficticia» etiquetada PER y la sociedad «Papelería Ficticia Ltda.».
     let doc = mkDoc([['cuerpo', 'la ambulancia de Papelería Ficticia no llegó. La cotización de Papelería Ficticia Ltda. asciende a dos millones. la ambulancia de Papelería Ficticia no llegó.']]);
     let c = [org(doc, 'Papelería Ficticia'), org(doc, 'Papelería Ficticia Ltda.'), per(doc, 'Papelería Ficticia', 2)];
     for (const s of [con(doc, c), porVentanas(doc, c)]) {
-      expect(grupos(s)).toEqual([['Papelería Ficticia', 'Papelería Ficticia Ltda.', 'Papelería Ficticia']]);
-      expect(dets(s).map((d) => `${d.type}:${d.role}`)).toEqual(['EMPRESA:EMPRESA', 'EMPRESA:EMPRESA', 'EMPRESA:EMPRESA']);
+      expect(grupos(s)).toEqual([['Papelería Ficticia', 'Papelería Ficticia Ltda.'], ['Papelería Ficticia']]);
+      expect(dets(s).map((d) => d.type)).toEqual(['EMPRESA', 'EMPRESA', 'PERSONA']);
     }
-    // C09-E22 · la forma corta etiquetada ORG («Ficticio⏎Barrera») llega antes de la forma corta PER que S-7.11 une a Héctor Fabio.
+    // C09-E22 · la forma corta etiquetada ORG («Ficticio⏎Barrera») y la forma corta PER que S-7.11 une a Héctor Fabio.
     doc = mkDoc([['cuerpo', 'Héctor Fabio Ficticio Barrera declaró. El vehículo es de propiedad de Ficticio\nBarrera, dijo. Luego reportó a Ficticio Barrera como retirado.']]);
     c = [per(doc, 'Héctor Fabio Ficticio Barrera'), org(doc, 'Ficticio\nBarrera'), per(doc, 'Ficticio Barrera', 1)];
     for (const s of [con(doc, c), porVentanas(doc, c)]) {
-      expect(grupos(s)).toEqual([['Héctor Fabio Ficticio Barrera', 'Ficticio\nBarrera', 'Ficticio Barrera']]);
-      expect(dets(s).map((d) => `${d.type}:${d.confidence}`)).toEqual(['PERSONA:media', 'PERSONA:baja', 'PERSONA:baja']);
+      expect(grupos(s)).toEqual([['Héctor Fabio Ficticio Barrera', 'Ficticio Barrera'], ['Ficticio\nBarrera']]);
+      expect(dets(s).map((d) => d.type)).toEqual(['PERSONA', 'EMPRESA', 'PERSONA']);
     }
     // C18-E06 · la forma corta ORG llega después de la PER, que ya es de Elizabeth.
     doc = mkDoc([['cuerpo', 'Elizabeth Ficticia Valencia firmó. Para constancia Ficticia Valencia lo suscribe. Revisar la T.P. 104 de Ficticia Valencia y el NIT.']]);
     c = [per(doc, 'Elizabeth Ficticia Valencia'), per(doc, 'Ficticia Valencia', 1), org(doc, 'Ficticia Valencia', 2)];
-    for (const s of [con(doc, c), porVentanas(doc, c)]) expect(grupos(s)).toEqual([['Elizabeth Ficticia Valencia', 'Ficticia Valencia', 'Ficticia Valencia']]);
+    for (const s of [con(doc, c), porVentanas(doc, c)]) expect(grupos(s)).toEqual([['Elizabeth Ficticia Valencia', 'Ficticia Valencia'], ['Ficticia Valencia']]);
     // C03-E49 · «Ficticio» LOC y ORG son uno; no se van con Ricardo Ficticio Ortiz, aunque S-7.11 le unió «el especialista Ficticio».
     doc = mkDoc([['cuerpo', 'el doctor Ricardo Ficticio Ortiz, médico tratante. Un vecino presenció cuando Ficticio negó la atención. El especialista Ficticio prescribió reposo. Otro vecino presenció cuando Ficticio negó la atención.']]);
     c = [per(doc, 'Ricardo Ficticio Ortiz'), loc(doc, 'Ficticio', 1), per(doc, 'Ficticio', 2), org(doc, 'Ficticio', 3)];
@@ -1262,15 +1266,15 @@ describe('T-MO-06 · PB-3-r3: la variante ambigua la decide el revisor (D-16) y 
       expect(grupos(s)).toEqual([['Ricardo Ficticio Ortiz', 'Ficticio'], ['Ficticio', 'Ficticio']]);
       expect(entOf(s, 'Ricardo Ficticio Ortiz').mentions).toHaveLength(2);
     }
-    // C11-E08 · la anfitriona es la persona de la lista: la ORG «Ejemplo Orozco» es su forma corta.
+    // C11-E08 · la ORG «Ejemplo Orozco» es la forma corta de la persona de la lista: tras A-5 queda aparte.
     const CAS = 'cas_000000000000000000000000000000d1' as CaseEntityId;
     const lista: CaseEntity[] = [{ id: CAS, name: 'Alejandro Ejemplo', variants: [], kind: 'persona', role: 'DEMANDANTE' }];
     doc = mkDoc([['cuerpo', 'Alejandro Ejemplo Orozco demandó. Ejemplo Orozco nació en 1965. El cobro a nombre de Ejemplo Orozco sigue.']]);
     c = [mc(doc, 0, 'Alejandro Ejemplo Orozco', { type: 'PERSONA', source: 'lista', caseEntityId: CAS, variantClass: 'exacta', canonicalKey: `LISTA:${CAS}`,
       role: 'DEMANDANTE', extended: true }), per(doc, 'Ejemplo Orozco', 1), org(doc, 'Ejemplo Orozco', 2)];
     for (const s of [con(doc, c, lista), porVentanas(doc, c, lista)]) {
-      expect(grupos(s)).toEqual([['Alejandro Ejemplo Orozco', 'Ejemplo Orozco', 'Ejemplo Orozco']]);
-      expect(markers(s).map(([, m]) => m)).toEqual(['[DEMANDANTE_1]', '[DEMANDANTE_1]', '[DEMANDANTE_1]']);
+      expect(grupos(s)).toEqual([['Alejandro Ejemplo Orozco', 'Ejemplo Orozco'], ['Ejemplo Orozco']]);
+      expect(markers(s).map(([, m]) => m)).toEqual(['[DEMANDANTE_1]', '[DEMANDANTE_1]', '[EMPRESA_1]']);
     }
   });
 
@@ -1296,6 +1300,48 @@ describe('T-MO-06 · PB-3-r3: la variante ambigua la decide el revisor (D-16) y 
     s = con(doc, [per(doc, 'Ricardo Ficticio Ortiz'), per(doc, 'Ficticio', 1), org(doc, 'Ficticio', 2)]);
     expect(grupos(s)).toEqual([['Ricardo Ficticio Ortiz', 'Ficticio'], ['Ficticio']]);
     expect(entOf(s, 'Ricardo Ficticio Ortiz').type).toBe('PERSONA');
+  });
+
+  // A-5 (CIERRE-1, ampliación de D-19; segunda pasada de PB-3-r3): las sondas C5a, C5h, C5c y C5d. Antes, un solo marcador.
+  it('INV-R12 A-5 C5a y C5h: la persona nunca se une a la sociedad de su nombre, escrita con o sin sufijo, de una vez y por ventana', () => {
+    const doc = mkDoc([['cuerpo', 'Pedro Ejemplo Gómez, representante legal, firmó. Pedro Ejemplo Gómez S.A.S. pagó. La sociedad Pedro Ejemplo Gómez incumplió.']]);
+    const c = [per(doc, 'Pedro Ejemplo Gómez'), org(doc, 'Pedro Ejemplo Gómez S.A.S.'), org(doc, 'Pedro Ejemplo Gómez', 2)];
+    for (const s of [con(doc, c), porVentanas(doc, c)]) {
+      expect(grupos(s)).toEqual([['Pedro Ejemplo Gómez'], ['Pedro Ejemplo Gómez S.A.S.', 'Pedro Ejemplo Gómez']]);
+      expect(markers(s).map(([, m]) => m)).toEqual(['[PERSONA_1]', '[EMPRESA_1]', '[EMPRESA_1]']);
+    }
+    // Por ventana con la sociedad en la segunda (C5h).
+    const d2 = mkDoc([['cuerpo', 'Pedro Ejemplo Gómez firmó. Pedro Ejemplo Gómez S.A.S. pagó y Pedro Ejemplo Gómez incumplió.']]);
+    const s2 = porVentanas(d2, [per(d2, 'Pedro Ejemplo Gómez'), org(d2, 'Pedro Ejemplo Gómez S.A.S.'), org(d2, 'Pedro Ejemplo Gómez', 2)]);
+    expect(entOf(s2, 'Pedro Ejemplo Gómez').type).toBe('PERSONA');
+    expect(markers(s2)[0]?.[1]).toBe('[PERSONA_1]');
+  });
+
+  it('INV-R12 A-5 C5c: una organización no se une a la forma corta que S-7.11 unió a una persona', () => {
+    const doc = mkDoc([['cuerpo', 'Héctor Fabio Ficticio Barrera declaró. Ficticio Barrera insistió. La firma Ficticio Barrera cobró.']]);
+    const c = [per(doc, 'Héctor Fabio Ficticio Barrera'), per(doc, 'Ficticio Barrera', 1), org(doc, 'Ficticio Barrera', 2)];
+    for (const s of [con(doc, c), porVentanas(doc, c)]) {
+      expect(grupos(s)).toEqual([['Héctor Fabio Ficticio Barrera', 'Ficticio Barrera'], ['Ficticio Barrera']]);
+      expect(markers(s).map(([, m]) => m)).toEqual(['[PERSONA_1]', '[PERSONA_1]', '[EMPRESA_1]']);
+    }
+  });
+
+  it('INV-R12 A-5 C5d: una persona y un municipio que se escriben igual quedan aparte si el texto presenta el lugar después o con «a»', () => {
+    let doc = mkDoc([['cuerpo', 'Ficticio Rojas declaró. Ficticio Rojas es un municipio frío.']]);
+    let c = [per(doc, 'Ficticio Rojas'), loc(doc, 'Ficticio Rojas', 1)];
+    for (const s of [con(doc, c), porVentanas(doc, c)]) expect(grupos(s)).toEqual([['Ficticio Rojas'], ['Ficticio Rojas']]);
+    doc = mkDoc([['cuerpo', 'Ficticio Rojas declaró. Llegó a Ficticio Rojas, Nariño.']]);
+    c = [per(doc, 'Ficticio Rojas'), loc(doc, 'Ficticio Rojas', 1)];
+    for (const s of [con(doc, c), porVentanas(doc, c)]) expect(grupos(s)).toEqual([['Ficticio Rojas'], ['Ficticio Rojas']]);
+  });
+
+  it('INV-R12 A-5 controles: la misma forma sin sufijo con otra etiqueta (C07) y un solo apellido de lugar y firma (C03-E49) se siguen uniendo', () => {
+    let doc = mkDoc([['cuerpo', 'la ambulancia de Papelería Ficticia no llegó y la Papelería Ficticia respondió.']]);
+    let c = [org(doc, 'Papelería Ficticia'), per(doc, 'Papelería Ficticia', 1)];
+    for (const s of [con(doc, c), porVentanas(doc, c)]) expect(grupos(s)).toEqual([['Papelería Ficticia', 'Papelería Ficticia']]);
+    doc = mkDoc([['cuerpo', 'cuando Ficticio negó la atención y luego Ficticio volvió a negarla']]);
+    c = [loc(doc, 'Ficticio'), org(doc, 'Ficticio', 1)];
+    for (const s of [con(doc, c), porVentanas(doc, c)]) expect(grupos(s)).toEqual([['Ficticio', 'Ficticio']]);
   });
 
   it('D-15 C5 y D-16 son lineales: 40.000 blancos dentro de la forma o antes de la variante no los hacen lentos', () => {
@@ -1788,6 +1834,47 @@ describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de
     const { s } = await tuberia(texto, LISTA_PEDRO, [[['Pedro Ejemplo Prueba', 'PER', 0]]]);
     expect(marcadorEn(s, texto, 'Pedro Ejemplo')).toBe('[DEMANDANTE_1]');
     expect(marcadorEn(s, texto, 'Pedro Ejemplo Prueba')).toMatch(/^\[PERSONA_[0-9]+\]$/u);
+  });
+
+  // A-6 (CIERRE-1, ampliación de D-19; segunda pasada de PB-3-r3): R4 y R5. Antes iban todas a la entidad con más menciones fuertes.
+  it('INV-L03 A-6 R5: con la persona y su sociedad en la lista, el nombre exacto de cada una es suyo, con o sin tratamiento', async () => {
+    const lista: Lista = [['Pedro Ejemplo Gómez', 'persona', 'DEMANDANTE'], ['Pedro Ejemplo Gómez S.A.S.', 'organizacion', 'EMPRESA' as Role]];
+    for (const texto of ['Pedro Ejemplo Gómez firmó por Pedro Ejemplo Gómez S.A.S. Pedro Ejemplo Gómez pagó.',
+      'El señor Pedro Ejemplo Gómez firmó por Pedro Ejemplo Gómez S.A.S. Luego el señor Pedro Ejemplo Gómez pagó.']) {
+      const { s, caseList } = await tuberia(texto, lista);
+      // Antes: [EMPRESA_1] las tres (la sociedad tenía la única mención fuerte).
+      expect(marcadorEn(s, texto, 'Pedro Ejemplo Gómez', 0)).toBe('[DEMANDANTE_1]');
+      expect(marcadorEn(s, texto, 'Pedro Ejemplo Gómez S.A.S.')).toBe('[EMPRESA_1]');
+      expect(marcadorEn(s, texto, 'Pedro Ejemplo Gómez', 2)).toBe('[DEMANDANTE_1]');
+      expect(contarAmbiguas(s)).toBe(0);
+      expect(s.entities[enPos(s, texto, 'Pedro Ejemplo Gómez S.A.S.').entityId]?.caseEntityId).toBe((caseList[1] as CaseEntity).id);
+    }
+  });
+
+  it('INV-L03 INV-G06 A-6 R4: con dos sociedades del mismo núcleo, el nombre exacto de cada una es suyo; el núcleo solo queda ambiguo y cierra la puerta', async () => {
+    const lista: Lista = [['Inversiones Ejemplo S.A.S.', 'organizacion', 'EMPRESA' as Role], ['Inversiones Ejemplo Ltda.', 'organizacion', 'EMPRESA' as Role]];
+    const texto = 'Inversiones Ejemplo S.A.S. e Inversiones Ejemplo Ltda. firmaron. Inversiones Ejemplo pagó.';
+    const { s: s0, ctx, caseList } = await tuberia(texto, lista);
+    const [sas, ltda] = [caseList[0] as CaseEntity, caseList[1] as CaseEntity];
+    // Antes: «Inversiones Ejemplo Ltda.» era de la primera, y la segunda se quedaba sin menciones.
+    expect(s0.entities[enPos(s0, texto, 'Inversiones Ejemplo S.A.S.').entityId]?.caseEntityId).toBe(sas.id);
+    expect(s0.entities[enPos(s0, texto, 'Inversiones Ejemplo Ltda.').entityId]?.caseEntityId).toBe(ltda.id);
+    const d = enPos(s0, texto, 'Inversiones Ejemplo', 2);
+    expect(esAmbigua(s0, d)).toBe(true);
+    expect(d).toMatchObject({ type: 'EMPRESA', role: 'EMPRESA', confidence: 'baja' });
+    expect(decisionesAmbiguas(s0, caseList).find((x) => x.detectionId === d.id)?.candidatas).toEqual([sas.id, ltda.id]);
+    let s = aceptarTodo(s0, ctx);
+    expect(exportGate(s, sinResiduos(s), TODAS).reasons).toContain('PENDIENTES');
+    s = act(s, { kind: 'unir_entidades', fromId: d.entityId, intoId: enPos(s, texto, 'Inversiones Ejemplo Ltda.').entityId }, ctx);
+    const t = aceptarTodo(s, ctx);
+    expect(exportGate(t, sinResiduos(t), TODAS)).toEqual({ ok: true, reasons: [] });
+  });
+
+  it('INV-L03 A-6 controles: una sola sociedad en la lista sigue tomando su nombre sin sufijo; dos personas siguen con D-16', async () => {
+    const texto = 'Inversiones Ejemplo S.A.S. firmó. Inversiones Ejemplo pagó.';
+    const { s } = await tuberia(texto, [['Inversiones Ejemplo S.A.S.', 'organizacion', 'EMPRESA' as Role]]);
+    expect([marcadorEn(s, texto, 'Inversiones Ejemplo S.A.S.'), marcadorEn(s, texto, 'Inversiones Ejemplo', 1)]).toEqual(['[EMPRESA_1]', '[EMPRESA_1]']);
+    expect(contarAmbiguas(s)).toBe(0);
   });
 
   it('INV-L03 M-82 a: la variante de los dos apellidos de la lista que también lleva otra persona del modelo queda ambigua (M10 y M11)', async () => {
