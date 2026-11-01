@@ -380,6 +380,27 @@ describe('T-MO-05 · bordes entre la lista y un tramo extendido por el modelo (7
       .toEqual(['PERSONA:«señora Ana Ficticia Rojas Prueba»:media:extendido']);   // AJ-6 (D-16): con el tratamiento pegado dentro del tramo
   });
 
+  it('INV-R02 A-4 (PB-3-r4) la regla E no extiende la lista al pariente que la oración presenta como tal, con texto en medio o con otra palabra de relación', () => {
+    // Las tres sondas de la regla E de la revisión (antes la lista tomaba el nombre del pariente) y las palabras nuevas.
+    const casos: Array<[string, string]> = [
+      ['La madre de la demandante, Ana Ficticia Rojas Prueba, declaró.', 'Ana Ficticia Rojas'],
+      ['Su hija menor de edad Ana Ficticia Rojas Prueba declaró.', 'Ana Ficticia Rojas'],
+      ['Ana Ficticia Rojas Prueba, quien es hija de Ana Ficticia Rojas, declaró.', 'Ana Ficticia Rojas'],
+      ['Su ahijada Ana Ficticia Rojas Prueba declaró.', 'Ana Ficticia Rojas'],
+      ['Su apoderada en este proceso es Ana Ficticia Rojas Prueba.', 'Ana Ficticia Rojas'],
+    ];
+    for (const [t, corto] of casos) {
+      const o = run(t, [lista(t, corto), per(t, 'Ana Ficticia Rojas Prueba')], NO_RULES, 'cuerpo', deAnaFicticiaRojas);
+      expect(o.filter((d) => t.slice(d.start, d.end).startsWith('Ana Ficticia Rojas Prueba')).map((d) => `${d.source}:${t.slice(d.start, d.end)}`), t)
+        .toEqual(['modelo:Ana Ficticia Rojas Prueba']);
+      expect(o.some((d) => d.caseEntityId === CAS_A && d.start === t.indexOf('Ana Ficticia Rojas Prueba')), t).toBe(false);
+    }
+    // En otra oración, el parentesco no cuenta (D-13): la regla E extiende como siempre.
+    const t = 'La madre vino ayer. Ana Ficticia Rojas Prueba declaró.';
+    expect(show(t, run(t, [lista(t, 'Ana Ficticia Rojas'), per(t, 'Ana Ficticia Rojas Prueba')], NO_RULES, 'cuerpo', deAnaFicticiaRojas)))
+      .toEqual(['PERSONA:«Ana Ficticia Rojas Prueba»:media:extendido']);
+  });
+
   it('INV-R02 una organización de la lista se extiende solo con un ORG del modelo', () => {
     const t = 'pagó Ferretería Ejemplo Prueba ayer';
     const emp = mk(t, 'Ferretería Ejemplo', { type: 'EMPRESA', source: 'lista', caseEntityId: CAS_F, confidence: 'alta', canonicalKey: `LISTA:${CAS_F}` });
@@ -903,6 +924,17 @@ describe('T-MO-05 · fusión de una ventana del modelo contra lo ya fusionado (7
     t = 'Asistió Ana Ficticia Rojas al despacho';
     const ap2 = mk(t, 'Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'apellidos', confidence: 'media', canonicalKey: `LISTA:${CAS_A}` });
     expect(show(t, porVentana(t, [ap2], [per(t, 'Ana Ficticia Rojas')], NO_RULES, deAna))).toEqual(['PERSONA:«Ana Ficticia Rojas»:media:extendido']);
+  });
+
+  it('INV-R02 INV-R12 A-4 (PB-3-r4) por ventana: el pariente que la oración presenta como tal, con texto en medio, no toma la mención de la lista; la lista cede', () => {
+    const deAna: EsVarianteDe = (id, texto) => id === CAS_A && texto.trim().split(/\s+/u).every((w) => ['ana', 'ficticia', 'rojas'].includes(w.toLowerCase()));
+    for (const t of ['La madre de la demandante, Ana Ficticia Rojas Prueba, declaró.', 'Su hija menor de edad Ana Ficticia Rojas Prueba declaró.',
+      'Ana Ficticia Rojas Prueba, quien es hija de la demandante, declaró.']) {
+      const exacta = mk(t, 'Ana Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'exacta', confidence: 'alta', canonicalKey: `LISTA:${CAS_A}` });
+      const out = porVentana(t, [exacta], [per(t, 'Ana Ficticia Rojas Prueba')], NO_RULES, deAna);
+      expect(show(t, out), t).toEqual(['PERSONA:«Ana Ficticia Rojas Prueba»:media']);
+      expect(out[0]?.source).toBe('modelo');
+    }
   });
 
   it('INV-R02 D-03 A y B el ORG del modelo con un apellido suelto de la lista entra entero, con su sufijo (M3 por ventana)', () => {

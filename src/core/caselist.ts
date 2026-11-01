@@ -421,6 +421,27 @@ export function personasDeLaVariante(text: string, caseList: readonly CaseEntity
   return caseList.filter((e) => e.kind === 'persona' && owners.has(e.id)).map((e) => e.id);
 }
 
+/** Palabras (vista `lista`, sin palabras de función ni tratamientos) de un texto. */
+const palabrasLista = (s: string): string[] => fold(s).split(/[^\p{L}\p{N}]+/u).filter((t) => t !== '' && !FUNCION_SET.has(t));
+
+/**
+ * M-72 (PB-3-r4, decidido; D-16) · ¿El apellido suelto `variante` de la persona `persona` de la lista es también el apellido de
+ * `otro`, el nombre de otra persona que aparece en el texto («Rojas», de «Ana Ficticia Rojas», en «Luis Rojas»)? Sí si `otro`
+ * tiene dos o más palabras de nombre, lleva todas las de la variante después de la primera (el nombre de pila no es un apellido) y
+ * alguna palabra de más de una letra que ni el nombre de `persona` ni sus variantes activas traen: una forma corta del mismo nombre
+ * («Ana Rojas», «A. Rojas») no es otra persona. Con eso la mención de la variante no se asigna a `persona`: queda ambigua y la
+ * decide el revisor, como la que comparten dos personas de la lista (D-16; entities.ts). Vista `lista`; no modifica la lista.
+ */
+export function esApellidoDeOtraPersona(variante: string, persona: CaseEntity, otro: string): boolean {
+  const v = palabrasLista(variante);
+  const o = palabrasLista(otro);
+  if (v.length === 0 || o.length < 2) return false;
+  const apellidos = o.slice(1);
+  if (!v.every((w) => apellidos.includes(w))) return false;
+  const suyas = new Set([persona.name, ...persona.variants.filter((x) => x.enabled).map((x) => x.text)].flatMap(palabrasLista));
+  return o.some((w) => [...w].length > 1 && !suyas.has(w));
+}
+
 // ---------------------------------------------------------------------------
 // «Pegar lista» (6.5.2) y alta de entidades
 // ---------------------------------------------------------------------------

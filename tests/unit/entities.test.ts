@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { newCaseEntity, personasDeLaVariante, refreshVariants } from '../../src/core/caselist.ts';
 import {
-  applyReviewAction, buildReviewState, canonicalKeyFor, consolidate, cryptoIds, emptyTable, esSiglaSilabica, marcaOtroTitular, nitCheckDigit,
+  applyReviewAction, buildReviewState, canonicalKeyFor, consolidate, cryptoIds, emptyTable, esAmbigua, esSiglaSilabica, marcaOtroTitular, nitCheckDigit,
   nitKey, orgKey, palabrasDeNombre, personKey, phoneKey, precedenceOf, tableIndexOf, type ReviewContext,
 } from '../../src/core/entities.ts';
 import { createDetectHandler } from '../../src/core/pipeline.ts';
@@ -750,13 +750,14 @@ describe('T-MO-06 · correferencia de PB-3-r2: nunca dos titulares bajo un marca
     return [...out.values()];
   };
 
-  it('marcaOtroTitular: el parentesco antes, en aposición después o dentro del tramo; un predicado («es hijo de un…») no', () => {
+  it('marcaOtroTitular: el parentesco antes, en aposición después o dentro del tramo; desde A-4 (PB-3-r4), también el predicado', () => {
+    // A-4 (D-15): el predicado («es hijo de un…») y el nombre del que sale el parentesco («los hijos de…») ya marcan a otra persona.
     const si = ['Su hijo Pedro Luis Ejemplo Prueba declaró.', 'la tía, Pedro Luis Ejemplo Prueba, vino', 'Hijo: Pedro Luis Ejemplo Prueba',
       'del hermano menor, el señor Pedro Luis Ejemplo Prueba', 'Pedro Luis Ejemplo Prueba, hijo de Pedro Ejemplo, declaró',
       'Pedro Luis Ejemplo Prueba (su hijo) declaró', 'Pedro Luis Ejemplo Prueba hija de la demandante', 'PEDRO LUIS EJEMPLO PRUEBA JR. FIRMÓ',
-      'Pedro Luis Ejemplo Prueba Junior firmó', 'SU ESPOSA PEDRO LUIS EJEMPLO PRUEBA FIRMÓ'];
-    const no = ['El señor Pedro Luis Ejemplo Prueba declaró.', 'ojo que Pedro Luis Ejemplo Prueba es hijo de un congresista',
-      'los hijos de Pedro Luis Ejemplo Prueba no vinieron', 'Pedro Luis Ejemplo Prueba, identificado con C.C. 1000000001',
+      'Pedro Luis Ejemplo Prueba Junior firmó', 'SU ESPOSA PEDRO LUIS EJEMPLO PRUEBA FIRMÓ',
+      'ojo que Pedro Luis Ejemplo Prueba es hijo de un congresista', 'los hijos de Pedro Luis Ejemplo Prueba no vinieron'];
+    const no = ['El señor Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba, identificado con C.C. 1000000001',
       'Prima de servicios. Pedro Luis Ejemplo Prueba cobró'];
     const at = (t: string): [number, number] => {
       const i = t.toLowerCase().indexOf('pedro luis ejemplo prueba');
@@ -1135,7 +1136,7 @@ describe('T-MO-06 · PB-3-r3: la variante ambigua la decide el revisor (D-16) y 
     // La decisión: las dos personas de la lista como candidatas y sus entidades como opciones, con el mensaje M-2001.
     const ent = (id: CaseEntityId): Entity['id'] => (Object.values(s.entities).find((e) => e.caseEntityId === id) as Entity).id;
     expect(decisionesAmbiguas(s, caseList)).toEqual(amb.map((d) => ({ detectionId: d.id, entityId: d.entityId, candidatas: [adriana.id, nicolas.id],
-      opciones: [ent(adriana.id), ent(nicolas.id)], mensaje: 'M-2001' })));
+      opciones: [ent(adriana.id), ent(nicolas.id)], fuera: [], mensaje: 'M-2001' })));
     expect(contarAmbiguas(s)).toBe(2);
   });
 
@@ -1307,5 +1308,358 @@ describe('T-MO-06 · PB-3-r3: la variante ambigua la decide el revisor (D-16) y 
     const t1 = performance.now();
     expect(personasDeLaVariante(`${blancos}Prueba`, lista)).toHaveLength(2);
     expect(performance.now() - t1).toBeLessThan(300);
+  });
+});
+
+describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de otra persona (M-72), D-16 en el modelo y el rastro de unir_entidades (B-92)', () => {
+  let n = 0;
+  const ids: IdSource = { next: (p) => `${p}_${(0xb0000 + ++n).toString(16).padStart(32, '0')}` };
+  const OPC = { referenceDate: '2026-10-30', rulesVersion: '1.0.0', nerHighThreshold: 0.9, nerMinScore: 0.3 };
+  type Lista = Array<[string, 'persona' | 'organizacion', Role]>;
+  /** La tubería real: `detectar` con la lista del caso y, si hay, una `fusionar` + `incorporar_modelo` por ventana. */
+  async function tuberia(texto: string, lista: Lista, ventanas: Array<Array<[string, NerSpan['label'], number?]>> = [],
+    antes?: (s: ReviewState, ctx: ReviewContext) => ReviewState) {
+    const caseList = refreshVariants(lista.map(([nombre, k, r]) => newCaseEntity(nombre, k, r, ids) as CaseEntity));
+    const doc = mkDoc([['cuerpo', texto]]);
+    const part = doc.parts[0] as DocumentModel['parts'][number];
+    const h = createDetectHandler({ ids });
+    const pedir = async (kind: string, payload: unknown): Promise<DetectionSet & { spanEdits?: SpanEdit[] }> => {
+      const out: Array<{ kind: string; payload?: { set: DetectionSet & { spanEdits?: SpanEdit[] } } }> = [];
+      await h({ v: 1, reqId: `req_${(++n).toString(16).padStart(32, '0')}`, kind, payload }, (m) => out.push(m as (typeof out)[number]));
+      const r = out.find((m) => m.kind === 'resultado');
+      if (r?.payload === undefined) throw new Error('sin resultado');
+      return r.payload.set;
+    };
+    const set = await pedir('detectar', { sessionId: 'ses_r4', doc, caseList, table: EMPTY, options: OPC });
+    let s: ReviewState = { docId: doc.id, revision: 0, detections: Object.fromEntries(set.detections.map((d) => [d.id, d])), order: set.detections.map((d) => d.id),
+      entities: Object.fromEntries(set.entities.map((e) => [e.id, e])), suggestions: {}, flags: {}, spanEdits: {}, committed: false, modelo: modeloInicial(false) };
+    const ctx: ReviewContext = { table: EMPTY, caseList, doc, ids };
+    if (antes !== undefined) s = antes(s, ctx);
+    for (let v = 0; v < ventanas.length; v++) {
+      const spans: NerSpan[] = (ventanas[v] ?? []).map(([sub, label, occ = 0]) => {
+        let i = -1; for (let k = 0; k <= occ; k++) i = texto.indexOf(sub, i + 1);
+        if (i < 0) throw new Error(`falta «${sub}»`);
+        return { start: i, end: i + sub.length, label, score: 0.95 };
+      });
+      const f = await pedir('fusionar', { sessionId: 'ses_r4', ner: { [part.id]: spans }, nerEngineId: 'gliner-x-large', ventana: v + 1, ventanasTotales: ventanas.length });
+      const o = incorporarModelo(s, v + 1, ventanas.length, f, ctx);
+      if (!o.ok) throw new Error(o.code);
+      s = o.state;
+    }
+    return { s, ctx, caseList, doc };
+  }
+  /** La detección que cubre la aparición `occ` de `sub`. */
+  const enPos = (s: ReviewState, texto: string, sub: string, occ = 0): Detection => {
+    let i = -1; for (let k = 0; k <= occ; k++) i = texto.indexOf(sub, i + 1);
+    const d = dets(s).find((x) => x.start <= i && x.end >= i + sub.length && x.status !== 'rechazada');
+    if (d === undefined) throw new Error(`sin detección en «${sub}» (${occ})`);
+    return d;
+  };
+  const marcadorEn = (s: ReviewState, texto: string, sub: string, occ = 0): string | undefined => s.entities[enPos(s, texto, sub, occ).entityId]?.marker;
+  const listo = (s: ReviewState): ReviewState => ({ ...s, modelo: { kind: 'terminado', ventanas: 1, respaldo: false } });
+  const sinResiduos = (s: ReviewState): ResidueResult => ({ revision: s.revision, ranAt: '2026-10-31T10:00:00.000Z', valuesSearched: 1,
+    modes: ['literal'], hits: [], newDetections: 0 });
+  const TODAS = { biometricos: true, reservaLegal: true, estrategia: true };
+  const aceptarTodo = (s0: ReviewState, ctx: ReviewContext): ReviewState => {
+    let s = listo(s0);
+    for (const e of Object.values(s.entities)) s = act(s, { kind: 'aceptar_entidad', entityId: e.id }, ctx);
+    return s;
+  };
+  const grupos = (s: ReviewState): string[][] => {
+    const out = new Map<string, string[]>();
+    for (const d of dets(s)) out.set(d.entityId, [...(out.get(d.entityId) ?? []), d.text]);
+    return [...out.values()];
+  };
+
+  // ---------------------------------------------------------------- A-4
+  /** [inicio, fin) de «Pedro Luis Ejemplo Prueba» (en cualquier caja) en `t`. */
+  const pedroLuis = (t: string): [number, number] => {
+    const i = t.toLowerCase().indexOf('pedro luis ejemplo prueba');
+    return [i, i + 'pedro luis ejemplo prueba'.length];
+  };
+
+  it('A-4 marcaOtroTitular: el parentesco o la relación en cualquier lugar de la misma oración, con lo que haya en medio', () => {
+    const si = [
+      // Las 11 de C1 de la revisión.
+      'El padre del demandante, Pedro Luis Ejemplo Prueba, declaró.', 'Su hijo menor de edad Pedro Luis Ejemplo Prueba declaró.',
+      'Pedro Luis Ejemplo Prueba, quien es hijo de Pedro Ejemplo, declaró.', 'Su hijo, el menor Pedro Luis Ejemplo Prueba, declaró.',
+      'Pedro Luis Ejemplo Prueba, de 10 años, hijo del demandante, declaró.',
+      ...['primogénito', 'ahijado', 'pareja', 'compañero', 'progenitor'].map((w) => `Su ${w} Pedro Luis Ejemplo Prueba declaró.`),
+      'El hijo del señor Pedro Ejemplo, Pedro Luis Ejemplo Prueba, declaró.',
+      // Las demás palabras de la tarjeta y de la revisión, lejos del nombre.
+      ...['cónyuge', 'apoderado', 'novia', 'padrino', 'madrina', 'tutora', 'curador', 'acudiente', 'viuda', 'hermanastro', 'progenitora']
+        .map((w) => `Su ${w} en este proceso es Pedro Luis Ejemplo Prueba.`),
+      // Después del nombre, como objeto: la persona de la lista puede ser el padre.
+      'Comparece Pedro Luis Ejemplo Prueba en representación de su padre.',
+      // Un salto de línea del PDF, MAYÚSCULAS, abreviaturas e iniciales no cortan la oración.
+      'El padre del demandante,\nPedro Luis Ejemplo Prueba, declaró.', 'EL PADRE DEL DEMANDANTE, PEDRO LUIS EJEMPLO PRUEBA, DECLARÓ.',
+      'Su hijo, identificado con C.C. 1000000001 ante la Sra. Ana, Pedro Luis Ejemplo Prueba, declaró.',
+      'Pedro Luis Ejemplo Prueba firmó en la Cra. 7 No. 10-20 junto a su esposa.',
+      // El parentesco pegado detrás, como un sufijo del nombre.
+      'Pedro Luis Ejemplo Prueba Hijo firmó.',
+    ];
+    const no = [
+      // D-13: sin parentesco, o con el parentesco en otra oración.
+      'El señor Pedro Luis Ejemplo Prueba declaró.', 'El hijo del accionante vino. Pedro Luis Ejemplo Prueba dijo que sí.',
+      'Pedro Luis Ejemplo Prueba firmó. Su hijo vino después.', '¿Vino su hijo? Pedro Luis Ejemplo Prueba no lo sabe.',
+      'PEDRO LUIS EJEMPLO PRUEBA FIRMÓ\n\nEL HIJO DEL DEMANDANTE VINO', 'Pedro Luis Ejemplo Prueba firmó en la Cra. 7 No. 10. El hijo vino.',
+      // Un «;» separa a las personas de una enumeración.
+      'Comparecen Ana Ficticia Rojas, en nombre de su hija; Pedro Luis Ejemplo Prueba, en nombre propio.',
+      // Homógrafos y palabras que son parte de un nombre propio.
+      'Pedro Luis Ejemplo Prueba cobró la prima de servicios, la prima de navidad y la prima técnica.',
+      'Pedro Luis Ejemplo Prueba compró la materia prima.', 'Pedro Luis Ejemplo Prueba firmó con Carlos Nieto y con Distribuidora Hermanos Prueba S.A.S.',
+    ];
+    for (const t of si) expect(marcaOtroTitular(t, ...pedroLuis(t)), t).toBe(true);
+    for (const t of no) expect(marcaOtroTitular(t, ...pedroLuis(t)), t).toBe(false);
+  });
+
+  it('A-4 marcaOtroTitular mira ventanas fijas: 40.000 caracteres antes y después no la hacen lenta', () => {
+    const textos = [`${'x '.repeat(20_000)}Pedro Luis Ejemplo Prueba${' y'.repeat(20_000)}`, `${'a'.repeat(40_000)} Pedro Luis Ejemplo Prueba ${'.'.repeat(40_000)}`,
+      `${'Sr. '.repeat(10_000)}Pedro Luis Ejemplo Prueba${' hijo'.repeat(10_000)}`];
+    const t0 = performance.now();
+    for (const t of textos) marcaOtroTitular(t, ...pedroLuis(t));
+    expect(performance.now() - t0).toBeLessThan(300);
+    expect(marcaOtroTitular(textos[2] as string, ...pedroLuis(textos[2] as string))).toBe(true);
+  });
+
+  // Las 16 sondas de la revisión (P0-6a · PB-3-r2, A-4), con la lista «Pedro Ejemplo» (DEMANDANTE) y el texto «Pedro Ejemplo demandó.»
+  // delante: 11 por C1 y 3 por la regla E (antes, las 14 recibían [DEMANDANTE_1]) y las 2 que ya quedaban aparte. Y la de otro nombre de pila.
+  const LISTA_PEDRO: Lista = [['Pedro Ejemplo', 'persona', 'DEMANDANTE']];
+  const SONDAS: Array<[string, string, string]> = [
+    ['C1 · padre del demandante', 'El padre del demandante, Pedro Luis Ejemplo Prueba, declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · hijo menor de edad', 'Su hijo menor de edad Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · quien es hijo de', 'Pedro Luis Ejemplo Prueba, quien es hijo de Pedro Ejemplo, declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · su hijo, el menor', 'Su hijo, el menor Pedro Luis Ejemplo Prueba, declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · de 10 años, hijo del demandante', 'Pedro Luis Ejemplo Prueba, de 10 años, hijo del demandante, declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · primogénito', 'Su primogénito Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · ahijado', 'Su ahijado Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · pareja', 'Su pareja Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · compañero', 'Su compañero Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · progenitor', 'Su progenitor Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · el hijo del señor', 'El hijo del señor Pedro Ejemplo, Pedro Luis Ejemplo Prueba, declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['regla E · padre del demandante', 'El padre del demandante, Pedro Ejemplo Prueba, declaró.', 'Pedro Ejemplo Prueba'],
+    ['regla E · hijo menor de edad', 'Su hijo menor de edad Pedro Ejemplo Prueba declaró.', 'Pedro Ejemplo Prueba'],
+    ['regla E · quien es hijo de', 'Pedro Ejemplo Prueba, quien es hijo de Pedro Ejemplo, declaró.', 'Pedro Ejemplo Prueba'],
+    ['C1 · padre del accionante (ya aparte)', 'Pedro Luis Ejemplo Prueba, padre del accionante, declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['C1 · SU HIJO MENOR (ya aparte)', 'SU HIJO MENOR PEDRO LUIS EJEMPLO PRUEBA DECLARÓ.', 'PEDRO LUIS EJEMPLO PRUEBA'],
+    ['otro nombre de pila', 'Su hija de crianza Pedra Luisa Ejemplo Prueba declaró.', 'Pedra Luisa Ejemplo Prueba'],
+  ];
+  it.each(SONDAS)('INV-R12 A-4 sonda «%s» con la tubería real: el pariente tiene su propio marcador, nunca el de la persona de la lista', async (_id, sonda, tramo) => {
+    const texto = `Pedro Ejemplo demandó. ${sonda}`;
+    const { s, caseList } = await tuberia(texto, LISTA_PEDRO, [[[tramo, 'PER', 0]]]);
+    const pedro = (caseList[0] as CaseEntity).id;
+    expect(marcadorEn(s, texto, 'Pedro Ejemplo')).toBe('[DEMANDANTE_1]');
+    // El nombre del pariente entra entero en una sola detección, con una entidad que no es la de la lista.
+    const i = texto.indexOf(tramo);
+    const d = enPos(s, texto, tramo);
+    expect([d.start <= i, d.end >= i + tramo.length]).toEqual([true, true]);
+    expect(s.entities[d.entityId]?.caseEntityId).toBeUndefined();
+    expect(s.entities[d.entityId]?.marker).toMatch(/^\[PERSONA_[0-9]+\]$/u);
+    // Ninguna detección dentro del nombre del pariente lleva a la persona de la lista.
+    const dentro = dets(s).filter((x) => x.start < i + tramo.length && i < x.end && x.status !== 'rechazada');
+    expect(dentro.map((x) => s.entities[x.entityId]?.caseEntityId === pedro)).toEqual(dentro.map(() => false));
+  });
+
+  it('INV-R12 A-4 controles de D-13 con la tubería real: sin parentesco, o con el parentesco en otra oración, el nombre completo es de la persona de la lista', async () => {
+    for (const [sonda, tramo] of [['El señor Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+      ['El hijo del accionante vino. Pedro Luis Ejemplo Prueba dijo que sí.', 'Pedro Luis Ejemplo Prueba'],
+      ['Pedro Ejemplo Prueba declaró.', 'Pedro Ejemplo Prueba']] as const) {
+      const texto = `Pedro Ejemplo demandó. ${sonda}`;
+      const { s } = await tuberia(texto, LISTA_PEDRO, [[[tramo, 'PER', 0]]]);
+      expect(marcadorEn(s, texto, tramo), sonda).toBe('[DEMANDANTE_1]');
+    }
+  });
+
+  it('A-4 al construir (sin ventanas): C1 tampoco une al pariente que la oración presenta como tal', () => {
+    const CAS_P = 'cas_000000000000000000000000000000c4' as CaseEntityId;
+    const lista: CaseEntity[] = [{ id: CAS_P, name: 'Pedro Ejemplo', variants: [], kind: 'persona', role: 'DEMANDANTE' }];
+    for (const [sonda, tramo] of SONDAS.slice(0, 11).map(([, t, x]) => [t, x] as const)) {
+      const doc = mkDoc([['cuerpo', `Pedro Ejemplo demandó. ${sonda}`]]);
+      const s = buildReviewState(doc, [mc(doc, 0, 'Pedro Ejemplo', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_P, variantClass: 'exacta',
+        canonicalKey: `LISTA:${CAS_P}`, role: 'DEMANDANTE' }), mc(doc, 0, tramo, { type: 'PERSONA', source: 'modelo', nerLabel: 'PER', canonicalKey: personKey(tramo),
+        role: 'OTRA_PERSONA' })], { table: EMPTY, caseList: lista, ids: seqIds(1000) });
+      expect(entOf(s, tramo).caseEntityId, sonda).toBeUndefined();
+    }
+  });
+
+  // ---------------------------------------------------------------- M-72
+  const LISTA_ANA: Lista = [['Ana Ficticia Rojas', 'persona', 'DEMANDANTE']];
+  // Apariciones de «Rojas»: 0 en Ana Ficticia Rojas, 1 en Luis Rojas, 2 en «El señor Rojas».
+  const TEXTO_M72 = 'Ana Ficticia Rojas demandó a Luis Rojas. El señor Rojas declaró.';
+
+  it('INV-L03 INV-R12 M-72 el apellido suelto de la lista que también lleva otra persona del texto queda ambiguo, con o sin tramo del modelo en él', async () => {
+    type Ventanas = Array<Array<[string, NerSpan['label'], number?]>>;
+    const casos: Ventanas[] = [[[['Luis Rojas', 'PER', 0]]], [[['Luis Rojas', 'PER', 0], ['Rojas', 'PER', 2]]], [[['Luis Rojas', 'PER', 0]], [['Rojas', 'PER', 2]]]];
+    for (const ventanas of casos) {
+      const { s, caseList } = await tuberia(TEXTO_M72, LISTA_ANA, ventanas);
+      const ana = (caseList[0] as CaseEntity).id;
+      expect(marcadorEn(s, TEXTO_M72, 'Ana Ficticia Rojas')).toBe('[DEMANDANTE_1]');
+      // Antes, «Rojas» recibía [DEMANDANTE_1], el marcador de Ana, con confianza media.
+      const d = enPos(s, TEXTO_M72, 'Rojas', 2);
+      expect(esAmbigua(s, d)).toBe(true);
+      expect(d).toMatchObject({ status: 'pendiente', source: 'lista', variantClass: 'apellido_suelto', role: 'OTRA_PERSONA', confidence: 'baja' });
+      expect(d.caseEntityId).toBeUndefined();
+      expect(s.entities[d.entityId]?.marker).not.toBe('[DEMANDANTE_1]');
+      // Las opciones del revisor: Ana (de la lista) y Luis Rojas (fuera de ella).
+      const luis = enPos(s, TEXTO_M72, 'Luis Rojas').entityId;
+      const anaEnt = (Object.values(s.entities).find((e) => e.caseEntityId === ana) as Entity).id;
+      expect(decisionesAmbiguas(s, caseList).find((x) => x.detectionId === d.id)).toMatchObject({ candidatas: [ana], opciones: [anaEnt], fuera: [luis] });
+    }
+  });
+
+  it('INV-G06 M-72 la mención ambigua cierra la puerta; el revisor la da a la otra persona con unir_entidades y la puerta se abre', async () => {
+    const { s: s0, ctx } = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Rojas', 'PER', 0]]]);
+    const d = enPos(s0, TEXTO_M72, 'Rojas', 2);
+    let s = aceptarTodo(s0, ctx);
+    expect(exportGate(s, sinResiduos(s), TODAS)).toEqual({ ok: false, reasons: ['PENDIENTES'] });
+    const luis = enPos(s, TEXTO_M72, 'Luis Rojas').entityId;
+    s = act(s, { kind: 'unir_entidades', fromId: d.entityId, intoId: luis }, ctx);
+    expect(s.detections[d.id]?.entityId).toBe(luis);
+    expect(marcadorEn(s, TEXTO_M72, 'Rojas', 2)).toBe(marcadorEn(s, TEXTO_M72, 'Luis Rojas'));
+    expect(exportGate(s, sinResiduos(s), TODAS)).toEqual({ ok: true, reasons: [] });
+  });
+
+  it('INV-R12 M-72 no hay ambigüedad sin otra persona, con una forma corta de la misma persona ni con una mención que el revisor ya decidió', async () => {
+    let texto = 'Ana Ficticia Rojas demandó. El señor Rojas declaró.';
+    let r = await tuberia(texto, LISTA_ANA, [[['Ana Ficticia Rojas', 'PER', 0]]]);
+    expect(marcadorEn(r.s, texto, 'Rojas', 1)).toBe('[DEMANDANTE_1]');
+    // «Ana Rojas» es una forma corta de la persona de la lista, no otra persona.
+    texto = 'Ana Ficticia Rojas demandó. Ana Rojas firmó. El señor Rojas declaró.';
+    r = await tuberia(texto, LISTA_ANA, [[['Ana Rojas', 'PER', 0]]]);
+    expect(marcadorEn(r.s, texto, 'Rojas', 2)).toBe('[DEMANDANTE_1]');
+    // Si el revisor ya aceptó la mención antes de que llegue «Luis Rojas», la ventana no la toca.
+    r = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Rojas', 'PER', 0]]], (s, ctx) => act(s, { kind: 'aceptar', detectionId: enPos(s, TEXTO_M72, 'Rojas', 2).id }, ctx));
+    const d = enPos(r.s, TEXTO_M72, 'Rojas', 2);
+    expect([esAmbigua(r.s, d), d.status, marcadorEn(r.s, TEXTO_M72, 'Rojas', 2)]).toEqual([false, 'aceptada', '[DEMANDANTE_1]']);
+  });
+
+  it('INV-L03 M-72 al construir y en la búsqueda de residuos: la mención no se asigna a la persona de la lista', async () => {
+    const CAS = 'cas_000000000000000000000000000000c5' as CaseEntityId;
+    const lista = refreshVariants([{ id: CAS, name: 'Ana Ficticia Rojas', variants: [], kind: 'persona', role: 'DEMANDANTE' }]);
+    const doc = mkDoc([['cuerpo', TEXTO_M72]]);
+    const lst = (t: string, cls: 'exacta' | 'apellido_suelto', occ = 0) => mc(doc, 0, t, { type: 'PERSONA', source: 'lista', caseEntityId: CAS,
+      variantClass: cls, canonicalKey: `LISTA:${CAS}`, role: 'DEMANDANTE' }, occ);
+    const s = buildReviewState(doc, [lst('Ana Ficticia Rojas', 'exacta'), mc(doc, 0, 'Luis Rojas', { type: 'PERSONA', source: 'modelo', nerLabel: 'PER',
+      canonicalKey: personKey('Luis Rojas'), role: 'OTRA_PERSONA' }), lst('Rojas', 'apellido_suelto', 2)], { table: EMPTY, caseList: lista, ids: seqIds(1000) });
+    expect(esAmbigua(s, enPos(s, TEXTO_M72, 'Rojas', 2))).toBe(true);
+    // Rechazada y vuelta a encontrar por la búsqueda de residuos con la persona de la lista: otra vez ambigua.
+    const { s: s1, ctx, caseList } = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Rojas', 'PER', 0]]]);
+    const d = enPos(s1, TEXTO_M72, 'Rojas', 2);
+    const rr = act(s1, { kind: 'rechazar', detectionId: d.id }, ctx);
+    const ana = caseList[0] as CaseEntity;
+    const c: DetectionCandidate = { partId: d.partId, start: d.start, end: d.end, type: 'PERSONA', role: 'DEMANDANTE', source: 'lista', caseEntityId: ana.id,
+      variantClass: 'apellido_suelto', confidence: 'media', score: 0.6, canonicalKey: `LISTA:${ana.id}` };
+    const t = act(rr, { kind: 'incorporar_residuos', residueRevision: rr.revision, candidates: [c] }, ctx);
+    const nueva = dets(t).find((x) => x.start === d.start && x.status === 'pendiente') as Detection;
+    expect(nueva.caseEntityId).toBeUndefined();
+    expect(esAmbigua(t, nueva)).toBe(true);
+  });
+
+  // ---------------------------------------------------------------- D-16 en el modelo
+  const per = (doc: DocumentModel, t: string, occ = 0) => mc(doc, 0, t, { type: 'PERSONA', source: 'modelo', nerLabel: 'PER', canonicalKey: personKey(t), role: 'OTRA_PERSONA' }, occ);
+  const con = (doc: DocumentModel, cands: MergedCandidate[], caseList: readonly CaseEntity[] = []) =>
+    buildReviewState(doc, cands, { table: EMPTY, caseList, ids: seqIds(1000) });
+  /** Las mismas candidatas, una ventana del reductor por candidata, en el orden dado. */
+  function porVentanas(doc: DocumentModel, cands: MergedCandidate[], caseList: readonly CaseEntity[] = []): { s: ReviewState; ctx: ReviewContext } {
+    const ctx: ReviewContext = { table: EMPTY, caseList, doc, ids: seqIds(7000) };
+    let s = buildReviewState(doc, cands.filter((c) => c.source !== 'modelo'), { table: EMPTY, caseList, ids: seqIds(1000) });
+    const modelo = cands.filter((c) => c.source === 'modelo');
+    modelo.forEach((c, v) => {
+      const set = buildReviewState(doc, [c], { table: EMPTY, caseList, ids: seqIds(0x5000 + v * 16) });
+      s = act(s, { kind: 'incorporar_modelo', ventana: v + 1, ventanasTotales: modelo.length,
+        delta: { detections: Object.values(set.detections), entities: Object.values(set.entities), flags: [], suggestions: [] } }, ctx);
+    });
+    return { s, ctx };
+  }
+  const TEXTO_C07 = 'Rafael Prueba Cuervo firmó. Marta Prueba Ruiz revisó. Luego Prueba aprobó el plan.';
+
+  it('INV-R12 D-16 en el modelo (C07-E47, C08-E20): la forma corta con dos anfitrionas queda ambigua, al construir y por ventana; con una sola, se une', () => {
+    const doc = mkDoc([['cuerpo', TEXTO_C07]]);
+    const cands = [per(doc, 'Rafael Prueba Cuervo'), per(doc, 'Marta Prueba Ruiz'), per(doc, 'Prueba', 2)];
+    for (const s of [con(doc, cands), porVentanas(doc, cands).s]) {
+      const d = enPos(s, TEXTO_C07, 'Prueba', 2);
+      // Antes: «Prueba» quedaba como una persona más, con su propio marcador y sin decisión del revisor.
+      expect(esAmbigua(s, d)).toBe(true);
+      expect(d).toMatchObject({ status: 'pendiente', source: 'modelo', role: 'OTRA_PERSONA', confidence: 'baja' });
+      expect(d.canonicalKey.startsWith('AMBIGUA:') && !d.canonicalKey.includes('rueba')).toBe(true);
+      const [rafael, marta] = [enPos(s, TEXTO_C07, 'Rafael Prueba Cuervo').entityId, enPos(s, TEXTO_C07, 'Marta Prueba Ruiz').entityId];
+      const x = decisionesAmbiguas(s, []).find((y) => y.detectionId === d.id);
+      expect(x).toMatchObject({ candidatas: [], opciones: [], mensaje: 'M-2001' });
+      expect([...(x?.fuera ?? [])].sort()).toEqual([rafael, marta].sort());
+    }
+    // Con una sola anfitriona, S-7.11 la une como siempre.
+    const t1 = 'Rafael Prueba Cuervo firmó. Luego Prueba aprobó el plan.';
+    const d1 = mkDoc([['cuerpo', t1]]);
+    const s1 = con(d1, [per(d1, 'Rafael Prueba Cuervo'), per(d1, 'Prueba', 1)]);
+    expect(grupos(s1)).toEqual([['Rafael Prueba Cuervo', 'Prueba']]);
+    expect(esAmbigua(s1, enPos(s1, t1, 'Prueba', 1))).toBe(false);
+  });
+
+  it('INV-G06 D-16 en el modelo: la forma corta ambigua cierra la puerta aunque se acepte; el revisor elige la anfitriona y la puerta se abre', () => {
+    const doc = mkDoc([['cuerpo', TEXTO_C07]]);
+    const { s: s0, ctx } = porVentanas(doc, [per(doc, 'Rafael Prueba Cuervo'), per(doc, 'Marta Prueba Ruiz'), per(doc, 'Prueba', 2)]);
+    const d = enPos(s0, TEXTO_C07, 'Prueba', 2);
+    let s = aceptarTodo(s0, ctx);
+    expect(exportGate(s, sinResiduos(s), TODAS)).toEqual({ ok: false, reasons: ['PENDIENTES'] });
+    const rafael = enPos(s, TEXTO_C07, 'Rafael Prueba Cuervo').entityId;
+    s = act(s, { kind: 'unir_entidades', fromId: rafael, intoId: d.entityId }, ctx);   // desde cualquiera de las dos fichas
+    expect(s.detections[d.id]?.entityId).toBe(rafael);
+    expect(exportGate(s, sinResiduos(s), TODAS)).toEqual({ ok: true, reasons: [] });
+    // Separarla como otra persona también decide.
+    const r = act(aceptarTodo(s0, ctx), { kind: 'separar_mencion', detectionId: d.id }, ctx);
+    expect(exportGate(act(r, { kind: 'aceptar', detectionId: d.id }, ctx), sinResiduos(r), TODAS).reasons).not.toContain('PENDIENTES');
+  });
+
+  it('INV-R12 D-16 en el modelo (C06-E38): por ventana, la forma corta que llega con dos anfitrionas queda ambigua; la que ya se unió a la primera se queda', () => {
+    const texto = 'Jairo Ejemplo Muñoz firmó. Ejemplo Muñoz pagó. Diana Carolina Ejemplo Muñoz vino. Ejemplo Muñoz cobró.';
+    const doc = mkDoc([['cuerpo', texto]]);
+    // Apariciones de «Ejemplo Muñoz»: 0 en Jairo, 1 suelta, 2 en Diana Carolina, 3 suelta.
+    const { s } = porVentanas(doc, [per(doc, 'Jairo Ejemplo Muñoz'), per(doc, 'Ejemplo Muñoz', 1), per(doc, 'Diana Carolina Ejemplo Muñoz'), per(doc, 'Ejemplo Muñoz', 3)]);
+    const jairo = enPos(s, texto, 'Jairo Ejemplo Muñoz').entityId;
+    expect(enPos(s, texto, 'Ejemplo Muñoz', 1).entityId).toBe(jairo);
+    const d = enPos(s, texto, 'Ejemplo Muñoz', 3);
+    expect(esAmbigua(s, d)).toBe(true);
+    expect([...(decisionesAmbiguas(s, []).find((x) => x.detectionId === d.id)?.fuera ?? [])].sort())
+      .toEqual([jairo, enPos(s, texto, 'Diana Carolina Ejemplo Muñoz').entityId].sort());
+  });
+
+  it('INV-L03 D-16 en el modelo: entre una persona de la lista y una del modelo, las dos son opciones (la de la lista en `opciones`, la otra en `fuera`)', () => {
+    const CAS = 'cas_000000000000000000000000000000c6' as CaseEntityId;
+    const lista: CaseEntity[] = [{ id: CAS, name: 'Martha Ejemplo', variants: [], kind: 'persona', role: 'DEMANDANTE' }];
+    const texto = 'Martha Cecilia Ejemplo Ortiz demandó. Luis Ejemplo Ortiz contestó. Ejemplo Ortiz firmó.';
+    const doc = mkDoc([['cuerpo', texto]]);
+    const s = con(doc, [per(doc, 'Martha Cecilia Ejemplo Ortiz'), per(doc, 'Luis Ejemplo Ortiz'), per(doc, 'Ejemplo Ortiz', 2)], lista);
+    const martha = enPos(s, texto, 'Martha Cecilia Ejemplo Ortiz');
+    expect(s.entities[martha.entityId]?.caseEntityId).toBe(CAS);   // C1, como siempre
+    const d = enPos(s, texto, 'Ejemplo Ortiz', 2);
+    expect(esAmbigua(s, d)).toBe(true);
+    expect(decisionesAmbiguas(s, lista).find((x) => x.detectionId === d.id)).toMatchObject({ candidatas: [CAS], opciones: [martha.entityId],
+      fuera: [enPos(s, texto, 'Luis Ejemplo Ortiz').entityId] });
+  });
+
+  // ---------------------------------------------------------------- B-92
+  it('INV-R12 B-92 unir_entidades, aceptar y restablecer cada mención, y otra ventana: el grupo que hizo el usuario no se mueve', () => {
+    const texto = 'Pagó Papelería Ficticia. Cotizó Ferretería Prueba. El taller Papelería Ficticia respondió, el taller Papelería Ficticia facturó y el taller Papelería Ficticia cobró.';
+    const doc = mkDoc([['cuerpo', texto]]);
+    const org = (t: string, occ = 0) => mc(doc, 0, t, { type: 'EMPRESA', source: 'modelo', nerLabel: 'ORG', canonicalKey: orgKey(t), role: 'EMPRESA' }, occ);
+    const ctx: ReviewContext = { table: EMPTY, caseList: [], doc, ids: seqIds(9000) };
+    const ventana = (s: ReviewState, v: number, cs: MergedCandidate[]): ReviewState => {
+      const set = buildReviewState(doc, cs, { table: EMPTY, caseList: [], ids: seqIds(0x6000 + v * 64) });
+      return act(s, { kind: 'incorporar_modelo', ventana: v, ventanasTotales: 3,
+        delta: { detections: Object.values(set.detections), entities: Object.values(set.entities), flags: [], suggestions: [] } }, ctx);
+    };
+    const s1 = ventana(buildReviewState(doc, [], { table: EMPTY, caseList: [], ids: seqIds(1000) }), 1, [org('Papelería Ficticia'), org('Ferretería Prueba')]);
+    const [pap, fer] = [enPos(s1, texto, 'Papelería Ficticia'), enPos(s1, texto, 'Ferretería Prueba')];
+    let u = act(s1, { kind: 'unir_entidades', fromId: fer.entityId, intoId: pap.entityId }, ctx);
+    // Antes: restablecer borraba el `decidedBy` de la unión y la mención volvía a ser movible.
+    for (const d of [pap, fer]) u = act(act(u, { kind: 'aceptar', detectionId: d.id }, ctx), { kind: 'restablecer', detectionId: d.id }, ctx);
+    for (const d of [pap, fer]) expect(u.detections[d.id]).toMatchObject({ status: 'pendiente', decidedBy: 'grupo' });
+    expect(u.detections[pap.id]?.canonicalKey).toBe(`${orgKey('Papelería Ficticia')}~ent`);
+    assertR05(u);
+    const s2 = ventana(u, 2, [0, 1, 2].map((k) => org('taller Papelería Ficticia', k)));
+    expect(grupos(s2)).toEqual([['Papelería Ficticia', 'Ferretería Prueba'], ['taller Papelería Ficticia', 'taller Papelería Ficticia', 'taller Papelería Ficticia']]);
+    expect(s2.entities[pap.entityId]?.marker).toBe(u.entities[pap.entityId]?.marker);
+    // La clave de la entidad no cambia: la tabla del asunto la sigue reconociendo.
+    expect(s2.entities[pap.entityId]?.canonicalKey).toBe(orgKey('Papelería Ficticia'));
   });
 });

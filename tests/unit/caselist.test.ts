@@ -1,7 +1,7 @@
 // T-MO-07 · Lista del caso y variantes (7.9, 6.5). Solo datos ficticios.
 import { describe, expect, it } from 'vitest';
 import {
-  LST, findCaseMentions, generateVariants, hasTreatment, inferOrgClass, isPossessive, nameUnits, newCaseEntity,
+  LST, esApellidoDeOtraPersona, findCaseMentions, generateVariants, hasTreatment, inferOrgClass, isPossessive, nameUnits, newCaseEntity,
   parseOrg, parsePastedList, personasDeLaVariante, refreshVariants, searchCaseList, sharedVariantWarnings, variantOwners,
 } from '../../src/core/caselist';
 import { buildSearchView } from '../../src/core/normalize';
@@ -447,6 +447,23 @@ describe('T-MO-07 INV-L03 variantes duplicadas y compartidas', () => {
     const antes = JSON.stringify(l);
     personasDeLaVariante('Sr. Prueba', l);
     expect(JSON.stringify(l)).toBe(antes);
+  });
+  it('INV-L03 M-72 esApellidoDeOtraPersona: el apellido suelto de la lista es el apellido de otro nombre del texto; una forma corta de la misma persona no', () => {
+    const src = ids();
+    const [ana] = refreshVariants([persona('Ana Ficticia Rojas', 'DEMANDANTE', src)]) as [CaseEntity];
+    for (const otro of ['Luis Rojas', 'LUIS ROJAS', 'señor Luis Rojas', 'Luis Ficticia Rojas', 'Luis Alberto Prueba Rojas']) {
+      expect(esApellidoDeOtraPersona('Rojas', ana, otro), otro).toBe(true);
+    }
+    // El nombre de pila no es un apellido; una forma corta de Ana (con sus palabras, o con una inicial) no es otra persona; una
+    // palabra sola no es un nombre.
+    for (const otro of ['Rojas Prueba', 'Ana Rojas', 'A. Rojas', 'Ana F. Rojas', 'Rojas', 'Luis Prueba']) expect(esApellidoDeOtraPersona('Rojas', ana, otro), otro).toBe(false);
+    // Las variantes activas de la persona también son suyas: un alias del abogado («Anita») no es otra persona.
+    const conAlias: CaseEntity = { ...ana, variants: [...ana.variants, { text: 'Anita Rojas', class: 'exacta', confidence: 'alta', origin: 'manual', enabled: true } satisfies CaseVariant] };
+    expect(esApellidoDeOtraPersona('Rojas', conAlias, 'Anita Rojas')).toBe(false);
+    expect(esApellidoDeOtraPersona('Rojas', ana, 'Anita Rojas')).toBe(true);
+    // Una parte de un apellido con partícula o con guion.
+    const [pedro] = refreshVariants([persona('Pedro Ejemplo del Valle', 'DEMANDANTE', src)]) as [CaseEntity];
+    expect(esApellidoDeOtraPersona('del Valle', pedro, 'Luis del Valle')).toBe(true);
   });
   it('INV-L03 una variante no compartida conserva su confianza base', () => {
     const src = ids();

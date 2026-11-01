@@ -131,12 +131,17 @@ export async function revisarConOraculo(a: ArgsOraculo): Promise<ResultadoOracul
     return mejor?.entidad;
   };
   const decididas = new Set<DetectionId>();
+  // PB-3-r4 (M-72 y D-16 en el modelo): las opciones fuera de la lista (`fuera`, la otra persona con ese apellido o las anfitrionas de
+  // una forma corta del modelo) se eligen si alguna de sus menciones es de la entidad gold de la mención.
+  const deLaEntidadGold = (id: EntityId, d: Detection, g: string | undefined): boolean => g !== undefined
+    && (st.entities[id]?.mentions ?? []).some((m) => { const o = st.detections[m]; return o !== undefined && o.id !== d.id && entidadGold(o) === g; });
   const resolverAmbiguas = (): void => {
-    for (const x of decisionesAmbiguas(st, dc.caseList)) {
+    for (const x of decisionesAmbiguas(st, dc.caseList, dc.doc)) {
       const d = st.detections[x.detectionId];
       if (d === undefined || decididas.has(d.id) || !verdadera(d)) continue;
       const g = entidadGold(d);
-      const elegida = x.opciones.find((id) => { const c = st.entities[id]?.caseEntityId; return c !== undefined && goldDeCaso.get(c) === g; });
+      const elegida = x.opciones.find((id) => { const c = st.entities[id]?.caseEntityId; return c !== undefined && goldDeCaso.get(c) === g; })
+        ?? x.fuera.find((id) => deLaEntidadGold(id, d, g));
       const ok = elegida !== undefined
         ? act({ kind: 'unir_entidades', fromId: x.entityId, intoId: elegida })
         : act({ kind: 'separar_mencion', detectionId: d.id });
