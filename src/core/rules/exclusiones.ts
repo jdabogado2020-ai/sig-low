@@ -542,9 +542,12 @@ function finesSaltosYCeldas(texto: string, view: SearchView): { fines: number[];
   const fines: number[] = [];
   const saltos: number[] = [];
   const celdas: number[] = [];
+  const { startMap, endMap } = view;
   for (let p = 0; p < texto.length; p++) {
     const c = texto.charCodeAt(p);
-    if (esCandidatoDeCelda(c) && esCelda(texto, p, view)) celdas.push(p);
+    // Un blanco solo puede ser celda si es ancho: se descarta aquí, sin llamar a `esCelda` en cada espacio del texto.
+    if (c === 32 ? ((endMap[p] ?? 0) - (startMap[p] ?? 0) >= 2 || texto.charCodeAt(p + 1) === 32) && esCelda(texto, p, view)
+      : (c === 9 || c === 124 || esSeparadorEntreBlancos(c)) && esCelda(texto, p, view)) celdas.push(p);
     if (!esCandidatoDeFin(c)) continue;
     if (c === 46 && p + 1 < texto.length) {
       const sig = texto.charAt(p + 1);
@@ -572,13 +575,31 @@ function inicios(re: RegExp, texto: string): number[] {
   re.lastIndex = 0;
   return out;
 }
+/**
+ * El índice de la vista. PB-2-r10: cada lista se arma la primera vez que se consulta, una sola vez por vista: un expediente que no
+ * va con una providencia ni en contexto de cita solo necesita esas dos, y la celda que ya decide no necesita `PROPIO_ORACION`. Lo
+ * mismo que armarlas todas al principio, en el mismo tiempo lineal o menos.
+ */
 function indiceDeCita(view: SearchView): IndiceDeCita {
   let ix = indices.get(view);
   if (ix === undefined) {
+    const t = view.text;
+    let cita: number[] | undefined;
+    let propio: number[] | undefined;
+    let rotulo: number[] | undefined;
+    let providencia: number[] | undefined;
+    let propioOracion: number[] | undefined;
+    let fsc: ReturnType<typeof finesSaltosYCeldas> | undefined;
+    const pasada = (): ReturnType<typeof finesSaltosYCeldas> => (fsc ??= finesSaltosYCeldas(t, view));
     ix = {
-      cita: inicios(RAPIDA_CITA, view.text), propio: inicios(RAPIDA_PROPIO, view.text), rotulo: inicios(RAPIDA_OWN_CASE, view.text),
-      providencia: inicios(RAPIDA_PROVIDENCIA, view.text), propioOracion: inicios(RAPIDA_PROPIO_ORACION, view.text),
-      ...finesSaltosYCeldas(view.text, view),
+      get cita() { return (cita ??= inicios(RAPIDA_CITA, t)); },
+      get propio() { return (propio ??= inicios(RAPIDA_PROPIO, t)); },
+      get rotulo() { return (rotulo ??= inicios(RAPIDA_OWN_CASE, t)); },
+      get providencia() { return (providencia ??= inicios(RAPIDA_PROVIDENCIA, t)); },
+      get propioOracion() { return (propioOracion ??= inicios(RAPIDA_PROPIO_ORACION, t)); },
+      get fines() { return pasada().fines; },
+      get saltos() { return pasada().saltos; },
+      get celdas() { return pasada().celdas; },
     };
     indices.set(view, ix);
   }
@@ -708,8 +729,10 @@ const RAPIDA_PROPIO_ORACION = new RegExp(R`(?<![\p{L}])${PROPIO_ORACION_CORE}|${
  * Antes, una alternativa de `PROPIO_ORACION` con un retrovisor; ahora una pasada por carácter (`esCelda`), cuyas posiciones guarda el
  * índice de la vista junto a los fines y los saltos (B-72): con índice, cada consulta es una búsqueda binaria.
  */
-const ANTES_DE_CELDA_EXCLUIDO = /[\s.)\]•·*º°\-‐-―]/u;
-const NO_BLANCO = /\S/u;
+/** `\s` de JavaScript, por código: sin una expresión por carácter en la pasada del índice. */
+const esEspacioJs = (c: number): boolean => (c >= 9 && c <= 13) || c === 32 || c === 0xa0 || c === 0x1680 || (c >= 0x2000 && c <= 0x200a) || c === 0x2028 || c === 0x2029 || c === 0x202f || c === 0x205f || c === 0x3000 || c === 0xfeff;
+/** `[\s.)\]•·*º°\-‐-―]`: lo que no puede ir justo antes de una celda (la sangría, la viñeta, el número de lista). */
+const antesDeCeldaExcluido = (c: number): boolean => esEspacioJs(c) || c === 46 || c === 41 || c === 93 || c === 0x2022 || c === 0xb7 || c === 42 || c === 0xba || c === 0xb0 || c === 45 || (c >= 0x2010 && c <= 0x2015);
 const esBlancoH = (c: number): boolean => c === 32 || c === 9;
 /** «-», «‐» a «―», «/», «·» y «•»: separadores de un encabezado cuando van entre blancos. */
 const esSeparadorEntreBlancos = (c: number): boolean => c === 45 || (c >= 0x2010 && c <= 0x2015) || c === 47 || c === 0xb7 || c === 0x2022;
@@ -721,18 +744,18 @@ function esCelda(texto: string, p: number, view: SearchView | undefined): boolea
     let q = p + 1;
     while (q < texto.length && q < p + 16 && texto.charCodeAt(q) === 32) q++;
     const propio = view === undefined ? 1 : (view.endMap[p] ?? p + 1) - (view.startMap[p] ?? p);
-    if (propio + (q - p - 1) < 2 || q >= texto.length || !NO_BLANCO.test(texto.charAt(q))) return false;
-    return p > 0 && texto.charCodeAt(p - 1) !== 32 && !ANTES_DE_CELDA_EXCLUIDO.test(texto.charAt(p - 1));
+    if (propio + (q - p - 1) < 2 || q >= texto.length || esEspacioJs(texto.charCodeAt(q))) return false;
+    return p > 0 && texto.charCodeAt(p - 1) !== 32 && !antesDeCeldaExcluido(texto.charCodeAt(p - 1));
   }
   if (c === 9 || c === 124) {
     let q = p - 1;
     while (q >= 0 && q >= p - 8 && texto.charCodeAt(q) === 32) q--;
-    return q >= 0 && !ANTES_DE_CELDA_EXCLUIDO.test(texto.charAt(q));
+    return q >= 0 && !antesDeCeldaExcluido(texto.charCodeAt(q));
   }
   if (!esSeparadorEntreBlancos(c) || !esBlancoH(texto.charCodeAt(p + 1))) return false;
   let q = p - 1;
   while (q >= 0 && q >= p - 8 && esBlancoH(texto.charCodeAt(q))) q--;
-  return q >= 0 && q < p - 1 && NO_BLANCO.test(texto.charAt(q));
+  return q >= 0 && q < p - 1 && !esEspacioJs(texto.charCodeAt(q));
 }
 /** ¿Hay una celda en [desde, hasta)? Con índice, búsqueda binaria; sin él, carácter por carácter (lo mismo). */
 function celdaEn(texto: string, desde: number, hasta: number, view: SearchView | undefined, ix: IndiceDeCita | undefined): boolean {
