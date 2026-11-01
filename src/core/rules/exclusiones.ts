@@ -488,8 +488,15 @@ const VENTANA_TRAS = 120;
 function citaConLexico(texto: string, start: number, end: number, antes: string, lexico: boolean, ix: IndiceDeCita | undefined): boolean {
   if (!lexico && (!posible(ix?.cita, start - VENTANA_ANTES, start, end, end + VENTANA_TRAS) || !CITA_SENAL.test(ventanaDeCita(texto, start, end)))) return false;
   if (posible(ix?.propio, start - VENTANA_ANTES, start, end, end + VENTANA_TRAS) && CITA_PROPIO.test(ventanaDeCita(texto, start, end))) return false;
-  return !OWN_CASE.test(antes);
+  return !rotuloJustoAntes(antes, start, ix);
 }
+/**
+ * `OWN_CASE` en los 150 caracteres antes del expediente. PB-2-r10: con índice, solo se prueba si en esa ventana empieza alguna de
+ * las palabras sin las que no casa (`RAPIDA_OWN_CASE`); era la expresión más cara de cada consulta en un renglón largo con
+ * providencias. Sin índice, siempre (lo mismo).
+ */
+const rotuloJustoAntes = (antes: string, start: number, ix: IndiceDeCita | undefined): boolean =>
+  posible(ix?.rotulo, start - CITE_ANTES, start, 0, 0) && OWN_CASE.test(antes);
 
 /**
  * B-62 (PB-2-r7) · Índice de una vista para R-RAD_ADMIN-03, que pregunta por el contexto en cada expediente: dónde empieza, en todo
@@ -502,6 +509,8 @@ interface IndiceDeCita {
   cita: readonly number[];
   /** `CITA_PROPIO`. */
   propio: readonly number[];
+  /** `OWN_CASE` (PB-2-r10): las palabras que toda coincidencia contiene («Ref», «Rad», «Proceso», «Exp», «Asunto», «Acción», «este»…). */
+  rotulo: readonly number[];
   /** `PROVIDENCIA` (D-11, PB-2-r8). */
   providencia: readonly number[];
   /** `PROPIO_ORACION` (D-11, PB-2-r8). */
@@ -509,16 +518,24 @@ interface IndiceDeCita {
   /** B-72 (PB-2-r8): las posiciones de «.», «;», «!», «?» y «\n» (candidatos a fin de oración) y las de «\n». */
   fines: readonly number[];
   saltos: readonly number[];
+  /**
+   * Las celdas y los separadores de encabezado (`esCelda`; M-61 y M-70). PB-2-r10: en -r9 eran una alternativa de `PROPIO_ORACION`
+   * con un retrovisor, que se probaba con la expresión entera en cada tabulador de la oración; ahora salen en la misma pasada que los
+   * fines y los saltos, y cada consulta es una búsqueda binaria.
+   */
+  celdas: readonly number[];
 }
 /**
- * Posiciones de los candidatos a fin de oración y de los saltos de línea, en una pasada. El punto pegado a lo que sigue («9.000.001»,
- * «S.A») nunca corta (`cortaEn`), así que no se guarda.
+ * Posiciones de los candidatos a fin de oración, de los saltos de línea y de las celdas, en una pasada. El punto pegado a lo que sigue
+ * («9.000.001», «S.A») nunca corta (`cortaEn`), así que no se guarda.
  */
-function finesYSaltos(texto: string): { fines: number[]; saltos: number[] } {
+function finesSaltosYCeldas(texto: string, view: SearchView): { fines: number[]; saltos: number[]; celdas: number[] } {
   const fines: number[] = [];
   const saltos: number[] = [];
+  const celdas: number[] = [];
   for (let p = 0; p < texto.length; p++) {
     const c = texto.charCodeAt(p);
+    if (esCandidatoDeCelda(c) && esCelda(texto, p, view)) celdas.push(p);
     if (!esCandidatoDeFin(c)) continue;
     if (c === 46 && p + 1 < texto.length) {
       const sig = texto.charAt(p + 1);
@@ -527,10 +544,12 @@ function finesYSaltos(texto: string): { fines: number[]; saltos: number[] } {
     fines.push(p);
     if (c === 10) saltos.push(p);
   }
-  return { fines, saltos };
+  return { fines, saltos, celdas };
 }
 const RAPIDA_CITA = new RegExp(`${LEX('Corte')}|${SENAL_CORE}`, 'giu');
 const RAPIDA_PROPIO = new RegExp(PROPIO_CORE, 'giu');
+/** Toda coincidencia de `OWN_CASE` lleva un rótulo («Ref», «Rad», «Proceso», «Exp», «Asunto», «Acción») o «este», «presente» o «nuestro». */
+const RAPIDA_OWN_CASE = /ref|rad|proceso|exp|asunto|acci[oó]n|este|presente|nuestro/giu;
 const indices = new WeakMap<SearchView, IndiceDeCita>();
 
 /** Inicios de todas las coincidencias, también las que se solapan (se reanuda en el carácter siguiente al inicio). */
@@ -548,9 +567,9 @@ function indiceDeCita(view: SearchView): IndiceDeCita {
   let ix = indices.get(view);
   if (ix === undefined) {
     ix = {
-      cita: inicios(RAPIDA_CITA, view.text), propio: inicios(RAPIDA_PROPIO, view.text),
+      cita: inicios(RAPIDA_CITA, view.text), propio: inicios(RAPIDA_PROPIO, view.text), rotulo: inicios(RAPIDA_OWN_CASE, view.text),
       providencia: inicios(RAPIDA_PROVIDENCIA, view.text), propioOracion: inicios(RAPIDA_PROPIO_ORACION, view.text),
-      ...finesYSaltos(view.text),
+      ...finesSaltosYCeldas(view.text, view),
     };
     indices.set(view, ix);
   }
@@ -618,33 +637,114 @@ const RAPIDA_PROVIDENCIA = new RegExp(PROVIDENCIA_CORE, 'gu');
  * una decisión del revisor; de menos, un dato a la vista (D-11). La cola de letras va acotada (`L20`): cada intento mira un largo
  * fijo, también en el índice, que reanuda en cada inicio.
  * - A-1 (PB-2-r9, D-14): la parte nombrada por su abogado o por quien escribe («mi poderdante», «mi representada», «mi prohijado»,
- *   «nuestro cliente», «mi mandante», «mi agenciada», «mi menor hijo»…: `PARTE_PROPIA`) y el escrito en primera persona («la
- *   suscrita», «el suscrito», «el infrascrito», «el abajo firmante», «quien suscribe»: `ESCRITO_PROPIO`). Sin `i` no casarían en la
- *   vista de MAYÚSCULAS: la expresión va con `i`, como las demás.
+ *   «nuestro cliente», «mi mandante», «mi agenciada», «mi menor hijo»…; desde -r10, cualquier posesivo de `PRIMERA_PERSONA`) y el
+ *   escrito en primera persona («la suscrita», «el suscrito», «el infrascrito», «el abajo firmante», «quien suscribe»:
+ *   `ESCRITO_PROPIO`). Sin `i` no casarían en la vista de MAYÚSCULAS: la expresión va con `i`, como las demás.
  * - M-61 (PB-2-r9, D-14): todas las formas de los verbos con que se dice que la providencia es del expediente, no solo una: «proferida»
  *   y también «profirió», «profiere»; «dictó», «dictada»; «emitió», «emitida»; «dispuso», «dispuesto»; «lo resuelto». («resolvió»
  *   solo no: «Así lo resolvió la Corte en la sentencia T-123 de 2019, expediente …» es una de las negativas de D-11.)
+ * - M-70 (PB-2-r10, D-11 y D-14): también «expidió», «expedida», «adoptó», «notificó», y «decidió» o «falló» en cualquier lugar de la
+ *   oración («La Corte decidió en la Sentencia … el expediente …»). Los sustantivos «fallo» y «decisión» no: son de toda cita.
+ * - A-3 (PB-2-r10, D-14): la primera persona en cualquier forma (`PRIMERA_PERSONA`): los posesivos «mi», «mis», «nuestro/a/os/as»
+ *   delante de cualquier palabra y los pospuestos («a favor mío»); «yo», «nosotros», «conmigo», «a mí»; «me» o «nos» delante de
+ *   cualquier palabra y pegados al verbo («ampararme», «concediéndonos»); y los verbos del escrito en primera persona («represento»,
+ *   «solicito», «pido», «presenté», «acudo», «padezco», «soy», «he»…: `VERBO_1P`, una lista cerrada). La única excepción son los giros
+ *   de opinión («a mi juicio», «en mi concepto», «a nuestro parecer»: `GIRO_DE_OPINION`). Los verbos con que se cita («invoco»,
+ *   «cito», «considero», «recuerdo») no están: «Como precedente invoco la Sentencia …» es la negativa de D-11. Tampoco las formas que
+ *   también son sustantivos («trabajo», «fundamento», «sustento», «anexo», «reclamo»), ni «de manifiesto». Además, el propio escrito y
+ *   la parte del trámite (`ESCRITO_PROPIO`): «la firmante», «quien firma», «la abogada que suscribe», «la aquí accionante», «el hoy
+ *   accionante», «la presente solicitud» (no «el presente año»), «este escrito», «esta tutela» y «en nombre propio».
  * - Entre las palabras de una señal, blancos o un salto de línea (`ESP`): el PDF que parte la oración («de mi⏎poderdante») no la corta
  *   (C03, `cortaEn`), así que tampoco puede partir la señal.
  */
 const L20 = R`\p{L}{0,20}`;
 const ESP = R`(?:[ ]+|[ ]*\n[ ]*)`;
-const PARTE_PROPIA = R`(?:mis?|nuestr[oa]s?)${ESP}(?:(?:menor(?:es)?|señor(?:a|es|as)?)${ESP})?(?:poderdantes?|representad[oa]s?|prohijad[oa]s?|client[ea]s?|mandantes?|defendid[oa]s?|apoderad[oa]s?|agenciad[oa]s?|patrocinad[oa]s?|hij[oa]s?|espos[oa]s?|compañer[oa]s?|madres?|padres?|herman[oa]s?|abuel[oa]s?|niet[oa]s?)`;
-const ESCRITO_PROPIO = R`(?:el|la|los|las)${ESP}(?:suscrit[oa]s?|infrascrit[oa]s?|abajo${ESP}firmantes?)|quien(?:es)?${ESP}suscrib${L20}`;
-const VERBO_PROPIO = R`prof(?:er|ir|ier)${L20}|dict(?:[óo]|ad[oa]s?|aron)|emit(?:i[óo]|ieron|id[oa]s?)|dispus${L20}|dispuest[oa]s?|resuelt[oa]s?`;
-const PROPIO_ORACION_CORE = R`(?:selecci[óo]n${L20}|insist${L20}|nulidad(?:es)?|desacatos?|temer${L20}|(?:in)?cumpl${L20}|apoderad[oa]s?|(?:otorg|confier|confer)${L20}${ESP}(?:el${ESP})?poder|poder${ESP}(?:especial|amplio|general)|remit${L20}|remite|remisi[óo]n|escog${L20}|decret${L20}|pruebas|${VERBO_PROPIO}|dentro${ESP}del${ESP}(?:presente${ESP})?expediente|folios?|fls?\.|cuadernos?|cdno\.|(?:fall|decid|resolv)${L20}${ESP}(?:(?:el|este|dicho|del|al|su)${ESP})?(?:expedientes?|exp\.)|propi[oa]s?${ESP}(?:tutela|acci[óo]n|demanda|solicitud|expediente|caso|proceso)|mis?${ESP}(?:tutela|acci[óo]n|demanda|solicitud|expediente|caso|proceso|favor)|${PARTE_PROPIA}|${ESCRITO_PROPIO}|(?:me|nos)${ESP}(?:ampar|conced|concedi|neg|tutel|proteg|reconoc|orden|otorg|favorec)${L20}|orden(?:[óo]|ad[oa]s?|aron)|las?${ESP}[óo]rden(?:es)?|esta${ESP}(?:tutela|acci[óo]n|demanda|solicitud))`;
+/** A-3 · Giros de opinión: el posesivo que los lleva no es señal («a mi juicio», «en nuestra opinión», «a mi modo de ver»). */
+const GIRO_DE_OPINION = R`(?:humilde${ESP})?(?:juicio|opini[óo]n|entender|parecer|criterio|concepto|sentir|ver|(?:modo|manera)${ESP}de${ESP}ver|punto${ESP}de${ESP}vista)(?![\p{L}])`;
 /**
- * M-61 (PB-2-r9, D-14) · Una celda o un encabezado no es una oración, y ante la duda se toma: un tabulador o una barra entre celdas
- * («11001-…-00⇥T-9.000.001⇥T-123 de 2026», «| T-9.000.001 | T-123 de 2026 |») y un guion entre blancos («Sentencia T-123 de 2026 –
- * Expediente T-…»; la vista `reglas` ya convierte «–» y «—» en «-») en la oración del expediente son también señales del propio caso.
- * No cuentan la sangría (el tabulador o el guion tras el inicio del renglón y blancos), ni el que sigue a una viñeta o a un número de
- * lista («1.⇥», «a)⇥», «-⇥», «•⇥»), ni el guion pegado («T-123», «SU-508/20»). Va fuera de las fronteras de letra de las señales: el
- * tabulador suele ir pegado a una palabra («Radicado⇥Expediente»). Primero el carácter y luego el retrovisor, acotado a 9 caracteres:
- * el índice solo lo prueba en los tabuladores, las barras y los guiones.
+ * A-3 · Los verbos del escrito en primera persona (presente, pretérito y futuro, del singular y del plural): una lista cerrada, porque
+ * una terminación en «-o» también es la de un sustantivo. Las formas con tilde («presenté») no casan sin ella («presente»).
  */
-const SEPARADOR_CORE = R`[\t|](?<=[^\s.)\]•·*º°\-‐-―][ ]{0,8}[\t|])|[\-‐-―](?<=[^\s][ \t]{1,8}[\-‐-―])(?=[ \t])`;
-const PROPIO_ORACION_Y = new RegExp(R`(?<![\p{L}])${PROPIO_ORACION_CORE}(?![\p{L}])|${SEPARADOR_CORE}`, 'iuy');
-const RAPIDA_PROPIO_ORACION = new RegExp(`${PROPIO_ORACION_CORE}|${SEPARADOR_CORE}`, 'giu');
+const VERBO_1P = R`(?:represent|solicit|instaur|formul|impetr|afirm|declar|aport|apel|impugn|demand|denunci|necesit|acredit|acompañ|present|labor|otorg|suplic|radic|alleg)(?:o|amos|é|ar[ée]|aremos)|(?:supliqu|radiqu|allegu|otorgu)é|(?<!de${ESP})manifiesto|manifest(?:amos|é|ar[ée])|(?:acud|recurr|sufr|viv|resid|suscrib)(?:o|imos|í|ir[ée]|iremos)|ped(?:imos|í|ir[ée]|iremos)|pido|interpongo|interpon(?:emos|dr[ée])|interpus(?:e|imos)|promuevo|promov(?:emos|í)|expongo|expus(?:e|imos)|requiero|requer(?:imos|í)|padezco|padec(?:emos|í)|act[úu]o|actu(?:amos|é)|soy|somos|estoy|estamos|tengo|tenemos|tuve|tuvimos|estuve|fui|fuimos|he|hemos`;
+/** A-3 · La primera persona: posesivos (salvo un giro de opinión), pronombres, «me/nos» delante de una palabra, y `VERBO_1P`. */
+const PRIMERA_PERSONA = R`(?:mis?|nuestr[oa]s?)(?![\p{L}])(?!${ESP}${GIRO_DE_OPINION})|mí(?:[oa]s?)?|mi[oa]s?|yo|nosotr[oa]s|conmigo|(?:me|nos)(?=${ESP}\p{L})|${VERBO_1P}`;
+/**
+ * A-3 · «me» y «nos» pegados al verbo: el infinitivo («ampararme», «otorgarnos», «concedérseme») y el gerundio («amparándome»,
+ * «concediéndonos»), tras al menos dos letras. Casa en la terminación (el retrovisor mira las dos letras de antes), así que va fuera
+ * de la frontera izquierda de las demás señales, y el índice solo la prueba donde empieza una terminación. Sin «-ernos»: «internos»,
+ * «paternos», «cuadernos». Sin «-orme»: «informe», «conforme»; «firme» no tiene dos letras antes de «irme».
+ */
+const ENCLITICO_1P = R`(?<=\p{L}{2})(?:(?:[aeiáéí]r(?:se)?|[áé]ndo(?:se)?)me|(?:[aiáí]r(?:se)?|[eé]rse|[áé]ndo(?:se)?)nos)`;
+const ESCRITO_PROPIO = R`(?:el|la|los|las|lo|del|al)${ESP}(?:suscrit[oa]s?|infrascrit[oa]s?|(?:abajo${ESP})?firmantes?|presentes?(?!${ESP}(?:año|mes|semana|siglo|d[íi]a)(?![\p{L}]))|(?:aqu[íi]|hoy)(?=${ESP}\p{L}))|(?:que|quien(?:es)?)${ESP}(?:suscrib${L20}|firm(?:a|an|o|amos))|est[ea]s?${ESP}(?:escrito|memorial|tr[áa]mite|incidente|asunto|caso|diligencias|petici[óo]n|impugnaci[óo]n|recurso|queja|tutela|acci[óo]n|demanda|solicitud)|(?:nombre|causa)${ESP}propi[oa]`;
+const VERBO_PROPIO = R`prof(?:er|ir|ier)${L20}|dict(?:[óo]|ad[oa]s?|aron)|emit(?:i[óo]|ieron|id[oa]s?)|dispus${L20}|dispuest[oa]s?|resuelt[oa]s?|expid(?:e|en|i[óo]|ieron)|expedid[oa]s?|adopt${L20}|notific${L20}|decidi(?:[óo]|eron)|fall(?:ó|aron)`;
+const PROPIO_ORACION_CORE = R`(?:selecci[óo]n${L20}|insist${L20}|nulidad(?:es)?|desacatos?|temer${L20}|(?:in)?cumpl${L20}|apoderad[oa]s?|(?:otorg|confier|confer)${L20}${ESP}(?:el${ESP})?poder|poder${ESP}(?:especial|amplio|general)|remit${L20}|remite|remisi[óo]n|escog${L20}|decret${L20}|pruebas|${VERBO_PROPIO}|dentro${ESP}del${ESP}(?:presente${ESP})?expediente|folios?|fls?\.|cuadernos?|cdno\.|(?:fall|decid|resolv)${L20}${ESP}(?:(?:el|este|dicho|del|al|su)${ESP})?(?:expedientes?|exp\.)|propi[oa]s?${ESP}(?:tutela|acci[óo]n|demanda|solicitud|expediente|caso|proceso)|${PRIMERA_PERSONA}|${ESCRITO_PROPIO}|orden(?:[óo]|ad[oa]s?|aron)|las?${ESP}[óo]rden(?:es)?)`;
+const PROPIO_ORACION_Y = new RegExp(R`(?<![\p{L}])${PROPIO_ORACION_CORE}(?![\p{L}])|${ENCLITICO_1P}(?![\p{L}])`, 'iuy');
+/**
+ * La versión del índice: la frontera izquierda va también aquí (PB-2-r10), así que solo se prueban las alternativas en el inicio de
+ * una palabra (o de una terminación enclítica). Sigue siendo exacta: la expresión completa exige la misma frontera.
+ */
+const RAPIDA_PROPIO_ORACION = new RegExp(R`(?<![\p{L}])${PROPIO_ORACION_CORE}|${ENCLITICO_1P}`, 'giu');
+
+/**
+ * M-61 (PB-2-r9) y M-70 (PB-2-r10, D-14) · Una celda o un encabezado no es una oración, y ante la duda se toma. En la oración del
+ * expediente son señales del propio caso:
+ * - un tabulador o una barra entre celdas («11001-…-00⇥T-9.000.001⇥T-123 de 2026», «| T-9.000.001 | T-123 de 2026 |»), con algo antes
+ *   en el renglón tras hasta 8 espacios que no sea un blanco, «.», «)», «]», «•», «·», «*», «º», «°» ni un guion: así no cuentan la
+ *   sangría ni el que sigue a una viñeta o a un número de lista («1.⇥», «a)⇥», «-⇥», «•⇥»);
+ * - un guion, «/», «·» o «•» entre blancos, con algo antes en el renglón («Sentencia T-123 de 2026 – Expediente T-…», «… / Expediente
+ *   …», «… · Expediente …»; la vista `reglas` ya convierte «–» y «—» en «-»). No el pegado («T-123», «SU-508/20», «y/o»);
+ * - M-70 (c): el hueco ancho de una fila de tabla del PDF («11001-…-00␣␣␣␣␣T-9.000.001␣␣␣␣␣T-123 de 2026»): dos o más blancos entre
+ *   dos textos del mismo renglón, con lo mismo antes que el tabulador. La vista `reglas` los colapsa en uno, así que el ancho se mira
+ *   en el texto canónico, con el mapa de la vista (`endMap − startMap`). Sin vista solo se ven los blancos repetidos del texto.
+ * Antes, una alternativa de `PROPIO_ORACION` con un retrovisor; ahora una pasada por carácter (`esCelda`), cuyas posiciones guarda el
+ * índice de la vista junto a los fines y los saltos (B-72): con índice, cada consulta es una búsqueda binaria.
+ */
+const ANTES_DE_CELDA_EXCLUIDO = /[\s.)\]•·*º°\-‐-―]/u;
+const NO_BLANCO = /\S/u;
+const esBlancoH = (c: number): boolean => c === 32 || c === 9;
+/** «-», «‐» a «―», «/», «·» y «•»: separadores de un encabezado cuando van entre blancos. */
+const esSeparadorEntreBlancos = (c: number): boolean => c === 45 || (c >= 0x2010 && c <= 0x2015) || c === 47 || c === 0xb7 || c === 0x2022;
+const esCandidatoDeCelda = (c: number): boolean => c === 9 || c === 124 || c === 32 || esSeparadorEntreBlancos(c);
+/** ¿El carácter de `texto` en `p` separa dos celdas o las dos partes de un encabezado? `view`: la vista de `texto`, para el ancho. */
+function esCelda(texto: string, p: number, view: SearchView | undefined): boolean {
+  const c = texto.charCodeAt(p);
+  if (c === 32) {
+    let q = p + 1;
+    while (q < texto.length && q < p + 16 && texto.charCodeAt(q) === 32) q++;
+    const propio = view === undefined ? 1 : (view.endMap[p] ?? p + 1) - (view.startMap[p] ?? p);
+    if (propio + (q - p - 1) < 2 || q >= texto.length || !NO_BLANCO.test(texto.charAt(q))) return false;
+    return p > 0 && texto.charCodeAt(p - 1) !== 32 && !ANTES_DE_CELDA_EXCLUIDO.test(texto.charAt(p - 1));
+  }
+  if (c === 9 || c === 124) {
+    let q = p - 1;
+    while (q >= 0 && q >= p - 8 && texto.charCodeAt(q) === 32) q--;
+    return q >= 0 && !ANTES_DE_CELDA_EXCLUIDO.test(texto.charAt(q));
+  }
+  if (!esSeparadorEntreBlancos(c) || !esBlancoH(texto.charCodeAt(p + 1))) return false;
+  let q = p - 1;
+  while (q >= 0 && q >= p - 8 && esBlancoH(texto.charCodeAt(q))) q--;
+  return q >= 0 && q < p - 1 && NO_BLANCO.test(texto.charAt(q));
+}
+/** ¿Hay una celda en [desde, hasta)? Con índice, búsqueda binaria; sin él, carácter por carácter (lo mismo). */
+function celdaEn(texto: string, desde: number, hasta: number, view: SearchView | undefined, ix: IndiceDeCita | undefined): boolean {
+  if (ix !== undefined) return hay(ix.celdas, desde, hasta);
+  for (let p = desde; p < hasta; p++) if (esCandidatoDeCelda(texto.charCodeAt(p)) && esCelda(texto, p, view)) return true;
+  return false;
+}
+/**
+ * M-70 (PB-2-r10, D-14) · Un encabezado con dos puntos pegado al expediente: «Sentencia T-123 de 2026: Expediente T-…», «…: T-…» o
+ * «Expediente T-…: Sentencia …». Solo pegado (con blancos, el rótulo y el signo de número de por medio): los dos puntos de una
+ * oración («invoco las siguientes: …») no cuentan. Ventanas fijas: hasta 8 blancos después y los últimos dos puntos de los 40
+ * caracteres de antes (lo que sigue a los dos puntos no puede llevar otros).
+ */
+const DOS_PUNTOS_ANTES = /^:[ \t]{0,8}(?:(?:expediente|exp\.|radicad[oa]|rad\.)[ \t]{0,8}(?:(?:no\.?|n\.?[ ]?º|nro\.?)[ \t]{0,8})?)?$/iu;
+function dosPuntosJunto(texto: string, start: number, end: number): boolean {
+  let q = end;
+  while (q < texto.length && q < end + 8 && esBlancoH(texto.charCodeAt(q))) q++;
+  if (texto.charCodeAt(q) === 58) return true;
+  for (let p = start - 1; p >= 0 && p >= start - 40; p--) if (texto.charCodeAt(p) === 58) return DOS_PUNTOS_ANTES.test(texto.slice(p, start));
+  return false;
+}
 
 /**
  * ¿Casa `re` (con `y`, sobre todo el texto) en alguna posición de [desde, hasta) y acaba antes de `hasta`? Con el índice de la vista
@@ -652,17 +752,17 @@ const RAPIDA_PROPIO_ORACION = new RegExp(`${PROPIO_ORACION_CORE}|${SEPARADOR_COR
  * índice, en cada posición (las pruebas). Lo mismo en los dos casos, y cada intento mira un largo acotado.
  */
 function casaEn(re: RegExp, texto: string, desde: number, hasta: number, xs: readonly number[] | undefined): boolean {
-  const aqui = (p: number): boolean => {
-    re.lastIndex = p;
-    const m = re.exec(texto);
-    return m !== null && re.lastIndex <= hasta;
-  };
   if (xs === undefined) {
-    for (let p = desde; p < hasta; p++) if (aqui(p)) return true;
+    for (let p = desde; p < hasta; p++) if (casaAqui(re, texto, p, hasta)) return true;
     return false;
   }
-  for (let i = primero(xs, desde); i < xs.length && (xs[i] as number) < hasta; i++) if (aqui(xs[i] as number)) return true;
+  for (let i = primero(xs, desde); i < xs.length && (xs[i] as number) < hasta; i++) if (casaAqui(re, texto, xs[i] as number, hasta)) return true;
   return false;
+}
+/** `re` (con `y`) casa en `p` y acaba antes de `hasta`. Sin cierre ni arreglo por intento (PB-2-r10: menos basura en un renglón largo). */
+function casaAqui(re: RegExp, texto: string, p: number, hasta: number): boolean {
+  re.lastIndex = p;
+  return re.test(texto) && re.lastIndex <= hasta;
 }
 /**
  * D-11, condición 2 · Rótulo del propio caso al inicio del renglón del expediente (antes de él) o del renglón anterior que no está
@@ -811,11 +911,16 @@ export function esPrecedenteCitado(texto: string, start: number, end: number): b
  *   PB-2-r9: A-1 y M-61). La tercera condición de D-11 (la misma clave sin cita en otra mención del documento) la aplica la tubería.
  * - `cita` (se toma, con la bandera) si está en contexto de cita (`esContextoDeCita`) y no hay ninguna señal del propio caso (B-70).
  * - `null` (se toma) en otro caso.
+ * PB-2-r10: la primera persona en cualquier forma (A-3), los verbos y encabezados de M-70 y las celdas (`esCelda`, `dosPuntosJunto`)
+ * son también señales del propio caso.
  * Ventanas fijas e índice de la vista (B-62 y B-72): solo se arma la oración si en la ventana empieza una providencia o una señal
- * del propio caso. Tiempo lineal en el número de expedientes, también en un renglón largo. Sin `view` da lo mismo, sin el índice.
+ * del propio caso. Tiempo lineal en el número de expedientes, también en un renglón largo. `view` es la vista de `texto`: da el
+ * índice y el ancho de los blancos en el canónico (M-70). Sin `view` da lo mismo, salvo ese ancho; con `indice: false` (las pruebas)
+ * se usa la vista sin el índice, y da lo mismo.
  */
-export function contextoDelExpediente(texto: string, start: number, end: number, view?: SearchView): 'precedente' | 'cita' | null {
-  const ix = view === undefined || view.text !== texto ? undefined : indiceDeCita(view);
+export function contextoDelExpediente(texto: string, start: number, end: number, view?: SearchView, indice = true): 'precedente' | 'cita' | null {
+  const vista = view === undefined || view.text !== texto ? undefined : view;
+  const ix = vista === undefined || !indice ? undefined : indiceDeCita(vista);
   // R-CIT-01: `CITE_LEX` y `OWN_CASE` en 150 caracteres antes y 60 después.
   const antes = texto.slice(Math.max(0, start - CITE_ANTES), start);
   const lexico = (posible(ix?.cita, start - CITE_ANTES, start, 0, 0) && CITE_LEX.test(antes))
@@ -827,12 +932,14 @@ export function contextoDelExpediente(texto: string, start: number, end: number,
   const cita = citaConLexico(texto, start, end, antes, lexico, ix);
   if (!providencia && !cita) return null;
   // Las señales del propio caso anulan las dos (D-11 y B-70). Con `cita`, `citaConLexico` ya vio que no hay `CITA_PROPIO` ni `OWN_CASE`.
-  if (!cita && (OWN_CASE.test(antes)
+  if (!cita && (rotuloJustoAntes(antes, start, ix)
     || (posible(ix?.propio, start - VENTANA_ANTES, start, end, end + VENTANA_TRAS) && CITA_PROPIO.test(ventanaDeCita(texto, start, end))))) return null;
-  if (rotuloPropio(texto, start, ix)) return null;
-  const o = providencia || posible(ix?.propioOracion, a, start, end, b) ? oracionDelExpediente(texto, start, end, a, b, ix) : null;
+  if (rotuloPropio(texto, start, ix) || dosPuntosJunto(texto, start, end)) return null;
+  const o = providencia || posible(ix?.propioOracion, a, start, end, b) || posible(ix?.celdas, a, start, end, b)
+    ? oracionDelExpediente(texto, start, end, a, b, ix) : null;
   if (o === null) return cita ? 'cita' : null;
-  if (casaEn(PROPIO_ORACION_Y, texto, o.ini, start, ix?.propioOracion) || casaEn(PROPIO_ORACION_Y, texto, end, o.fin, ix?.propioOracion)) return null;
+  if (celdaEn(texto, o.ini, start, vista, ix) || celdaEn(texto, end, o.fin, vista, ix)
+    || casaEn(PROPIO_ORACION_Y, texto, o.ini, start, ix?.propioOracion) || casaEn(PROPIO_ORACION_Y, texto, end, o.fin, ix?.propioOracion)) return null;
   if (providencia && (casaEn(PROVIDENCIA_Y, texto, o.ini, start, ix?.providencia) || casaEn(PROVIDENCIA_Y, texto, end, o.fin, ix?.providencia))) return 'precedente';
   return cita ? 'cita' : null;
 }

@@ -684,7 +684,9 @@ describe('T-MO-01 · A-1 (PB-2-r7 y PB-2-r8, D-11): R-RAD_ADMIN-03 solo descarta
       for (let j = 0; j < 14; j++) t += trozos[azar(trozos.length)] as string;
       const v = buildSearchView(t, 'reglas', 'cuerpo');
       for (const m of v.text.matchAll(/T-9\.000\.00[12]/gu)) {
-        expect(contextoDelExpediente(v.text, m.index, m.index + 11, v), t).toBe(contextoDelExpediente(v.text, m.index, m.index + 11));
+        // PB-2-r10: sin índice, pero con la vista: el hueco ancho (M-70) se mide en el canónico con el mapa de la vista, y « » + « y»
+        // deja dos blancos en el canónico.
+        expect(contextoDelExpediente(v.text, m.index, m.index + 11, v), t).toBe(contextoDelExpediente(v.text, m.index, m.index + 11, v, false));
         comparados++;
       }
     }
@@ -792,7 +794,8 @@ describe('T-MO-01 · A-1, M-61 y B-81 (PB-2-r9, D-14): la parte propia, los verb
       const v = buildSearchView(t, 'reglas', 'cuerpo');
       for (const m of v.text.matchAll(/T-9\.000\.001/gu)) {
         const con = contextoDelExpediente(v.text, m.index, m.index + 11, v);
-        expect(con, JSON.stringify(t)).toBe(contextoDelExpediente(v.text, m.index, m.index + 11));
+        // PB-2-r10: sin índice, con la misma vista (el ancho de los blancos en el canónico, M-70).
+        expect(con, JSON.stringify(t)).toBe(contextoDelExpediente(v.text, m.index, m.index + 11, v, false));
         if (con === null) propios++;
         comparados++;
       }
@@ -819,6 +822,148 @@ describe('T-MO-01 · A-1, M-61 y B-81 (PB-2-r9, D-14): la parte propia, los verb
       // Con el código de -r8, en los dos primeros el fin seguro era el de la norma entera («… Protección Social», «… Seguridad Social»).
       expect(finDeNormaAlInicio(cx, s, t.length - 8), t).toBe(s + resto.length);
     }
+  });
+});
+
+describe('T-MO-01 · A-3, M-70 y B-90 (PB-2-r10, D-11 y D-14): la primera persona en cualquier forma, los verbos y encabezados de la providencia, la fila de PDF y «Tránsito»', () => {
+  const vistaYPos = (t: string, sub: string): { v: ReturnType<typeof buildSearchView>; s: number } => {
+    const v = buildSearchView(t, 'reglas', 'cuerpo');
+    return { v, s: v.text.indexOf(sub) };
+  };
+  /** Con índice, con la vista sin el índice y sin la vista: las dos primeras dan siempre lo mismo. */
+  const tres = (t: string, sub = 'T-9.000.001'): Array<ReturnType<typeof contextoDelExpediente>> => {
+    const { v, s } = vistaYPos(t, sub);
+    return [contextoDelExpediente(v.text, s, s + sub.length, v), contextoDelExpediente(v.text, s, s + sub.length, v, false),
+      contextoDelExpediente(v.text, s, s + sub.length)];
+  };
+  const ANTES = 'En la Sentencia T-123 de 2026, expediente T-9.000.001,';
+  const CITA = 'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.';
+
+  it('A-3 · la primera persona en cualquier forma es señal del propio caso, tras el expediente, antes de él y en MAYÚSCULAS', () => {
+    // Cada cláusula lleva una sola señal, y ninguna de las listas de -r9.
+    const clausulas = [
+      // posesivos delante de cualquier palabra, pospuestos y «mí»
+      'la Corte amparó mis derechos', 'la Corte amparó los derechos de mi mamá', 'la Corte amparó los derechos de mi comitente',
+      'la Corte amparó los derechos de nuestra afiliada', 'la Corte amparó a nuestros asociados', 'la Corte resolvió a favor mío',
+      'la Corte resolvió la petición mía', 'la Corte resolvió el caso nuestro', 'la Corte se pronunció sobre mí',
+      'la Corte protegió a mi núcleo familiar', 'la Corte amparó a mi\npersona',
+      // pronombres, «me» y «nos» con cualquier verbo y pegados a él
+      'la Corte amparó los derechos que yo invoqué', 'la Corte resolvió el caso de nosotras', 'la Corte habló conmigo',
+      'me fueron amparados los derechos', 'la Corte nos concedió el amparo', 'la Corte me permitió el acceso', 'la Corte nos\nconcedió el amparo',
+      'la Corte resolvió ampararme', 'la Corte resolvió otorgarnos el tratamiento', 'la Corte terminó concediéndome el amparo',
+      'la Corte resolvió concedérsenos el amparo',
+      // verbos del escrito en primera persona
+      'la Corte amparó a la sociedad que represento', 'la Corte amparó a quienes representamos', 'solicito la misma protección',
+      'pido la misma protección', 'presenté la acción de tutela', 'acudo de nuevo a la Corte', 'padezco la misma enfermedad',
+      'soy la accionante', 'he pedido la misma protección', 'manifiesto que la EPS no ha obedecido', 'interpongo la acción de tutela',
+      // el escrito y la parte del trámite
+      'la Corte amparó a la firmante', 'la Corte amparó a quien firma', 'la Corte amparó a la abogada que suscribe',
+      'la Corte amparó a la aquí accionante', 'la Corte amparó los derechos del hoy accionante', 'el aquí demandado no ha obedecido',
+      'lo pedido en este escrito coincide', 'la presente solicitud lo recuerda', 'actuando en nombre propio, la accionante obtuvo el amparo',
+    ];
+    for (const c of clausulas) {
+      const despues = `${ANTES} ${c}.`;
+      const antes = `${c.charAt(0).toUpperCase()}${c.slice(1)}, según la Sentencia T-123 de 2026, expediente T-9.000.001.`;
+      for (const t of [despues, despues.toUpperCase(), antes]) {
+        // Con el código de -r9, 'precedente': el expediente propio no se tomaba.
+        expect(tres(t), t).toEqual([null, null, null]);
+      }
+    }
+  });
+
+  it('A-3 · negativos: los giros de opinión, las palabras que contienen las señales y los sustantivos con forma de verbo (sigue siendo precedente)', () => {
+    const giros = ['A mi juicio', 'En mi concepto', 'A nuestro parecer', 'En mi opinión', 'A mi entender', 'A mi parecer', 'En mi criterio',
+      'A mi modo de ver', 'A mi manera de ver', 'En nuestra opinión', 'A nuestro juicio', 'En mi humilde opinión', 'Desde mi punto de vista',
+      'A mi\njuicio', 'Para mi sentir'];
+    const otros = [
+      'Como precedente invoco la misma Sentencia T-074 de 2020, conforme al informe en firme del Ministerio, y, en particular, el expediente T-9.000.001.',
+      'Como precedente invoco la Sentencia T-074 de 2020 sobre el derecho al trabajo y su fundamento (anexo 3), que pone de manifiesto la regla, y, en particular, el expediente T-9.000.001.',
+      'Como precedente invoco la Sentencia T-074 de 2020 sobre los abuelos paternos y los reglamentos internos, y, en particular, el expediente T-9.000.001.',
+      'Como precedente invoco las Sentencias Nos. T-074 de 2020 y T-121 de 2015 y, en particular, el expediente T-9.000.001.',
+      'Como precedente invoco la Sentencia T-074 de 2020, reiterada en el presente año, y, en particular, el expediente T-9.000.001.',
+      'Como precedente invoco el fallo T-074 de 2020 y su decisión, y, en particular, el expediente T-9.000.001.',
+      'Cito la Sentencia T-074 de 2020, que considero aplicable, y, en particular, el expediente T-9.000.001.',
+      'Recuerdo la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.',
+      'Tengase presente la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001.',
+    ];
+    for (const t of [...giros.map((g) => `${g}, la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001 resuelven un caso análogo.`), ...otros]) {
+      for (const x of [t, t.toUpperCase()]) expect(tres(x), x).toEqual(['precedente', 'precedente', 'precedente']);
+    }
+    // El giro no tapa otra señal de la misma oración.
+    expect(tres('A mi juicio, la Sentencia T-123 de 2026, expediente T-9.000.001, amparó a mi madre.')).toEqual([null, null, null]);
+  });
+
+  it('M-70 · «expidió», «expedida», «adoptó», «notificó», y «decidió» o «falló» en cualquier lugar de la oración son señales; «fallo», «decisión» y «resolvió» no', () => {
+    for (const o of [
+      'La Corte expidió la Sentencia T-123 de 2026 en el expediente T-9.000.001.',
+      'La Sentencia T-123 de 2026, expedida en el expediente T-9.000.001, amparó a la accionante.',
+      'La Corte notificó la Sentencia T-123 de 2026, expediente T-9.000.001.',
+      'La Sentencia T-123 de 2026, notificada en el expediente T-9.000.001, amparó a la accionante.',
+      'La Sala adoptó la Sentencia T-123 de 2026 en el expediente T-9.000.001.',
+      'La Corte decidió en la Sentencia T-123 de 2026 el expediente T-9.000.001.',
+      'Las salas decidieron con la Sentencia T-123 de 2026 el expediente T-9.000.001.',
+      'La Corte falló con la Sentencia T-123 de 2026 el expediente T-9.000.001.',
+    ]) for (const t of [o, o.toUpperCase()]) expect(tres(t), t).toEqual([null, null, null]);
+    expect(tres('Así lo resolvió la Corte en la sentencia T-123 de 2019, expediente T-9.000.001.')).toEqual(['precedente', 'precedente', 'precedente']);
+  });
+
+  it('M-70 · los encabezados con «/», «·», «•» o «:» pegado al expediente son señales; los dos puntos de una oración, la barra pegada y la viñeta no', () => {
+    for (const o of [
+      'Sentencia T-123 de 2026 / Expediente T-9.000.001', 'Sentencia T-123 de 2026 · Expediente T-9.000.001',
+      'Sentencia T-123 de 2026 • Expediente T-9.000.001', 'Expediente T-9.000.001 / Sentencia T-123 de 2026',
+      'Sentencia T-123 de 2026: Expediente T-9.000.001', 'Sentencia T-123 de 2026: Expediente No. T-9.000.001',
+      'Sentencia T-123 de 2026: T-9.000.001', 'Expediente T-9.000.001: Sentencia T-123 de 2026',
+    ]) for (const t of [o, o.toUpperCase()]) expect(tres(t), t).toEqual([null, null, null]);
+    for (const t of [
+      'Como precedente invoco las siguientes: la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.',
+      'Como precedente invoco la Sentencia T-074 de 2020 y/o, en particular, el expediente T-9.000.001.',
+      'Ver la Sentencia SU-508/20 (expediente T-9.000.001), sobre la integralidad.',
+      `/ ${CITA}`, `· ${CITA}`, `• ${CITA}`, `\t· ${CITA}`,
+    ]) expect(tres(t), t).toEqual(['precedente', 'precedente', 'precedente']);
+  });
+
+  it('M-70 · la fila de tabla del PDF separada por blancos: el ancho se mira en el canónico con el mapa de la vista, que colapsa los blancos', () => {
+    for (const t of ['11001-31-03-999-2026-00123-00     T-9.000.001     T-123 de 2026', 'T-9.000.001  T-123 de 2026',
+      'Sentencia T-123 de 2026   T-9.000.001', 'Radicado     Expediente     Sentencia\n11001-31-03-999-2026-00123-00     T-9.000.001     T-123 de 2026']) {
+      const { v, s } = vistaYPos(t, 'T-9.000.001');
+      expect(v.text.includes('  '), t).toBe(false);
+      // Con el código de -r9, 'precedente' con la vista. Sin ella, en el texto de la vista, el hueco no se ve; en el canónico sí.
+      expect(tres(t), t).toEqual([null, null, 'precedente']);
+      const c = t.indexOf('T-9.000.001');
+      if (!t.includes(' ')) expect(contextoDelExpediente(t, c, c + 11), t).toBeNull();
+    }
+    // No son celdas: la sangría, los blancos tras un punto, una viñeta o un número de lista, ni los del final del renglón.
+    const cita = CITA.slice(0, -1);
+    for (const t of [`    ${CITA}`, `Hechos.   ${CITA}`, `1.   ${CITA}`, `a)   ${CITA}`, `•   ${CITA}`, `${cita}   \nII. PRETENSIONES`, `${cita}   `]) {
+      expect(tres(t), JSON.stringify(t)).toEqual(['precedente', 'precedente', 'precedente']);
+    }
+  });
+
+  it('B-62 · con índice da lo mismo que con la vista sin él en textos aleatorios con la primera persona, los encabezados y los huecos anchos', () => {
+    const base = ['Como precedente invoco la Sentencia T-074 de 2020', ' y, en particular,', ' el expediente T-9.000.001', '.', ' ', '\n'];
+    const trozos = [...base, ...base, ...base, '  ', '\t', ' / ', '/', ' · ', ':', ': ', ' mi', ' juicio', ' a mi juicio', ' mío', ' me', ' nos',
+      ' yo', ' ampararme', ' represento', ' la presente', ' del presente año', ' el aquí', ' accionante', ' expidió', ' falló', ' fallo', ' 1.',
+      '    ', ' Expediente', ' T-456 de 2020', '  '];
+    let semilla = 13;
+    const azar = (n: number): number => { semilla = (semilla * 48271) % 2147483647; return semilla % n; };
+    let comparados = 0;
+    let propios = 0;
+    let precedentes = 0;
+    for (let k = 0; k < 800; k++) {
+      let t = '';
+      for (let j = 0; j < 12; j++) t += trozos[azar(trozos.length)] as string;
+      const v = buildSearchView(t, 'reglas', 'cuerpo');
+      for (const m of v.text.matchAll(/T-9\.000\.001/gu)) {
+        const con = contextoDelExpediente(v.text, m.index, m.index + 11, v);
+        expect(con, JSON.stringify(t)).toBe(contextoDelExpediente(v.text, m.index, m.index + 11, v, false));
+        if (con === null) propios++;
+        if (con === 'precedente') precedentes++;
+        comparados++;
+      }
+    }
+    expect(comparados).toBeGreaterThan(300);
+    expect(propios).toBeGreaterThan(50);
+    expect(precedentes).toBeGreaterThan(20);
   });
 });
 
@@ -1026,6 +1171,13 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     // PB-2-r9: la parte propia, el encabezado con guion y la celda, en cada expediente.
     ['«En la Sentencia T-1 de 2020 – expediente T-9.000.001 de mi poderdante; »', 1_000_000, 'En la Sentencia T-1 de 2020 – expediente T-9.000.001 de mi poderdante; ', null, true],
     ['«T-1 de 2020⇥T-9.000.001⇥»', 1_000_000, 'T-1 de 2020\tT-9.000.001\t', null, true],
+    // PB-2-r10: la primera persona, el encabezado con barra o con dos puntos, la fila de PDF con blancos (la vista los colapsa) y el
+    // giro de opinión (todos citados), en cada expediente.
+    ['«…, la Corte amparó mis derechos. »', 1_000_000, 'En la Sentencia T-1 de 2020, expediente T-9.000.001, la Corte amparó mis derechos. ', null, true],
+    ['«T-1 de 2020 / T-9.000.001 / »', 1_000_000, 'T-1 de 2020 / T-9.000.001 / ', null, true],
+    ['«Sentencia T-1 de 2020: Expediente T-9.000.001; »', 1_000_000, 'Sentencia T-1 de 2020: Expediente T-9.000.001; ', null, true],
+    ['«T-1 de 2020␣␣␣␣␣T-9.000.001␣␣␣␣␣»', 1_000_000, 'T-1 de 2020     T-9.000.001     ', null, true],
+    ['«A mi juicio, la Sentencia T-1 de 2020 y el expediente T-9.000.001 son análogos; »', 1_000_000, 'A mi juicio, la Sentencia T-1 de 2020 y el expediente T-9.000.001 son análogos; ', null, false],
   ] as const)('B-62 y B-72 R-RAD_ADMIN-03 en un renglón con %s hasta %i caracteres: toma lo que debe y el contexto va por debajo del tope', async (_n, largo, unidad, contexto, toma) => {
     const reglas = (await reglasDeModulos(['radicado'])).filter((r) => r.id === 'R-RAD_ADMIN-03');
     const texto = unidad.repeat(Math.ceil(largo / unidad.length));
@@ -1033,7 +1185,8 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
     const c = runRules(buildSearchView(texto, 'reglas', 'cuerpo'), PART, reglas, 2026, { maxMsPerRule: Number.POSITIVE_INFINITY });
     expect(c.length).toBe(toma ? total : 0);
     expect(c.every((x) => (x.context ?? null) === contexto)).toBe(true);
-    const inicios = [...texto.matchAll(/T-9\.000\.001/gu)].map((m) => m.index);
+    // Las posiciones en el texto de la vista (PB-2-r10: con blancos repetidos no es el mismo que el canónico).
+    const inicios = [...buildSearchView(texto, 'reglas', 'cuerpo').text.matchAll(/T-9\.000\.001/gu)].map((m) => m.index);
     expect(inicios.length).toBe(total);
     const mejor = Math.min(...[0, 1, 2].map(() => {
       const v = buildSearchView(texto, 'reglas', 'cuerpo');
@@ -1093,6 +1246,36 @@ describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas 
       for (const s of inicios) {
         const i = v.text === texto ? s : v.text.indexOf('T-9.000.001');
         contextoDelExpediente(v.text, i, i + 11, v);
+        contextoDelExpediente(texto, s, s + 11);
+      }
+      return performance.now() - t0;
+    }));
+    expect(mejor).toBeLessThan(50);
+  }, 120_000);
+
+  // PB-2-r10: el giro de opinión tras el posesivo, «me» o «nos» con su palabra, las terminaciones enclíticas, «el presente año», «de
+  // manifiesto», «el aquí …», los separadores entre blancos, los huecos anchos y los dos puntos pegados, con 40.000 blancos, saltos o
+  // signos: el contexto de cada expediente con el índice, con la vista sin él y sin la vista, el mejor de 3, por debajo de 50 ms.
+  it.each([
+    ['«a mi» y espacios antes de «juicio», fuera de la vista', 'la Sentencia T-1 de 2020 y el expediente T-9.000.001, a mi' + SP + 'juicio'],
+    ['«me» y saltos con espacios antes de la palabra', 'la Sentencia T-1 de 2020 y el expediente T-9.000.001, me' + ' \n'.repeat(K / 2) + 'amparó'],
+    ['una racha de terminaciones enclíticas', 'ampararme'.repeat(K / 9) + ' la Sentencia T-1 de 2020 y el expediente T-9.000.001'],
+    ['una racha de «-rnos» y «-ndonos» sin blancos', 'arnosandonos'.repeat(K / 12) + ' la Sentencia T-1 de 2020 y el expediente T-9.000.001'],
+    ['«el presente» y espacios antes de «año»', 'la Sentencia T-1 de 2020 y el expediente T-9.000.001, el presente' + SP + 'año'],
+    ['«de» y espacios antes de «manifiesto»', 'la Sentencia T-1 de 2020 y el expediente T-9.000.001, de' + SP + 'manifiesto'],
+    ['«el aquí» y espacios antes del rol', 'la Sentencia T-1 de 2020 y el expediente T-9.000.001, el aquí' + SP + 'accionante'],
+    ['barras y puntos medios entre blancos encadenados', ' / · '.repeat(K / 5) + 'T-9.000.001 / T-1 de 2020'],
+    ['huecos anchos encadenados', 'a  '.repeat(K / 3) + 'T-9.000.001  T-1 de 2020'],
+    ['dos puntos encadenados antes y después del expediente', ': '.repeat(K / 2) + 'T-9.000.001' + ' :'.repeat(K / 2) + ' T-1 de 2020'],
+  ])('PB-2-r10 contextoDelExpediente, %s: 40.000 caracteres por debajo de 50 ms', (_n, texto) => {
+    const inicios = [...texto.matchAll(/T-9\.000\.001/gu)].map((m) => m.index);
+    const mejor = Math.min(...[0, 1, 2].map(() => {
+      const v = buildSearchView(texto, 'reglas', 'cuerpo');
+      const t0 = performance.now();
+      for (const s of inicios) {
+        const i = v.text === texto ? s : v.text.indexOf('T-9.000.001');
+        contextoDelExpediente(v.text, i, i + 11, v);
+        contextoDelExpediente(v.text, i, i + 11, v, false);
         contextoDelExpediente(texto, s, s + 11);
       }
       return performance.now() - t0;

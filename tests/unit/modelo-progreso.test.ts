@@ -1108,6 +1108,105 @@ describe('T-MO-12 · D-14: la parte propia, los verbos de la providencia y las c
   });
 });
 
+describe('T-MO-12 · D-11 y D-14: la primera persona en cualquier forma, los verbos y encabezados de M-70 y «Tránsito» (A-3, M-70 y B-90 de la P0-6a de PB-2-r9; PB-2-r10)', () => {
+  async function detectarCon(...textos: string[]) {
+    const doc = documento(textos);
+    const det = resultado<{ kind: 'detectar'; set: DetectionSet }>(await banco().enviar('detectar', { sessionId: 'ses_1', doc, caseList: [], table: TABLA, options: OPCIONES }));
+    return { doc, set: det.set };
+  }
+  const salida = (doc: DocumentModel, set: DetectionSet): string => render(doc, estadoDe(doc, set)).sections.map((s) => s.text).join('\n');
+  /** La sonda E1 de la revisión: la sentencia del caso y el expediente en la misma oración, con ⟨X⟩ al final. */
+  const E1 = (x: string): string => `En la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte amparó los derechos de ${x}.`;
+
+  /** Las 50 sondas E1 de la revisión de -r9, por grupo y en su orden. */
+  const ABOGADO: readonly string[] = [
+    E1('la sociedad que represento'), E1('quien represento'), E1('la persona a quien represento'), E1('la sociedad que represento').toUpperCase(),
+    E1('mi comitente'), E1('mi asistido'), E1('mi asesorada'), E1('la firmante'), E1('quien firma este escrito'), E1('la abogada que suscribe'),
+  ];
+  const NOMBRE_PROPIO: readonly string[] = [
+    'En la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte amparó mis derechos.',
+    'Actuando en nombre propio, recuerdo que en la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte amparó mis derechos.',
+    'En la Sentencia T-123 de 2026, expediente T-9.000.001, me fueron amparados los derechos.',
+    'En la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte falló a favor mío.',
+    'En la Sentencia T-123 de 2026, expediente T-9.000.001, la Corte amparó los derechos que yo invoqué.',
+    E1('mi persona'), E1('mi empresa'), E1('mi núcleo familiar'),
+  ];
+  const FAMILIA: readonly string[] = ['mi mamá', 'mi mama', 'mi papá', 'mi cónyuge', 'mi tía', 'mi tío', 'mi sobrina', 'mi progenitora',
+    'mi hijita', 'mi pareja', 'mi suegra', 'mi familia', 'mi bebé'].map(E1);
+  const TRAMITE: readonly string[] = [
+    E1('la aquí accionante'), E1('el hoy accionante'),
+    'Con la presente solicitud recuerdo que la Sentencia T-123 de 2026, expediente T-9.000.001, amparó los derechos de la accionante.',
+    E1('nuestra afiliada'),
+  ];
+  const VERBOS: readonly string[] = [
+    'La Corte expidió la Sentencia T-123 de 2026 en el expediente T-9.000.001.',
+    'La Corte notificó la Sentencia T-123 de 2026, expediente T-9.000.001.',
+    'La Sala adoptó la Sentencia T-123 de 2026 en el expediente T-9.000.001.',
+    'La Corte decidió en la Sentencia T-123 de 2026 el expediente T-9.000.001.',
+    'La Corte falló con la Sentencia T-123 de 2026 el expediente T-9.000.001.',
+  ];
+  const ENCABEZADOS: readonly string[] = [
+    'Sentencia T-123 de 2026 / Expediente T-9.000.001',
+    'Sentencia T-123 de 2026 · Expediente T-9.000.001',
+    'Sentencia T-123 de 2026: Expediente T-9.000.001',
+    '11001-31-03-999-2026-00123-00     T-9.000.001     T-123 de 2026',
+  ];
+  const YA_TOMADOS: readonly string[] = ['Sentencia T-123 de 2026 - Expediente T-9.000.001', '| T-9.000.001 | T-123 de 2026 |', '1.\tT-9.000.001\tT-123 de 2026'];
+  const NEGATIVAS: readonly string[] = [
+    'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.',
+    'A mi juicio, la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001 resuelven un caso análogo.',
+    'Así lo resolvió la Corte en la sentencia T-123 de 2019, expediente T-9.000.001.',
+  ];
+  const positivas = [...ABOGADO.map((t, i) => ['A-3 · el abogado', i + 1, t] as const), ...NOMBRE_PROPIO.map((t, i) => ['A-3 · en nombre propio', i + 1, t] as const),
+    ...FAMILIA.map((t, i) => ['A-3 · la familia', i + 1, t] as const), ...TRAMITE.map((t, i) => ['A-3 · el trámite y el escrito', i + 1, t] as const),
+    ...VERBOS.map((t, i) => ['M-70 · los verbos', i + 1, t] as const), ...ENCABEZADOS.map((t, i) => ['M-70 · encabezados y celdas', i + 1, t] as const),
+    ...YA_TOMADOS.map((t, i) => ['-r9 ya los tomaba', i + 1, t] as const)];
+
+  it('las 50 sondas: 35 de A-3, 9 de M-70, 3 que -r9 ya tomaba y las 3 negativas de D-11', () => {
+    expect([ABOGADO.length, NOMBRE_PROPIO.length, FAMILIA.length, TRAMITE.length]).toEqual([10, 8, 13, 4]);
+    expect([VERBOS.length, ENCABEZADOS.length, YA_TOMADOS.length, NEGATIVAS.length]).toEqual([5, 4, 3, 3]);
+    expect(positivas.length + NEGATIVAS.length).toBe(50);
+  });
+
+  it.each(positivas)('%s, sonda %i: el expediente propio se toma, sin la bandera de cita, y no queda a la vista', async (_h, _n, T) => {
+    const { doc, set } = await detectarCon(T);
+    const exps = set.detections.filter((d) => d.text === 'T-9.000.001');
+    // Con el código de -r9 (salvo las 3 que ya tomaba), el expediente se descartaba como precedente: sin detección ni bandera, a la vista.
+    expect(exps.length).toBe(1);
+    expect(exps[0]).toMatchObject({ type: 'RADICADO_ADMIN', status: 'pendiente' });
+    expect(salida(doc, set).includes('9.000.001')).toBe(false);
+    expect(set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL' && f.detectionId === exps[0]?.id)).toEqual([]);
+  });
+
+  it.each(NEGATIVAS.map((t, i) => [i + 1, t] as const))('negativa %i de D-11: sigue sin tomarse', async (_n, T) => {
+    const { set } = await detectarCon(T);
+    expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text), T).toEqual([]);
+  });
+
+  it('«Por medio de la presente acción pido que se acate la Sentencia …» se toma, también en MAYÚSCULAS y en un renglón aparte', async () => {
+    const o = 'Por medio de la presente acción pido que se acate la Sentencia T-123 de 2026, expediente T-9.000.001.';
+    for (const T of [o, o.toUpperCase(), `HECHOS\n${o}`]) {
+      const { doc, set } = await detectarCon(T);
+      expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').length, T).toBe(1);
+      expect(salida(doc, set).includes('9.000.001'), T).toBe(false);
+    }
+  });
+
+  it('M-70 · la fila de PDF con blancos se mira en el canónico: dos o más blancos son un hueco de celda; la sangría, el fin de renglón y el punto no', async () => {
+    for (const T of ['Radicado     Expediente     Sentencia\n11001-31-03-999-2026-00123-00     T-9.000.001     T-123 de 2026',
+      'T-9.000.001  T-123 de 2026', 'T-123 de 2026   T-9.000.001']) {
+      const { doc, set } = await detectarCon(T);
+      expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text), T).toEqual(['T-9.000.001']);
+      expect(salida(doc, set).includes('9.000.001'), T).toBe(false);
+    }
+    const cita = 'Como precedente invoco la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.004, donde se amparó un caso análogo';
+    for (const T of [`    ${cita}.`, `Hechos.   ${cita}.`, `1.   ${cita}.`, `${cita}   \nII. PRETENSIONES`]) {
+      const { set } = await detectarCon(T);
+      expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text), JSON.stringify(T)).toEqual([]);
+    }
+  });
+});
+
 describe('T-MO-12 · cancelación y progreso', () => {
   it('INV-W08 tras cancelar a mitad del documento, detect no envía más progreso ni resultado, responde cancelado y la sesión no existe', async () => {
     const partes = Array.from({ length: 6 }, (_, i) => `Parte ${i + 1}: Pedro Prueba Ejemplo, C.C. 100000000${i}.`);
