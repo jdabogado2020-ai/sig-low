@@ -34,6 +34,12 @@ export interface GoldAnnotation {
 }
 export interface GoldDocument {
   docId: CorpusDocId; conjunto: 'desarrollo' | 'reserva'; entidades: GoldEntity[]; anotaciones: GoldAnnotation[];
+  /**
+   * CORPUS-2 (D-16, D-17) · La lista del caso del documento, tal como la trae el gold (entrada, no anotación). `alias` son las formas que el
+   * abogado conoce y agrega como variantes manuales («Fercho», «AGEX», un nombre completo): la medición las lee como formas conocidas de la
+   * entidad de la entrada (`conocidoPorEntidad`), igual que el nombre de la lista.
+   */
+  listaDelCaso?: ReadonlyArray<{ name: string; role?: string; alias?: readonly string[] }>;
 }
 
 /** Detección tal como la mide el script: `parte` es `claveParte(...)`; `entidad` es el `EntityId` que le dio la fusión. */
@@ -726,6 +732,14 @@ function conocidoPorEntidad(gold: GoldDocument, segs: ReadonlyMap<string, readon
     const d = datoDe(nombre, esOrganizacion(e.tipo));
     for (const p of d.palabras) { k.palabras.add(p); k.iniciales.add(p.charAt(0)); }
     guardarFormas(k, formasDe(nombre, e.tipo));
+    // CORPUS-2 (D-16, D-17) · Los alias de la entrada de la lista son formas conocidas de la entidad: si uno queda en la salida, es residuo.
+    for (const alias of gold.listaDelCaso?.find((l) => l.name === nombre)?.alias ?? []) {
+      const da = datoDe(alias, esOrganizacion(e.tipo));
+      for (const p of da.palabras) { k.palabras.add(p); k.iniciales.add(p.charAt(0)); }
+      for (const i of da.iniciales) k.iniciales.add(i);
+      const letras = letrasDeIniciales(alias);
+      if (letras !== null) k.formas.add(letras);
+    }
     out.set(e.id, k);
   }
   for (const g of gold.anotaciones.filter(esPositiva)) {

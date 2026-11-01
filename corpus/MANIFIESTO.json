@@ -352,8 +352,8 @@
     },
     {
       "ruta": "corpus/gold/C18.json",
-      "sha256": "a1cab5e842c770cad60fbe8cf7376a35962bdc6509f98571a5bd1f531c8be8cd",
-      "bytes": 65695
+      "sha256": "ee8f2a38164e753f3f9da4014f3410fcf8330b5fae0220e9ca3322356e0f5727",
+      "bytes": 66350
     },
     {
       "ruta": "corpus/gold/C18.texto.json",
@@ -382,8 +382,8 @@
     },
     {
       "ruta": "corpus/gold/C21.json",
-      "sha256": "d802ff2c1da1b56db84eae8ff88eea6f581dbe1d3877219a08c4ba48ecce8f43",
-      "bytes": 61824
+      "sha256": "8a29dde15d7e0c3a851db5e0de3e578e8b6550615a9e6fbbcae60138e6e56461",
+      "bytes": 62480
     },
     {
       "ruta": "corpus/gold/C21.texto.json",
@@ -412,8 +412,8 @@
     },
     {
       "ruta": "corpus/gold/C24.json",
-      "sha256": "e3688f67b64eda2718149fe754c8d20fbd69a1164371bd0c33346d3b34ea30af",
-      "bytes": 32188
+      "sha256": "72e5b47868a1fa0512861231bf05bc0ab08f9d9bc3157f4a3c8ea27b66dbddbe",
+      "bytes": 33090
     },
     {
       "ruta": "corpus/gold/C24.texto.json",

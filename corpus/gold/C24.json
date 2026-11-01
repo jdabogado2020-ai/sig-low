@@ -336,6 +336,14 @@
       "canonico": "CC:967000019",
       "mismoTitular": [],
       "enLista": false
+    },
+    {
+      "id": "C24-E41",
+      "tipo": "PERSONA",
+      "rol": "OTRA_PERSONA",
+      "canonico": "PER:gloria",
+      "mismoTitular": [],
+      "enLista": false
     }
   ],
   "anotaciones": [
@@ -482,15 +490,16 @@
       "end": 239,
       "texto": "Doña Gloria",
       "tipo": "PERSONA",
-      "rol": "CLIENTE",
-      "entidad": "C24-E01",
+      "rol": "OTRA_PERSONA",
+      "entidad": "C24-E41",
       "debe_generalizarse": false,
       "es_negativo_esperado": false,
       "estructura": "no_aplica",
-      "enLista": true,
+      "enLista": false,
       "rotulado": false,
       "caracteristicas": [
-        "F44"
+        "F44",
+        "F51"
       ]
     },
     {
@@ -1420,7 +1429,8 @@
     "estado": "adjudicado",
     "discrepancias": 0,
     "cambios": [
-      "RG-r1: C24-A018 MUNICIPIO «Envigado» dentro del despacho C24-A017: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad."
+      "RG-r1: C24-A018 MUNICIPIO «Envigado» dentro del despacho C24-A017: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "CORPUS-2: C24-A007 «Doña Gloria»: enLista true → false; entidad C24-E01 → C24-E41 (nueva, PER:gloria, OTRA_PERSONA, enLista false); rol CLIENTE → OTRA_PERSONA; caracteristicas [\"F44\"] → [\"F44\",\"F51\"] (D-17, aprobado por el dueño). Es el cambio 5b del dictamen de RG-r2 (5a no se aplica: el tramo «Doña Gloria» no se recorta, AJ-6 ya cubre el tratamiento). Motivo: el texto no vincula a «Gloria» con Mauricio Ficticio Rodríguez (el remitente, con nombre de pila masculino; «Doña Gloria» es otra persona) y un marcador compartido haría que la reinserción escribiera el nombre equivocado. Plan 7.9.3, T-RS-01 y 7.12.2 paso 4; 10.2.1 (persona fuera de la lista: F51); S-10.4."
     ]
   }
 }

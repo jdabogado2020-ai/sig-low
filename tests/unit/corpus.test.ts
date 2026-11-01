@@ -449,7 +449,10 @@ describe('corpus · T-CO-04 datos ficticios evidentes', () => {
       for (const a of g.anotaciones) if (a.tipo === 'PERSONA' && !a.es_negativo_esperado) { const l = porEntidad.get(a.entidad) ?? []; l.push(a); porEntidad.set(a.entidad, l); }
       for (const [ent, l] of porEntidad) {
         // las variantes (iniciales, nombre de pila, apodo) heredan el token de la mención completa de su entidad
-        if (!l.some((a) => TOKENS.test(a.texto))) sinToken.push(`${g.docId} ${ent} ${l[0]?.texto}`);
+        // D-17: «Doña Gloria» (C24-E41) es una persona aparte que el texto nombra solo con el nombre de pila y el tratamiento (F44): no tiene
+        // apellido y no identifica a nadie. Es la única entidad sin token y el dueño la aprobó.
+        const soloNombreDePila = `${g.docId} ${ent}` === 'C24 C24-E41' && l.every((a) => a.caracteristicas.includes('F44'));
+        if (!soloNombreDePila && !l.some((a) => TOKENS.test(a.texto))) sinToken.push(`${g.docId} ${ent} ${l[0]?.texto}`);
         for (const a of l) if (!TOKENS.test(a.texto) && !a.caracteristicas.includes('F44')) sinToken.push(`${g.docId} ${a.id} ${a.texto}`);
       }
     }
@@ -1157,19 +1160,19 @@ describe('corpus · T-GO-01 comprobaciones automáticas del gold', () => {
 // La lista del caso es entrada del documento, no anotación: el abogado conoce el apodo o la sigla y los agrega como variantes
 // manuales (6.5, 7.9.4). Cada alias queda en `listaDelCaso[].alias` y registrado en `revision.cambios`. Las anotaciones no cambian.
 describe('corpus · T-GO-01 alias de la lista del caso (D-16)', () => {
-  // documento → [entrada de la lista, alias aprobado por el dueño]
-  const APROBADOS: Record<string, Array<[string, string]>> = {
+  // documento → [entrada de la lista, alias aprobado por el dueño, decisión (D-16 si no se indica)]
+  const APROBADOS: Record<string, Array<[string, string] | [string, string, string]>> = {
     C06: [['Clínica Ejemplo S.A.S.', 'CESA']],
     C11: [['Alejandro Ejemplo', 'Alejandro Ejemplo Orozco'], ['Alejandro Ejemplo', 'Ejemplo Orozco']],
     C16: [['Ferretería Ejemplo S.A.S.', 'FESA']],
     C17: [['Constructora Prueba S.A.', 'COPSA']],
-    C18: [['Agroindustrias Ejemplo S.A.', 'AGEX']],
+    C18: [['Agroindustrias Ejemplo S.A.', 'AGEX'], ['Leonardo Prueba', 'Leonardo Prueba Sánchez', 'D-17']],
     C19: [['Textiles Ficticios S.A.S.', 'TEFI']],
     C20: [['Distribuidora Prueba y Cía. S. en C.', 'DIPRU']],
-    C21: [['Seguros Prueba S.A.', 'SEPRU']],
+    C21: [['Seguros Prueba S.A.', 'SEPRU'], ['Álvaro Ficticio', 'Álvaro Ficticio Salazar', 'D-17']],
     C22: [['Nicolás Ficticio Gómez', 'Fercho']],
   };
-  const REGISTRO = 'entrada, alias aprobado por el dueño, D-16';
+  const REGISTRO = (doc: string, alias: string): string => `entrada, alias aprobado por el dueño, ${(APROBADOS[doc] ?? []).find((p) => p[1] === alias)?.[2] ?? 'D-16'}`;
 
   it.skipIf(!COMPLETO)('T-GO-01 los alias aprobados por el dueño (D-16) están en la lista del caso de su documento', () => {
     for (const [doc, pares] of Object.entries(APROBADOS)) {
@@ -1210,8 +1213,30 @@ describe('corpus · T-GO-01 alias de la lista del caso (D-16)', () => {
         const m = g.anotaciones.filter((x) => x.texto === a);
         expect(m.length, `${g.docId} «${a}» anotado en el gold`).toBeGreaterThan(0);
         for (const x of m) { expect(x.enLista, x.id).toBe(true); expect(x.entidad, x.id).toBe(duena?.id); }
-        expect(g.revision.cambios.some((c) => c.includes(`«${a}»`) && c.includes(REGISTRO)), `${g.docId} «${a}» registrado en revision.cambios`).toBe(true);
+        expect(g.revision.cambios.some((c) => c.includes(`«${a}»`) && c.includes(REGISTRO(g.docId, a))), `${g.docId} «${a}» registrado en revision.cambios`).toBe(true);
       }
     }
+  });
+});
+
+// ---------- «Doña Gloria» en C24 (CORPUS-2, D-17, cambio 5b de RG-r2, S-10.4) ----------
+describe('corpus · T-GO-01 C24-A007 «Doña Gloria» es otra persona, fuera de la lista (D-17)', () => {
+  const g = (): Gold => golds.get('C24') as Gold;
+  const a007 = (): GoldAnn => g().anotaciones.find((x) => x.id === 'C24-A007') as GoldAnn;
+
+  it('T-GO-01 la anotación sigue siendo «Doña Gloria» (el tramo no se recorta) y es OTRA_PERSONA fuera de la lista con [F44, F51]', () => {
+    expect(a007()).toMatchObject({ start: 228, end: 239, texto: 'Doña Gloria', tipo: 'PERSONA', rol: 'OTRA_PERSONA', enLista: false, entidad: 'C24-E41' });
+    expect(a007().caracteristicas).toEqual(['F44', 'F51']);
+  });
+
+  it('T-GO-01 su entidad es C24-E41 «PER:gloria», sin titular compartido, y la de Mauricio (C24-E01) ya no la incluye', () => {
+    expect(g().entidades.find((e) => e.id === 'C24-E41')).toEqual({ id: 'C24-E41', tipo: 'PERSONA', rol: 'OTRA_PERSONA', canonico: 'PER:gloria', mismoTitular: [], enLista: false });
+    expect(g().anotaciones.filter((x) => x.entidad === 'C24-E41').map((x) => x.id)).toEqual(['C24-A007']);
+    expect(g().anotaciones.filter((x) => x.entidad === 'C24-E01').map((x) => x.id)).toEqual(['C24-A001', 'C24-A046']);
+  });
+
+  it('T-GO-01 el cambio consta en revision.cambios con «D-17, aprobado por el dueño»', () => {
+    expect(g().revision.cambios.some((c) => c.includes('C24-A007') && c.includes('D-17, aprobado por el dueño') && c.includes('PER:gloria'))).toBe(true);
+    for (const doc of ['C18', 'C21']) expect((golds.get(doc) as Gold).revision.cambios.some((c) => c.includes('D-17, aprobado por el dueño'))).toBe(true);
   });
 });

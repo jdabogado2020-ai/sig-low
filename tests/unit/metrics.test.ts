@@ -760,3 +760,53 @@ describe('T-ME-01 · PB-4-r2 · las formas que el motor conoce o genera son resi
     expect(tablaTexto(informe)).toContain('copias sin dato 1 · omisiones que la letra contaba como residuo 1');
   });
 });
+
+// CORPUS-2 (D-16, D-17) · Los alias de la lista del caso (`listaDelCaso[].alias`) son formas conocidas de la entidad de su entrada: si uno queda
+// en la salida, la clasificación de menciones lo cuenta como residuo y el escáner independiente lo busca (observación de la revisión del lote 11).
+describe('T-ME-01 · CORPUS-2 · los alias de la lista del caso son formas conocidas (D-16, D-17)', () => {
+  const seg = (a: number, b: number, tipo?: DataType): SegmentoSalida =>
+    ({ outStart: a, outEnd: b, partStart: a, partEnd: b, ...(tipo === undefined ? {} : { detectionId: `det-${a}`, tipo }) });
+  const m = (id: string, tipo: DataType, start: number, texto: string, entidad: string): GoldAnnotation =>
+    ({ ...ann(id, tipo, start, start + texto.length, entidad), texto, enLista: true });
+  const NICOLAS = ent('EN', 'PERSONA', { enLista: true, canonico: 'LISTA:Nicolás Ficticio Gómez' });
+  const AGRO = ent('EG', 'EMPRESA', { enLista: true, canonico: 'LISTA:Agroindustrias Ejemplo S.A.' });
+  const LEONARDO = ent('EL', 'PERSONA', { enLista: true, canonico: 'LISTA:Leonardo Prueba' });
+  const LISTA = [
+    { name: 'Nicolás Ficticio Gómez', role: 'CLIENTE', alias: ['Fercho'] },
+    { name: 'Agroindustrias Ejemplo S.A.', role: 'EMPRESA', alias: ['AGEX'] },
+    { name: 'Leonardo Prueba', role: 'CLIENTE', alias: ['Leonardo Prueba Sánchez'] },
+  ];
+  const gold = (anotaciones: GoldAnnotation[], listaDelCaso?: typeof LISTA) =>
+    ({ docId: 'T01', conjunto: 'desarrollo' as const, entidades: [NICOLAS, AGRO, LEONARDO], anotaciones, ...(listaDelCaso === undefined ? {} : { listaDelCaso }) });
+  const salida = (segmentos: SegmentoSalida[]): SalidaParte[] => [{ parte: PARTE, texto: '·'.repeat(400), segmentos }];
+  const clases = (an: GoldAnnotation[], segmentos: SegmentoSalida[], lista?: typeof LISTA, generar?: typeof formasDeLaLista): string[] =>
+    clasificarMenciones(gold(an, lista), salida(segmentos), generar).map((x) => `${x.g.id.slice(4)}:${x.clase}`);
+
+  it('un apodo, una sigla y un nombre completo que quedan en la salida son residuo; sin el alias en la lista eran omisión', () => {
+    const an = [m('a', 'PERSONA', 0, 'Fercho', 'EN'), m('b', 'EMPRESA', 20, 'AGEX', 'EG'), m('c', 'PERSONA', 40, 'Sánchez', 'EL')];
+    for (const generar of [undefined, formasDeLaLista]) {
+      // Con el código anterior: omisión las tres (el alias no se leía de la lista del caso).
+      expect(clases(an, [seg(0, 400)], undefined, generar)).toEqual(['a:omision', 'b:omision', 'c:omision']);
+      expect(clases(an, [seg(0, 400)], LISTA, generar)).toEqual(['a:residuo', 'b:residuo', 'c:residuo']);
+    }
+  });
+
+  it('un alias reemplazado por completo sigue siendo protegido: la lista del caso solo amplía lo que el motor conocía', () => {
+    const an = [m('a', 'PERSONA', 0, 'Fercho', 'EN'), m('b', 'EMPRESA', 20, 'AGEX', 'EG')];
+    expect(clases(an, [seg(0, 6, 'PERSONA'), seg(6, 20), seg(20, 24, 'EMPRESA'), seg(24, 400)], LISTA)).toEqual(['a:protegida', 'b:protegida']);
+  });
+
+  it('un alias de otra entrada no vuelve conocida la palabra para esta entidad', () => {
+    const an = [m('a', 'PERSONA', 0, 'Fercho', 'EL')];
+    expect(clases(an, [seg(0, 400)], LISTA)).toEqual(['a:omision']);
+  });
+
+  it('el escáner independiente busca los alias que quedan en la salida y lo que no conoce sigue sin buscarse', () => {
+    const an = [m('a', 'PERSONA', 0, 'Fercho', 'EN'), m('b', 'EMPRESA', 20, 'AGEX', 'EG'), m('c', 'PERSONA', 40, 'Pancho', 'EN')];
+    const s = salida([seg(0, 400)]);
+    expect(valoresDelEscaner(gold(an, LISTA), s, formasDeLaLista)).toEqual(['Fercho', 'AGEX']);
+    expect(valoresDelEscaner(gold(an), s, formasDeLaLista)).toEqual([]);
+    const texto = `Fercho${' '.repeat(14)}AGEX${' '.repeat(16)}Pancho`;
+    expect(escanearResiduos(PARTE, texto, valoresDelEscaner(gold(an, LISTA), s, formasDeLaLista), 'cuerpo', true).map((h) => h.start).sort((x, y) => x - y)).toEqual([0, 0, 20, 20]);
+  });
+});
