@@ -1227,6 +1227,40 @@ describe('T-MO-12 · D-11 y D-14: la primera persona en cualquier forma, los ver
       tramo(tn, 'Código Nacional de Tránsito', 'ORG', 0.95, 120)], { part: documento([tn]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
     expect(neg.candidates).toEqual([]);
   });
+
+  // CIERRE-1 · M-83 (D-19.4): la primera persona como regla, no como lista cerrada. Las siete sondas de la revisión de PB-2-r10 y más
+  // formas de la regla (plural, pretérito con tilde, «que» + verbo en «-o», el verbo que abre la oración antes de «que»).
+  const M83: readonly string[] = [
+    E1('la parte que apodero'), E1('la menor que agencio'), E1('la entidad que asesoro'), E1('la paciente que cuido'), E1('la sociedad que gerencio'),
+    'Reitero que la Sentencia T-123 de 2026, expediente T-9.000.001, amparó los derechos de la accionante.', E1('la ahora accionante'),
+  ];
+  const M83_REGLA: readonly string[] = [
+    E1('la menor que agenciamos'), E1('la persona que asistimos'), E1('quien apoderé en su momento'), E1('la paciente a quien atendí'),
+    E1('la menor que custodio desde 2020'), E1('el ahora demandado'), E1('la paciente que cuido').toUpperCase(),
+    'Insisto que la Sentencia T-123 de 2026, expediente T-9.000.001, amparó los derechos de la accionante.',
+  ];
+  it.each([...M83.map((t, i) => ['M-83 · sonda de la revisión', i + 1, t] as const), ...M83_REGLA.map((t, i) => ['M-83 · la regla', i + 1, t] as const)])(
+    '%s %i: el expediente propio se toma, sin la bandera de cita, y no queda a la vista', async (_h, _n, T) => {
+      const { doc, set } = await detectarCon(T);
+      const exps = set.detections.filter((d) => d.text === 'T-9.000.001');
+      // Con el código anterior (lista cerrada de verbos y sin «ahora»), el expediente se descartaba como precedente: a la vista.
+      expect(exps.length, T).toBe(1);
+      expect(salida(doc, set).includes('9.000.001'), T).toBe(false);
+      expect(set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL' && f.detectionId === exps[0]?.id), T).toEqual([]);
+    });
+
+  it('M-83 · la regla deja fuera los giros de opinión, los verbos con que se cita y las palabras que solo parecen verbos', async () => {
+    const cita = (x: string): string => `${x} la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.`;
+    for (const T of [cita('Como precedente invocamos'), cita('Como precedente citamos'), cita('Consideramos aplicable'), cita('Creemos aplicable'),
+      cita('Como precedente invoqué'), 'Considero que la Sentencia T-074 de 2020, expediente T-9.000.001, resolvió un caso análogo.',
+      'Dado que la Sentencia T-074 de 2020, expediente T-9.000.001, resolvió un caso análogo, se cita.',
+      'Puesto que la Sentencia T-074 de 2020, expediente T-9.000.001, trató los préstamos y los reclamos mínimos, se cita.',
+      'Así lo resolvió la Corte aquí en la sentencia T-123 de 2019, expediente T-9.000.001, sobre los últimos extremos.',
+      'Así lo resolvió la Corte en la sentencia T-123 de 2019, expediente T-9.000.001, que todo comité debe acatar.']) {
+      const { set } = await detectarCon(T);
+      expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text), T).toEqual([]);
+    }
+  });
 });
 
 describe('T-MO-12 · cancelación y progreso', () => {
