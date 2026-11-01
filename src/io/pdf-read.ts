@@ -90,17 +90,53 @@ export function codigoPdf(e: unknown): SiglowError | LecturaCancelada {
 
 interface Pagina { texto: string; saltosOrden: number }
 
-/** Concatena los `str` con '\n' cuando `hasEOL` (6.1.1) y cuenta los saltos hacia arriba del flujo (orden no visual). */
+/**
+ * Aviso de PE-4 (PB-2-r10; CIERRE-1, D-19.9) · Hueco ancho entre dos fragmentos del mismo renglón, en múltiplos de la altura de la
+ * letra: la separación entre las celdas de una fila de tabla. Un espacio entre palabras mide ≈ 0,25 de la altura; dos alturas no
+ * las alcanza ni un texto justificado.
+ */
+export const HUECO_DE_CELDA = 2;
+/** La posición que pdf.js da de un fragmento sin rotar: x e y del origen, ancho y alto. null si falta o el texto está girado. */
+function posicionDe(it: Record<string, unknown>): { x: number; y: number; ancho: number; alto: number } | null {
+  const tr = it.transform;
+  if (!Array.isArray(tr) || tr.length < 6 || !tr.every((v) => typeof v === 'number' && Number.isFinite(v))) return null;
+  if (tr[1] !== 0 || tr[2] !== 0 || typeof it.width !== 'number' || !Number.isFinite(it.width) || it.width < 0) return null;
+  const alto = typeof it.height === 'number' && it.height > 0 ? it.height : Math.abs(tr[3] as number);
+  return alto > 0 ? { x: tr[4] as number, y: tr[5] as number, ancho: it.width, alto } : null;
+}
+
+/**
+ * Concatena los `str` con '\n' cuando `hasEOL` (6.1.1) y cuenta los saltos hacia arriba del flujo (orden no visual).
+ * Aviso de PE-4 (D-19.9): entre dos fragmentos del mismo renglón separados por un hueco ancho (`HUECO_DE_CELDA`), cuando pdf.js da
+ * la posición, el lector emite un tabulador en lugar de los blancos que pdf.js puso (o de nada): las celdas de una fila de tabla
+ * quedan separadas como en un .docx, y R-RAD_ADMIN-03 (M-70) las ve aunque pdf.js entregue un solo espacio. Lo demás no cambia.
+ */
 function textoDePagina(items: ReadonlyArray<unknown>): Pagina {
   let texto = '';
   let saltos = 0;
   let yAnterior: number | null = null;
   let altoAnterior = 0;
+  /** El último fragmento con letras, si desde él no hubo fin de renglón: dónde acaba en la página y dónde acaba en `texto`. */
+  let previo: { finX: number; y: number; alto: number; finTexto: number } | null = null;
   for (const it of items) {
     if (!esObjeto(it) || typeof it.str !== 'string') continue;
-    texto += it.str;
-    if (it.hasEOL === true) texto += '\n';
-    if (it.str.trim() === '') continue;
+    const conLetras = it.str.trim() !== '';
+    const pos = conLetras ? posicionDe(it) : null;
+    if (conLetras && pos !== null && previo !== null) {
+      const hueco = pos.x - previo.finX;
+      const mismoRenglon = Math.abs(pos.y - previo.y) <= Math.min(pos.alto, previo.alto) / 2;
+      const entre = texto.slice(previo.finTexto);
+      const inicioBlancos = it.str.length - it.str.trimStart().length;
+      if (mismoRenglon && hueco >= HUECO_DE_CELDA * Math.max(pos.alto, previo.alto) && /^[ \t ]*$/u.test(entre)) {
+        texto = `${texto.slice(0, previo.finTexto)}\t`;
+        texto += it.str.slice(inicioBlancos);
+      } else texto += it.str;
+    } else texto += it.str;
+    if (conLetras) {
+      previo = pos === null ? null : { finX: pos.x + pos.ancho, y: pos.y, alto: pos.alto, finTexto: texto.length - (it.str.length - it.str.trimEnd().length) };
+    }
+    if (it.hasEOL === true) { texto += '\n'; previo = null; }
+    if (!conLetras) continue;
     const tr = it.transform;
     const y = Array.isArray(tr) && typeof tr[5] === 'number' ? tr[5] : null;
     const alto = typeof it.height === 'number' && it.height > 0 ? it.height : 1;

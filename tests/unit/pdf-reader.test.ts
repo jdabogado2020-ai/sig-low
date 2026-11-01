@@ -427,3 +427,41 @@ describe('V-42 pdf.js sin recursos opcionales y con worker del mismo origen', ()
     expect(src).toContain("import('pdfjs-dist/legacy/build/pdf.mjs')");
   });
 });
+
+// CIERRE-1 · Aviso de PE-4 (PB-2-r10, D-19.9): el hueco ancho entre celdas de una fila sale como tabulador cuando pdf.js da la posición.
+describe('CIERRE-1 · el hueco ancho entre celdas de una fila de PDF es un tabulador', () => {
+  /** Un fragmento con su posición: x, ancho y la altura de la letra (10), en el renglón y. */
+  const en = (str: string, x: number, ancho: number, y = 700, hasEOL = false): Record<string, unknown> =>
+    ({ str, hasEOL, height: 10, width: ancho, transform: [10, 0, 0, 10, x, y] });
+  const texto = async (items: unknown[]): Promise<string> => {
+    const f = libFalsa([{ items }]);
+    const d = await crearReadPdf({ cargarPdfjs: () => Promise.resolve(f.lib), crearWorker: () => null, ids: idsFijos() })(new ArrayBuffer(8), ctx(), sinProgreso, senal());
+    return d.parts[0]?.text ?? '';
+  };
+
+  it('la fila de tabla con un solo espacio entre celdas (o con ninguno) da un tabulador entre ellas; antes, un espacio o nada', async () => {
+    const fila = [en('11001-31-03-999-2026-00123-00 ', 50, 150), en('T-9.000.001', 260, 60), en(' ', 320, 3), en('T-123 de 2026', 380, 70, 700, true),
+      en('Texto ficticio suficiente para la página.', 50, 200, 680)];
+    expect(await texto(fila)).toBe('11001-31-03-999-2026-00123-00\tT-9.000.001\tT-123 de 2026\nTexto ficticio suficiente para la página.');
+    const pegadas = [en('Radicado', 50, 40), en('Expediente', 200, 50), en('Sentencia ficticia', 400, 90)];
+    expect(await texto(pegadas)).toBe('Radicado\tExpediente\tSentencia ficticia');
+  });
+
+  it('lo que ya se leía bien no cambia: palabras con su espacio, el texto justificado, otro renglón, el fin de renglón y sin posición', async () => {
+    // Un espacio normal (≈ 0,25 de la altura) y el justificado (hasta una altura y media) siguen como están.
+    expect(await texto([en('Señora Marta', 50, 60), en(' ', 110, 3), en('Ficticia Prueba firmó.', 113, 110)])).toBe('Señora Marta Ficticia Prueba firmó.');
+    expect(await texto([en('Señora Marta ', 50, 60), en('Ficticia Prueba firmó el acta.', 125, 140)])).toBe('Señora Marta Ficticia Prueba firmó el acta.');
+    // Otro renglón (la ordenada cambia más de media altura), un fin de renglón entre los dos y fragmentos sin ancho: igual que antes.
+    expect(await texto([en('Primera línea ficticia', 50, 100, 700), en('segunda línea ficticia', 300, 100, 680)])).toBe('Primera línea ficticiasegunda línea ficticia');
+    expect(await texto([en('Primera línea ficticia', 50, 100, 700, true), en('segunda línea ficticia', 300, 100, 700)])).toBe('Primera línea ficticia\nsegunda línea ficticia');
+    expect(await texto([item('Celda ficticia uno'), item('Celda ficticia dos')])).toBe('Celda ficticia unoCelda ficticia dos');
+    // Texto girado: no se mira el hueco.
+    expect(await texto([{ str: 'Uno ficticio', hasEOL: false, height: 10, width: 50, transform: [0, 10, -10, 0, 50, 700] },
+      { str: 'Dos ficticio', hasEOL: false, height: 10, width: 50, transform: [0, 10, -10, 0, 300, 700] }])).toBe('Uno ficticioDos ficticio');
+  });
+
+  it('el fixture de dos columnas y los demás PDF de prueba leen igual que antes (sus pruebas de texto siguen arriba)', async () => {
+    const d = await leer('pdf-dos-columnas.pdf');
+    expect(d.parts.some((p) => p.text.includes('\t'))).toBe(false);
+  });
+});
