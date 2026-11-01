@@ -1205,6 +1205,26 @@ describe('T-MO-12 · D-11 y D-14: la primera persona en cualquier forma, los ver
       expect(set.detections.filter((d) => d.type === 'RADICADO_ADMIN').map((d) => d.text), JSON.stringify(T)).toEqual([]);
     }
   });
+
+  it('B-90 · «Tránsito» como nombre de pila tras «Código Nacional de Tránsito» va con el nombre; con «Terrestre», un conector o un signo es de la norma', () => {
+    const casos: Array<[string, string, string, 'ORG' | 'PER']> = [
+      ['según el artículo 131 del Código Nacional de Tránsito Ejemplo Gómez pagó', 'Código Nacional de Tránsito Ejemplo Gómez', 'PERSONA:Tránsito Ejemplo Gómez', 'PER'],
+      ['el artículo 131 del Código Nacional de Tránsito Ejemplo S.A.S. dispone', 'Código Nacional de Tránsito Ejemplo S.A.S.', 'EMPRESA:Tránsito Ejemplo S.A.S.', 'ORG'],
+      ['SEGÚN EL ARTÍCULO 131 DEL CÓDIGO NACIONAL DE TRÁNSITO EJEMPLO GÓMEZ PAGÓ', 'CÓDIGO NACIONAL DE TRÁNSITO EJEMPLO GÓMEZ', 'PERSONA:TRÁNSITO EJEMPLO GÓMEZ', 'PER'],
+      // Controles (igual que en -r9): un complemento tras «Tránsito» lo deja en la norma.
+      ['según el artículo 131 del Código Nacional de Tránsito Terrestre Pedro Ejemplo Gómez pagó', 'Código Nacional de Tránsito Terrestre Pedro Ejemplo Gómez', 'PERSONA:Pedro Ejemplo Gómez', 'PER'],
+    ];
+    for (const [t, sub, esperado, label] of casos) {
+      const conv = candidatesFromNer([tramo(t, sub, label, 0.95)], { part: documento([t]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+      // Con el código de -r9, «Ejemplo Gómez» y «Ejemplo S.A.S.»: el nombre de pila «Tránsito» quedaba en la norma, a la vista.
+      expect(conv.candidates.map((c) => `${c.type}:${t.slice(c.start, c.end)}`), t).toEqual([esperado]);
+    }
+    // La norma sola se sigue descartando, también seguida de un signo, de un conector o de una palabra que no es nombre.
+    const tn = 'según el artículo 131 del Código Nacional de Tránsito, el artículo 2 del Código Nacional de Tránsito y la Ley 769, y el artículo 3 del Código Nacional de Tránsito vigente.';
+    const neg = candidatesFromNer([tramo(tn, 'Código Nacional de Tránsito', 'ORG', 0.95), tramo(tn, 'Código Nacional de Tránsito', 'ORG', 0.95, 60),
+      tramo(tn, 'Código Nacional de Tránsito', 'ORG', 0.95, 120)], { part: documento([tn]).parts[0]!, options: UMBRALES_MODELO, docDepCodes: [], base: [], ids });
+    expect(neg.candidates).toEqual([]);
+  });
 });
 
 describe('T-MO-12 · cancelación y progreso', () => {

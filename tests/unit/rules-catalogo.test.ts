@@ -965,6 +965,27 @@ describe('T-MO-01 · A-3, M-70 y B-90 (PB-2-r10, D-11 y D-14): la primera person
     expect(propios).toBeGreaterThan(50);
     expect(precedentes).toBeGreaterThan(20);
   });
+
+  it('B-90 · el ambiguo con que acaba un nombre de norma conocido («Nacional de Tránsito») va con el resto si lo sigue una palabra de fuera', () => {
+    for (const [t, norma, resto] of [
+      ['según el artículo 131 del Código Nacional de Tránsito Ejemplo Gómez pagó', 'Código Nacional de Tránsito', 'Código Nacional de'],
+      ['el artículo 131 del Código Nacional de Tránsito Ejemplo S.A.S. dispone', 'Código Nacional de Tránsito', 'Código Nacional de'],
+      ['SEGÚN EL ARTÍCULO 131 DEL CÓDIGO NACIONAL DE TRÁNSITO EJEMPLO GÓMEZ PAGÓ', 'CÓDIGO NACIONAL DE TRÁNSITO', 'CÓDIGO NACIONAL DE'],
+      // Controles: un complemento, un conector o un signo tras «Tránsito» lo dejan en la norma (igual que en -r9).
+      ['según el artículo 131 del Código Nacional de Tránsito Terrestre Pedro Ejemplo Gómez pagó', 'Código Nacional de Tránsito Terrestre', 'Código Nacional de Tránsito Terrestre'],
+      ['según el artículo 131 del Código Nacional de Tránsito y Transporte Ejemplo pagó', 'Código Nacional de Tránsito', 'Código Nacional de Tránsito'],
+      ['según el artículo 131 del Código Nacional de Tránsito, Pedro Ejemplo Gómez pagó', 'Código Nacional de Tránsito', 'Código Nacional de Tránsito'],
+      ['el artículo 90 del Código General del Proceso Comercial Ejemplo S.A. dispone', 'Código General del Proceso', 'Código General del Proceso'],
+    ] as const) {
+      const cx = contextosDelModelo(buildSearchView(t, 'reglas', 'cuerpo'));
+      const s = t.indexOf(norma);
+      // La norma sola no cambia: el tramo igual a ella se sigue descartando.
+      expect(cx.filter((c) => c.inicio === true).map((c) => t.slice(c.start, c.end)), t).toEqual([norma]);
+      expect(exclusionDelModelo(cx, s, s + norma.length)).toBe('suprime');
+      // Con el código de -r9, en los tres primeros el fin seguro era el de «Tránsito», que quedaba en la norma.
+      expect(finDeNormaAlInicio(cx, s, t.length - 5), t).toBe(s + resto.length);
+    }
+  });
 });
 
 describe('T-MO-01 · suite adversaria: tiempo lineal en entradas largas (reglas y exclusiones)', () => {

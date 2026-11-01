@@ -338,6 +338,9 @@ function nombreConAmbiguo(ws: ReadonlyArray<{ w: string }>, i: number): number {
  * Fin (relativo a `t`) del nombre de la norma que empieza en `t[0]` con una cabeza de la lista: cabeza + complemento + año. `seguro`
  * es el fin sin los complementos ambiguos (B-71): el de la cabeza, de un complemento que no es ambiguo o de un año, hasta el primer
  * ambiguo que no está dentro de un nombre de `NOMBRES_CON_AMBIGUO` (B-81). `fin` no cambia: la norma sola se sigue descartando entera.
+ * B-90 (PB-2-r10): si el nombre conocido acaba en un ambiguo («Nacional de Tránsito») y lo sigue enseguida una palabra que no es de la
+ * norma («… Tránsito Ejemplo Gómez»), ese ambiguo puede ser el nombre de pila: el fin seguro queda antes de él y el ambiguo va con el
+ * resto (ante la duda, con el nombre). Si lo sigue un complemento («Terrestre»), un conector, un signo o nada, sigue siendo de la norma.
  */
 function finDelNombreDeNorma(t: string): { fin: number; seguro: number } {
   const ws: Array<{ w: string; fin: number }> = [];
@@ -352,6 +355,7 @@ function finDelNombreDeNorma(t: string): { fin: number; seguro: number } {
   let previa = cabeza.w;
   let nombre = 0;        // fin (en palabras, exclusivo) del nombre conocido en curso
   let dudoso = false;    // B-81: hubo un ambiguo fuera de un nombre conocido
+  let ambiguoFinal = -1; // B-90: índice del ambiguo con que acaba un nombre conocido, si es la última palabra de la norma
   for (let i = 1; i < ws.length; i++) {
     const { w, fin: finW } = ws[i] as { w: string; fin: number };
     const ambiguo = COMPLEMENTO_AMBIGUO.has(w);
@@ -362,8 +366,13 @@ function finDelNombreDeNorma(t: string): { fin: number; seguro: number } {
         if (n > 0) nombre = i + n;
         else dudoso = true;
       }
+      ambiguoFinal = ambiguo && i === nombre - 1 ? i : -1;
       if (!dudoso && (!ambiguo || i < nombre)) seguro = finW;
-    } else if (!CONECTOR_NORMA.has(w)) break;
+    } else if (!CONECTOR_NORMA.has(w)) {
+      // B-90: la palabra de fuera va justo detrás del ambiguo final, y es una palabra (no un signo).
+      if (ambiguoFinal === i - 1 && /^\p{L}/u.test(w) && !dudoso) seguro = Math.min(seguro, (ws[i - 2] as { fin: number }).fin);
+      break;
+    } else ambiguoFinal = -1;
     previa = w;
   }
   return { fin, seguro };
