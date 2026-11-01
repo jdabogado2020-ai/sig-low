@@ -695,7 +695,7 @@ const GIRO_DE_OPINION = R`(?:humilde${ESP})?(?:juicio|opini[óo]n|entender|parec
  * A-3 · Los verbos del escrito en primera persona (presente, pretérito y futuro, del singular y del plural): una lista cerrada, porque
  * una terminación en «-o» también es la de un sustantivo. Las formas con tilde («presenté») no casan sin ella («presente»).
  */
-const VERBO_1P = R`(?:represent|solicit|instaur|formul|impetr|afirm|declar|aport|apel|impugn|demand|denunci|necesit|acredit|acompañ|present|labor|otorg|suplic|radic|alleg|apoder|agenci|asesor|cuid|gerenci|reiter|adjunt|allan|coadyuv|ratific)(?:o|amos|é|ar[ée]|aremos)|(?:supliqu|radiqu|allegu|otorgu|ratifiqu)é|(?<!de${ESP})manifiesto|manifest(?:amos|é|ar[ée])|(?:acud|recurr|sufr|viv|resid|suscrib)(?:o|imos|í|ir[ée]|iremos)|ped(?:imos|í|ir[ée]|iremos)|pido|interpongo|interpon(?:emos|dr[ée])|interpus(?:e|imos)|promuevo|promov(?:emos|í)|expongo|expus(?:e|imos)|requiero|requer(?:imos|í)|padezco|padec(?:emos|í)|act[úu]o|actu(?:amos|é)|soy|somos|estoy|estamos|tengo|tenemos|tuve|tuvimos|estuve|fui|fuimos|he|hemos`;
+const VERBO_1P = R`(?:represent|solicit|instaur|formul|impetr|afirm|declar|aport|apel|impugn|demand|denunci|necesit|acredit|acompañ|present|labor|otorg|suplic|radic|alleg|apoder|agenci|asesor|cuid|gerenci|reiter|adjunt|allan|coadyuv|ratific|elev|inform|aclar|qued|comunic|señal|indic|precis|narr|exhort|implor)(?:o|amos|é|ar[ée]|aremos)|(?:anex|relat)(?:amos|é|ar[ée]|aremos)|(?:supliqu|radiqu|allegu|otorgu|ratifiqu|comuniqu|indiqu|señal)é|ruego|rogamos|rogu[ée]|agradezco|agradec(?:emos|í)|advierto|advert(?:imos|í)|exijo|exig(?:imos|í)|(?:desist|insist|remit)(?:o|imos|í|ir[ée]|iremos)|vengo|venimos|(?<!de${ESP})manifiesto|manifest(?:amos|é|ar[ée])|(?:acud|recurr|sufr|viv|resid|suscrib)(?:o|imos|í|ir[ée]|iremos)|ped(?:imos|í|ir[ée]|iremos)|pido|interpongo|interpon(?:emos|dr[ée])|interpus(?:e|imos)|promuevo|promov(?:emos|í)|expongo|expus(?:e|imos)|requiero|requer(?:imos|í)|padezco|padec(?:emos|í)|act[úu]o|actu(?:amos|é)|soy|somos|estoy|estamos|tengo|tenemos|tuve|tuvimos|estuve|fui|fuimos|he|hemos`;
 /**
  * M-83 (CIERRE-1, D-19.4) · La regla de la primera persona, además de la lista: un verbo en primera persona del presente o del
  * pretérito en cualquier lugar de la oración del expediente.
@@ -706,6 +706,10 @@ const VERBO_1P = R`(?:represent|solicit|instaur|formul|impetr|afirm|declar|aport
  * - El presente del singular en «-o», donde un sustantivo no va: tras «que» o «quien» y antes de otra palabra («la parte que apodero»,
  *   «la menor que agencio», «la paciente que cuido»), o abriendo la oración antes de «que» («Reitero que la Sentencia…»). Menos las
  *   palabras de función y los participios que van ahí («que todo», «que dicho», «dado que», «puesto que»).
+ * - A-8 (ampliación de D-19): el imperativo con el pronombre pegado, que lleva tilde en la sílaba del verbo («Ampárenseme»,
+ *   «Concédaseme», «Protéjanme», «Ayúdeme»). La lista cerrada suma los verbos del escrito de la segunda pasada («ruego», «elevo»,
+ *   «informo», «agradezco», «aclaro», «advierto», «exijo», «desisto», «quedo», «vengo»…), y `ESCRITO_PROPIO` «esta servidora» y
+ *   «quien escribe».
  * Fuera quedan los giros de opinión y los verbos con que se cita (D-11: «invoco», «cito», «considero», «creemos», «estimamos»…), en
  * cualquier forma. Todas las repeticiones van acotadas (`\p{L}{2,20}`, lookbehind de largo fijo): tiempo lineal.
  */
@@ -715,7 +719,8 @@ const NO_1P_TILDE = R`(?:aqu[íi]|all[íi]|ah[íi]|as[íi]|caf[ée]|beb[ée]|com
 const NO_1P_O = R`(?:no|lo|todo|como|cuando|dicho|hecho|mismo|cuyo|tanto|solo|s[óo]lo|tampoco|mucho|poco|cierto|nuevo|ello|esto|eso|aquello|algo|luego|pronto|justo|primero|segundo|tercero|[úu]ltimo|debido|dado|puesto|supuesto|sumado|aunado|visto|citado|anotado|expuesto|se[ñn]alado|referido|indicado|resuelto|dispuesto|ordenado|mencionado|antedicho|adicionalmente|claro|obvio|asimismo|centro|medio|caso|modo|efecto|respecto|pago|cargo|tiempo|derecho|proceso|fallo|auto|acto|ejemplo|objeto|dio|vio|hubo|pudo|supo|cupo|quiso|anduvo|\p{L}{0,8}(?:puso|dujo|tuvo|hizo|dijo|vino|trajo))`;
 // Cada alternativa abre con una compuerta barata (la terminación, «que», el inicio de la oración) antes de las listas de excepciones:
 // el índice de la vista la prueba en cada palabra de un texto que puede tener un millón de caracteres (B-62).
-const VERBO_1P_REGLA = R`(?=\p{L}{2,20}(?<=[aei]mos|[éí])(?![\p{L}]))(?!${NO_1P_CITA}\p{L}{0,8}(?![\p{L}]))(?:(?!${NO_1P_AMOS}(?![\p{L}]))\p{L}{2,20}(?:amos|emos|imos)|(?!${NO_1P_TILDE}(?![\p{L}]))\p{L}{3,20}[éí])`
+const VERBO_1P_REGLA = R`(?=\p{L}{4,24}(?<=me|nos)(?![\p{L}]))\p{L}{0,14}[áéíóú]\p{L}{0,8}(?:[aeiu]n?(?:se)?me|[aeiu]n?senos|[aeiu]nnos)(?![\p{L}])`
+  + R`|(?=\p{L}{2,20}(?<=[aei]mos|[éí])(?![\p{L}]))(?!${NO_1P_CITA}\p{L}{0,8}(?![\p{L}]))(?:(?!${NO_1P_AMOS}(?![\p{L}]))\p{L}{2,20}(?:amos|emos|imos)|(?!${NO_1P_TILDE}(?![\p{L}]))\p{L}{3,20}[éí])`
   + R`|(?:que|quien(?:es)?)${ESP}(?=\p{L}{2,20}o(?![\p{L}]))(?!${NO_1P_CITA}\p{L}{0,8}(?![\p{L}]))(?!${NO_1P_O}(?![\p{L}]))\p{L}{2,20}o(?=${ESP}\p{L})`
   + R`|(?<=(?:^|[.;:!?¿¡\n])[ ]{0,8})(?=\p{L}{2,20}o[ ]{1,8}que(?![\p{L}]))(?!${NO_1P_CITA}\p{L}{0,8}(?![\p{L}]))(?!${NO_1P_O}(?![\p{L}]))\p{L}{2,20}o(?=${ESP}que(?![\p{L}]))`;
 /** A-3 · La primera persona: posesivos (salvo un giro de opinión), pronombres, «me/nos» delante de una palabra, `VERBO_1P` y, con
@@ -728,7 +733,7 @@ const PRIMERA_PERSONA = R`(?:mis?|nuestr[oa]s?)(?![\p{L}])(?!${ESP}${GIRO_DE_OPI
  * «paternos», «cuadernos». Sin «-orme»: «informe», «conforme»; «firme» no tiene dos letras antes de «irme».
  */
 const ENCLITICO_1P = R`(?<=\p{L}{2})(?:(?:[aeiáéí]r(?:se)?|[áé]ndo(?:se)?)me|(?:[aiáí]r(?:se)?|[eé]rse|[áé]ndo(?:se)?)nos)`;
-const ESCRITO_PROPIO = R`(?:el|la|los|las|lo|del|al)${ESP}(?:suscrit[oa]s?|infrascrit[oa]s?|(?:abajo${ESP})?firmantes?|presentes?(?!${ESP}(?:año|mes|semana|siglo|d[íi]a)(?![\p{L}]))|(?:aqu[íi]|hoy|ahora)(?=${ESP}\p{L}))|(?:que|quien(?:es)?)${ESP}(?:suscrib${L20}|firm(?:a|an|o|amos))|est[ea]s?${ESP}(?:escrito|memorial|tr[áa]mite|incidente|asunto|caso|diligencias|petici[óo]n|impugnaci[óo]n|recurso|queja|tutela|acci[óo]n|demanda|solicitud)|(?:nombre|causa)${ESP}propi[oa]`;
+const ESCRITO_PROPIO = R`(?:el|la|los|las|lo|del|al)${ESP}(?:suscrit[oa]s?|infrascrit[oa]s?|(?:abajo${ESP})?firmantes?|presentes?(?!${ESP}(?:año|mes|semana|siglo|d[íi]a)(?![\p{L}]))|(?:aqu[íi]|hoy|ahora)(?=${ESP}\p{L}))|(?:que|quien(?:es)?)${ESP}(?:suscrib${L20}|firm(?:a|an|o|amos)|escrib(?:e|en|o|imos))|est[ea]${ESP}servidor[a]?|est[ea]s?${ESP}(?:escrito|memorial|tr[áa]mite|incidente|asunto|caso|diligencias|petici[óo]n|impugnaci[óo]n|recurso|queja|tutela|acci[óo]n|demanda|solicitud)|(?:nombre|causa)${ESP}propi[oa]`;
 const VERBO_PROPIO = R`prof(?:er|ir|ier)${L20}|dict(?:[óo]|ad[oa]s?|aron)|emit(?:i[óo]|ieron|id[oa]s?)|dispus${L20}|dispuest[oa]s?|resuelt[oa]s?|expid(?:e|en|i[óo]|ieron)|expedid[oa]s?|adopt${L20}|notific${L20}|decidi(?:[óo]|eron)|fall(?:ó|aron)`;
 const PROPIO_ORACION_CORE = R`(?:selecci[óo]n${L20}|insist${L20}|nulidad(?:es)?|desacatos?|temer${L20}|(?:in)?cumpl${L20}|apoderad[oa]s?|(?:otorg|confier|confer)${L20}${ESP}(?:el${ESP})?poder|poder${ESP}(?:especial|amplio|general)|remit${L20}|remite|remisi[óo]n|escog${L20}|decret${L20}|pruebas|${VERBO_PROPIO}|dentro${ESP}del${ESP}(?:presente${ESP})?expediente|folios?|fls?\.|cuadernos?|cdno\.|(?:fall|decid|resolv)${L20}${ESP}(?:(?:el|este|dicho|del|al|su)${ESP})?(?:expedientes?|exp\.)|propi[oa]s?${ESP}(?:tutela|acci[óo]n|demanda|solicitud|expediente|caso|proceso)|${PRIMERA_PERSONA}|${ESCRITO_PROPIO}|orden(?:[óo]|ad[oa]s?|aron)|las?${ESP}[óo]rden(?:es)?)`;
 const PROPIO_ORACION_Y = new RegExp(R`(?<![\p{L}])${PROPIO_ORACION_CORE}(?![\p{L}])|${ENCLITICO_1P}(?![\p{L}])`, 'iuy');

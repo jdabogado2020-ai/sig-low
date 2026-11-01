@@ -569,7 +569,7 @@ const PARENTESCO = String.raw`(?:hij[oa]s?|hijastr[oa]s?|padres?|madres?|padrast
 const RELACION = String.raw`(?:primogenit[oa]s?|ahijad[oa]s?|padrinos?|madrinas?|parejas?|companer[oa]s?|progenitor(?:a|as|es)?`
   + String.raw`|novi[oa]s?|prometid[oa]s?|marido|maridos|viud[oa]s?|parientes?|herederos?|herederas?|hermanastr[oa]s?`
   + String.raw`|medi[oa]s? herman[oa]s?|tatarabuel[oa]s?|concunad[oa]s?|consuegr[oa]s?|ex ?espos[oa]s?|ex ?companer[oa]s?`
-  + String.raw`|tutor(?:a|as|es)?|curador(?:a|as|es)?|acudientes?|apoderad[oa]s?)`;
+  + String.raw`|tutor(?:a|as|es)?|curador(?:a|as|es)?|acudientes?|apoderad[oa]s?|gemel[oa]s?|melliz[oa]s?)`;
 /** El parentesco y las demás relaciones de A-4: lo que marca a otra persona antes, después o en la misma oración. */
 const RELACIONADO = String.raw`(?:${PARENTESCO}|${RELACION})`;
 /** Lo que se mira antes y después del nombre (vista `lista`, blancos colapsados). */
@@ -591,7 +591,8 @@ const RE_RELACION_EN_ORACION = new RegExp(String.raw`(?<![\p{L}\p{N}])` + RELACI
  * M-81 (CIERRE-1, D-19.2) · Relaciones que no son parentesco: la representación y el trato («agente oficioso», «representante»,
  * «abogado», «defensora», «cuidador», «amigo», «vecina», «compadre», «socio», «empleada», «jefe», «mandatario»…). Vista `lista`.
  * Solas son palabras de oficio («el abogado Pedro…» es la misma persona), así que cuentan solo ligadas a otra persona (abajo).
- * «Representante legal» no liga a otra persona: es como el texto presenta a la persona misma.
+ * «Representante legal» solo, o «representante legal de la sociedad», es como el texto presenta a la persona misma; con un
+ * posesivo («su representante legal», A-7 de la segunda pasada) sí la liga a otra. «Gemelo» y «mellizo» van con el parentesco.
  */
 const RELACION_REPRESENTA = String.raw`(?:agentes? oficios[oa]s?|agenciad[oa]s?|agenciador(?:a|as|es)?|representantes?(?! legal)|representad[oa]s?`
   + String.raw`|abogad[oa]s?|defensor(?:a|as|es)?|cuidador(?:a|as|es)?|mandatari[oa]s?|mandantes?|poderdantes?|amig[oa]s?|compadres?|comadres?)`;
@@ -608,8 +609,8 @@ const RELACION_LIGABLE = String.raw`(?:${RELACION_REPRESENTA}|${RELACION_TRATO})
  * «A nombre de» solo cuenta delante de una persona presentada como tal (un tratamiento, «del menor», un posesivo): «el cobro a nombre
  * de Ejemplo Orozco» es de la misma persona (C11-E08). No cuentan las instituciones («Defensor del Pueblo», «Defensoría de Familia»).
  */
-const RE_RELACION_LIGADA = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:(?:su|sus|mi|mis|tu|tus|nuestr[oa]s?) ` + RELACION_LIGABLE
-  + String.raw`|` + RELACION_REPRESENTA + String.raw` (?:de|del)|(?:en representacion|en nombre y representacion) (?:de|del)`
+const RE_RELACION_LIGADA = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:(?:su|sus|mi|mis|tu|tus|nuestr[oa]s?) (?:` + RELACION_LIGABLE
+  + String.raw`|representantes? legal(?:es)?)|` + RELACION_REPRESENTA + String.raw` (?:de|del)|(?:en representacion|en nombre y representacion) (?:de|del)`
   + String.raw`|(?:a|en) nombre (?:(?:de la|del|de) (?:senor|senora|senorita|sr|sra|srta|don|dona|doctor|doctora|dr|dra|menor|nino|nina)`
   + String.raw`|de (?:su|sus|mi|mis|nuestr[oa]s?)))(?![\p{L}\p{N}])`, 'gu');
 /** M-81 · Instituciones con una palabra de relación (vista `lista`): se borran de la oración antes de buscar. */

@@ -1249,6 +1249,38 @@ describe('T-MO-12 · D-11 y D-14: la primera persona en cualquier forma, los ver
       expect(set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL' && f.detectionId === exps[0]?.id), T).toEqual([]);
     });
 
+  // CIERRE-1, ampliación de D-19 (A-8, segunda pasada del lote 12): las 35 formas nuevas de primera persona de la revisión. Las 24
+  // primeras descartaban el expediente propio (sin detección ni bandera, a la vista); las 11 últimas ya se tomaban y quedan de control.
+  const S = 'la Sentencia T-123 de 2026, expediente T-9.000.001';
+  const A8: readonly string[] = [
+    // Sin otra señal del propio caso en la oración («cumplimiento», «cumpla» ya lo son): el verbo es la única.
+    `Adjunto copia de ${S}.`, `Ruego al despacho tener en cuenta ${S}.`, `Elevo petición respecto de ${S}.`,
+    `Informo que ${S} sigue sin efecto.`, `Reitero que ${S} sigue sin efecto.`, `Agradezco la atención a ${S}.`,
+    `Aclaro el alcance de ${S}.`, `Advierto al despacho sobre ${S}.`, `Exijo el respeto de ${S}.`, `Desisto del trámite de ${S}.`,
+    `Quedo atento a lo que diga ${S}.`, `Vengo a solicitar copia de ${S}.`,
+    `Con ${S}, quedé amparada.`, `Firmé el acta de ${S}.`, `Recibí copia de ${S}.`, `Pagué la multa de ${S}.`, `Estudié con cuidado ${S}.`,
+    `Trabajé en la empresa que menciona ${S}.`, `Coticé al sistema según ${S}.`,
+    `Ampárenseme los derechos como en ${S}.`, `Concédaseme lo pedido, como en ${S}.`, `Protéjanme los derechos, como en ${S}.`,
+    `En ${S}, la Corte amparó a esta servidora.`, `En ${S}, la Corte amparó a quien escribe.`,
+  ];
+  const A8_YA: readonly string[] = [
+    `En ${S}, la Corte amparó al aquí suscrito.`, `EN ${S.toUpperCase()}, LA CORTE AMPARÓ MIS DERECHOS.`, `En ${S}, la Corte falló a favor mio.`,
+    `Acudí a ${S}.`, `Me permito recordar ${S}.`, `EN ${S.toUpperCase()}, LA CORTE AMPARÓ A QUIEN FIRMA.`,
+    `EN ${S.toUpperCase()}, LA CORTE AMPARÓ A LA AQUÍ ACCIONANTE.`, `En ${S}, la Corte amparó a la aqui accionante.`,
+    `En ${S}, la Corte amparó a mi\npoderdante.`, `En ${S}, la Corte nos amparó.`, `En ${S}, la Corte amparó al suscrito apoderado.`,
+  ];
+  it('A-8 · las 35 formas de la segunda pasada: 24 que fallaban y 11 de control', () => {
+    expect([A8.length, A8_YA.length]).toEqual([24, 11]);
+  });
+  it.each([...A8.map((t, i) => ['A-8 · fallaba', i + 1, t] as const), ...A8_YA.map((t, i) => ['A-8 · ya se tomaba', i + 1, t] as const)])(
+    '%s %i: el expediente propio se toma, sin la bandera de cita, y no queda a la vista', async (_h, _n, T) => {
+      const { doc, set } = await detectarCon(T);
+      const exps = set.detections.filter((d) => d.text === 'T-9.000.001');
+      expect(exps.length, T).toBe(1);
+      expect(salida(doc, set).includes('9.000.001'), T).toBe(false);
+      expect(set.flags.filter((f) => f.type === 'CITA_JURISPRUDENCIAL' && f.detectionId === exps[0]?.id), T).toEqual([]);
+    });
+
   it('M-83 · la regla deja fuera los giros de opinión, los verbos con que se cita y las palabras que solo parecen verbos', async () => {
     const cita = (x: string): string => `${x} la Sentencia T-074 de 2020 y, en particular, el expediente T-9.000.001, donde se amparó un caso análogo.`;
     for (const T of [cita('Como precedente invocamos'), cita('Como precedente citamos'), cita('Consideramos aplicable'), cita('Creemos aplicable'),

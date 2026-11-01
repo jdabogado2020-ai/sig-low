@@ -1759,6 +1759,37 @@ describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de
     expect(marcadorEn(s, texto, tramo)).toMatch(/^\[PERSONA_[0-9]+\]$/u);
   });
 
+  // CIERRE-1, ampliación de D-19 (A-7, segunda pasada del lote 12): las 18 relaciones por C1 y las 3 por la regla E. Las 9 primeras de
+  // C1 y las 3 de la regla E daban [DEMANDANTE_1] al otro; las 9 últimas de C1 ya quedaban aparte y siguen de control.
+  const PL = 'Pedro Luis Ejemplo Prueba';
+  const A7_C1: ReadonlyArray<readonly [string, string]> = [
+    ['falla · su abogado', `Pedro Ejemplo demandó. Su abogado ${PL} declaró.`], ['falla · agente oficioso de', `Pedro Ejemplo demandó. ${PL}, agente oficioso de Pedro Ejemplo, declaró.`],
+    ['falla · su cuidador', `Pedro Ejemplo demandó. Su cuidador ${PL} declaró.`], ['falla · su gemelo', `Pedro Ejemplo demandó. Su gemelo ${PL} declaró.`],
+    ['falla · su vecino', `Pedro Ejemplo demandó. Su vecino ${PL} declaró.`], ['falla · su amigo', `Pedro Ejemplo demandó. Su amigo ${PL} declaró.`],
+    ['falla · su socio', `Pedro Ejemplo demandó. Su socio ${PL} declaró.`], ['falla · su empleador', `Pedro Ejemplo demandó. Su empleador ${PL} declaró.`],
+    ['falla · su representante legal', `Pedro Ejemplo demandó. Su representante legal, ${PL}, declaró.`],
+    ['control · su yerno', `Pedro Ejemplo demandó. Su yerno ${PL} declaró.`], ['control · su cónyuge', `Pedro Ejemplo demandó. Su cónyuge ${PL} declaró.`],
+    ['control · su apoderado', `Pedro Ejemplo demandó. Su apoderado ${PL} declaró.`], ['control · el curador ad litem', `Pedro Ejemplo demandó. El curador ad litem ${PL} declaró.`],
+    ['control · SU AHIJADO', `Pedro Ejemplo demandó. SU AHIJADO ${PL.toUpperCase()} DECLARÓ.`], ['control · su hijo, el Sr.', `Pedro Ejemplo demandó. Su hijo, el Sr. ${PL}, declaró.`],
+    ['control · su hijo, identificado con C.C.', `Pedro Ejemplo demandó. Su hijo, identificado con C.C. 1000000001, ${PL}, declaró.`],
+    ['control · salto de línea', `Pedro Ejemplo demandó\nSu hijo\n${PL} declaró.`], ['control · Hijo:', `Pedro Ejemplo demandó. Hijo: ${PL} declaró.`],
+  ];
+  it('A-7 · las 18 relaciones de la segunda pasada', () => { expect(A7_C1.length).toBe(18); });
+  it.each(A7_C1)('INV-R12 A-7 C1 «%s» con la tubería real: el otro no recibe el marcador de la persona de la lista', async (_id, texto) => {
+    const tramo = texto.includes(PL.toUpperCase()) ? PL.toUpperCase() : PL;
+    const { s, caseList } = await tuberia(texto, LISTA_PEDRO, [[[tramo, 'PER', 0]]]);
+    const i = texto.indexOf(tramo);
+    const dentro = dets(s).filter((x) => x.start < i + tramo.length && i < x.end && x.status !== 'rechazada');
+    expect(dentro.length).toBeGreaterThan(0);
+    expect(dentro.map((x) => s.entities[x.entityId]?.caseEntityId === (caseList[0] as CaseEntity).id)).toEqual(dentro.map(() => false));
+  });
+  it.each(['abogado', 'vecino', 'socio'])('INV-R12 A-7 regla E «Su %s Pedro Ejemplo Prueba declaró.»: el nombre entra entero con su propio marcador', async (w) => {
+    const texto = `Pedro Ejemplo demandó. Su ${w} Pedro Ejemplo Prueba declaró.`;
+    const { s } = await tuberia(texto, LISTA_PEDRO, [[['Pedro Ejemplo Prueba', 'PER', 0]]]);
+    expect(marcadorEn(s, texto, 'Pedro Ejemplo')).toBe('[DEMANDANTE_1]');
+    expect(marcadorEn(s, texto, 'Pedro Ejemplo Prueba')).toMatch(/^\[PERSONA_[0-9]+\]$/u);
+  });
+
   it('INV-L03 M-82 a: la variante de los dos apellidos de la lista que también lleva otra persona del modelo queda ambigua (M10 y M11)', async () => {
     for (const texto of ['Ana Ficticia Rojas demandó a su hermano Luis Ficticia Rojas. El señor Ficticia Rojas declaró.',
       'Ana Ficticia Rojas demandó a Luis Ficticia Rojas. El señor Ficticia Rojas declaró.']) {
