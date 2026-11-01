@@ -793,8 +793,9 @@ describe('T-MO-06 · correferencia de PB-3-r2: nunca dos titulares bajo un marca
     expect(markers(s)).toEqual([['Carmen Rosa Ejemplo Muñoz', '[DEMANDANTE_1]'], ['Wilson Ejemplo Muñoz', '[PERSONA_1]']]);
     // Sin parentesco, C1 sigue uniendo (D-13), con confianza media.
     s = await tuberia('Pedro Ejemplo demandó. El señor Pedro Luis Ejemplo Prueba declaró.', lista, [['Pedro Luis Ejemplo Prueba', 'PER']]);
-    expect(marcadorDe(s, 'Pedro Luis Ejemplo Prueba')).toBe('[DEMANDANTE_1]');
-    expect(dets(s).find((d) => d.text === 'Pedro Luis Ejemplo Prueba')?.confidence).toBe('media');
+    // AJ-6 (D-16): el tratamiento pegado va dentro del tramo; la unión y la confianza son las de siempre.
+    expect(marcadorDe(s, 'señor Pedro Luis Ejemplo Prueba')).toBe('[DEMANDANTE_1]');
+    expect(dets(s).find((d) => d.text === 'señor Pedro Luis Ejemplo Prueba')?.confidence).toBe('media');
   });
 
   it('INV-R12 A-2 C2 con la tubería real: la sigla de otra institución que encaja en los prefijos no recibe el marcador de la IPS de la lista; la definida sí', async () => {
@@ -815,7 +816,7 @@ describe('T-MO-06 · correferencia de PB-3-r2: nunca dos titulares bajo un marca
     expect(dets(s).map((d) => d.type)).toEqual(['PERSONA', 'EMPRESA', 'EMPRESA']);
     s = await tuberia('El señor Ejemplo Nariño declaró que vive en Ejemplo Nariño, y que Ejemplo Nariño es frío.', [],
       [['Ejemplo Nariño', 'PER'], ['Ejemplo Nariño', 'LOC', 1], ['Ejemplo Nariño', 'LOC', 2]]);
-    expect(markers(s)).toEqual([['Ejemplo Nariño', '[PERSONA_1]'], ['Ejemplo Nariño', '[DIRECCIÓN_1]'], ['Ejemplo Nariño', '[DIRECCIÓN_1]']]);
+    expect(markers(s)).toEqual([['señor Ejemplo Nariño', '[PERSONA_1]'], ['Ejemplo Nariño', '[DIRECCIÓN_1]'], ['Ejemplo Nariño', '[DIRECCIÓN_1]']]);   // AJ-6 (D-16)
   });
 
   it('A-2 al construir (sonda C2 de la revisión): padre e hijo, tía, persona y sociedad, persona y lugar quedan aparte', () => {

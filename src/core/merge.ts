@@ -88,6 +88,68 @@ const RE_HUECO = /^[ \t]{0,2}\([ \t]{0,2}$/u;
 const RE_CIERRE = /^[ \t]{0,2}\)/u;
 const CIERRE_WINDOW = 256;
 
+/**
+ * AJ-6 (D-16, punto 3) · Los tratamientos de R-MOD-03 (los de `FW`: «Doña», «Don», «Sr.», «Sra.», «Srta.», «Dr.», «Dra.», «señor»,
+ * «señora», «señorita», «doctor», «doctora», «Mr.», «Mrs.», «Ms.») que van pegados delante de un nombre de persona: la palabra entera,
+ * con un punto opcional, y a continuación uno o dos blancos (o el punto pegado al nombre). Ni coma, ni salto de línea, ni otra palabra
+ * en medio. La expresión mira una ventana fija de `TRATAMIENTO_VENTANA` caracteres antes del nombre: tiempo constante por mención.
+ */
+const RE_TRATAMIENTO_ANTES = /(?:^|[^\p{L}\p{N}])(?<t>do[ñn]a|don|se[ñn]or(?:ita|a)?|srta|sra?|dra?|doctora?|mrs?|ms)(?:\.[ \t]{0,2}|[ \t]{1,2})$/diu;
+/** Largo máximo del tratamiento más largo («señorita» + punto + dos blancos) más el carácter que lo precede, con holgura. */
+const TRATAMIENTO_VENTANA = 16;
+/** Tratamientos seguidos que se toman («el señor doctor Pedro Ejemplo»). */
+const TRATAMIENTO_MAX = 3;
+/** El mismo conjunto, al inicio de un tramo ya construido (para saber dónde empieza el nombre). */
+const RE_TRATAMIENTO_INICIO = /^(?:(?:do[ñn]a|don|se[ñn]or(?:ita|a)?|srta|sra?|dra?|doctora?|mrs?|ms)(?:\.[ \t]{0,2}|[ \t]{1,2}))+(?=\p{L})/iu;
+
+/** Inicio del tramo de una persona que arranca en `start` si se le suman los tratamientos pegados delante (o `start` si no hay). */
+function inicioConTratamiento(text: string, start: number): number {
+  let s = start;
+  for (let i = 0; i < TRATAMIENTO_MAX; i++) {
+    const desde = Math.max(0, s - TRATAMIENTO_VENTANA);
+    // Al inicio del texto no hay carácter anterior: un blanco de relleno hace de borde de palabra.
+    const relleno = desde === 0 ? 1 : 0;
+    const m = RE_TRATAMIENTO_ANTES.exec((relleno === 1 ? ' ' : '') + text.slice(desde, s));
+    const g = m?.indices?.groups?.['t'];
+    if (g === undefined) break;
+    s = desde + g[0] - relleno;
+  }
+  return s;
+}
+
+/** Inicio del nombre de un tramo de persona que ya trae el tratamiento delante (el de la lista o el del modelo ya fusionados). */
+function inicioSinTratamiento(text: string, c: { type: DataType; start: number; end: number }): number {
+  if (c.type !== 'PERSONA') return c.start;
+  const m = RE_TRATAMIENTO_INICIO.exec(text.slice(c.start, c.end));
+  return m === null ? c.start : c.start + m[0].length;
+}
+
+/**
+ * AJ-6 (D-16, punto 3) · El tramo de una persona (del modelo o de la lista) incluye el tratamiento pegado delante, y entonces el
+ * tratamiento también se oculta («Doña Gloria» → un solo marcador). La clave canónica, la entidad y la confianza no cambian: la
+ * clave sigue siendo la del nombre sin tratamiento. Se aplica al final, sobre lo ya aceptado, para no estorbar el paso 2 (que exige
+ * que lo agregado por el modelo sean palabras de nombre) ni la colocación: solo se toma el tratamiento si ningún otro tramo lo
+ * ocupa (los tramos aceptados no se solapan, así que basta mirar al anterior). Nunca toca una detección manual. Devuelve copias
+ * de los tramos de `nuevos` que cambian; el resto de `todos` no se modifica.
+ */
+function conTratamiento(part: Part, nuevos: readonly MergedCandidate[], todos: readonly MergedCandidate[]): MergedCandidate[] {
+  const text = part.text;
+  const orden = [...todos].sort(byStart);
+  /** Fin del tramo anterior: lo más a la izquierda que puede llegar el tratamiento. */
+  const antes = new Map<MergedCandidate, number>();
+  for (let i = 1; i < orden.length; i++) antes.set(orden[i] as MergedCandidate, (orden[i - 1] as MergedCandidate).end);
+  return nuevos.map((c) => {
+    if (c.type !== 'PERSONA' || (c.source !== 'modelo' && c.source !== 'lista')) return c;
+    // Las variantes débiles de la lista (una palabra: `apellido_suelto`, `nombre_suelto`) quedan como están: el reductor (`cedeAnteModelo`,
+    // entities.ts) las reconoce por no tener blancos en su texto, y con el tratamiento dejarían de cederle el paso al nombre completo
+    // del modelo en la ventana siguiente. Si `esVarianteDebil` aprende a quitar el tratamiento, esta excepción sobra.
+    if (c.source === 'lista' && (c.variantClass === 'apellido_suelto' || c.variantClass === 'nombre_suelto')) return c;
+    const s = inicioConTratamiento(text, c.start);
+    if (s >= c.start || s < (antes.get(c) ?? 0)) return c;
+    return { ...c, start: widenStart(text, s) };
+  });
+}
+
 /** Vista `lista` (7.1.3) de un tramo. */
 const fold = (s: string, kind: PartKind): string => buildSearchView(s, 'lista', kind).text;
 
@@ -451,9 +513,11 @@ function planDelModelo(M: MergedCandidate, over: readonly MergedCandidate[], par
   const ceden: MergedCandidate[] = [];
   const propias: MergedCandidate[] = [];
   for (const X of over) {
-    if (X.source !== 'lista' || X.caseEntityId === undefined || X.start < M.start || X.end > M.end
-      || X.end - X.start >= M.end - M.start) return null;
-    if (esVarianteDebil(X, text.slice(X.start, X.end)) && !esVariante(X.caseEntityId, textoM)) ceden.push(X);
+    // AJ-6: un tramo de la lista de una ventana anterior ya trae el tratamiento delante; el modelo no lo trae (R-MOD-03): se compara el nombre.
+    const xs = inicioSinTratamiento(text, X);
+    if (X.source !== 'lista' || X.caseEntityId === undefined || xs < M.start || X.end > M.end
+      || X.end - xs >= M.end - M.start) return null;
+    if (esVarianteDebil(X, text.slice(xs, X.end)) && !esVariante(X.caseEntityId, textoM)) ceden.push(X);
     else propias.push(X);
   }
   if (propias.length === 0) return { kind: 'ceder', ceden };
@@ -617,8 +681,9 @@ export function mergeCandidates(part: Part, cands: readonly DetectionCandidate[]
   work = detrasDeSuRegla(work, tras);
   // 4. Colocar en orden.
   const accepted = place(part, work, [], rules);
+  // AJ-6 (D-16): el tratamiento pegado a una persona entra en su tramo.
   // 5. Devolver ordenado por inicio.
-  return accepted.sort(byStart);
+  return conTratamiento(part, accepted, accepted).sort(byStart);
 }
 
 /**
@@ -644,14 +709,20 @@ export function mergeIntoFused(part: Part, fused: readonly MergedCandidate[], ca
   work.sort(byPriority);
   // Paso 2 por ventana (D-03 B y E), del tramo del modelo de mayor prioridad al de menor.
   const tomados = new Set<MergedCandidate>();
+  const extendidos: MergedCandidate[] = [];
   for (const M of work) {
     const over = fixed.filter((X) => overlaps(X, M.start, M.end));
     const plan = planDelModelo(M, over, part, esVariante);
     if (plan === null) continue;
     const fuera = new Set<MergedCandidate>([...plan.ceden, ...(plan.kind === 'extender' ? plan.propias : [])]);
     fixed = fixed.filter((c) => !fuera.has(c));
-    if (plan.kind === 'extender') { fixed.push(finish(extension(M, plan.propias), part.text)); tomados.add(M); }
+    if (plan.kind === 'extender') { const e = finish(extension(M, plan.propias), part.text); fixed.push(e); extendidos.push(e); tomados.add(M); }
   }
   work = detrasDeSuRegla(work.filter((c) => !tomados.has(c)), tras);
-  return [...fixed, ...place(part, work, fixed, rules)].sort(byStart);
+  const nuevos = place(part, work, fixed, rules);
+  // AJ-6 (D-16): solo lo nuevo (lo extendido de esta ventana y lo colocado) toma el tratamiento; lo ya fusionado no cambia (INV-R12).
+  const todos = [...fixed, ...nuevos];
+  const aTratar = new Set<MergedCandidate>([...extendidos, ...nuevos]);
+  const unidos = conTratamiento(part, todos.filter((c) => aTratar.has(c)), todos);
+  return [...todos.filter((c) => !aTratar.has(c)), ...unidos].sort(byStart);
 }

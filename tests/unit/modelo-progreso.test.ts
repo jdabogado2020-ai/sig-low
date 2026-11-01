@@ -96,7 +96,7 @@ describe('T-MO-12 · incorporar_modelo (INV-R12)', () => {
     const antes = structuredClone(st);
 
     const w1 = await ventana(b, 1, 3, { [PRT(1)]: [tramo(TEXTO, 'Pedro Prueba Ejemplo', 'PER', 0.95), tramo(TEXTO, 'Ferretería Ficticia', 'ORG', 0.8)] });
-    expect(w1.detections.map((d) => d.text).sort()).toEqual(['Ferretería Ficticia', 'Pedro Prueba Ejemplo']);
+    expect(w1.detections.map((d) => d.text).sort()).toEqual(['Ferretería Ficticia', 'señor Pedro Prueba Ejemplo']);   // AJ-6 (D-16): con el tratamiento pegado
     const s1 = bien(incorporarModelo(st, 1, 3, w1, ctx));
 
     for (const [id, d] of Object.entries(antes.detections)) expect(s1.detections[id as keyof typeof s1.detections], id).toEqual(d);
@@ -117,7 +117,7 @@ describe('T-MO-12 · incorporar_modelo (INV-R12)', () => {
 
     // Dos ventanas con solape: el nombre del solape no se repite en el delta (tramo ya emitido) y, si llegara repetido con otro id, no se duplica.
     const w2 = await ventana(b, 2, 3, { [PRT(1)]: [tramo(TEXTO, 'Pedro Prueba Ejemplo', 'PER', 0.95), tramo(TEXTO, 'Ana Ficticia Rojas', 'PER', 0.92)] });
-    expect(w2.detections.map((d) => d.text)).toEqual(['Ana Ficticia Rojas']);
+    expect(w2.detections.map((d) => d.text)).toEqual(['señora Ana Ficticia Rojas']);
     const s2 = bien(incorporarModelo(s1, 2, 3, w2, ctx));
     const reenviada = bien(incorporarModelo(s2, 3, 3, w1, ctx));   // la ventana 1 llega de nuevo, ya como «3»: sus detecciones no se duplican
     expect(Object.keys(reenviada.detections)).toHaveLength(Object.keys(s2.detections).length);
@@ -153,16 +153,16 @@ describe('T-MO-12 · incorporar_modelo (INV-R12)', () => {
     let st = estadoDe(doc, set);
     const w1 = await ventana(b, 1, 4, { [PRT(1)]: [tramo(TEXTO, 'Ana Ficticia Rojas', 'PER', 0.92)] });
     st = bien(incorporarModelo(st, 1, 4, w1, ctx));
-    const ana = Object.values(st.detections).find((d) => d.text === 'Ana Ficticia Rojas')!;
+    const ana = Object.values(st.detections).find((d) => d.text === 'señora Ana Ficticia Rojas')!;   // AJ-6 (D-16): con el tratamiento pegado
     st = bien(applyReviewAction(st, { kind: 'rechazar', detectionId: ana.id, reason: 'FALSO_POSITIVO' }, ctx));
 
-    // «Ana Ficticia Rojas» vuelve en una ventana posterior con otro id: no revive lo rechazado.
+    // «señora Ana Ficticia Rojas» vuelve en una ventana posterior con otro id: no revive lo rechazado.
     const delta: DetectionSet = {
       detections: [{ ...structuredClone(ana), id: ids.next('det') as typeof ana.id, status: 'pendiente' }], entities: [], suggestions: [], flags: [],
     };
     delete (delta.detections[0] as { rejectReason?: unknown }).rejectReason;
     const s2 = bien(incorporarModelo(st, 2, 4, delta, ctx));
-    expect(Object.values(s2.detections).filter((d) => d.text === 'Ana Ficticia Rojas')).toHaveLength(1);
+    expect(Object.values(s2.detections).filter((d) => d.text === 'señora Ana Ficticia Rojas')).toHaveLength(1);
     expect(s2.detections[ana.id]?.status).toBe('rechazada');
 
     // Una detección manual no rechazada sobre «Luisa Ejemplo»: el modelo propone «Luisa Ejemplo Prueba» (se solapa) y se descarta.
@@ -240,8 +240,8 @@ describe('T-MO-12 · fusionar por ventana (6.11.2)', () => {
       tramo(t, 'señor Pedro', 'PER', 0.99, 0),            // se solapa con el primero: gana la primera
     ] });
     const por = Object.fromEntries(d.detections.map((x) => [x.text, x]));
-    expect(por['Pedro Prueba Ejemplo']).toMatchObject({ type: 'PERSONA', confidence: 'media', role: 'OTRA_PERSONA', nerLabel: 'PER' });
-    expect(por['ana ficticia rojas']).toMatchObject({ type: 'PERSONA', confidence: 'baja' });
+    expect(por['señor Pedro Prueba Ejemplo']).toMatchObject({ type: 'PERSONA', confidence: 'media', role: 'OTRA_PERSONA', nerLabel: 'PER' });
+    expect(por['señora ana ficticia rojas']).toMatchObject({ type: 'PERSONA', confidence: 'baja' });   // AJ-6 (D-16)
     expect(por['Luisa Ejemplo Prueba']).toBeUndefined();
     expect(por['Ferretería Ficticia']).toMatchObject({ type: 'EMPRESA', confidence: 'baja' });
     expect(por['Envigado']).toBeUndefined();

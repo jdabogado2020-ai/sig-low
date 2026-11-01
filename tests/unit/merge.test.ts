@@ -209,13 +209,16 @@ describe('T-MO-05 · tabla de decisiones de 7.11.4', () => {
     expect(show(t, out)).toEqual(['PERSONA:«Ana Ficticia Rojas»:alta']);
   });
 
-  it('INV-R02 M8c el tratamiento no extiende; el remanente «Dra.» se descarta', () => {
+  it('INV-R02 M8c el tratamiento no extiende a la lista; el remanente «Dra.» se descarta (AJ-6: y la persona lo toma pegado, D-16)', () => {
     const t = 'la Dra. Ana Ficticia Rojas firmó';
     const out = run(t, [
       mk(t, 'Ana Ficticia Rojas', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, confidence: 'alta', canonicalKey: `LISTA:${CAS_A}` }),
       mk(t, 'Dra. Ana Ficticia Rojas', { type: 'PERSONA', source: 'modelo', nerLabel: 'PER', canonicalKey: 'PER:dra ana ficticia rojas' }),
     ]);
-    expect(show(t, out)).toEqual(['PERSONA:«Ana Ficticia Rojas»:alta']);
+    // Antes de D-16 el tramo era «Ana Ficticia Rojas»: el tratamiento se recortaba y quedaba a la vista. Sigue siendo la persona de la
+    // lista, con la confianza y la clave de siempre; ahora el tratamiento pegado va dentro del mismo marcador.
+    expect(show(t, out)).toEqual(['PERSONA:«Dra. Ana Ficticia Rojas»:alta']);
+    expect(out[0]).toMatchObject({ source: 'lista', caseEntityId: CAS_A, canonicalKey: `LISTA:${CAS_A}` });
   });
 
   it('INV-R02 M9 mismo tramo en el modelo y en la lista: gana la lista', () => {
@@ -374,7 +377,7 @@ describe('T-MO-05 · bordes entre la lista y un tramo extendido por el modelo (7
     // Sin parentesco ni otro nombre de pila, la regla E sigue igual (D-03 E).
     t = 'Declaró la señora Ana Ficticia Rojas Prueba ayer.';
     expect(show(t, run(t, [lista(t, 'Ana Ficticia Rojas'), per(t, 'Ana Ficticia Rojas Prueba')], NO_RULES, 'cuerpo', deAnaFicticiaRojas)))
-      .toEqual(['PERSONA:«Ana Ficticia Rojas Prueba»:media:extendido']);
+      .toEqual(['PERSONA:«señora Ana Ficticia Rojas Prueba»:media:extendido']);   // AJ-6 (D-16): con el tratamiento pegado dentro del tramo
   });
 
   it('INV-R02 una organización de la lista se extiende solo con un ORG del modelo', () => {
@@ -1147,5 +1150,146 @@ describe('T-MO-05 · contrato de 6.4.2', () => {
   it('mergeCandidates cumple MergeCandidatesFn de types.ts', () => {
     const contrato: MergeCandidatesFn = mergeCandidates;
     expect(contrato(mkPart('sin datos'), [], NO_RULES)).toEqual([]);
+  });
+});
+
+describe('T-MO-05 · AJ-6 (D-16): el tratamiento pegado al nombre de una persona entra en el tramo', () => {
+  const lista = (t: string, sub: string, id: CaseEntityId = CAS_A) =>
+    mk(t, sub, { type: 'PERSONA', source: 'lista', caseEntityId: id, confidence: 'alta', canonicalKey: `LISTA:${id}` });
+  const modelo = (t: string, sub: string, key = 'PER:x') =>
+    mk(t, sub, { type: 'PERSONA', source: 'modelo', nerLabel: 'PER', score: 0.7, canonicalKey: key });
+  const tramos = (t: string, out: readonly MergedCandidate[]): string[] => out.map((d) => t.slice(d.start, d.end));
+
+  it.each([
+    ['Doña', 'Gloria'], ['DOÑA', 'GLORIA'], ['doña', 'gloria'], ['Dona', 'Gloria'], ['Don', 'Pedro Ejemplo'], ['don', 'Pedro Ejemplo'],
+    ['Sr.', 'Pedro Ejemplo'], ['Sr', 'Pedro Ejemplo'], ['Sra.', 'Ana Prueba'], ['Srta.', 'Ana Prueba'], ['Dr.', 'Iván Ejemplo'],
+    ['Dra.', 'Ana Ficticia Rojas'], ['señor', 'Wilson Prueba Bonilla'], ['señora', 'Liliana Ejemplo González'], ['señorita', 'Ana Prueba'],
+    ['doctor', 'Iván Darío Ejemplo Pérez'], ['doctora', 'Ana Ficticia'], ['Mr.', 'John Ejemplo'], ['Mrs.', 'Mary Ejemplo'], ['Ms.', 'Mary Ejemplo'],
+    ['SEÑOR', 'WILSON PRUEBA'],
+  ])('INV-R02 «%s» pegado a «%s»: el tramo lo incluye y la clave canónica no cambia', (trat, nombre) => {
+    const t = `El negocio es de ${trat} ${nombre} con Inmobiliaria Ficticia.`;
+    const out = run(t, [modelo(t, nombre, 'PER:clave-del-nombre')]);
+    expect(tramos(t, out)).toEqual([`${trat} ${nombre}`]);
+    expect(out[0]).toMatchObject({ type: 'PERSONA', source: 'modelo', canonicalKey: 'PER:clave-del-nombre', confidence: 'media' });
+  });
+
+  it('INV-R02 C24-A007: «Doña Gloria» con el tratamiento dentro del tramo (caso 5 del dictamen de RG-r2)', () => {
+    const t = 'Le comento que el negocio es de Doña Gloria con Inmobiliaria Ficticia (nit 800.000.001-1).';
+    const out = run(t, [modelo(t, 'Gloria', 'PER:gloria')]);
+    expect(show(t, out)).toEqual(['PERSONA:«Doña Gloria»:media']);
+    expect(out[0]?.canonicalKey).toBe('PER:gloria');
+  });
+
+  it('INV-R02 la persona de la lista conserva su entidad y su clave con el tratamiento dentro del tramo', () => {
+    const t = 'Firma Don Mauricio Ficticio Rodríguez, cliente.';
+    const out = run(t, [lista(t, 'Mauricio Ficticio Rodríguez')]);
+    expect(tramos(t, out)).toEqual(['Don Mauricio Ficticio Rodríguez']);
+    expect(out[0]).toMatchObject({ source: 'lista', caseEntityId: CAS_A, canonicalKey: `LISTA:${CAS_A}`, confidence: 'alta' });
+  });
+
+  it('INV-R02 dos tratamientos seguidos («el señor doctor Pedro») entran los dos', () => {
+    const t = 'Habló el señor doctor Pedro Ejemplo ayer.';
+    expect(tramos(t, run(t, [modelo(t, 'Pedro Ejemplo')]))).toEqual(['señor doctor Pedro Ejemplo']);
+  });
+
+  it('INV-R02 la lista extendida por el modelo (D-03 E) toma también el tratamiento: «Doña Ana Ficticia Rojas»', () => {
+    const t = 'Firmó Doña Ana Ficticia Rojas ayer.';
+    const deAna: EsVarianteDe = (id, texto) => id === CAS_A && texto.trim().split(/\s+/u).every((w) => ['ana', 'ficticia', 'rojas'].includes(w.toLowerCase()));
+    const out = run(t, [lista(t, 'Ficticia Rojas'), modelo(t, 'Ana Ficticia Rojas')], NO_RULES, 'cuerpo', deAna);
+    expect(show(t, out)).toEqual(['PERSONA:«Doña Ana Ficticia Rojas»:media:extendido']);
+    expect(out[0]).toMatchObject({ caseEntityId: CAS_A, canonicalKey: `LISTA:${CAS_A}` });
+  });
+
+  it.each([
+    ['con una coma', 'Habló el señor, Pedro Ejemplo ayer.', 'Pedro Ejemplo'],
+    ['con un salto de línea', 'Habló el doctor\nGustavo Ejemplo ayer.', 'Gustavo Ejemplo'],
+    ['con otra palabra en medio', 'Habló el señor muy Pedro Ejemplo ayer.', 'Pedro Ejemplo'],
+    ['con tres blancos', 'Habló el señor   Pedro Ejemplo ayer.', 'Pedro Ejemplo'],
+    ['dentro de una palabra («Cardón»)', 'Habló Cardon Pedro Ejemplo ayer.', 'Pedro Ejemplo'],
+    ['dentro de una palabra («Madona»)', 'Habló Madona Pedro Ejemplo ayer.', 'Pedro Ejemplo'],
+    ['una palabra que no es tratamiento («Donde»)', 'Habló Donde Pedro Ejemplo ayer.', 'Pedro Ejemplo'],
+    ['un artículo no es tratamiento', 'Habló la Pedro Ejemplo ayer.', 'Pedro Ejemplo'],
+    ['un título profesional que no está en R-MOD-03', 'Habló la ingeniera Ana Prueba ayer.', 'Ana Prueba'],
+  ])('INV-R02 no se extiende %s', (_motivo, t, nombre) => {
+    expect(tramos(t, run(t, [modelo(t, nombre)]))).toEqual([nombre]);
+  });
+
+  it('INV-R02 solo las personas: una organización o un lugar con «Don» delante no cambia', () => {
+    const t = 'Compró en Don Ejemplo S.A.S. ayer.';
+    const out = run(t, [mk(t, 'Ejemplo S.A.S.', { type: 'EMPRESA', source: 'modelo', nerLabel: 'ORG', score: 0.7, canonicalKey: 'ORG:ejemplo' })]);
+    expect(tramos(t, out)).toEqual(['Ejemplo S.A.S.']);
+  });
+
+  it('INV-R02 la detección manual del usuario nunca se amplía', () => {
+    const t = 'Habló el señor Pedro Ejemplo ayer.';
+    const out = run(t, [mk(t, 'Pedro Ejemplo', { type: 'PERSONA', source: 'manual', confidence: 'alta', canonicalKey: 'PER:pedro ejemplo' })]);
+    expect(tramos(t, out)).toEqual(['Pedro Ejemplo']);
+  });
+
+  it('INV-R02 si otra detección ocupa el tratamiento, el tramo no lo pisa', () => {
+    const t = 'Habló la Dra. Ana Prueba ayer.';
+    const out = run(t, [modelo(t, 'Ana Prueba'), mk(t, 'Dra.', { type: 'ENTIDAD', source: 'regla', canonicalKey: 'ORG:dra' })]);
+    expect(show(t, out)).toEqual(['ENTIDAD:«Dra.»:media', 'PERSONA:«Ana Prueba»:media']);
+  });
+
+  it('INV-R12 la variante débil de la lista (una palabra) no toma el tratamiento; el nombre completo del modelo sí', () => {
+    // El reductor (cedeAnteModelo, entities.ts) reconoce la variante débil por no tener blancos: con «señor» dentro ya no cedería el paso.
+    const t = 'Pedro Ejemplo demandó. El señor Pedro Luis Ejemplo Prueba declaró.';
+    const debil = mk(t, 'Pedro', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'nombre_suelto', confidence: 'media', canonicalKey: `LISTA:${CAS_A}` }, 1);
+    expect(tramos(t, run(t, [debil]))).toEqual(['Pedro']);
+    const apellido = mk(t, 'Ejemplo', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'apellido_suelto', confidence: 'media', canonicalKey: `LISTA:${CAS_A}` }, 1);
+    const part = mkPart(t);
+    const fused = mergeCandidates(part, [debil, apellido], NO_RULES);
+    const out = mergeIntoFused(part, fused, [modelo(t, 'Pedro Luis Ejemplo Prueba')], NO_RULES);
+    assertInvariants(part, out);
+    expect(tramos(t, out)).toEqual(['señor Pedro Luis Ejemplo Prueba']);
+  });
+
+  it('INV-R02 el tratamiento ya incluido en el tramo no se repite', () => {
+    const t = 'Habló el señor Pedro Ejemplo ayer.';
+    expect(tramos(t, run(t, [modelo(t, 'señor Pedro Ejemplo')]))).toEqual(['señor Pedro Ejemplo']);
+  });
+
+  it('INV-R02 la salida es la misma en cualquier orden de entrada', () => {
+    const t = 'Firmó Doña Ana Ficticia Rojas y el Dr. Pedro Ejemplo.';
+    const cands = [modelo(t, 'Ana Ficticia Rojas'), modelo(t, 'Pedro Ejemplo'), lista(t, 'Ficticia Rojas')];
+    const a = tramos(t, run(t, cands));
+    expect(a).toEqual(['Doña Ana Ficticia Rojas', 'Dr. Pedro Ejemplo']);
+    expect(tramos(t, run(t, [...cands].reverse()))).toEqual(a);
+  });
+
+  it('INV-R12 la ventana nueva del modelo vuelve a extender la lista que ya traía el tratamiento (D-03 E)', () => {
+    const t = 'Firma Don Mauricio Ficticio Rodríguez, cliente.';
+    const part = mkPart(t);
+    const fused = mergeCandidates(part, [lista(t, 'Mauricio Ficticio')], NO_RULES).map((c) => Object.freeze(c));
+    expect(tramos(t, fused)).toEqual(['Don Mauricio Ficticio']);
+    const out = mergeIntoFused(part, fused, [modelo(t, 'Mauricio Ficticio Rodríguez')], NO_RULES);
+    assertInvariants(part, out);
+    expect(show(t, out)).toEqual(['PERSONA:«Don Mauricio Ficticio Rodríguez»:media:extendido']);
+    expect(out[0]?.caseEntityId).toBe(CAS_A);
+  });
+
+  it('INV-R12 la ventana nueva con un nombre ya fusionado con su tratamiento no lo parte', () => {
+    const t = 'Habló la Dra. Ana Prueba ayer.';
+    const part = mkPart(t);
+    const fused = mergeCandidates(part, [modelo(t, 'Ana Prueba')], NO_RULES).map((c) => Object.freeze(c));
+    expect(tramos(t, fused)).toEqual(['Dra. Ana Prueba']);
+    const out = mergeIntoFused(part, fused, [modelo(t, 'Ana Prueba')], NO_RULES);
+    expect(tramos(t, out)).toEqual(['Dra. Ana Prueba']);
+    const sola = mergeIntoFused(part, [], [modelo(t, 'Ana Prueba')], NO_RULES);
+    expect(tramos(t, sola)).toEqual(['Dra. Ana Prueba']);
+  });
+
+  it('INV-R02 tiempo lineal: 40.000 blancos entre el tratamiento y el nombre no se recorren', () => {
+    const t = 'Dr.' + ' '.repeat(40000) + 'Ana Ficticia';
+    const cands = [modelo(t, 'Ana Ficticia')];
+    const t0 = performance.now();
+    const out = run(t, cands);
+    expect(performance.now() - t0).toBeLessThan(200);
+    expect(tramos(t, out)).toEqual(['Ana Ficticia']);
+    const u = 'Dr. '.repeat(10000) + 'Ana Ficticia';
+    const t1 = performance.now();
+    run(u, [modelo(u, 'Ana Ficticia')]);
+    expect(performance.now() - t1).toBeLessThan(200);
   });
 });
