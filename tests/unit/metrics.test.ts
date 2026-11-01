@@ -668,9 +668,12 @@ describe('T-ME-01 · PB-4-r2 · las formas que el motor conoce o genera son resi
     expect(clases(an, [seg(0, 13, 'PERSONA'), seg(13, 400)])).toEqual(['a:residuo']);
   });
 
-  it('G1 · si la detección cae sobre otra anotación positiva de otra entidad es otro dato: omisión, no límites cortos', () => {
+  it('G1 · si la detección cae dentro de otra anotación positiva de otra entidad es otro dato: omisión, no límites cortos', () => {
     const an = [m('a', 'PERSONA', 0, 'Pedro Ejemplo Gómez', 'EA'), m('b', 'DIRECCION', 6, 'Ejemplo', 'EB')];
-    expect(clases(an, [seg(0, 13, 'DIRECCION'), seg(13, 400)])).toEqual(['a:omision', 'b:protegida']);
+    expect(clases(an, [seg(0, 6), seg(6, 13, 'DIRECCION'), seg(13, 400)])).toEqual(['a:omision', 'b:protegida']);
+    // M-71 (CIERRE-1, D-19.7): la que solo solapa la otra anotación y también reemplaza parte de la mención («Pedro Ejemplo») son
+    // límites cortos de la mención. Antes: omisión.
+    expect(clases(an, [seg(0, 13, 'DIRECCION'), seg(13, 400)])).toEqual(['a:residuo', 'b:protegida']);
     // Del mismo titular no es otro dato.
     const mismo = [m('a', 'PERSONA', 0, 'Pedro Ejemplo Gómez', 'EA'), m('b', 'PERSONA', 6, 'Ejemplo', 'EB')];
     const e = [ent('EA', 'PERSONA', { mismoTitular: ['T01-EB'] }), ent('EB', 'PERSONA', { mismoTitular: ['T01-EA'] })];
@@ -712,6 +715,35 @@ describe('T-ME-01 · PB-4-r2 · las formas que el motor conoce o genera son resi
     // Con el código anterior: protegida, porque la vista `lista` da «sa» y R-LST-05 lo quitaba como sufijo.
     expect(clases(an, [seg(0, 14, 'PERSONA'), seg(14, 400)], [SA])).toEqual(['a:residuo']);
     expect(clases(an, [seg(0, 400)], [SA])).toEqual(['a:residuo']);
+  });
+
+  // M-71 (CIERRE-1, D-19.7) · Las sondas K2, K2b y K2c de la revisión de PB-4-r2: con menciones anidadas, cada una cuenta los límites
+  // cortos de su propia detección. Antes, las cuatro clasificaciones de abajo daban omisión.
+  it('M-71 K2 · «Ferretería Pedro Gómez S.A.S.» con la PERSONA «Pedro Gómez» anidada y la detección EMPRESA «Ferretería Pedro»: residuo las dos', () => {
+    const an = [m('o', 'EMPRESA', 0, 'Ferretería Pedro Gómez S.A.S.', 'EO'), m('p', 'PERSONA', 11, 'Pedro Gómez', 'EP')];
+    expect(clases(an, [seg(0, 16, 'EMPRESA'), seg(16, 400)])).toEqual(['o:residuo', 'p:residuo']);
+  });
+
+  it('M-71 K2b · la misma, con la detección PERSONA «Pedro» sola: la persona es residuo por su propia detección («Gómez» copiado)', () => {
+    const an = [m('o', 'EMPRESA', 0, 'Ferretería Pedro Gómez S.A.S.', 'EO'), m('p', 'PERSONA', 11, 'Pedro Gómez', 'EP')];
+    // La detección cae dentro de la PERSONA, que no contiene a la EMPRESA: para la EMPRESA es otro dato (omisión); para la persona, sus límites cortos.
+    expect(clases(an, [seg(0, 11), seg(11, 16, 'PERSONA'), seg(16, 400)])).toEqual(['o:omision', 'p:residuo']);
+  });
+
+  it('M-71 K2c · «Juzgado 990 de Familia de Bogotá» con el MUNICIPIO anidado y la detección «Familia de Bogotá»: el ENTIDAD es residuo', () => {
+    const an = [m('j', 'ENTIDAD', 0, 'Juzgado 990 de Familia de Bogotá', 'EJ'), m('b', 'MUNICIPIO', 26, 'Bogotá', 'EB')];
+    expect(clases(an, [seg(0, 15), seg(15, 32, 'ENTIDAD'), seg(32, 400)])).toEqual(['j:residuo', 'b:protegida']);
+    // Solo el MUNICIPIO reemplazado: para el ENTIDAD es la detección de otro dato.
+    expect(clases(an, [seg(0, 26), seg(26, 32, 'MUNICIPIO'), seg(32, 400)])).toEqual(['j:omision', 'b:protegida']);
+  });
+
+  it('B-91 K9 · «Sá» al final de una organización de la lista sin sufijo es una palabra del nombre: copiado, es residuo', () => {
+    const DS = ent('ED', 'EMPRESA', { enLista: true, canonico: 'LISTA:Distribuciones Sá' });
+    const an = [m('a', 'EMPRESA', 0, 'Distribuciones Sá', 'ED')];
+    // Con el código anterior: protegida, porque la vista `lista` da «sa» y R-LST-05 lo quitaba como sufijo al final de la organización.
+    expect(clases(an, [seg(0, 14, 'EMPRESA'), seg(14, 400)], [DS])).toEqual(['a:residuo']);
+    expect(datoDe('Distribuciones Sá', true).palabras).toEqual(['distribuciones', 'sa']);
+    expect(datoDe('Distribuciones SA', true).palabras).toEqual(['distribuciones']);
   });
 
   it('G4 · el sufijo societario solo se quita al final de una organización: «S.A.» sigue sin ser dato; «Sá» en una persona o en medio de la razón social, sí', () => {

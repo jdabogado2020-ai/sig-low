@@ -638,8 +638,13 @@ export interface DatoCopiado { palabras: string[]; iniciales: string[]; digitos:
  * `true`): el apellido «Sá» de una persona es «sa» en la vista `lista` y no es un sufijo.
  */
 export function datoDe(texto: string, sufijo = true): DatoCopiado {
-  const vista = buildSearchView(texto, 'lista', 'cuerpo').text;
-  const v = sufijo ? vista.replace(RE_SUFIJO_FINAL, ' ') : vista;
+  const sv = buildSearchView(texto, 'lista', 'cuerpo');
+  const vista = sv.text;
+  // B-91 (CIERRE-1, D-19.8): «Sá» al final de una organización sin sufijo es una palabra del nombre. El sufijo de dos letras se
+  // reconoce en el texto con tildes: «SA» o «S.A.» sí, «Sá» no.
+  const m = sufijo ? RE_SUFIJO_FINAL.exec(vista) : null;
+  const conTilde = m !== null && m[0].replace(/[^a-z]/gu, '') === 'sa' && /\p{M}/u.test(texto.slice(sv.startMap[m.index]).normalize('NFD'));
+  const v = m !== null && !conTilde ? vista.replace(RE_SUFIJO_FINAL, ' ') : vista;
   const palabras: string[] = [];
   const iniciales: string[] = [];
   for (const m of v.matchAll(/\p{L}+(\.)?/gu)) {
@@ -695,14 +700,14 @@ function esFormaGenerada(texto: string, ks: readonly Conocido[]): boolean {
 }
 
 /** Trozos [start, end) de la parte dentro de [g.start, g.end) que caen en segmentos copiados (`copiado`) o reemplazados. */
-function trozos(segmentos: readonly SegmentoSalida[], g: Tramo, copiado: boolean): Array<{ start: number; end: number; deteccion: boolean }> {
-  const out: Array<{ start: number; end: number; deteccion: boolean }> = [];
+function trozos(segmentos: readonly SegmentoSalida[], g: Tramo, copiado: boolean): Array<{ start: number; end: number; deteccion: boolean; segmento: Tramo }> {
+  const out: Array<{ start: number; end: number; deteccion: boolean; segmento: Tramo }> = [];
   for (const s of segmentos) {
     const reemplazado = s.detectionId !== undefined || s.spanEditId !== undefined;
     if (reemplazado === copiado) continue;
     const a = Math.max(s.partStart, g.start);
     const b = Math.min(s.partEnd, g.end);
-    if (b > a) out.push({ start: a, end: b, deteccion: s.detectionId !== undefined });
+    if (b > a) out.push({ start: a, end: b, deteccion: s.detectionId !== undefined, segmento: { start: s.partStart, end: s.partEnd } });
   }
   return out;
 }
@@ -785,10 +790,16 @@ export function clasificarMenciones(gold: GoldDocument, salida: readonly SalidaP
   const tocadas = new Set<string>();
   for (const g of positivas) if (caracteresCopiados(segs.get(claveParte(g.parte)) ?? [], g.start, g.end) < g.end - g.start) tocadas.add(g.entidad);
   const tocadaPorLaLetra = (id: string): boolean => titulares(id).some((o) => tocadas.has(o) || entPorId.get(o)?.enLista === true);
-  /** El tramo reemplazado cae sobre otra anotación positiva de otra entidad (que no es del mismo titular): es la detección de otro dato. */
-  const sobreOtroDato = (g: GoldAnnotation, t: Tramo): boolean => {
+  /**
+   * El tramo reemplazado (el segmento entero de la detección) cae **dentro** de otra anotación positiva de otra entidad (que no es del
+   * mismo titular) que no contiene a la mención: es la detección de otro dato. M-71 (CIERRE-1, D-19.7): antes bastaba con solapar, y
+   * una mención anidada (el MUNICIPIO dentro de un ENTIDAD, la persona dentro de una razón social) nunca contaba los límites cortos
+   * de su propia detección, ni la de fuera los de una detección que cruzaba a la de dentro.
+   */
+  const sobreOtroDato = (g: GoldAnnotation, segmento: Tramo): boolean => {
     const propios = new Set(titulares(g.entidad));
-    return positivas.some((o) => !propios.has(o.entidad) && claveParte(o.parte) === claveParte(g.parte) && solapa(o, t));
+    return positivas.some((o) => !propios.has(o.entidad) && claveParte(o.parte) === claveParte(g.parte)
+      && o.start <= segmento.start && segmento.end <= o.end && !(o.start <= g.start && g.end <= o.end));
   };
   return positivas.map((g): ResultadoResiduo => {
     const s = segs.get(claveParte(g.parte)) ?? [];
@@ -806,7 +817,7 @@ export function clasificarMenciones(gold: GoldDocument, salida: readonly SalidaP
       || dato.iniciales.some((i) => ks.some((k) => k.iniciales.has(i)))
       || (dato.digitos.length >= 3 && ks.some((k) => k.digitos.some((d) => d.includes(dato.digitos) || (d.length >= 5 && dato.digitos.includes(d)))));
     const corta = trozos(s, g, false).some((t) => t.deteccion
-      && conDato(datoDe(g.texto.slice(t.start - g.start, t.end - g.start), esOrganizacion(g.tipo) && alFinalDeLaMencion(g, t))) && !sobreOtroDato(g, t));
+      && conDato(datoDe(g.texto.slice(t.start - g.start, t.end - g.start), esOrganizacion(g.tipo) && alFinalDeLaMencion(g, t))) && !sobreOtroDato(g, t.segmento));
     return { g, clase: sabida || corta ? 'residuo' : 'omision', copiados, letra };
   });
 }
