@@ -44,7 +44,10 @@
   "listaDelCaso": [
     {
       "name": "Agroindustrias Ejemplo S.A.",
-      "role": "EMPRESA"
+      "role": "EMPRESA",
+      "alias": [
+        "AGEX"
+      ]
     },
     {
       "name": "Leonardo Prueba",
@@ -2818,7 +2821,8 @@
       "RG-r1: C18-A061 MUNICIPIO «Envigado» dentro del despacho C18-A060: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
       "RG-r1: C18-A083 MUNICIPIO «Ibagué» dentro del despacho C18-A082: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
       "RG-r1: C18-A087 MUNICIPIO «Facatativá» dentro del despacho C18-A086: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
-      "RG-r1: C18-A091 MUNICIPIO «Soacha» dentro del despacho C18-A090: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad."
+      "RG-r1: C18-A091 MUNICIPIO «Soacha» dentro del despacho C18-A090: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "CORPUS-1: lista del caso, entrada «Agroindustrias Ejemplo S.A.»: alias «AGEX» (entrada, alias aprobado por el dueño, D-16). Motivo: es una forma que el abogado conoce y que el motor no deriva del nombre de la entrada (6.5.1, 7.9.4; T-RS-01 para el apodo); se agrega como variante manual de la entrada (listaDelCaso[].alias), como lo haría el abogado con «Agregar variante» en la vista previa. Las anotaciones y las entidades del gold no cambian (C18-A031, C18-A033, C18-A073, C18-A078 siguen siendo C18-E03)."
     ]
   }
 }

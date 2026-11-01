@@ -4,7 +4,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { newCaseEntity, refreshVariants } from '../../../src/core/caselist.ts';
-import type { CaseEntity, DocId, DocumentModel, IdSource, Part, PartId, PartKind, Role } from '../../../src/core/types.ts';
+import type { CaseEntity, CaseVariant, DocId, DocumentModel, IdSource, Part, PartId, PartKind, Role } from '../../../src/core/types.ts';
 import { claveParte } from '../../../scripts/metrics.ts';
 import type { GoldDocument } from '../../../scripts/metrics.ts';
 
@@ -14,7 +14,8 @@ export const CARPETA_CORPUS: string = join(RAIZ, 'corpus');
 export type Conjunto = 'todo' | 'desarrollo' | 'reserva';
 
 interface GoldArchivo extends GoldDocument {
-  listaDelCaso: Array<{ name: string; role: string }>;
+  /** `alias`: formas que el abogado conoce de la entidad y agrega como variantes manuales (D-16); entrada del documento, no anotación. */
+  listaDelCaso: Array<{ name: string; role: string; alias?: string[] }>;
   esperado: { partes: unknown[]; error?: string };
 }
 interface TextoArchivo {
@@ -36,6 +37,23 @@ export interface DocCorpus {
 }
 
 const CLASES_ORG: ReadonlySet<string> = new Set(['EMPRESA', 'EPS', 'IPS', 'ENTIDAD', 'PROVEEDOR']);
+
+/**
+ * Los alias de una entrada de la lista del caso como variantes manuales (6.5, 7.9.1): clase `exacta`, confianza `alta`, activas.
+ * Es la misma variante que crea el abogado con «Agregar variante» en la vista previa (`ListaCaso.tsx`); `caselist.ts` las conserva
+ * al regenerar y las busca como cualquier otra. Sin repetidos ni vacíos.
+ */
+export function variantesDeAlias(alias: readonly string[] | undefined): CaseVariant[] {
+  const vistos = new Set<string>();
+  const out: CaseVariant[] = [];
+  for (const a of alias ?? []) {
+    const texto = a.normalize('NFC').replace(/\s+/gu, ' ').trim();
+    if (texto === '' || vistos.has(texto)) continue;
+    vistos.add(texto);
+    out.push({ text: texto, class: 'exacta', confidence: 'alta', enabled: true, origin: 'manual' });
+  }
+  return out;
+}
 
 /** Ids deterministas (`pfx_<32 hex>`): las pruebas y los informes no dependen del azar. */
 export function idsSecuenciales(inicio = 1): IdSource {
@@ -82,7 +100,7 @@ export function armarDocumento(gold: GoldArchivo, texto: TextoArchivo, ids: IdSo
   const lista: CaseEntity[] = [];
   for (const l of gold.listaDelCaso) {
     const e = newCaseEntity(l.name, CLASES_ORG.has(l.role) ? 'organizacion' : 'persona', l.role as Role, ids);
-    if (e !== null) lista.push(e);
+    if (e !== null) lista.push({ ...e, variants: variantesDeAlias(l.alias) } as CaseEntity);
   }
   // Páginas normalizadas (10.3.1): las del PDF si las hay; si no, 3.000 caracteres por página (≈ 500 palabras).
   const conPagina = parts.filter((p) => p.page !== undefined);

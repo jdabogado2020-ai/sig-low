@@ -22,7 +22,10 @@
   "listaDelCaso": [
     {
       "name": "Seguros Prueba S.A.",
-      "role": "EMPRESA"
+      "role": "EMPRESA",
+      "alias": [
+        "SEPRU"
+      ]
     },
     {
       "name": "Álvaro Ficticio",
@@ -2684,7 +2687,8 @@
     "cambios": [
       "RG-r1: C21-A070 MUNICIPIO «Sogamoso» dentro del despacho C21-A069: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
       "RG-r1: C21-A089 MUNICIPIO «Dosquebradas» dentro del despacho C21-A088: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
-      "RG-r1: C21-A093 MUNICIPIO «Palmira» dentro del despacho C21-A092: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad."
+      "RG-r1: C21-A093 MUNICIPIO «Palmira» dentro del despacho C21-A092: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "CORPUS-1: lista del caso, entrada «Seguros Prueba S.A.»: alias «SEPRU» (entrada, alias aprobado por el dueño, D-16). Motivo: es una forma que el abogado conoce y que el motor no deriva del nombre de la entrada (6.5.1, 7.9.4; T-RS-01 para el apodo); se agrega como variante manual de la entrada (listaDelCaso[].alias), como lo haría el abogado con «Agregar variante» en la vista previa. Las anotaciones y las entidades del gold no cambian (C21-A076, C21-A084 siguen siendo C21-E03)."
     ]
   }
 }

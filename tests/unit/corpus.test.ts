@@ -25,7 +25,7 @@ interface GoldEnt { id: string; tipo: string; rol?: string; canonico: string; mi
 interface Gold {
   formato: string; v: number; docId: string; tipoDocumento: string; fuente: string; archivo: string; conjunto: string; semilla: string;
   esperado: { partes: Array<{ kind: string; index: number; page?: number; longitud: number; sha256: string }>; advertencias: string[]; metadatos: string[]; error?: string };
-  listaDelCaso: Array<{ name: string; role: string }>; entidades: GoldEnt[]; anotaciones: GoldAnn[];
+  listaDelCaso: Array<{ name: string; role: string; alias?: string[] }>; entidades: GoldEnt[]; anotaciones: GoldAnn[];
   revision: { estado: string; discrepancias: number; cambios: string[] };
 }
 interface TextoJson {
@@ -1150,5 +1150,68 @@ describe('corpus · T-GO-01 comprobaciones automáticas del gold', () => {
 
   it('T-GO-01 el estado de revisión es válido y un borrador no trae cambios', () => {
     for (const g of todos) { expect(['borrador', 'revisado', 'adjudicado']).toContain(g.revision.estado); if (g.revision.estado === 'borrador') { expect(g.revision.discrepancias).toBe(0); expect(g.revision.cambios).toEqual([]); } }
+  });
+});
+
+// ---------- Alias de la lista del caso (CORPUS-1, D-16, S-10.4) ----------
+// La lista del caso es entrada del documento, no anotación: el abogado conoce el apodo o la sigla y los agrega como variantes
+// manuales (6.5, 7.9.4). Cada alias queda en `listaDelCaso[].alias` y registrado en `revision.cambios`. Las anotaciones no cambian.
+describe('corpus · T-GO-01 alias de la lista del caso (D-16)', () => {
+  // documento → [entrada de la lista, alias aprobado por el dueño]
+  const APROBADOS: Record<string, Array<[string, string]>> = {
+    C06: [['Clínica Ejemplo S.A.S.', 'CESA']],
+    C11: [['Alejandro Ejemplo', 'Alejandro Ejemplo Orozco'], ['Alejandro Ejemplo', 'Ejemplo Orozco']],
+    C16: [['Ferretería Ejemplo S.A.S.', 'FESA']],
+    C17: [['Constructora Prueba S.A.', 'COPSA']],
+    C18: [['Agroindustrias Ejemplo S.A.', 'AGEX']],
+    C19: [['Textiles Ficticios S.A.S.', 'TEFI']],
+    C20: [['Distribuidora Prueba y Cía. S. en C.', 'DIPRU']],
+    C21: [['Seguros Prueba S.A.', 'SEPRU']],
+    C22: [['Nicolás Ficticio Gómez', 'Fercho']],
+  };
+  const REGISTRO = 'entrada, alias aprobado por el dueño, D-16';
+
+  it.skipIf(!COMPLETO)('T-GO-01 los alias aprobados por el dueño (D-16) están en la lista del caso de su documento', () => {
+    for (const [doc, pares] of Object.entries(APROBADOS)) {
+      const g = golds.get(doc) as Gold;
+      for (const [entrada, alias] of pares) {
+        const l = g.listaDelCaso.find((x) => x.name === entrada);
+        expect(l, `${doc} entrada ${entrada}`).toBeDefined();
+        expect(l?.alias ?? [], `${doc} ${entrada}`).toContain(alias);
+      }
+    }
+  });
+
+  it('T-GO-01 solo los documentos aprobados llevan alias; sin vacíos, repetidos ni el nombre de la entrada', () => {
+    for (const g of todos) {
+      const vistos = new Set<string>();
+      for (const l of g.listaDelCaso) {
+        if (l.alias === undefined) continue;
+        expect(Object.keys(APROBADOS), `${g.docId} no está entre los aprobados`).toContain(g.docId);
+        expect(Array.isArray(l.alias) && l.alias.length > 0, `${g.docId} ${l.name}`).toBe(true);
+        for (const a of l.alias) {
+          expect(a.trim(), `${g.docId} alias vacío`).toBe(a);
+          expect(a.length, `${g.docId} alias vacío`).toBeGreaterThan(0);
+          expect(a, `${g.docId} alias igual al nombre`).not.toBe(l.name);
+          expect(vistos.has(a.toLowerCase()), `${g.docId} alias repetido ${a}`).toBe(false);
+          vistos.add(a.toLowerCase());
+        }
+      }
+    }
+  });
+
+  it('T-GO-01 cada alias figura en el texto, lo anota el gold como forma de la misma entidad y consta en revision.cambios', () => {
+    for (const g of todos) {
+      const cuerpo = (textos.get(g.docId) as TextoJson).partes.map((p) => p.texto).join('\n');
+      for (const l of g.listaDelCaso) for (const a of l.alias ?? []) {
+        expect(cuerpo.includes(a), `${g.docId} «${a}» en el texto`).toBe(true);
+        const duena = g.entidades.find((e) => e.enLista && e.canonico === `LISTA:${l.name}`);
+        expect(duena, `${g.docId} entidad de ${l.name}`).toBeDefined();
+        const m = g.anotaciones.filter((x) => x.texto === a);
+        expect(m.length, `${g.docId} «${a}» anotado en el gold`).toBeGreaterThan(0);
+        for (const x of m) { expect(x.enLista, x.id).toBe(true); expect(x.entidad, x.id).toBe(duena?.id); }
+        expect(g.revision.cambios.some((c) => c.includes(`«${a}»`) && c.includes(REGISTRO)), `${g.docId} «${a}» registrado en revision.cambios`).toBe(true);
+      }
+    }
   });
 });

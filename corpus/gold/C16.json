@@ -31,7 +31,10 @@
   "listaDelCaso": [
     {
       "name": "Ferretería Ejemplo S.A.S.",
-      "role": "EMPRESA"
+      "role": "EMPRESA",
+      "alias": [
+        "FESA"
+      ]
     },
     {
       "name": "Patricia Prueba Mora",
@@ -2551,7 +2554,8 @@
     "cambios": [
       "RG-r1: C16-A058 MUNICIPIO «Sogamoso» dentro del despacho C16-A057: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
       "RG-r1: C16-A084 MUNICIPIO «Ibagué» dentro del despacho C16-A083: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
-      "RG-r1: C16-A088 MUNICIPIO «Envigado» dentro del despacho C16-A087: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad."
+      "RG-r1: C16-A088 MUNICIPIO «Envigado» dentro del despacho C16-A087: generalizacion MUNICIPIO_A_DEPARTAMENTO → DESPACHO_A_GENERICO. Motivo: el municipio en el nombre de un despacho no recibe sugerencia propia; lo generaliza la del despacho en su opción o1. Plan 6.2.1 fila MUNICIPIO («o DESPACHO_A_GENERICO si está en el nombre de un despacho o autoridad»); 7.7.3 R-MUN-05 y R-DESP-01 (o1 generaliza el municipio); 10.2.2 fila Despacho o autoridad.",
+      "CORPUS-1: lista del caso, entrada «Ferretería Ejemplo S.A.S.»: alias «FESA» (entrada, alias aprobado por el dueño, D-16). Motivo: es una forma que el abogado conoce y que el motor no deriva del nombre de la entrada (6.5.1, 7.9.4; T-RS-01 para el apodo); se agrega como variante manual de la entrada (listaDelCaso[].alias), como lo haría el abogado con «Agregar variante» en la vista previa. Las anotaciones y las entidades del gold no cambian (C16-A044, C16-A068, C16-A079 siguen siendo C16-E01)."
     ]
   }
 }
