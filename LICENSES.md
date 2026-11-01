@@ -47,7 +47,7 @@ Las huellas son las de `h0/huellas.txt`; coinciden con el SHA-256 de Git LFS pub
 **Pendientes de los modelos (bloquean el cierre, ver sección 8):**
 
 - La licencia de los **datos de entrenamiento** de GLiNER-X no está declarada: el conjunto sintético de Knowledgator no trae licencia ni ficha. El modelo y su base sí declaran Apache-2.0. La confirmación escrita del autor se pide antes de vender el producto [VERIFICAR con Knowledgator].
-- **Archivo NOTICE y ficha del modelo.** La descarga de H-0 guardó el ONNX, los tokenizadores y las configuraciones; no guardó la ficha ni el `LICENSE`/`NOTICE` del repositorio de origen. Si el repositorio de origen trae un `NOTICE`, su contenido se reproduce aquí y en «Créditos y licencias» [VERIFICAR presencia de NOTICE en el repositorio de cada modelo].
+- **Archivo NOTICE y ficha del modelo.** La descarga de H-0 guardó el ONNX, los tokenizadores y las configuraciones; no guardó la ficha ni el `LICENSE`/`NOTICE` del repositorio de origen. Comprobado el 1-nov-2026 en los listados de archivos de los repositorios de origen: ni `knowledgator/gliner-x-large` (commit `4a4437f…`) ni `knowledgator/gliner-x-base` (commit `a6c7a8f…`), ni `google/mt5-large` ni `google/mt5-base` (rama `main`) tienen un archivo `NOTICE` ni `LICENSE`; declaran Apache-2.0 solo en los metadatos de la ficha. No hay `NOTICE` que reproducir; el texto de la Licencia Apache 2.0 es el del archivo `LICENSE` de este repositorio.
 
 ## 3. Código incorporado: `@piighost/ner-web`
 
@@ -159,7 +159,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 **onnxruntime-web 1.31.0-dev.20260914-8d85527a0**
 
-El paquete npm no incluye un archivo de licencia; el aviso es el que lleva el propio archivo `ort.wasm.min.mjs` («Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License»). El texto siguiente es la forma estándar de la licencia MIT con ese titular. [VERIFICAR] contra el `LICENSE` del repositorio de onnxruntime.
+El paquete npm no incluye un archivo de licencia; el aviso es el que lleva el propio archivo `ort.wasm.min.mjs` («Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License»). El texto siguiente es el del `LICENSE` del repositorio de onnxruntime (`microsoft/onnxruntime`, rama principal), comparado el 1-nov-2026: coincide con el titular y el cuerpo de la licencia MIT.
 
 ```text
 MIT License
@@ -187,12 +187,11 @@ SOFTWARE.
 
 **core-js 3.50.0 (dentro de `pdfjs-dist`)**
 
-`node_modules` no incluye el `LICENSE` de core-js: pdf.js lo lleva empaquetado y declara en su propio código el titular, la licencia y la dirección del texto (`pdf.mjs`: «© 2013–2025 Denis Pushkarev (zloirock.ru), 2025–2026 CoreJS Company (core-js.io)»; licencia en `https://github.com/zloirock/core-js/blob/v3.50.0/LICENSE`; MIT). El texto siguiente es la forma estándar de la licencia MIT con ese titular. [VERIFICAR] contra el `LICENSE` de la etiqueta v3.50.0 de core-js.
+`node_modules` no incluye el `LICENSE` de core-js: pdf.js lo lleva empaquetado y declara en su propio código el titular, la licencia y la dirección del texto (`pdf.mjs`: «© 2013–2025 Denis Pushkarev (zloirock.ru), 2025–2026 CoreJS Company (core-js.io)»; licencia en `https://github.com/zloirock/core-js/blob/v3.50.0/LICENSE`; MIT). El texto siguiente es el del `LICENSE` de la etiqueta v3.50.0 de core-js, consultado el 1-nov-2026 (los dos avisos de derechos de autor van en líneas separadas, como en el original).
 
 ```text
-MIT License
-
-Copyright (c) 2013–2025 Denis Pushkarev (zloirock.ru), 2025–2026 CoreJS Company (core-js.io)
+Copyright (c) 2013–2025 Denis Pushkarev (zloirock.ru)
+Copyright (c) 2025–2026 CoreJS Company (core-js.io)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -201,16 +200,16 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 ```
 
 ### 4.2 Apache-2.0
@@ -295,11 +294,11 @@ Vite 8.3.5 (MIT), TypeScript 6.0.3 (Apache-2.0), ESLint 10.13.0 y typescript-esl
 | # | Pendiente | Quién |
 |---|---|---|
 | 1 | Licencia de los datos de entrenamiento de GLiNER-X: confirmación escrita de Knowledgator [VERIFICAR]. | Dueño |
-| 2 | Archivo `NOTICE` y ficha de cada repositorio de modelo (no se guardaron en H-0) [VERIFICAR]. | Integrador |
-| 3 | Texto de la licencia de core-js 3.50.0 y de onnxruntime: copiar el `LICENSE` del repositorio de origen; hoy es la forma estándar de la licencia MIT con el titular que declara el propio código [VERIFICAR]. | Integrador |
-| 4 | Titular y año del aviso de derechos de autor de `LICENSE`/`NOTICE` («Copyright 2026 Juan David Vergara Melo») [VERIFICAR con el dueño]. | Dueño |
+| 2 | ~~Archivo `NOTICE` y ficha de cada repositorio de modelo.~~ Resuelto (DOC-4, 1-nov-2026): los repositorios de GLiNER-X (large y base) y de mT5 (large y base) no tienen `NOTICE` ni `LICENSE`; declaran Apache-2.0 en la ficha (sección 2). | Integrador |
+| 3 | ~~Texto de la licencia de core-js 3.50.0 y de onnxruntime.~~ Resuelto (DOC-4, 1-nov-2026): los textos de la sección 4.1 son los del `LICENSE` de la etiqueta v3.50.0 de core-js y del repositorio de onnxruntime. | Integrador |
+| 4 | ~~Titular y año del aviso de derechos de autor de `LICENSE`/`NOTICE`.~~ Resuelto por el dueño (D-08, 31-oct-2026): «Copyright 2026 Juan David Vergara Melo». | Dueño |
 | 5 | Revisión legal de las obligaciones de esta lista (Apache-2.0 con NOTICE, MIT, CC BY-SA 4.0 y licencia de los datos de los modelos). | Dueño |
-| 6 | Repetir `npm ls --omit=dev --all` contra el `package-lock.json` de la etiqueta `v1.0.0` y comparar con la sección 6. | Integrador (P0-5) |
+| 6 | Repetir `npm ls --omit=dev --all` contra el `package-lock.json` de la etiqueta `v1.0.0` y comparar con la sección 6. Avance (DOC-4, 1-nov-2026): las 35 entradas de producción del `package-lock.json` de esta rama coinciden en nombre y versión con las secciones 3, 4 y 6, y `npm ls --omit=dev --depth=0` da los mismos seis paquetes directos; falta repetirlo sobre la etiqueta. | Integrador (P0-5) |
 
 ## 9. Cómo se comprobó este archivo
 

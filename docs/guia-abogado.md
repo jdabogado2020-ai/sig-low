@@ -18,7 +18,7 @@ Esta guía le lleva desde cero hasta una prueba en modo avión. Tómese unos 30 
 
 ### 1.1 Use la dirección oficial
 
-Abra Sig-Low solo desde **`sig-low.vergarameloabogado.site`** [VERIFICAR: nombre exacto del subdominio al publicar]. Guárdela como marcador o favorito y entre siempre desde ahí. No use enlaces recibidos por correo o mensajes, y no use copias en otras direcciones: una copia no oficial podría ver todo lo que procesa.
+Abra Sig-Low solo desde **`sig-low.vergarameloabogado.site`**. Guárdela como marcador o favorito y entre siempre desde ahí. No use enlaces recibidos por correo o mensajes, y no use copias en otras direcciones: una copia no oficial podría ver todo lo que procesa.
 
 La dirección debe empezar por `https://` (conexión cifrada). Sin ella, Sig-Low no funciona sin conexión ni guarda tablas, y le avisará.
 

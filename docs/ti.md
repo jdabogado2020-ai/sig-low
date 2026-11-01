@@ -16,7 +16,7 @@ Lo que **no** cubre ni la aplicación ni esta guía: ver la sección 8 («Lo que
 
 ## 2. Dirección oficial y distribución
 
-- La dirección oficial es `https://sig-low.vergarameloabogado.site` [VERIFICAR: nombre exacto del subdominio al publicar]. Distribúyala a los usuarios como **marcador**; no distribuya copias de Sig-Low en otros servidores ni acepte direcciones recibidas por correo o mensajes.
+- La dirección oficial es `https://sig-low.vergarameloabogado.site`. Distribúyala a los usuarios como **marcador**; no distribuya copias de Sig-Low en otros servidores ni acepte direcciones recibidas por correo o mensajes.
 - Sig-Low necesita contexto seguro (`https://`) y funciona sin conexión después de la primera carga, gracias a un service worker. Una directiva de empresa que borre los datos del sitio al cerrar el navegador (cookies y datos de sitio) eliminaría la tabla guardada y el modo sin conexión: vea la política de excepción de datos de sitio (fila 16 de la sección 4).
 - Una versión nueva se aplica sola la próxima vez que se abre Sig-Low con todas sus pestañas cerradas. Para decidir cuándo aprobar una versión, repita la verificación de la sección 6 con la lista de las notas de la versión.
 
@@ -43,7 +43,7 @@ Los nombres de los ajustes de la interfaz del navegador cambian entre versiones;
 
 ## 4. Políticas de navegador y de sistema
 
-La columna «Reduce» remite a la lista de vectores de privacidad del proyecto (V-nn). El estado es el de la investigación del proyecto (corte 2026-10-22).
+La columna «Reduce» remite a la lista de vectores de privacidad del proyecto (V-nn). El estado es el de la investigación del proyecto (corte 2026-10-22), salvo las filas con «Verificado 2026-11-01», que se comprobaron ese día en la página del fabricante que se cita. Las filas con sufijo «b» separan el ajuste de Chrome, que sigue sin comprobar, del de Edge, ya comprobado.
 
 | # | Reduce | Ámbito | Política o ajuste | Valor | Estado |
 |---|---|---|---|---|---|
@@ -55,18 +55,22 @@ La columna «Reduce» remite a la lista de vectores de privacidad del proyecto (
 | 6 | V-28 | Edge ≥ 130, perfiles con Entra | `EdgeEntraCopilotPageContext` | Deshabilitada (no cubre cuentas personales) | Verificado (https://learn.microsoft.com/en-us/deployedge/microsoft-edge-browser-policies/edgeentracopilotpagecontext) |
 | 7 | V-28 | Edge, cuenta personal | Acceso del asistente al contenido de la página | Deshabilitado | **Política no encontrada [VERIFICAR]**; use el ajuste del perfil (sección 3) |
 | 8 | V-27 | Chrome | `TranslateEnabled` | `false` | Documentación [VERIFICAR] |
-| 9 | V-27 | Edge | Traducción de páginas | Apagada | [VERIFICAR nombre] |
+| 9 | V-27 | Edge | `TranslateEnabled` | `false` (apaga todas las funciones de traducción integradas; no se aplica a perfiles con cuenta Microsoft) | Verificado 2026-11-01 (https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies/translateenabled) |
 | 10 | V-24 | Chrome y Edge | `ExtensionSettings` → `runtime_blocked_hosts` | `["*://<host-de-sig-low>"]` (máximo 100 patrones, sin ruta): las extensiones no inyectan, no leen cookies ni modifican peticiones en ese host | Verificado (https://support.google.com/chrome/a/answer/9867568) |
 | 11 | V-29 | Edge | «Coincidencias relacionadas» en Buscar en la página | Apagada | Ajuste verificado; **política [VERIFICAR]** |
 | 12 | V-30 | Chrome | `MetricsReportingEnabled` | `false` | [VERIFICAR] |
-| 13 | V-30 | Edge | `DiagnosticData` | Sin datos opcionales | [VERIFICAR] |
-| 14 | V-31 | Chrome y Edge | `SyncTypesListDisabled` o `SyncDisabled` (perfil dedicado) | Sin sincronización | [VERIFICAR] |
-| 15 | V-19 | Chrome y Edge | `PasswordManagerEnabled` (perfil dedicado) | `false` (opcional) | [VERIFICAR] |
-| 16 | V-13 | Chrome y Edge | Excepción de datos de sitio (p. ej., `CookiesAllowedForUrls`) | Permitir el host de Sig-Low | [VERIFICAR] |
-| 17 | V-33 | Chrome y Edge | `IncognitoModeAvailability`, `InPrivateModeAvailability` | Disponible (para copiar el texto reinsertado) | [VERIFICAR] |
-| 18 | Rendimiento | Edge | Modo de seguridad mejorada (sección 5) | Excepción para el host de Sig-Low, o seguir sin el modelo | Política principal verificada; **lista de excepciones [VERIFICAR]** |
+| 13 | V-30 | Edge | `DiagnosticData` | `1` (solo datos requeridos, sin opcionales; `0` apaga todo pero Microsoft no lo recomienda y `2` envía los opcionales) | Verificado 2026-11-01 (https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies/diagnosticdata) |
+| 14 | V-31 | Edge | `SyncDisabled` (perfil dedicado) | `true` (el usuario no puede activar la sincronización; no se aplica a perfiles con cuenta Microsoft) | Verificado 2026-11-01 (https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies/syncdisabled) |
+| 14b | V-31 | Chrome | `SyncDisabled` o `SyncTypesListDisabled` (perfil dedicado) | Sin sincronización | [VERIFICAR] |
+| 15 | V-19 | Edge | `PasswordManagerEnabled` (perfil dedicado) | `false` (opcional; impide guardar contraseñas nuevas, no borra las guardadas) | Verificado 2026-11-01 (https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies/passwordmanagerenabled) |
+| 15b | V-19 | Chrome | `PasswordManagerEnabled` (perfil dedicado) | `false` (opcional) | [VERIFICAR] |
+| 16 | V-13 | Edge | `CookiesAllowedForUrls` con `https://sig-low.vergarameloabogado.site`; para que no se borren los datos del sitio al cerrar el navegador, `SaveCookiesOnExit` | Permitir el host de Sig-Low | Verificado 2026-11-01 (https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies/cookiesallowedforurls; esa página remite a `SaveCookiesOnExit` para excluir cookies del borrado al salir) |
+| 16b | V-13 | Chrome | Excepción de datos de sitio (p. ej., `CookiesAllowedForUrls`) | Permitir el host de Sig-Low | [VERIFICAR] |
+| 17 | V-33 | Edge | `InPrivateModeAvailability` | `0` (InPrivate disponible; es el valor predeterminado; `1` lo deshabilita y `2` lo fuerza) | Verificado 2026-11-01 (https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies/inprivatemodeavailability) |
+| 17b | V-33 | Chrome | `IncognitoModeAvailability` | Disponible (para copiar el texto reinsertado) | [VERIFICAR] |
+| 18 | Rendimiento | Edge | Modo de seguridad mejorada (sección 5) | `EnhanceSecurityModeBypassListDomains` con `sig-low.vergarameloabogado.site` (dominio, sin esquema ni ruta), o seguir sin el modelo | Verificado 2026-11-01 (https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies/enhancesecuritymodebypasslistdomains: lista de cadenas, Windows y macOS desde Edge 98). Que Edge con la seguridad mejorada activa cargue el modelo con la excepción se comprueba con T-ED-01 |
 | 19 | V-33 | Windows | `AllowClipboardHistory`, `AllowCrossDeviceClipboard` | Deshabilitados | Ajuste verificado (Configuración > Sistema > Portapapeles; Win+V guarda hasta 25 elementos); **políticas [VERIFICAR]** |
-| 20 | V-34 | Windows | Recall | Deshabilitado | Desactivado por defecto (verificado); **política [VERIFICAR]** |
+| 20 | V-34 | Windows | Recall: `AllowRecallEnablement` y `DisableAIDataAnalysis` | `AllowRecallEnablement` = `0` (Recall no está disponible; quita el componente) y `DisableAIDataAnalysis` = `1` (no se guardan capturas para Recall) | Verificado 2026-11-01 (https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-windowsai; en dispositivos administrados Recall viene desactivado por defecto) |
 | 21 | V-33 | macOS e iOS | Handoff (Portapapeles universal) | Desactivado | Activo por defecto (verificado); **clave [VERIFICAR]** |
 | 22 | V-17, V-23 | Windows y macOS | Cifrado de disco (BitLocker, FileVault) | Activo | **Cobertura de memoria virtual e hibernación [VERIFICAR]** |
 | 23 | V-35 | Sistema | Bloqueo automático de sesión | Según la política del despacho | Recomendación general |
@@ -109,7 +113,7 @@ Medición del proyecto (equipo de referencia; informe en `docs/informe-medicion.
 
 Qué puede hacer TI:
 
-- **Opción recomendada:** agregar `sig-low.vergarameloabogado.site` a la lista de sitios exceptuados del modo de seguridad mejorada, por política (fila 18). La política principal está verificada; **el nombre y el formato de la lista de excepciones están por verificar [VERIFICAR]**.
+- **Opción recomendada:** agregar `sig-low.vergarameloabogado.site` a la lista de sitios exceptuados del modo de seguridad mejorada, por política (fila 18). La política es `EnhanceSecurityModeBypassListDomains` (lista de cadenas con el dominio, sin esquema ni ruta; ejemplo `sig-low.vergarameloabogado.site`), comprobada en la página del fabricante citada en la fila 18.
 - **Alternativa:** dejar el modo activo y usar Sig-Low sin el modelo (solo reglas y lista del caso). El abogado ve el aviso de que el modelo no está disponible y lee todo el texto con más cuidado.
 
 ## 6. Lista de comprobación del despliegue
@@ -167,4 +171,4 @@ node scripts/verificar-despliegue.mjs https://sig-low.vergarameloabogado.site SH
 
 ## 9. Pendientes de esta guía
 
-Todas las filas de la sección 4 con [VERIFICAR] (4, 5, 7, 8, 9, 11 a 22, 24 a 26), la ruta de la excepción del modo de seguridad mejorada (fila 18 y sección 5), la comprobación con el modo real de Edge, el nombre exacto del subdominio oficial y el comportamiento de la ventana privada frente al historial del portapapeles (T-PV-21) siguen sin confirmar. Las opciones de `scripts/verificar-despliegue.mjs` (6.1) ya están confirmadas con el script (T-PV-15). Ninguna debe aplicarse en producción sin esa comprobación.
+Siguen sin confirmar las filas de la sección 4 que aún llevan [VERIFICAR]: 4, 5, 7, 8, 11, 12, 14b, 15b, 16b, 17b, 19, 21, 22, 24, 25 y 26 (casi todas, ajustes de Chrome, de Windows y de macOS), el ajuste de Edge de «Instalar como aplicación» (sección 3), la comprobación con el modo real de Edge (sección 5) y el comportamiento de la ventana privada frente al historial del portapapeles (T-PV-21). Las filas 9, 13, 14, 15, 16, 17, 18 y 20 se comprobaron el 2026-11-01 en la página del fabricante citada, y el subdominio oficial ya está publicado y responde por HTTPS. Las opciones de `scripts/verificar-despliegue.mjs` (6.1) ya están confirmadas con el script (T-PV-15). Ninguna debe aplicarse en producción sin esa comprobación.

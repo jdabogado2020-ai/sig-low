@@ -1,8 +1,6 @@
 # Términos de uso de Sig-Low
 
-> **Borrador para revisión del dueño.** Este texto no es definitivo ni se publica hasta que el dueño, como abogado, lo apruebe por escrito. No quedan datos pendientes de verificar. La fecha de vigencia `{FECHA_V1}` se completa con la fecha de publicación de la versión 1.0.0.
-
-Versión del borrador: 2 · Fecha del borrador: 31 de octubre de 2026 · Fecha de vigencia: {FECHA_V1}
+Versión 1 · Fecha de vigencia: {FECHA_V1}
 
 ## 1. Aceptación
 
