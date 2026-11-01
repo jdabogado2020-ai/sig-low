@@ -2,7 +2,8 @@
 // separar de la entidad) y por entidad (aceptar o rechazar todas, cambiar rol o clase, unir, marcador específico).
 // Los errores del reductor se muestran con 8.5.5 en una región `alert`; el estado no cambia si hay error.
 import { useEffect, useRef, useState } from 'preact/hooks';
-import type { DetectableType, Detection, Entity, RejectReason, ReviewState, Role } from '../../../core/types.ts';
+import type { DetectableType, Detection, DocumentModel, Entity, RejectReason, ReviewState, Role } from '../../../core/types.ts';
+import { obtenerListaDelCaso } from '../../sesion.ts';
 import { ORG_CLASSES } from '../../../core/types.ts';
 import { atributosDeContenedor, atributosDeContenido, Seleccion, useIdNeutro } from '../../campos.tsx';
 import { etiqueta, mensajeDeCodigo, ROTULOS, t } from '../../mensajes.ts';
@@ -11,7 +12,8 @@ import {
 } from './acciones.ts';
 import { limpiarError, marcarEdicion, pedirEnfoque, seleccionar, seleccionarEntidad, solicitarEdicion, terminarEdicion, useRevisionUi } from './almacen.ts';
 import {
-  nombreDeTipo, pendientesDe, TIPOS_CON_MARCADOR_ESPECIFICO, TIPOS_ELEGIBLES, textoDeMenciones, textoDePendientes,
+  fichaDeAmbigua, nombreDeTipo, pendientesDe, TIPOS_CON_MARCADOR_ESPECIFICO, TIPOS_ELEGIBLES, textoDeMenciones, textoDePendientes,
+  type OpcionAmbigua,
 } from './presentacion.ts';
 import { tx } from './textos.ts';
 
@@ -132,6 +134,40 @@ function BloqueEntidad({ state, e }: { state: ReviewState; e: Entity }) {
   );
 }
 
+/**
+ * D-18 y D-19.6 (CIERRE-1) · La decisión de una mención ambigua (D-16, M-72, D-16 en el modelo): el aviso general M-2001 y un botón
+ * por cada persona que puede ser, las de la lista del caso y las de fuera de ella (`fuera`). Unir es `unir_entidades` desde la
+ * entidad propia de la mención; separar y rechazar siguen en las acciones de la mención.
+ */
+function BloqueAmbigua({ state, doc, d }: { state: ReviewState; doc: DocumentModel; d: Detection }) {
+  const ficha = fichaDeAmbigua(state, obtenerListaDelCaso(), doc, d.id);
+  if (ficha === null) return null;
+  const grupo = (g: OpcionAmbigua['grupo'], titulo: 'M-2002' | 'M-2003') => {
+    const xs = ficha.opciones.filter((o) => o.grupo === g);
+    return xs.length === 0 ? null : (
+      <div class="fila" data-prueba={`ambigua-${g}`}>
+        <h5>{t(titulo)}</h5>
+        <ul>
+          {xs.map((o) => (
+            <li key={o.entityId}>
+              <button type="button" class="secundario" onClick={() => { unir(d.entityId, o.entityId); }}>{t('M-2004', { opcion: o.marcador })}</button>
+              {' '}<span>{state.entities[o.entityId]?.display ?? ''}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+  return (
+    <section class="ficha-ambigua" data-prueba="ficha-ambigua">
+      <p role="note">{ficha.aviso}</p>
+      {grupo('lista', 'M-2002')}
+      {grupo('fuera', 'M-2003')}
+      {ficha.opciones.length === 0 ? <p class="ayuda">{t('M-2005')}</p> : null}
+    </section>
+  );
+}
+
 export function Ficha() {
   const rev = useRevisionUi();
   const { state, doc, seleccion, entidadSeleccion, edicion, error } = rev;
@@ -161,6 +197,7 @@ export function Ficha() {
             <dt>{tx('M-1751')}</dt><dd>{d.status === 'rechazada' ? tx('M-1759') : textoFinal(d, entidad) || tx('M-1755')}</dd>
           </dl>
           {d.validator?.passed === false ? <p class="aviso-validador" data-prueba="validador-fallido">{t('M-71')}</p> : null}
+          <BloqueAmbigua state={state} doc={doc} d={d} />
           <div class="acciones">
             <button type="button" class="secundario" aria-label={tx('M-1756', { accion: t(ROTULOS.aceptar) })} disabled={d.status === 'aceptada'} onClick={() => { aceptar(d.id); }}>{t(ROTULOS.aceptar)}</button>
             <button type="button" class="secundario" aria-label={tx('M-1756', { accion: t(ROTULOS.rechazar) })} disabled={d.status === 'rechazada'} onClick={() => { rechazar(d.id, motivo); }}>{t(ROTULOS.rechazar)}</button>

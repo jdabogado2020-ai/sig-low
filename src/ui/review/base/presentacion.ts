@@ -1,8 +1,11 @@
 // Funciones puras de presentación de la Revisión I (PC-3): categoría, abreviatura y nombres de 8.4 y 8.6.4, elementos del
 // texto (detecciones, banderas, ediciones de tramo), bloques de 50 líneas (8.8) y contexto de ±40 caracteres.
 // Sin DOM. Los textos visibles salen del catálogo (mensajes.ts y textos.ts).
-import type { DataType, Detection, DetectionId, DocumentModel, Entity, Flag, Part, PartId, ReviewState, SpanEdit } from '../../../core/types.ts';
+import type {
+  CaseEntity, DataType, Detection, DetectionId, DocumentModel, Entity, EntityId, Flag, Part, PartId, ReviewState, SpanEdit,
+} from '../../../core/types.ts';
 import { DATA_TYPES } from '../../../core/types.ts';
+import { decisionesAmbiguas } from '../../../core/review/ambiguas.ts';
 import { etiqueta, type MessageId } from '../../mensajes.ts';
 import { t } from '../../mensajes.ts';
 import { tx } from './textos.ts';
@@ -205,4 +208,28 @@ export function pendienteAdyacente(state: ReviewState, desde: DetectionId | null
 
 export function partesIncluidas(doc: DocumentModel): Part[] {
   return doc.parts.filter((p) => p.included).sort((a, b) => a.order - b.order);
+}
+
+/** Una opción de la ficha de la mención ambigua: la entidad con la que se une, su marcador y si es de la lista o de fuera. */
+export interface OpcionAmbigua { entityId: EntityId; marcador: string; grupo: 'lista' | 'fuera' }
+/** Lo que muestra la ficha de una mención ambigua (PC-3, D-19.6): M-2001 con los marcadores de todas las opciones y las opciones. */
+export interface FichaAmbigua { aviso: string; opciones: OpcionAmbigua[] }
+
+/**
+ * D-18 y D-19.6 (CIERRE-1) · La ficha de una mención ambigua: el texto general de M-2001 con los marcadores de las personas que
+ * puede ser y, para cada una, la entidad con la que el revisor la une, separadas en las de la lista del caso (`opciones`) y las de
+ * otras personas del documento (`fuera`, M-72 y D-16 en el modelo). null si la detección no es una mención ambigua sin decidir.
+ * Solo marcadores [P]; el nombre de cada entidad lo pone la pantalla.
+ */
+export function fichaDeAmbigua(state: ReviewState, caseList: readonly CaseEntity[], doc: DocumentModel | undefined, id: DetectionId): FichaAmbigua | null {
+  const x = decisionesAmbiguas(state, caseList, doc).find((y) => y.detectionId === id);
+  if (x === undefined) return null;
+  const opciones: OpcionAmbigua[] = [
+    ...x.opciones.map((entityId) => ({ entityId, grupo: 'lista' as const })),
+    ...x.fuera.filter((e) => !x.opciones.includes(e)).map((entityId) => ({ entityId, grupo: 'fuera' as const })),
+  ].flatMap((o) => {
+    const e = state.entities[o.entityId];
+    return e === undefined ? [] : [{ ...o, marcador: e.marker ?? t('M-958') }];
+  });
+  return { aviso: t('M-2001', { opciones: opciones.map((o) => o.marcador).join(', ') }), opciones };
 }

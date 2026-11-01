@@ -92,9 +92,15 @@ const EXTRA = {
   'M-1902': 'Para entregarle esta página, el sitio que la aloja registra su dirección IP, la fecha y hora de la solicitud y las rutas de los archivos que su navegador pide. Son registros técnicos mínimos: no incluyen el contenido de sus documentos y Sig-Low no los usa para identificarlo.',
   'M-1903': 'Cloudflare trata esos registros como encargado del tratamiento, por cuenta del responsable y según su contrato de procesamiento de datos (DPA), y puede hacerlo fuera de Colombia, conforme a los artículos 24 y 25 del Decreto 1377 de 2013, hoy compilados en el Decreto 1074 de 2015.',
   'M-1904': 'La política de privacidad completa, con la identificación y el correo del responsable y sus derechos como titular, está en el archivo docs/legal/politica-de-privacidad.md del repositorio de Sig-Low.',
-  // Mención ambigua de la lista del caso (PB-3-r3, D-16; rango M-20xx): la decide el revisor. {opciones}: los marcadores [P] de
-  // las personas candidatas que tienen entidad en el documento (core/review/ambiguas.ts, `MENSAJE_AMBIGUA`).
-  'M-2001': 'Esta mención coincide con más de una persona de la lista del caso ({opciones}). Elija a quién corresponde con «Unir con otra entidad», sepárela si es otra persona o recházela. Mientras no lo decida, no se puede copiar ni exportar.',
+  // Mención ambigua (PB-3-r3, D-16; rango M-20xx): la decide el revisor. {opciones}: los marcadores [P] de las personas que pueden
+  // ser, de la lista o de otra persona del documento (core/review/ambiguas.ts, `MENSAJE_AMBIGUA`). CIERRE-1 (D-18, D-19.6): texto
+  // general, porque en M-72 hay una sola persona de la lista y en una forma corta del modelo puede no haber ninguna.
+  'M-2001': 'Esta mención puede ser de más de una persona ({opciones}). Elija a quién corresponde, sepárela si es otra persona o recházela. Mientras no lo decida, no se puede copiar ni exportar.',
+  // La ficha de la mención ambigua (PC-3, D-19.6): las opciones de la lista del caso y las de fuera de ella (`fuera`).
+  'M-2002': 'Personas de la lista del caso',
+  'M-2003': 'Otras personas del documento',
+  'M-2004': 'Unir con {opcion}',
+  'M-2005': 'Ninguna de esas personas tiene otra mención en el documento con la que unirla: sepárela si es otra persona o recházela.',
 } as const;
 
 const TODO: Record<string, string> = { ...CATALOGO, ...EXTRA };
