@@ -1,8 +1,8 @@
 // Búsqueda de residuos sobre la salida (plan 7.13, 6.9): tres pasadas (literal y plegada, dígitos tolerantes a separadores,
 // reglas y lista sobre la salida). PB-4. Código puro de core/: sin DOM ni red. Los valores buscados son [M]: nada de aquí
 // va a la consola, al informe (solo se cuenta `valuesSearched`), al título ni a la URL (F-02, F-03).
-import { LST, newCaseEntity, parseOrg, refreshVariants, searchCaseList } from './caselist.ts';
-import { nitCheckDigit } from './entities.ts';
+import { LST, newCaseEntity, parseOrg, personasDeLaVariante, refreshVariants, searchCaseList } from './caselist.ts';
+import { esClaveAmbigua, nitCheckDigit } from './entities.ts';
 import { PALABRAS_DE_FUNCION, resolveRemainder, trimFunctionWords } from './merge.ts';
 import { buildSearchView, toCanonicalSpan } from './normalize.ts';
 import { sameHolderAs, type TitularEntrada } from './rules/ids.ts';
@@ -72,6 +72,8 @@ const foldWord = (w: string): string => foldList(w).trim();
 /** Palabra de nombre: empieza con mayúscula, 2 letras o más, sin dígitos («Prueba», «Ejemplo-Acosta», «D'Ficticia»). */
 const RE_NAME_WORD = /^\p{Lu}[\p{L}\p{M}'’-]*\p{L}$/u;
 const isFunctionWord = (w: string): boolean => PALABRAS_DE_FUNCION.has(foldWord(w.replace(/[^\p{L}\p{M}]/gu, '')));
+/** B-91 · ¿La palabra es el sufijo societario de dos letras tal como se escribe («SA», «Sa»), sin tilde? «Sá» no lo es. */
+const esSufijoSinTilde = (w: string): boolean => foldWord(w) === 'sa' && w.normalize('NFD') === w.normalize('NFD').replace(/\p{M}/gu, '');
 const isUpperWord = (w: string): boolean => { const l = w.replace(/[^\p{L}]/gu, ''); return l.length > 0 && l === l.toUpperCase(); };
 
 /**
@@ -305,6 +307,18 @@ function cleanCandidate(d: DetectionCandidate, start: number, end: number): Dete
 }
 
 /**
+ * CIERRE-1 · Una detección de la pasada 3 que la construcción dejó ambigua (D-16, M-72) llega sin persona de la lista y con la clave
+ * de su tramo en la salida. Se le devuelve la primera persona de la lista que tiene esa variante: así la decisión del revisor (S-7.12)
+ * y el objetivo se buscan como siempre, y el reductor (`incorporar_residuos`) vuelve a decidir la ambigüedad sobre el texto real.
+ */
+function conPersonaDeLaLista(c: DetectionCandidate, texto: string, caseList: readonly CaseEntity[]): DetectionCandidate {
+  if (c.source !== 'lista' || c.caseEntityId !== undefined || !esClaveAmbigua(c.canonicalKey)) return c;
+  const ce = caseList.find((x) => personasDeLaVariante(texto, caseList).includes(x.id));
+  if (ce === undefined) return c;
+  return { ...c, caseEntityId: ce.id, canonicalKey: `LISTA:${ce.id}`, role: ce.role };
+}
+
+/**
  * B-60 (PB-2-r7) · Menciones de la lista del caso de una sola palabra (sin blancos) estrictamente dentro de las reglas de la pasada 3
  * que el revisor rechazó (`excluidas`), en la parte copiada de la salida y sin superviviente propio en el mismo tramo. Son las que
  * la fusión absorbe en la regla (D-06, 7.11.1): sin esto, rechazar la regla dejaba la palabra a la vista y la búsqueda pasaba.
@@ -435,18 +449,28 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     const e = t.entity;
     const originals = [...(mentionsOf.get(e.id) ?? []).map((d) => d.text), ...(ctx.originals?.[e.canonicalKey] ?? [])];
     const seenRun = new Set<string>();
+    // PB-4-r2 (M-60, G4) · La lista no genera como forma suelta una palabra de dos letras («Sá» da «sa»: la descarta 7.9.5 por corta),
+    // pero el motor la conoce: es una palabra del nombre. Se busca con su mayúscula inicial y su tilde, para no tomar el sufijo «SA».
+    // Solo en el nombre de una persona de la lista: lo que el usuario escribió es nombre; una palabra de dos letras en lo que dijo el
+    // modelo («No.» de «Cuenta No.») no lo es.
+    // B-91 (CIERRE-1, D-19.8): también en el nombre de una organización de la lista, y también en el nombre que el usuario escribió en
+    // la lista, aunque ninguna mención lo traiga entero. «Sá» al final de «Distribuciones Sá» es una palabra del nombre, no el sufijo
+    // «S.A.»: el sufijo se escribe sin tilde («SA», «S.A.»), y esa forma no se busca.
+    const ceLista = e.caseEntityId === undefined ? undefined : caseById.get(e.caseEntityId);
+    if (ceLista !== undefined && (e.type === 'PERSONA' || ORG_SET.has(e.type))) {
+      for (const o of [...originals, ceLista.name]) {
+        for (const r of nameRuns(o)) {
+          for (const w of r.split(/\s+/u)) {
+            if (!RE_NAME_WORD.test(w) || foldWord(w).length !== 2 || isFunctionWord(w)) continue;
+            if (e.type !== 'PERSONA' && esSufijoSinTilde(w)) continue;
+            addFolded(w, t, 'variante', true, 'baja', undefined, true, w.normalize('NFC').toLowerCase());
+          }
+        }
+      }
+    }
     for (const o of originals) {
       const fo = foldList(o).trim();
       for (const r of nameRuns(o)) {
-        // PB-4-r2 (M-60, G4) · La lista no genera como forma suelta una palabra de dos letras («Sá» da «sa»: la descarta 7.9.5 por corta),
-        // pero el motor la conoce: es una palabra del nombre. Se busca con su mayúscula inicial y su tilde, para no tomar el sufijo «SA».
-        // Solo en el nombre de una persona de la lista: lo que el usuario escribió es nombre; una palabra de dos letras en lo que dijo el
-        // modelo («No.» de «Cuenta No.») no lo es.
-        if (e.type === 'PERSONA' && e.caseEntityId !== undefined) {
-          for (const w of r.split(/\s+/u)) {
-            if (RE_NAME_WORD.test(w) && foldWord(w).length === 2 && !isFunctionWord(w)) addFolded(w, t, 'variante', true, 'baja', undefined, true, w.normalize('NFC').toLowerCase());
-          }
-        }
         const fr = foldList(r).trim();
         if (fr === '' || seenRun.has(fr)) continue;
         seenRun.add(fr);
@@ -548,7 +572,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     const sec = secByPart.get(d.partId);
     const tmpPart = tmpById.get(d.partId);
     if (sec === undefined || tmpPart === undefined || !(d.end > d.start && d.start >= 0 && d.end <= sec.section.text.length)) continue;
-    const base = cleanCandidate(d, d.start, d.end);
+    const base = conPersonaDeLaLista(cleanCandidate(d, d.start, d.end), sec.section.text.slice(d.start, d.end), ctx.caseList);
     const whole = locate(sec, d.start, d.end);
     // Dentro (o tocando) un texto editado por el revisor: solo cuenta si es un residuo de una entidad objetivo (7.13.6).
     if (whole.kind === 'edited') {
@@ -591,7 +615,18 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     nameWords.set(e.id, w);
     return w;
   };
+  // S-7.12 con una mención ambigua (D-18, CIERRE-1): su rechazo dice que ese texto no es de ninguna de sus personas candidatas
+  // de la lista (las que tienen esa variante, D-16 y M-72). Excluye los aciertos de esas personas sobre el mismo tramo, como el
+  // rechazo de la misma entidad (C19: «PRUEBA» de «PERÍODO DE PRUEBA» volvía como hallazgo de la persona de la lista).
+  const candidatasDelRechazo = new Map<Detection, ReadonlySet<CaseEntityId>>();
+  const deLaAmbigua = (r: Detection, ce: CaseEntityId | undefined): boolean => {
+    if (ce === undefined || r.source !== 'lista' || r.caseEntityId !== undefined || !esClaveAmbigua(r.canonicalKey)) return false;
+    let cs = candidatasDelRechazo.get(r);
+    if (cs === undefined) { cs = new Set(personasDeLaVariante(r.text, ctx.caseList)); candidatasDelRechazo.set(r, cs); }
+    return cs.has(ce);
+  };
   const rejectionCovers = (r: Detection, e: Entity, partId: PartId, ps: number, pe: number): boolean => {
+    if (deLaAmbigua(r, e.caseEntityId) && insideRejected(r, partId, ps, pe)) return true;
     if (r.entityId !== e.id || !insideRejected(r, partId, ps, pe)) return false;
     if (r.start === ps && r.end === pe) return true;
     const names = namesOf(e);
@@ -604,7 +639,8 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     const loc = sv.loc as Extract<Loc, { kind: 'copy' }>;
     const t = targetFor(sv.cand);
     const excluded = rejected.some((r) => (t !== undefined ? rejectionCovers(r, t.entity, sv.cand.partId, loc.partStart, loc.partEnd)
-      : insideRejected(r, sv.cand.partId, loc.partStart, loc.partEnd) && (keyOfEntity(r) === sv.cand.canonicalKey || r.canonicalKey === sv.cand.canonicalKey)));
+      : insideRejected(r, sv.cand.partId, loc.partStart, loc.partEnd) && (keyOfEntity(r) === sv.cand.canonicalKey || r.canonicalKey === sv.cand.canonicalKey
+        || deLaAmbigua(r, sv.cand.caseEntityId))));
     if (excluded) return false;
     kept.push(sv);
     if (t !== undefined) {

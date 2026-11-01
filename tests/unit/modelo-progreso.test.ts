@@ -330,7 +330,9 @@ describe('T-MO-12 · fusión por ventana contra lo ya fusionado y umbrales (7.10
     expect(st.entities[nombre.entityId]).toMatchObject({ canonicalKey: 'PER:pedro luis ficticia gomez', role: 'OTRA_PERSONA' });
     // La demandante conserva su mención completa; nada más cambió.
     for (const [id, d] of Object.entries(st0.detections)) if (id !== suelto.id) expect(st.detections[id as keyof typeof st.detections]).toEqual(d);
-    expect(st.entities[suelto.entityId]?.mentions).toHaveLength(1);
+    // M-82 b (CIERRE-1): «Ficticia» pegada a «Luis» ya era ambigua antes del modelo (otra persona), en su entidad propia, que se va con ella.
+    expect(st0.entities[suelto.entityId]?.caseEntityId).toBeUndefined();
+    expect(Object.values(st.entities).find((e) => e.caseEntityId === ctx.caseList[0]?.id)?.mentions).toHaveLength(1);
   });
 
   it('INV-R12 D-03 la excepción ocurre con la detección de la lista intacta y no ocurre tras cualquier acción sobre ella', async () => {

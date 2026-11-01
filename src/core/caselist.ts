@@ -224,7 +224,10 @@ export function parseOrg(name: string): OrgParts {
   let baseText = full;
   let suffix: string | null = null;
   const m = reSufijoFinal.exec(v.text);
-  if (m !== null && m.index > 0) {
+  // B-91 (CIERRE-1, D-19.8): el sufijo se escribe sin tilde; «Sá» al final de «Distribuciones Sá» es parte del nombre, aunque en la
+  // vista `lista` sea «sa» como «S.A.».
+  const conTilde = m !== null && (m[1] ?? '').replace(/[^a-z]/gu, '') === 'sa' && /\p{M}/u.test(full.slice(v.startMap[m.index]).normalize('NFD'));
+  if (m !== null && m.index > 0 && !conTilde) {
     const cut = full.slice(0, v.startMap[m.index]).replace(/[\s,]+$/u, '');
     if (cut.length > 0) {
       suffix = m[1] as string;
@@ -438,8 +441,41 @@ export function esApellidoDeOtraPersona(variante: string, persona: CaseEntity, o
   if (v.length === 0 || o.length < 2) return false;
   const apellidos = o.slice(1);
   if (!v.every((w) => apellidos.includes(w))) return false;
-  const suyas = new Set([persona.name, ...persona.variants.filter((x) => x.enabled).map((x) => x.text)].flatMap(palabrasLista));
+  return traeOtraPalabra(persona, o);
+}
+
+/** Las palabras (vista `lista`) del nombre de `persona` y de sus variantes activas. */
+export function palabrasDeLaPersona(persona: CaseEntity): Set<string> {
+  return new Set([persona.name, ...persona.variants.filter((x) => x.enabled).map((x) => x.text)].flatMap(palabrasLista));
+}
+
+/** ¿`o` trae alguna palabra de más de una letra que ni el nombre de `persona` ni sus variantes activas traen? */
+const traeOtraPalabra = (persona: CaseEntity, o: readonly string[]): boolean => {
+  const suyas = palabrasDeLaPersona(persona);
   return o.some((w) => [...w].length > 1 && !suyas.has(w));
+};
+
+/**
+ * M-72 para `nombre_suelto` (CIERRE-1, D-18 y D-19.6) · ¿El nombre de pila suelto `variante` de `persona` es también el nombre de
+ * pila de `otro`, otra persona del texto («Ana», de «Ana Ficticia Rojas», en «Ana Lucía Prueba»)? Sí si `otro` empieza por las
+ * palabras de la variante, tiene al menos una más y trae una palabra que el nombre de `persona` no trae («Ana Rojas» es la misma).
+ */
+export function esNombreDeOtraPersona(variante: string, persona: CaseEntity, otro: string): boolean {
+  const v = palabrasLista(variante);
+  const o = palabrasLista(otro);
+  if (v.length === 0 || o.length <= v.length || !v.every((w, i) => o[i] === w)) return false;
+  return traeOtraPalabra(persona, o);
+}
+
+/**
+ * M-72 ampliado (CIERRE-1, D-19.3 y D-19.6) · ¿La variante `variante` de clase `clase` de `persona` la lleva también `otro`, el
+ * nombre de otra persona del texto? `apellido_suelto` y `apellidos` (los dos apellidos, M-82 a) miran los apellidos de `otro`;
+ * `nombre_suelto`, su nombre de pila. Las demás clases nunca.
+ */
+export function esVarianteDeOtraPersona(variante: string, clase: VariantClass | undefined, persona: CaseEntity, otro: string): boolean {
+  if (clase === 'apellido_suelto' || clase === 'apellidos') return esApellidoDeOtraPersona(variante, persona, otro);
+  if (clase === 'nombre_suelto') return esNombreDeOtraPersona(variante, persona, otro);
+  return false;
 }
 
 // ---------------------------------------------------------------------------

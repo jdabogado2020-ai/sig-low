@@ -1,7 +1,7 @@
 // T-MO-07 · Lista del caso y variantes (7.9, 6.5). Solo datos ficticios.
 import { describe, expect, it } from 'vitest';
 import {
-  LST, esApellidoDeOtraPersona, findCaseMentions, generateVariants, hasTreatment, inferOrgClass, isPossessive, nameUnits, newCaseEntity,
+  LST, esApellidoDeOtraPersona, esNombreDeOtraPersona, esVarianteDeOtraPersona, findCaseMentions, generateVariants, hasTreatment, inferOrgClass, isPossessive, nameUnits, newCaseEntity,
   parseOrg, parsePastedList, personasDeLaVariante, refreshVariants, searchCaseList, sharedVariantWarnings, variantOwners,
 } from '../../src/core/caselist';
 import { buildSearchView } from '../../src/core/normalize';
@@ -464,6 +464,25 @@ describe('T-MO-07 INV-L03 variantes duplicadas y compartidas', () => {
     // Una parte de un apellido con partícula o con guion.
     const [pedro] = refreshVariants([persona('Pedro Ejemplo del Valle', 'DEMANDANTE', src)]) as [CaseEntity];
     expect(esApellidoDeOtraPersona('del Valle', pedro, 'Luis Prueba del Valle')).toBe(true);
+  });
+  it('INV-L03 CIERRE-1 esVarianteDeOtraPersona: los dos apellidos (M-82 a) y el nombre de pila suelto (D-18) de la lista también pueden ser de otra persona', () => {
+    const src = ids();
+    const [ana] = refreshVariants([persona('Ana Ficticia Rojas', 'DEMANDANTE', src)]) as [CaseEntity];
+    // M-82 a: «Ficticia Rojas» es la variante `apellidos`; «Luis Ficticia Rojas» es otro titular.
+    expect(esVarianteDeOtraPersona('Ficticia Rojas', 'apellidos', ana, 'Luis Ficticia Rojas')).toBe(true);
+    expect(esVarianteDeOtraPersona('Ficticia Rojas', 'apellidos', ana, 'Ana Ficticia Rojas')).toBe(false);
+    // `nombre_suelto`: el nombre de pila de otro nombre del texto, con una palabra que Ana no trae.
+    for (const otro of ['Ana Lucía Prueba', 'ANA LUCÍA PRUEBA', 'Ana Prueba']) expect(esNombreDeOtraPersona('Ana', ana, otro), otro).toBe(true);
+    for (const otro of ['Ana Rojas', 'Ana Ficticia', 'Luisa Ana Prueba', 'Ana', 'Ana R.']) expect(esNombreDeOtraPersona('Ana', ana, otro), otro).toBe(false);
+    expect(esVarianteDeOtraPersona('Ana', 'nombre_suelto', ana, 'Ana Lucía Prueba')).toBe(true);
+    // Las demás clases nunca.
+    expect(esVarianteDeOtraPersona('Ana Ficticia Rojas', 'exacta', ana, 'Luis Ana Ficticia Rojas')).toBe(false);
+  });
+  it('B-91 parseOrg: «Sá» al final de una razón social sin sufijo es parte del nombre; «SA» y «S.A.» siguen siendo el sufijo', () => {
+    expect(parseOrg('Distribuciones Sá')).toMatchObject({ baseText: 'Distribuciones Sá', suffix: null });
+    expect(parseOrg('Distribuciones SA')).toMatchObject({ baseText: 'Distribuciones', suffix: 'sa' });
+    expect(parseOrg('Distribuciones Ejemplo S.A.')).toMatchObject({ baseText: 'Distribuciones Ejemplo' });
+    expect(parseOrg('Ferretería Ejemplo y Cía.').suffix).not.toBeNull();
   });
   it('INV-L03 una variante no compartida conserva su confianza base', () => {
     const src = ids();

@@ -1264,11 +1264,11 @@ describe('T-MO-05 · AJ-6 (D-16): el tratamiento pegado al nombre de una persona
     expect(show(t, out)).toEqual(['ENTIDAD:«Dra.»:media', 'PERSONA:«Ana Prueba»:media']);
   });
 
-  it('INV-R12 la variante débil de la lista (una palabra) no toma el tratamiento; el nombre completo del modelo sí', () => {
-    // El reductor (cedeAnteModelo, entities.ts) reconoce la variante débil por no tener blancos: con «señor» dentro ya no cedería el paso.
+  it('INV-R12 B-100 la variante débil de la lista (una palabra) también toma el tratamiento, y sigue cediendo ante el nombre completo del modelo', () => {
+    // B-100 (CIERRE-1, D-19.5): antes quedaba «El señor [DEMANDANTE_1]». El reductor (esVarianteDebil) la reconoce sin el tratamiento.
     const t = 'Pedro Ejemplo demandó. El señor Pedro Luis Ejemplo Prueba declaró.';
     const debil = mk(t, 'Pedro', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'nombre_suelto', confidence: 'media', canonicalKey: `LISTA:${CAS_A}` }, 1);
-    expect(tramos(t, run(t, [debil]))).toEqual(['Pedro']);
+    expect(tramos(t, run(t, [debil]))).toEqual(['señor Pedro']);
     const apellido = mk(t, 'Ejemplo', { type: 'PERSONA', source: 'lista', caseEntityId: CAS_A, variantClass: 'apellido_suelto', confidence: 'media', canonicalKey: `LISTA:${CAS_A}` }, 1);
     const part = mkPart(t);
     const fused = mergeCandidates(part, [debil, apellido], NO_RULES);

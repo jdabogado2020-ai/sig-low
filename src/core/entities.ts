@@ -8,7 +8,7 @@ import type {
 } from './types.ts';
 import { FLAG_TYPES, MARKER_LABEL, ORG_CLASSES } from './types.ts';
 import { buildAlnumSearchView, buildSearchView, toCanonicalSpan } from './normalize.ts';
-import { esApellidoDeOtraPersona, personasDeLaVariante } from './caselist.ts';
+import { esVarianteDeOtraPersona, palabrasDeLaPersona, personasDeLaVariante } from './caselist.ts';
 
 // ---------------------------------------------------------------------------------------------
 // 6.2.1 · Familia del marcador
@@ -238,8 +238,12 @@ export function esAmbigua(state: ReviewState, d: Detection): boolean {
 const palabrasPlegadas = (s: string, kind: PartKind): string[] =>
   fold(s, kind).split(/[^\p{L}\p{N}]+/u).filter((t) => t !== '' && !FW_SET.has(t) && !TRATAMIENTOS.has(t));
 
-/** M-72 · Las menciones de otras personas del documento por apellido: cada palabra después de la primera (el nombre de pila no es
- *  un apellido) de una mención no rechazada de persona que no es de la lista. Lineal en el número de menciones. */
+/** M-72 · Clases de variante de la lista que pueden ser de otra persona del texto: el apellido suelto, los dos apellidos (M-82 a)
+ *  y el nombre de pila suelto (D-18, D-19.6). */
+const CLASES_COMPARTIBLES: ReadonlySet<string> = new Set(['apellido_suelto', 'apellidos', 'nombre_suelto']);
+
+/** M-72 · Las menciones de otras personas del documento por palabra de nombre: cada palabra de una mención no rechazada de
+ *  persona que no es de la lista (la primera también: el nombre de pila de `nombre_suelto`). Lineal en el número de menciones. */
 function indiceDeApellidos(state: ReviewState, kindOf: (d: Detection) => PartKind): Map<string, Detection[]> {
   const out = new Map<string, Detection[]>();
   for (const e of Object.values(state.entities)) {
@@ -247,7 +251,7 @@ function indiceDeApellidos(state: ReviewState, kindOf: (d: Detection) => PartKin
     for (const m of e.mentions) {
       const o = state.detections[m];
       if (o === undefined || o.status === 'rechazada' || o.source === 'lista' || o.type !== 'PERSONA') continue;
-      for (const w of new Set(palabrasPlegadas(o.text, kindOf(o)).slice(1))) {
+      for (const w of new Set(palabrasPlegadas(o.text, kindOf(o)))) {
         const l = out.get(w);
         if (l === undefined) out.set(w, [o]); else l.push(o);
       }
@@ -256,42 +260,101 @@ function indiceDeApellidos(state: ReviewState, kindOf: (d: Detection) => PartKin
   return out;
 }
 
-/** M-72 · Entidades de otra persona con el apellido de `d` (`esApellidoDeOtraPersona` de caselist.ts con alguna de `personas`). */
+/** M-72 · Entidades de otra persona con la variante de `d` (`esVarianteDeOtraPersona` de caselist.ts con alguna de `personas`). */
 function conElApellido(indice: ReadonlyMap<string, readonly Detection[]>, d: Detection, personas: readonly CaseEntity[], kind: PartKind): EntityId[] {
   const w = palabrasPlegadas(d.text, kind)[0];
   const out = new Set<EntityId>();
   for (const o of w === undefined ? [] : indice.get(w) ?? []) {
-    if (o.entityId !== d.entityId && !overlaps(spanOf(o), spanOf(d)) && personas.some((p) => esApellidoDeOtraPersona(d.text, p, o.text))) out.add(o.entityId);
+    if (o.entityId !== d.entityId && !overlaps(spanOf(o), spanOf(d))
+      && personas.some((p) => esVarianteDeOtraPersona(d.text, d.variantClass, p, o.text))) out.add(o.entityId);
   }
   return [...out];
 }
 
+/** Palabras con mayúscula pegadas a una variante que no son un nombre de pila ni un apellido (vista `lista`): las de función, los
+ *  tratamientos, los títulos y roles con que el texto presenta a la persona, y las que abren una oración sin ser nombres. */
+const NO_ES_OTRO_NOMBRE_EXTRA: readonly string[] = (('ingeniera|ingeniero|ing|abogada|abogado|abg|licenciada'
+  + '|licenciado|lic|magistrada|magistrado|jueza|juez|profesora|profesor|prof|mrs|mr|ms|demandante|demandantes|demandada|demandado'
+  + '|demandados|accionante|accionantes|accionada|accionado|tutelante|convocante|convocada|convocado|testigo|testigos|paciente|apoderada'
+  + '|apoderado|menor|nino|nina|joven|ciudadana|ciudadano|usuaria|usuario|afiliada|afiliado|trabajadora|trabajador|familia|hermanos|senores'
+  + '|senoras|segun|contra|ante|entre|hacia|desde|hasta|sobre|tras|mediante|durante|como|cuando|donde|pero|sino|aunque|tambien|luego'
+  + '|despues|antes|ademas|finalmente|igualmente|asimismo|entonces|porque|pues|si|no|ni|ya|mas|solo|incluso|y|e|o|u|hoy|ayer|manana'
+  + '|firma|firmado|atentamente|cordialmente|nombre|nombres|apellido|apellidos|asunto|ref|referencia|cc|nit').split('|'));
+let noEsOtroNombreCache: ReadonlySet<string> | undefined;
+/** `NO_ES_NOMBRE` (más abajo) y las palabras de arriba; se arma en el primer uso. */
+const noEsOtroNombre = (): ReadonlySet<string> => (noEsOtroNombreCache ??= new Set([...NO_ES_NOMBRE, ...NO_ES_OTRO_NOMBRE_EXTRA]));
+/** La palabra con mayúscula pegada delante (misma línea, solo blancos o un guion en medio) y la pegada detrás. */
+const RE_PALABRA_ANTES = /(?:^|[^\p{L}\p{N}.])(\p{Lu}[\p{L}'’]+)[ \t]{1,3}$/u;
+const RE_PALABRA_DESPUES = /^[ \t]{1,3}(\p{Lu}[\p{L}'’]+)(?![\p{L}\p{N}.])/u;
+
 /**
- * M-72 · Entidades de otras personas del documento que llevan como apellido la variante suelta `apellido_suelto` de la mención
- * de la lista `d`, para las personas de la lista que tienen esa variante: las opciones del revisor fuera de la lista
+ * M-82 b (CIERRE-1, D-19.3) · La otra persona que el modelo no ve: el texto trae un nombre de pila pegado delante del apellido de la
+ * lista («Luis Rojas», con «Ana Ficticia Rojas» en la lista), o una palabra de nombre pegada detrás del nombre de pila suelto
+ * («Ana Lucía», D-19.6). Es otra persona si esa palabra empieza con mayúscula, no es del nombre de la persona de la lista ni de sus
+ * variantes, y no es una palabra de función, un tratamiento, un título o un rol (`NO_ES_OTRO_NOMBRE`). Texto original; ventana fija.
+ */
+function otraPersonaPegada(text: string, d: Detection, persona: CaseEntity, kind: PartKind): boolean {
+  const despues = d.variantClass === 'nombre_suelto';
+  const antes = despues ? '' : text.slice(Math.max(0, d.start - 40), d.start);
+  const m = despues ? RE_PALABRA_DESPUES.exec(text.slice(d.end, d.end + 40)) : RE_PALABRA_ANTES.exec(antes);
+  const w = m?.[1];
+  if (m === null || w === undefined) return false;
+  const f = fold(w, kind);
+  const suyas = palabrasDeLaPersona(persona);
+  if (f.length <= 1 || noEsOtroNombre().has(f) || suyas.has(f)) return false;
+  // Un segundo nombre entre el nombre de pila de la persona y su apellido («Blanca Nubia Ficticia-Arango», con «Blanca
+  // Ficticia-Arango» en la lista) es la misma persona con un nombre que la lista no trae, no otra.
+  // Lo mismo detrás del nombre de pila suelto: «Ana Lucía Ficticia Rojas», con «Ana Ficticia Rojas» en la lista.
+  const vecina = despues
+    ? RE_NOMBRE_SIGUIENTE.exec(text.slice(d.end + m.index + m[0].length, d.end + m.index + m[0].length + 40))?.[1]
+    : RE_NOMBRE_PREVIO.exec(antes.slice(0, m.index + m[0].indexOf(w)))?.[1];
+  return vecina === undefined || !fold(vecina, kind).split(/[^\p{L}\p{N}]+/u).some((x) => suyas.has(x));
+}
+/** La palabra con mayúscula anterior o siguiente a otra (blancos o un salto de línea en medio). */
+const RE_NOMBRE_PREVIO = /(\p{Lu}[\p{L}'’-]+)\s{1,3}$/u;
+const RE_NOMBRE_SIGUIENTE = /^\s{1,3}(\p{Lu}[\p{L}'’-]+)/u;
+
+/**
+ * M-72 · Entidades de otras personas del documento que llevan la variante débil (`apellido_suelto`, `apellidos` o `nombre_suelto`)
+ * de la mención de la lista `d`, para las personas de la lista que tienen esa variante: las opciones del revisor fuera de la lista
  * (review/ambiguas.ts). Lee el texto de las detecciones; no lo devuelve.
  */
 export function otrasPersonasDelApellido(state: ReviewState, d: Detection, caseList: readonly CaseEntity[], kind: PartKind = 'cuerpo'): EntityId[] {
-  if (d.source !== 'lista' || d.type !== 'PERSONA' || d.variantClass !== 'apellido_suelto') return [];
+  if (d.source !== 'lista' || d.type !== 'PERSONA' || !CLASES_COMPARTIBLES.has(d.variantClass ?? '')) return [];
   const personas = caseList.filter((c) => personasDeLaVariante(d.text, caseList).includes(c.id));
   return personas.length === 0 ? [] : conElApellido(indiceDeApellidos(state, () => kind), d, personas, kind);
 }
 
 /**
- * M-72 · Vuelve ambigua cada mención `apellido_suelto` de la lista, intacta (`listaIntacta`: sin ninguna acción del revisor), cuyo
- * apellido lleva otra persona del documento: sin persona de la lista, en una entidad propia con la clave de su tramo, rol
- * `OTRA_PERSONA` y confianza baja, como las de D-16. Lo que el revisor ya decidió no se toca.
+ * M-72 · Vuelve ambigua cada mención de la lista de una variante compartible (`apellido_suelto`; con CIERRE-1 también `apellidos`,
+ * M-82 a, y `nombre_suelto`, D-18), intacta (`listaIntacta`: sin ninguna acción del revisor), cuya variante lleva otra persona del
+ * documento: sin persona de la lista, en una entidad propia con la clave de su tramo, rol `OTRA_PERSONA` y confianza baja, como las
+ * de D-16. La otra persona es la del modelo (o la que agregó el revisor) o, sin ella, la que el texto trae pegada a la variante
+ * («Luis Rojas», M-82 b): entonces esa mención y las demás de la misma variante y la misma persona quedan ambiguas. Lo que el
+ * revisor ya decidió no se toca.
  */
 function ambiguasPorOtraPersona(state: ReviewState, caseList: readonly CaseEntity[], parts: ReadonlyMap<PartId, Part>, ids: IdSource): void {
   const kindOf = (d: Detection): PartKind => parts.get(d.partId)?.kind ?? 'cuerpo';
   const sueltas = Object.values(state.detections).filter((d) => d.source === 'lista' && d.type === 'PERSONA'
-    && d.variantClass === 'apellido_suelto' && d.caseEntityId !== undefined && listaIntacta(state, d, caseList));
+    && CLASES_COMPARTIBLES.has(d.variantClass ?? '') && d.caseEntityId !== undefined && listaIntacta(state, d, caseList));
   if (sueltas.length === 0) return;
   const indice = indiceDeApellidos(state, kindOf);
-  if (indice.size === 0) return;
+  const persona = (d: Detection): CaseEntity | undefined => caseList.find((c) => c.id === d.caseEntityId);
+  const claveVariante = (ce: CaseEntityId, d: Detection): string => `${ce}|${d.variantClass ?? ''}|${palabrasPlegadas(d.text, kindOf(d)).join(' ')}`;
+  // M-82 b: las variantes que el texto muestra pegadas a otro nombre, en cualquier mención (también en una ya decidida o ya
+  // ambigua: entonces cuenta para cada persona de la lista que tiene esa variante).
+  const pegadas = new Set<string>();
+  for (const d of Object.values(state.detections)) {
+    if (d.source !== 'lista' || d.type !== 'PERSONA' || d.status === 'rechazada' || !CLASES_COMPARTIBLES.has(d.variantClass ?? '')) continue;
+    const p = parts.get(d.partId);
+    if (p === undefined) continue;
+    const ces = d.caseEntityId !== undefined ? [persona(d)] : caseList.filter((c) => personasDeLaVariante(d.text, caseList).includes(c.id));
+    for (const ce of ces) if (ce !== undefined && otraPersonaPegada(p.text, d, ce, p.kind)) pegadas.add(claveVariante(ce.id, d));
+  }
+  if (indice.size === 0 && pegadas.size === 0) return;
   for (const d of sueltas) {
-    const ce = caseList.find((c) => c.id === d.caseEntityId);
-    if (ce === undefined || conElApellido(indice, d, [ce], kindOf(d)).length === 0) continue;
+    const ce = persona(d);
+    if (ce === undefined || (!pegadas.has(claveVariante(ce.id, d)) && conElApellido(indice, d, [ce], kindOf(d)).length === 0)) continue;
     const key = claveAmbigua(d);
     delete d.caseEntityId; d.role = 'OTRA_PERSONA'; d.confidence = 'baja'; d.score = Math.min(d.score, 0.3); d.canonicalKey = key;
     attach(state, d, entityByKey(state, key) ?? newEntity(state, ids, key, d, 'OTRA_PERSONA'));
@@ -524,6 +587,33 @@ const RE_PARENTESCO_DESPUES = new RegExp(String.raw`^ ?(?:[,(] ?(?:(?:su|sus|mi|
 const RE_PARENTESCO_DENTRO = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:` + PARENTESCO + String.raw`|junior|jr|senior)(?![\p{L}\p{N}])`, 'u');
 /** A-4 · Cualquier palabra de relación en la oración (vista `lista`), con su posición para mirar el texto original. */
 const RE_RELACION_EN_ORACION = new RegExp(String.raw`(?<![\p{L}\p{N}])` + RELACIONADO + String.raw`(?![\p{L}\p{N}])`, 'gu');
+/**
+ * M-81 (CIERRE-1, D-19.2) · Relaciones que no son parentesco: la representación y el trato («agente oficioso», «representante»,
+ * «abogado», «defensora», «cuidador», «amigo», «vecina», «compadre», «socio», «empleada», «jefe», «mandatario»…). Vista `lista`.
+ * Solas son palabras de oficio («el abogado Pedro…» es la misma persona), así que cuentan solo ligadas a otra persona (abajo).
+ * «Representante legal» no liga a otra persona: es como el texto presenta a la persona misma.
+ */
+const RELACION_REPRESENTA = String.raw`(?:agentes? oficios[oa]s?|agenciad[oa]s?|agenciador(?:a|as|es)?|representantes?(?! legal)|representad[oa]s?`
+  + String.raw`|abogad[oa]s?|defensor(?:a|as|es)?|cuidador(?:a|as|es)?|mandatari[oa]s?|mandantes?|poderdantes?|amig[oa]s?|compadres?|comadres?)`;
+/** Las de trato y de trabajo: solo con un posesivo delante. Con «de» son domicilio u oficio («vecino de esta ciudad», «jefa de
+ *  talento humano», «socio de la empresa»), no una persona. */
+const RELACION_TRATO = String.raw`(?:vecin[oa]s?|soci[oa]s?|emplead[oa]s?|empleador(?:a|as|es)?|jef[ea]s?|patron(?:a|as|es)?|colegas?`
+  + String.raw`|conocid[oa]s?|allegad[oa]s?|cuidandero|cuidandera)`;
+const RELACION_LIGABLE = String.raw`(?:${RELACION_REPRESENTA}|${RELACION_TRATO})`;
+/**
+ * M-81 · La relación ligada a otra persona, en cualquier lugar de la oración: con un posesivo delante («su abogado», «sus vecinos»,
+ * «su socio»), con «de» o «del» detrás si es de representación o de amistad («agente oficioso de Pedro…», «abogado del demandante»,
+ * «amiga de») o las fórmulas de representación («en representación de», «en nombre y representación de», «a nombre del señor», «en
+ * nombre de su padre»; no «en nombre propio»). La lista es abierta por la forma: un sustantivo de relación con «su», «de» o «del».
+ * «A nombre de» solo cuenta delante de una persona presentada como tal (un tratamiento, «del menor», un posesivo): «el cobro a nombre
+ * de Ejemplo Orozco» es de la misma persona (C11-E08). No cuentan las instituciones («Defensor del Pueblo», «Defensoría de Familia»).
+ */
+const RE_RELACION_LIGADA = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:(?:su|sus|mi|mis|tu|tus|nuestr[oa]s?) ` + RELACION_LIGABLE
+  + String.raw`|` + RELACION_REPRESENTA + String.raw` (?:de|del)|(?:en representacion|en nombre y representacion) (?:de|del)`
+  + String.raw`|(?:a|en) nombre (?:(?:de la|del|de) (?:senor|senora|senorita|sr|sra|srta|don|dona|doctor|doctora|dr|dra|menor|nino|nina)`
+  + String.raw`|de (?:su|sus|mi|mis|nuestr[oa]s?)))(?![\p{L}\p{N}])`, 'gu');
+/** M-81 · Instituciones con una palabra de relación (vista `lista`): se borran de la oración antes de buscar. */
+const RE_NO_ES_RELACION = /(?<![\p{L}\p{N}])(?:defensor(?:a|es|as)? del pueblo|defensor(?:a|es|as)? de familia|colegios? de abogad[oa]s|jefes? de (?:estado|gobierno))(?![\p{L}\p{N}])/gu;
 /** A-4 · Homógrafos que no son parentesco (vista `lista`): la prima del salario o del seguro, la materia prima y «prima facie». Se
  *  borran de la oración antes de buscar. */
 const RE_NO_ES_PARENTESCO = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:materias? primas?|primas? (?:de (?:servicios?|navidad|vacaciones`
@@ -532,6 +622,9 @@ const RE_NO_ES_PARENTESCO = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:materias? 
   + String.raw`|especial(?:es)?|mensual(?:es)?|unicas?|facie))(?![\p{L}\p{N}])`, 'gu');
 /** A-4 · Lo que se mira antes y después del nombre para encontrar su oración (texto original, ventanas fijas: tiempo constante). */
 const VENTANA_ORACION = 320;
+/** M-80 (CIERRE-1, D-19.1) · Si la primera ventana no encuentra el fin de la oración de un lado, se busca hasta este tope, todavía
+ *  constante: la oración larga con aposiciones (≈ 370 caracteres entre el parentesco y el nombre) sigue siendo la misma oración. */
+const VENTANA_ORACION_MAX = 4000;
 /** Fin de oración (texto original): «.», «!», «?» o «…» seguidos de blancos y de una mayúscula, una cifra o un signo de apertura;
  *  un «;» (separa las personas de una enumeración); o una línea en blanco. Un salto de línea solo no cierra la oración (PDF). */
 const RE_FIN_ORACION = /(?:([.!?…])[.!?…]*["»”’')\]]*(?=\s)(?=[ \t]*\r?\n?[ \t]*["«“‘'(¿¡\[]?[\p{Lu}\p{N}])|;|\n[ \t\r]*\n)/gu;
@@ -551,15 +644,28 @@ const NO_ES_NOMBRE: ReadonlySet<string> = new Set([...FW_SET, ...TRATAMIENTOS, .
 /**
  * A-4 · La oración de [start, end): el texto antes y después de la mención hasta el fin de oración más cercano, dentro de ventanas
  * fijas de `VENTANA_ORACION` caracteres (sin la palabra que la ventana corta por la mitad). Texto original.
+ * M-80 (D-19.1): si de un lado la ventana no llega al fin de la oración ni al borde del texto, se vuelve a mirar con
+ * `VENTANA_ORACION_MAX`. Las oraciones de siempre se resuelven con la primera ventana; el tope alto solo cuesta en las largas.
  */
 function oracionDe(text: string, start: number, end: number): { antes: string; despues: string } {
-  let a = Math.max(0, start - VENTANA_ORACION);
-  let b = Math.min(text.length, end + VENTANA_ORACION);
+  const o = oracionEnVentana(text, start, end, VENTANA_ORACION);
+  if ((o.abiertaAntes && start > VENTANA_ORACION) || (o.abiertaDespues && text.length - end > VENTANA_ORACION)) {
+    return oracionEnVentana(text, start, end, VENTANA_ORACION_MAX);
+  }
+  return o;
+}
+
+/** La oración de [start, end) dentro de ventanas de `ventana` caracteres; `abierta…` dice si de ese lado no apareció su fin. */
+function oracionEnVentana(text: string, start: number, end: number, ventana: number):
+  { antes: string; despues: string; abiertaAntes: boolean; abiertaDespues: boolean } {
+  let a = Math.max(0, start - ventana);
+  let b = Math.min(text.length, end + ventana);
   while (a > 0 && a < start && /[\p{L}\p{N}]/u.test(text.charAt(a - 1)) && /[\p{L}\p{N}]/u.test(text.charAt(a))) a++;
   while (b < text.length && b > end && /[\p{L}\p{N}]/u.test(text.charAt(b)) && /[\p{L}\p{N}]/u.test(text.charAt(b - 1))) b--;
   const trozo = text.slice(a, b);
   const ms = start - a; const me = end - a;
   let desde = 0; let hasta = trozo.length;
+  let finAntes = false; let finDespues = false;
   const re = new RegExp(RE_FIN_ORACION.source, RE_FIN_ORACION.flags);
   for (let m = re.exec(trozo); m !== null; m = re.exec(trozo)) {
     const i = m.index; const j = i + m[0].length;
@@ -569,10 +675,9 @@ function oracionDe(text: string, start: number, end: number): { antes: string; d
       const w = RE_LETRAS_FINALES.exec(trozo.slice(Math.max(0, i - 24), i))?.[1];
       if (w !== undefined && ([...w].length <= 1 || ABREVIATURAS.has(fold(w, 'cuerpo')))) continue;
     }
-    if (j <= ms) desde = j;
-    else if (i >= me) { hasta = i; break; }
+    if (j <= ms) { desde = j; finAntes = true; } else if (i >= me) { hasta = i; finDespues = true; break; }
   }
-  return { antes: trozo.slice(desde, ms), despues: trozo.slice(me, hasta) };
+  return { antes: trozo.slice(desde, ms), despues: trozo.slice(me, hasta), abiertaAntes: !finAntes && a > 0, abiertaDespues: !finDespues && b < text.length };
 }
 
 /** A-4 · ¿Hay una palabra de relación en `s` (un trozo de la oración, texto original)? Con mayúsculas y minúsculas, una palabra con
@@ -580,15 +685,18 @@ function oracionDe(text: string, start: number, end: number): { antes: string; d
 function relacionEn(s: string, kind: PartKind): boolean {
   if (s === '') return false;
   const v = buildSearchView(s, 'lista', kind);
-  const t = v.text.replace(RE_NO_ES_PARENTESCO, (x) => ' '.repeat(x.length));
+  const t = v.text.replace(RE_NO_ES_PARENTESCO, (x) => ' '.repeat(x.length)).replace(RE_NO_ES_RELACION, (x) => ' '.repeat(x.length));
   const mixto = /\p{Lu}/u.test(s) && /\p{Ll}/u.test(s);
-  const re = new RegExp(RE_RELACION_EN_ORACION.source, RE_RELACION_EN_ORACION.flags);
-  for (let m = re.exec(t); m !== null; m = re.exec(t)) {
-    if (!mixto) return true;
-    const c = toCanonicalSpan(v, m.index, m.index + m[0].length);
-    if (!/^\p{Lu}/u.test(s.slice(c.start, c.end))) return true;
-    const previa = RE_NOMBRE_ANTES.exec(s.slice(Math.max(0, c.start - 32), c.start))?.[1];
-    if (previa === undefined || NO_ES_NOMBRE.has(fold(previa, kind))) return true;
+  // A-4: el parentesco y las relaciones de la lista; M-81: las relaciones ligadas a otra persona.
+  for (const patron of [RE_RELACION_EN_ORACION, RE_RELACION_LIGADA]) {
+    const re = new RegExp(patron.source, patron.flags);
+    for (let m = re.exec(t); m !== null; m = re.exec(t)) {
+      if (!mixto) return true;
+      const c = toCanonicalSpan(v, m.index, m.index + m[0].length);
+      if (!/^\p{Lu}/u.test(s.slice(c.start, c.end))) return true;
+      const previa = RE_NOMBRE_ANTES.exec(s.slice(Math.max(0, c.start - 32), c.start))?.[1];
+      if (previa === undefined || NO_ES_NOMBRE.has(fold(previa, kind))) return true;
+    }
   }
   return false;
 }
@@ -1296,9 +1404,14 @@ function attach(state: ReviewState, d: Detection, e: Entity): void {
 }
 const entityByKey = (state: ReviewState, key: string): Entity | undefined => Object.values(state.entities).find((e) => e.canonicalKey === key);
 
-/** D-03 B · Variante débil de una sola palabra de la lista (`apellido_suelto` o `nombre_suelto`, sin blancos). La usa merge.ts. */
+/** El tratamiento pegado al inicio de un tramo de persona (AJ-6: «Doña», «Sr.», «señora doctora»…), hasta el nombre. */
+const RE_TRATAMIENTO_INICIAL = /^(?:(?:do[ñn]a|don|se[ñn]or(?:ita|a)?|srta|sra?|dra?|doctora?|mrs?|ms)(?:\.[ \t]{0,2}|[ \t]{1,2}))+(?=\p{L})/iu;
+
+/** D-03 B · Variante débil de una sola palabra de la lista (`apellido_suelto` o `nombre_suelto`, sin blancos). La usa merge.ts.
+ *  B-100 (CIERRE-1): el tratamiento pegado delante no cuenta («señora Ficticia» sigue siendo de una palabra). */
 export function esVarianteDebil(c: { source: DetectionCandidate['source']; variantClass?: DetectionCandidate['variantClass'] }, texto: string): boolean {
-  return c.source === 'lista' && (c.variantClass === 'apellido_suelto' || c.variantClass === 'nombre_suelto') && !/\s/u.test(texto.trim());
+  return c.source === 'lista' && (c.variantClass === 'apellido_suelto' || c.variantClass === 'nombre_suelto')
+    && !/\s/u.test(texto.trim().replace(RE_TRATAMIENTO_INICIAL, ''));
 }
 
 /**
@@ -1350,6 +1463,9 @@ export function cedeAnteModelo(state: ReviewState, o: Detection, d0: Detection, 
   if (!contains(spanOf(d0), spanOf(o)) || o.end - o.start >= d0.end - d0.start || !listaIntacta(state, o, caseList)) return false;
   if (d0.source === 'lista' && d0.caseEntityId === o.caseEntityId) return true;
   if (d0.source === 'modelo' && nombreDeOtraPersona(o, d0, caseList, parts)) return true;
+  // M-82 (CIERRE-1): una mención ambigua de la lista (D-16, M-72), intacta, cede ante el nombre más largo del modelo que la
+  // contiene, también de dos palabras («Ejemplo Muñoz» dentro de «Wilson Ejemplo Muñoz»): no es de ninguna persona todavía.
+  if (d0.source === 'modelo' && o.caseEntityId === undefined && esClaveAmbigua(o.canonicalKey)) return true;
   return (d0.source === 'modelo' || d0.source === 'lista') && esVarianteDebil(o, o.text);
 }
 

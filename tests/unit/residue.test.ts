@@ -343,7 +343,8 @@ describe('T-RS · búsqueda de residuos (plan 7.13, 10.6)', () => {
     expect(r.run.result.hits).toHaveLength(1);
     const h = r.run.result.hits[0];
     expect(['variante', 'normalizado']).toContain(h?.mode);
-    expect(r.out.sections[0]?.text.slice(h?.start, h?.end)).toBe('Ficticia');
+    // B-100 (CIERRE-1): el tratamiento pegado entra en el tramo también con la variante débil de la lista.
+    expect(r.out.sections[0]?.text.slice(h?.start, h?.end)).toBe('señora Ficticia');
     expect(h?.partStart).toBe(d.start);
     expect(r.run.nuevas).toEqual([]);
   });
@@ -553,13 +554,14 @@ describe('7.13.6 · decisiones del revisor y entidades distintas', () => {
     const r = await check(s);
     expect(r.out.sections[0]?.text.startsWith('[DEMANDANTE_1], C.C. [CC_1], tel. [TELÉFONO_1]. ANA FICTICIA declaró.')).toBe(true);
     const got = hitsOf(r).map((x) => x.split('|').slice(1).join('|'));
-    expect(got).toEqual(['variante|ANA FICTICIA', 'digitos|41 000 001', 'variante|Rojas', 'digitos|410000017', 'digitos|+57 3000000001']);
+    // B-100 (CIERRE-1): «La señora Rojas» entra con su tratamiento.
+    expect(got).toEqual(['variante|ANA FICTICIA', 'digitos|41 000 001', 'variante|señora Rojas', 'digitos|410000017', 'digitos|+57 3000000001']);
     const nuevas = r.run.nuevas.map((c) => s.doc.parts[0]?.text.slice(c.start, c.end));
-    expect(nuevas).toEqual(expect.arrayContaining(['ANA FICTICIA', 'Rojas']));
+    expect(nuevas).toEqual(expect.arrayContaining(['ANA FICTICIA', 'señora Rojas']));
     expect(nuevas).not.toContain('3');
     expect(r.run.result.newDetections).toBeGreaterThanOrEqual(2);
     // «Rojas» de «Rojas (otra persona)» (rechazado) y «rojas» de «flores rojas» no están entre los impactos.
-    const rojasHits = r.run.result.hits.filter((h) => r.out.sections[0]?.text.slice(h.start, h.end) === 'Rojas');
+    const rojasHits = r.run.result.hits.filter((h) => r.out.sections[0]?.text.slice(h.start, h.end).endsWith('Rojas'));
     expect(rojasHits).toHaveLength(1);
     expect(r.out.sections[0]?.text.indexOf('Rojas (otra persona)')).toBeGreaterThan(rojasHits[0]?.end ?? 0);
   });
@@ -919,5 +921,50 @@ describe('PB-4-r2 · huecos de la definición de residuo por dato (M-60)', () =>
     const s = scenario([C('LA CÉDULA DE FICTICIA DE LA HOZ. VIVE EN LA CALLE EJEMPLO SUR.')],
       [{ p: 0, sub: 'FICTICIA', type: 'LUGAR', key: 'LUGAR:ficticia', src: 'modelo' }, { p: 0, sub: 'CALLE EJEMPLO', type: 'DIRECCION', key: 'DIR:calle ejemplo', src: 'regla' }]);
     expect(hitsOf(await check(s))).toEqual(['Cuerpo|variante|DE LA HOZ']);
+  });
+});
+
+// =============================================================================================================
+// CIERRE-1 (D-19): S-7.12 con una mención ambigua (D-18) y B-91 («Sá» al final de una organización de la lista). Datos ficticios.
+describe('CIERRE-1 · el rechazo de una mención ambigua y «Sá» de una organización', () => {
+  const CAS_R = 'cas_000000000000000000000000000000c1' as CaseEntityId;
+  const CAS_M = 'cas_000000000000000000000000000000c2' as CaseEntityId;
+  const DOS = refreshVariants([
+    { id: CAS_R, name: 'Rafael Prueba Cuervo', variants: [], kind: 'persona', role: 'DEMANDANTE' },
+    { id: CAS_M, name: 'Marta Prueba Díaz', variants: [], kind: 'persona', role: 'DEMANDADO' },
+  ] as CaseEntity[]);
+  const de = (sub: string, cas: CaseEntityId, role: Role, extra: Partial<Mark> = {}): Mark =>
+    ({ p: 0, sub, type: 'PERSONA', key: `LISTA:${cas}`, role, src: 'lista', cas, ...extra });
+
+  it('INV-G08 S-7.12 · la mención ambigua (D-16) que el revisor rechazó no vuelve como hallazgo ni como detección nueva de sus personas', async () => {
+    const text = 'Rafael Prueba Cuervo y Marta Prueba Díaz firmaron. El período de Prueba venció.';
+    const s = scenario([['cuerpo', text, 'Cuerpo']], [de('Rafael Prueba Cuervo', CAS_R, 'DEMANDANTE'), de('Marta Prueba Díaz', CAS_M, 'DEMANDADO'),
+      de('Prueba', CAS_R, 'DEMANDANTE', { occ: 2, decide: { rechazar: 'FALSO_POSITIVO' } })], DOS);
+    const amb = detOf(s, 0, 'Prueba', 2);
+    expect([amb.caseEntityId, amb.status]).toEqual([undefined, 'rechazada']);
+    const r = await check(s);
+    // Antes: la pasada 3 volvía a encontrar «Prueba» como variante de la lista y lo proponía de nuevo (C19, «PERÍODO DE PRUEBA»).
+    expect(hitsOf(r)).toEqual([]);
+    expect(r.run.nuevas.map((c) => text.slice(c.start, c.end))).not.toContain('Prueba');
+  });
+
+  it('INV-G08 S-7.12 · el rechazo de la ambigua solo excluye su tramo: «Prueba» en otro lugar sigue siendo un hallazgo', async () => {
+    const text = 'Rafael Prueba Cuervo y Marta Prueba Díaz firmaron. El período de Prueba venció.';
+    const s = scenario([['cuerpo', text, 'Cuerpo'], ['pie', 'Lo firmó Prueba en la notaría.', 'Pie 1']],
+      [de('Rafael Prueba Cuervo', CAS_R, 'DEMANDANTE'), de('Marta Prueba Díaz', CAS_M, 'DEMANDADO'),
+        de('Prueba', CAS_R, 'DEMANDANTE', { occ: 2, decide: { rechazar: 'FALSO_POSITIVO' } })], DOS);
+    const r = await check(s);
+    expect(r.run.nuevas.some((c) => s.doc.parts[1]?.id === c.partId)).toBe(true);
+  });
+
+  it('INV-G08 B-91 · «Sá» al final de una organización de la lista sin sufijo se busca; el sufijo «SA» de otra no', async () => {
+    const ORG = refreshVariants([{ id: CAS, name: 'Distribuciones Sá', variants: [], kind: 'organizacion', role: 'EMPRESA' } as CaseEntity]);
+    const mark: Mark = { p: 0, sub: 'Distribuciones Sá', type: 'EMPRESA', key: `LISTA:${CAS}`, role: 'EMPRESA' as Role, src: 'lista', cas: CAS };
+    // «Sá» suelto en otra parte: es una palabra del nombre de la organización. Antes: 0 hallazgos (solo se buscaba en una persona).
+    const s = scenario([['cuerpo', 'Contrató con Distribuciones Sá la obra.', 'Cuerpo'], ['pie', 'Lo cobró Sá en la notaría.', 'Pie 1']], [mark], ORG);
+    expect(hitsOf(await check(s))).toEqual(['Pie 1|variante|Sá']);
+    // El sufijo «SA» de otra razón social no es «Sá».
+    const s2 = scenario([['cuerpo', 'Contrató con Distribuciones Sá la obra.', 'Cuerpo'], ['pie', 'Y con Aseo Total SA también.', 'Pie 1']], [mark], ORG);
+    expect(hitsOf(await check(s2))).toEqual([]);
   });
 });

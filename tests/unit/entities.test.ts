@@ -9,6 +9,7 @@ import { createDetectHandler } from '../../src/core/pipeline.ts';
 import { incorporarModelo, modeloInicial } from '../../src/core/review/modelo.ts';
 import { contarAmbiguas, decisionesAmbiguas } from '../../src/core/review/ambiguas.ts';
 import { exportGate } from '../../src/core/review/puerta.ts';
+import { render } from '../../src/core/render.ts';
 import type {
   AsuntoId, CaseEntity, CaseEntityId, DataType, Detection, DetectionCandidate, DetectionSet, DocId, DocumentModel, Entity, Flag, FlagId, IdSource,
   MappingTable, MergedCandidate, NerSpan, PartId, PartKind, ResidueResult, ReviewAction, ReviewState, Role, SpanEdit, SpanEditId, Suggestion,
@@ -1527,8 +1528,13 @@ describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de
     texto = 'Ana Ficticia Rojas demandó. Ana Rojas firmó. El señor Rojas declaró.';
     r = await tuberia(texto, LISTA_ANA, [[['Ana Rojas', 'PER', 0]]]);
     expect(marcadorEn(r.s, texto, 'Rojas', 2)).toBe('[DEMANDANTE_1]');
-    // Si el revisor ya aceptó la mención antes de que llegue «Luis Ficticio Rojas», la ventana no la toca.
-    r = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Ficticio Rojas', 'PER', 0]]], (s, ctx) => act(s, { kind: 'aceptar', detectionId: enPos(s, TEXTO_M72, 'Rojas', 2).id }, ctx));
+    // Si el revisor ya decidió la mención antes de que llegue «Luis Ficticio Rojas», la ventana no la toca. M-82 b (CIERRE-1): sin
+    // el modelo ya es ambigua («Ficticio Rojas» en el texto es otra persona); el revisor la da a Ana con unir_entidades y la acepta.
+    r = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Ficticio Rojas', 'PER', 0]]], (s, ctx) => {
+      const x = enPos(s, TEXTO_M72, 'Rojas', 2);
+      const ana = Object.values(s.entities).find((e) => e.caseEntityId !== undefined) as Entity;
+      return act(act(s, { kind: 'unir_entidades', fromId: x.entityId, intoId: ana.id }, ctx), { kind: 'aceptar', detectionId: x.id }, ctx);
+    });
     const d = enPos(r.s, TEXTO_M72, 'Rojas', 2);
     expect([esAmbigua(r.s, d), d.status, marcadorEn(r.s, TEXTO_M72, 'Rojas', 2)]).toEqual([false, 'aceptada', '[DEMANDANTE_1]']);
   });
@@ -1661,5 +1667,194 @@ describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de
     expect(s2.entities[pap.entityId]?.marker).toBe(u.entities[pap.entityId]?.marker);
     // La clave de la entidad no cambia: la tabla del asunto la sigue reconociendo.
     expect(s2.entities[pap.entityId]?.canonicalKey).toBe(orgKey('Papelería Ficticia'));
+  });
+
+  // ================================================================ CIERRE-1 (D-19): M-80, M-81, M-82, M-72 con `nombre_suelto` y B-100
+  /** Una aposición larga, sin punto ni relación: más de 370 caracteres entre el parentesco y el nombre (X10 a X12 de la revisión). */
+  const APOSICION = Array.from({ length: 6 }, (_, i) => `quien para la fecha ${i + 1} de los hechos residía en la vereda Ficticia de Villa Ejemplo`).join(', ');
+  /** El texto de la salida (render con los marcadores de la vista previa). */
+  const salida = (s: ReviewState, doc: DocumentModel): string => render(doc, s).sections.map((x) => x.text).join('\n');
+
+  it('M-80 marcaOtroTitular: el parentesco cuenta en toda la oración, también a más de 320 caracteres del nombre (X10, X11 y X12)', () => {
+    expect(APOSICION.length).toBeGreaterThan(370);
+    const si = [
+      `El padre del demandante, ${APOSICION}, Pedro Luis Ejemplo Prueba, declaró.`,
+      `Pedro Luis Ejemplo Prueba, ${APOSICION}, es el padre del demandante.`,
+      `Su hijo, ${APOSICION}, Pedro Luis Ejemplo Prueba, declaró.`,
+    ];
+    // D-13: el parentesco de otra oración sigue sin contar, aunque la oración sea larga.
+    const no = [`El padre del demandante vino. Q${APOSICION.slice(1)}, Pedro Luis Ejemplo Prueba, declaró.`,
+      `Pedro Luis Ejemplo Prueba, ${APOSICION}, declaró. El padre del demandante vino.`];
+    for (const t of si) expect(marcaOtroTitular(t, ...pedroLuis(t)), t.slice(0, 40)).toBe(true);
+    for (const t of no) expect(marcaOtroTitular(t, ...pedroLuis(t)), t.slice(0, 40)).toBe(false);
+  });
+
+  it.each([
+    ['X10 · antes', `El padre del demandante, ${APOSICION}, Pedro Luis Ejemplo Prueba, declaró.`, 'Pedro Luis Ejemplo Prueba'],
+    ['X11 · después', `Pedro Luis Ejemplo Prueba, ${APOSICION}, es el padre del demandante.`, 'Pedro Luis Ejemplo Prueba'],
+    ['X12 · regla E', `El padre del demandante, ${APOSICION}, Pedro Ejemplo Prueba, declaró.`, 'Pedro Ejemplo Prueba'],
+  ])('INV-R12 M-80 sonda %s con la tubería real: el pariente lejos del parentesco tiene su propio marcador', async (_id, sonda, tramo) => {
+    const texto = `Pedro Ejemplo demandó. ${sonda}`;
+    const { s, caseList } = await tuberia(texto, LISTA_PEDRO, [[[tramo, 'PER', 0]]]);
+    const i = texto.indexOf(tramo);
+    const dentro = dets(s).filter((x) => x.start < i + tramo.length && i < x.end && x.status !== 'rechazada');
+    expect(dentro.length).toBeGreaterThan(0);
+    expect(dentro.map((x) => s.entities[x.entityId]?.caseEntityId === (caseList[0] as CaseEntity).id)).toEqual(dentro.map(() => false));
+    expect(marcadorEn(s, texto, tramo)).toMatch(/^\[PERSONA_[0-9]+\]$/u);
+  });
+
+  it('M-80 tiempo: la oración sin fin dentro del tope alto (4.000) y 40.000 caracteres alrededor no hacen lenta a marcaOtroTitular', () => {
+    const sinFin = `${'palabra '.repeat(5_000)}Pedro Luis Ejemplo Prueba${' palabra'.repeat(5_000)}`;
+    const textos = [sinFin, `${'x '.repeat(20_000)}Pedro Luis Ejemplo Prueba${' y'.repeat(20_000)}`, `${'Sr. '.repeat(10_000)}Pedro Luis Ejemplo Prueba${' su amigo'.repeat(5_000)}`];
+    const t0 = performance.now();
+    for (let k = 0; k < 20; k++) for (const t of textos) marcaOtroTitular(t, ...pedroLuis(t));
+    expect(performance.now() - t0).toBeLessThan(1_500);
+    // El tope es constante: la relación a más de 4.000 caracteres de la misma «oración» ya no se mira.
+    const lejos = `Su hijo ${'palabra '.repeat(600)}Pedro Luis Ejemplo Prueba declaró.`;
+    expect(marcaOtroTitular(lejos, ...pedroLuis(lejos))).toBe(false);
+  });
+
+  it('M-81 marcaOtroTitular: las relaciones de representación y de trato ligadas a otra persona («su», «de», «del») la marcan como otro titular', () => {
+    const si = [
+      // Sonda R de la revisión.
+      'Pedro Luis Ejemplo Prueba, actuando como agente oficioso de Pedro Ejemplo, presentó la acción.',
+      'Pedro Luis Ejemplo Prueba, en representación de Pedro Ejemplo, presentó la acción.',
+      'Pedro Luis Ejemplo Prueba, a nombre del señor Pedro Ejemplo, presentó la acción.',
+      'Pedro Luis Ejemplo Prueba, en nombre y representación de Pedro Ejemplo, presentó la acción.',
+      'Pedro Luis Ejemplo Prueba, en nombre de su padre, presentó la acción.',
+      // X13 a X20.
+      ...['agente oficioso', 'representante', 'abogado', 'amigo', 'vecino', 'compadre', 'socio', 'cuidadora', 'empleado', 'jefe', 'mandatario']
+        .map((w) => `Su ${w} Pedro Luis Ejemplo Prueba declaró.`),
+      'El abogado del demandante, Pedro Luis Ejemplo Prueba, declaró.', 'La amiga de la accionante, Pedro Luis Ejemplo Prueba, declaró.',
+      'SU AMIGO PEDRO LUIS EJEMPLO PRUEBA DECLARÓ.',
+    ];
+    const no = [
+      // La misma persona presentada por su oficio o su domicilio, no ligada a otra.
+      'El abogado Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba, vecino de esta ciudad, declaró.',
+      'Pedro Luis Ejemplo Prueba, jefa de talento humano, firmó.', 'Pedro Luis Ejemplo Prueba, representante legal de Ejemplo S.A.S., firmó.',
+      'Pedro Luis Ejemplo Prueba, en nombre propio, presentó la acción.', 'El cobro a nombre de Pedro Luis Ejemplo Prueba sigue.',
+      'Pedro Luis Ejemplo Prueba acudió a la Defensoría del Pueblo y al Defensor del Pueblo.',
+      'Pedro Luis Ejemplo Prueba firmó con Carlos Amigo Prueba.',
+    ];
+    for (const t of si) expect(marcaOtroTitular(t, ...pedroLuis(t)), t).toBe(true);
+    for (const t of no) expect(marcaOtroTitular(t, ...pedroLuis(t)), t).toBe(false);
+  });
+
+  it.each([
+    ['R · agente oficioso de', 'Pedro Luis Ejemplo Prueba, actuando como agente oficioso de Pedro Ejemplo, presentó la acción.', 'Pedro Luis Ejemplo Prueba'],
+    ['R · en representación de', 'Pedro Luis Ejemplo Prueba, en representación de Pedro Ejemplo, presentó la acción.', 'Pedro Luis Ejemplo Prueba'],
+    ['R · a nombre del señor', 'Pedro Luis Ejemplo Prueba, a nombre del señor Pedro Ejemplo, presentó la acción.', 'Pedro Luis Ejemplo Prueba'],
+    ['X13 · su amigo', 'Su amigo Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['X15 · su compadre', 'Su compadre Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['X16 · su abogado', 'Su abogado Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['X19 · su socio', 'Su socio Pedro Luis Ejemplo Prueba declaró.', 'Pedro Luis Ejemplo Prueba'],
+    ['X20 · su amigo, regla E', 'Su amigo Pedro Ejemplo Prueba declaró.', 'Pedro Ejemplo Prueba'],
+  ])('INV-R12 M-81 sonda %s con la tubería real: el representante o el amigo no recibe el marcador de la persona de la lista', async (_id, sonda, tramo) => {
+    const texto = `Pedro Ejemplo demandó. ${sonda}`;
+    const { s, caseList } = await tuberia(texto, LISTA_PEDRO, [[[tramo, 'PER', 0]]]);
+    expect(marcadorEn(s, texto, 'Pedro Ejemplo')).toBe('[DEMANDANTE_1]');
+    const i = texto.indexOf(tramo);
+    const dentro = dets(s).filter((x) => x.start < i + tramo.length && i < x.end && x.status !== 'rechazada');
+    expect(dentro.map((x) => s.entities[x.entityId]?.caseEntityId === (caseList[0] as CaseEntity).id)).toEqual(dentro.map(() => false));
+    expect(marcadorEn(s, texto, tramo)).toMatch(/^\[PERSONA_[0-9]+\]$/u);
+  });
+
+  it('INV-L03 M-82 a: la variante de los dos apellidos de la lista que también lleva otra persona del modelo queda ambigua (M10 y M11)', async () => {
+    for (const texto of ['Ana Ficticia Rojas demandó a su hermano Luis Ficticia Rojas. El señor Ficticia Rojas declaró.',
+      'Ana Ficticia Rojas demandó a Luis Ficticia Rojas. El señor Ficticia Rojas declaró.']) {
+      const { s, caseList } = await tuberia(texto, LISTA_ANA, [[['Luis Ficticia Rojas', 'PER', 0]]]);
+      // Apariciones de «Ficticia Rojas»: 0 en Ana, 1 en Luis, 2 en «El señor Ficticia Rojas». Antes: [DEMANDANTE_1].
+      const d = enPos(s, texto, 'Ficticia Rojas', 2);
+      expect(esAmbigua(s, d), texto).toBe(true);
+      expect(d.variantClass).toBe('apellidos');
+      expect(s.entities[d.entityId]?.marker).not.toBe('[DEMANDANTE_1]');
+      const luis = enPos(s, texto, 'Luis Ficticia Rojas').entityId;
+      expect(decisionesAmbiguas(s, caseList).find((x) => x.detectionId === d.id)?.fuera).toEqual([luis]);
+      expect(marcadorEn(s, texto, 'Ana Ficticia Rojas')).toBe('[DEMANDANTE_1]');
+    }
+  });
+
+  it('INV-L03 M-82 b: sin el modelo, el nombre de pila pegado delante del apellido de la lista es otra persona: la mención y las demás de ese apellido quedan ambiguas (M06 y M07)', async () => {
+    for (const texto of ['Ana Ficticia Rojas demandó a Luis Rojas. El señor Rojas declaró.',
+      'Ana Ficticia Rojas demandó a su hermano Luis Rojas. El señor Rojas declaró.']) {
+      const { s, doc } = await tuberia(texto, LISTA_ANA);
+      // Antes: «Luis [DEMANDANTE_1]» y «El señor [DEMANDANTE_1]».
+      for (const occ of [1, 2]) {
+        const d = enPos(s, texto, 'Rojas', occ);
+        expect(esAmbigua(s, d), `${texto} ${occ}`).toBe(true);
+        expect(s.entities[d.entityId]?.marker).not.toBe('[DEMANDANTE_1]');
+      }
+      const out = salida(s, doc);
+      expect(out.startsWith('[DEMANDANTE_1] demandó')).toBe(true);
+      expect(out).not.toMatch(/Luis \[DEMANDANTE_1\]|señor \[DEMANDANTE_1\]/u);
+      expect(contarAmbiguas(s)).toBe(2);
+    }
+  });
+
+  it('INV-L03 M-82 b controles: un tratamiento, un rol, la propia persona o un segundo nombre que la lista no trae no hacen ambiguo el apellido', async () => {
+    for (const texto of ['Ana Ficticia Rojas demandó. La señora Rojas declaró. La Demandante Rojas firmó.',
+      'Ana Ficticia Rojas demandó. Ana Rojas firmó. El señor Rojas declaró.',
+      'Ana Lucía Ficticia Rojas demandó. El señor Rojas declaró.']) {
+      const { s } = await tuberia(texto, LISTA_ANA);
+      expect(contarAmbiguas(s), texto).toBe(0);
+      expect(marcadorEn(s, texto, 'Rojas', 1), texto).toBe('[DEMANDANTE_1]');
+    }
+    // «Blanca Nubia Prueba-Ejemplo» con «Blanca Prueba-Ejemplo» en la lista: Nubia es un segundo nombre de la misma persona.
+    const texto = 'Blanca Nubia Prueba-Ejemplo demandó. Prueba-Ejemplo declaró.';
+    const { s } = await tuberia(texto, [['Blanca Prueba-Ejemplo', 'persona', 'DEMANDANTE']]);
+    expect(contarAmbiguas(s)).toBe(0);
+  });
+
+  it('INV-L03 M-72 con `nombre_suelto` (D-18): el nombre de pila de la lista que también lleva otra persona del texto queda ambiguo, con o sin el modelo', async () => {
+    const texto = 'Ana Ficticia Rojas demandó. Ana Lucía Prueba declaró. Ana firmó el acta.';
+    // Con el modelo en «Ana Lucía Prueba»: la otra persona es una opción de fuera. Sin él: «Lucía» pegada detrás.
+    for (const ventanas of [[[['Ana Lucía Prueba', 'PER', 0]]], []] as Array<Array<Array<[string, NerSpan['label'], number?]>>>) {
+      const { s, caseList } = await tuberia(texto, LISTA_ANA, ventanas);
+      const d = enPos(s, texto, 'Ana', 2);
+      expect(d.variantClass).toBe('nombre_suelto');
+      expect(esAmbigua(s, d)).toBe(true);
+      expect(s.entities[d.entityId]?.marker).not.toBe('[DEMANDANTE_1]');
+      if (ventanas.length > 0) {
+        expect(decisionesAmbiguas(s, caseList).find((x) => x.detectionId === d.id)?.fuera).toEqual([enPos(s, texto, 'Ana Lucía Prueba').entityId]);
+      }
+    }
+    // Control: la misma persona («Ana Rojas») no es otra.
+    const t2 = 'Ana Ficticia Rojas demandó. Ana Rojas declaró. Ana firmó el acta.';
+    const r = await tuberia(t2, LISTA_ANA, [[['Ana Rojas', 'PER', 0]]]);
+    expect(esAmbigua(r.s, enPos(r.s, t2, 'Ana', 2))).toBe(false);
+  });
+
+  it('INV-G06 M-82 la ambigua sin opciones se decide separándola; la de fuera, uniéndola a la otra persona', async () => {
+    const texto = 'Ana Ficticia Rojas demandó a Luis Rojas. El señor Rojas declaró.';
+    const { s: s0, ctx } = await tuberia(texto, LISTA_ANA);
+    let s = aceptarTodo(s0, ctx);
+    expect(exportGate(s, sinResiduos(s), TODAS)).toEqual({ ok: false, reasons: ['PENDIENTES'] });
+    const ana = (Object.values(s.entities).find((e) => e.caseEntityId !== undefined) as Entity).id;
+    s = act(s, { kind: 'separar_mencion', detectionId: enPos(s, texto, 'Rojas', 1).id }, ctx);
+    s = act(s, { kind: 'unir_entidades', fromId: enPos(s, texto, 'Rojas', 2).entityId, intoId: ana }, ctx);
+    s = aceptarTodo(s, ctx);
+    expect(exportGate(s, sinResiduos(s), TODAS)).toEqual({ ok: true, reasons: [] });
+    expect(marcadorEn(s, texto, 'Rojas', 2)).toBe('[DEMANDANTE_1]');
+  });
+
+  it('B-100 (T6 y T7) con la tubería real: el tratamiento delante de una variante débil de la lista entra en el tramo', async () => {
+    const lista: Lista = [['Gloria Ficticia Mora', 'persona', 'DEMANDANTE']];
+    for (const [texto, tramo] of [['Gloria Ficticia Mora demandó. Vino la señora Ficticia y firmó.', 'señora Ficticia'],
+      ['Gloria Ficticia Mora demandó. Vino doña Gloria y firmó.', 'doña Gloria'], ['Gloria Ficticia Mora demandó. Vino Doña Gloria y firmó.', 'Doña Gloria']] as const) {
+      const { s, doc } = await tuberia(texto, lista);
+      // Antes: «Vino la señora [DEMANDANTE_1]», «Vino doña [DEMANDANTE_1]».
+      expect(enPos(s, texto, tramo).text).toBe(tramo);
+      expect(salida(s, doc)).toContain(`Vino ${tramo.startsWith('señora') ? 'la ' : ''}[DEMANDANTE_1] y firmó.`);
+    }
+  });
+
+  it('INV-R12 B-100 la variante débil con su tratamiento sigue cediendo ante el nombre completo de otra persona del modelo', async () => {
+    const texto = 'Gloria Ficticia Mora demandó. Vino la señora Ficticia Prueba y firmó.';
+    const { s, caseList } = await tuberia(texto, [['Gloria Ficticia Mora', 'persona', 'DEMANDANTE']], [[['Ficticia Prueba', 'PER', 0]]]);
+    const d = enPos(s, texto, 'Ficticia Prueba');
+    expect(d.text).toBe('señora Ficticia Prueba');
+    expect(s.entities[d.entityId]?.caseEntityId).not.toBe((caseList[0] as CaseEntity).id);
+    const i = texto.indexOf('señora Ficticia Prueba');
+    expect(dets(s).filter((x) => x.start < i + 22 && i < x.end && x.status !== 'rechazada')).toHaveLength(1);
   });
 });

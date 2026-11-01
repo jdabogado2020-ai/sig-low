@@ -140,10 +140,9 @@ function conTratamiento(part: Part, nuevos: readonly MergedCandidate[], todos: r
   for (let i = 1; i < orden.length; i++) antes.set(orden[i] as MergedCandidate, (orden[i - 1] as MergedCandidate).end);
   return nuevos.map((c) => {
     if (c.type !== 'PERSONA' || (c.source !== 'modelo' && c.source !== 'lista')) return c;
-    // Las variantes débiles de la lista (una palabra: `apellido_suelto`, `nombre_suelto`) quedan como están: el reductor (`cedeAnteModelo`,
-    // entities.ts) las reconoce por no tener blancos en su texto, y con el tratamiento dejarían de cederle el paso al nombre completo
-    // del modelo en la ventana siguiente. Si `esVarianteDebil` aprende a quitar el tratamiento, esta excepción sobra.
-    if (c.source === 'lista' && (c.variantClass === 'apellido_suelto' || c.variantClass === 'nombre_suelto')) return c;
+    // B-100 (CIERRE-1, D-19.5): también la variante débil de la lista («Vino la señora Ficticia», «Vino doña Gloria»). El reductor
+    // (`esVarianteDebil`, `cedeAnteModelo`) la reconoce sin el tratamiento delante, así que sigue cediéndole el paso al nombre
+    // completo del modelo en la ventana siguiente.
     const s = inicioConTratamiento(text, c.start);
     if (s >= c.start || s < (antes.get(c) ?? 0)) return c;
     return { ...c, start: widenStart(text, s) };
