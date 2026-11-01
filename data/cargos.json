@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "nota": "Cargos únicos que, junto a una entidad concreta, pueden identificar a una persona (R-CAR-01, 7.7.6). Lista propia del producto; los jueces y magistrados quedan fuera porque son la autoridad del proceso.",
+  "nota": "Cargos únicos que, junto a una entidad concreta, pueden identificar a una persona (R-CAR-01, 7.7.6). Lista propia del producto; los jueces y magistrados quedan fuera de `privados` y `publicos` porque son la autoridad del proceso. Única excepción (D-16, AJ-6): el juez o la jueza titular de un despacho identifica a la persona, y va aparte en `jueces` y `titularidadJuez` (R-CAR-04). El magistrado ponente sigue fuera.",
   "privados": [
     "gerente general", "gerente", "subgerente", "representante legal suplente", "representante legal",
     "presidente de la junta directiva", "presidente", "presidenta", "vicepresidente", "vicepresidenta",
@@ -17,6 +17,9 @@
     "superintendente", "comandante", "párroco"
   ],
   "excluidosTrasDe": ["la República", "la Nación"],
+  "notaJueces": "D-16 (AJ-6), R-CAR-04: `jueces` solo se marcan como CARGO si les sigue una de `titularidadJuez` («jueza titular del despacho», «el juez titular», «la jueza del despacho»). Un juez sin esa marca («el juez de Villa Ejemplo», «el juez de conocimiento») y los magistrados («magistrado ponente») no se marcan.",
+  "jueces": ["juez", "jueza"],
+  "titularidadJuez": ["titular", "del despacho"],
   "notaExtension": "AJ-4 (D-12): `estructurales` son cargos que solo se marcan en contexto (tras «se desempeña como», «en su calidad de», «Atn.:», «Cargo:», o junto a un nombre tras coma, guion o línea); `calificativos` completan un cargo («directora regional»); `sustantivosEntidad` terminan el complemento («… de la entidad»).",
   "estructurales": ["líder", "conciliador", "conciliadora"],
   "calificativos": [

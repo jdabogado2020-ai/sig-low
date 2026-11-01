@@ -636,6 +636,8 @@ interface FlagRegexes {
   car: RegExp; cie: RegExp; diag: RegExp; lla: RegExp; men: RegExp; cargoClase: Map<string, 'privado' | 'publico'>; clin: RegExp; cieExcl: RegExp;
   /** AJ-4 (D-12): R-CAR-02 (cargo tras un giro de cargo), R-CAR-03 (cargo junto a un nombre o en una celda) y R-DIAG-02 (término tras un giro de diagnóstico). */
   carCue: RegExp; carSep: RegExp; dxCue: RegExp;
+  /** D-16 (AJ-6) · R-CAR-04: el juez o la jueza titular de un despacho (`jueces` + `titularidadJuez` de data/cargos.json). */
+  juez: RegExp;
   /** Cargos que solo valen con contexto (`estructurales`): una línea suelta con uno solo no basta. */
   soloConContexto: ReadonlySet<string>;
   /** Sustantivo de una organización genérica que cierra un cargo («… de la entidad»), al inicio del resto. */
@@ -675,7 +677,13 @@ function getFlagRegexes(): FlagRegexes {
   const WORD_DX = `(?!${ETAPA})${WORD}`;
   const DX_TERM = `(?!(?:${DX_NO})(?![\\p{L}]))(?<term>${WORD}(?:(?:${H}+(?:de|del)(?:${H}+(?:la|el))?)?${H}+${WORD_DX}){0,4}`
     + `(?:${H}+(?:estadio|grado|tipo|fase|etapa|clase|nivel)${H}+[0-9ivx]{1,3}(?![\\p{L}\\p{N}]))?)`;
+  // D-16 (AJ-6) · R-CAR-04. Corre sobre `t.toLowerCase()`. Artículo opcional (como R-CAR-01), el juez o la jueza y una o dos marcas de
+  // titularidad («titular», «del despacho», en cualquier orden); sin una marca no hay coincidencia.
+  const JUEZ = alt((cargosRaw.jueces as string[]).map((c) => c.toLowerCase()));
+  const TITULAR = alt((cargosRaw.titularidadJuez as string[]).map((c) => c.toLowerCase()));
   flagRx = {
+    juez: new RegExp(`(?<![\\p{L}\\p{N}])(?:(?<art>${alt(['el', 'la', 'del', 'al', 'su', 'como'])})${H}+)?(?<base>${JUEZ})(?![\\p{L}])`
+      + `(?<tit>(?:${HN}${TITULAR}(?![\\p{L}])){1,2})`, 'gdu'),
     cargoClase,
     soloConContexto: new Set((cargosRaw.estructurales as string[]).map(vistaLista)),
     entidadNoun: new RegExp(`^${ENTN}`, 'u'),
@@ -731,7 +739,7 @@ function finDePalabras(t: string, cs: number, ce: number, cortaEnMayuscula: bool
  *   R-CAR-03 tras coma, guion, tabulador o salto de línea (junto a un nombre o en una celda), y a continuación «de/del la entidad» u
  *     «de» + mayúscula, o un signo (coma, punto y coma, punto, paréntesis, guion largo, salto, tabulador o fin). Una línea suelta con
  *     una sola palabra y mayúscula inicial («Secretaria») es una firma, no un cargo, y no se marca.
- * Los jueces y magistrados siguen fuera (no están en la lista). El tramo no se solapa con una bandera ya emitida.
+ * Los jueces y magistrados siguen fuera de esta lista (el juez titular lo marca R-CAR-04, D-16). El tramo no se solapa con una bandera ya emitida.
  */
 function scanCargosExtendidos(rx: FlagRegexes, t: string, previas: readonly FlagHit[]): FlagHit[] {
   const tl = t.toLowerCase();
@@ -799,6 +807,36 @@ function scanCargosExtendidos(rx: FlagRegexes, t: string, previas: readonly Flag
 }
 
 /**
+ * D-16 (AJ-6) · R-CAR-04, el juez o la jueza titular de un despacho («jueza titular del despacho», «el juez titular», «la jueza del
+ * despacho»). Identifica a la persona igual que un cargo de la lista (S-7.8 los dejaba fuera por ser la autoridad del proceso; el dueño
+ * decidió en D-16 que el titular del despacho lleva bandera CARGO). Solo con una marca de titularidad (`titularidadJuez`): «el juez de
+ * Villa Ejemplo» y «el juez de conocimiento» siguen sin bandera, y los magistrados («magistrado ponente») también. El tramo es el juez
+ * con sus marcas, con el artículo si lo trae (como R-CAR-01), y no incluye el nombre del juzgado. Clase pública: «una funcionaria» /
+ * «una autoridad» (G-08). No se solapa con una bandera de cargo ya emitida.
+ */
+function scanJuecesTitulares(rx: FlagRegexes, t: string, previas: readonly FlagHit[]): FlagHit[] {
+  const tl = t.toLowerCase();
+  if (tl.length !== t.length) return [];
+  // Los tramos de R-CAR-04 salen en orden y no se solapan entre sí: basta un puntero sobre las banderas de cargo previas (tiempo lineal).
+  const previo: Tramo2[] = previas.filter((h) => h.type === 'CARGO').sort((a, b) => a.start - b.start);
+  let j = 0;
+  return scan(rx.juez, tl, (m): FlagHit | null => {
+    const [bs, be] = grp(m, 'base');
+    const art = hasGrp(m, 'art') ? vistaLista(m.groups?.['art'] ?? '') : '';
+    const start = art === '' ? bs : grp(m, 'art')[0];
+    const end = grp(m, 'tit')[1];
+    while (j < previo.length && (previo[j] as Tramo2).end <= start) j++;
+    if (j < previo.length && (previo[j] as Tramo2).start < end) return null;
+    const fem = tl.slice(bs, be) === 'jueza' || art === 'la';
+    const N = fem ? ['una funcionaria', 'una autoridad'] : ['un funcionario', 'una autoridad'];
+    const sinArticulo = art === 'su' || art === 'como';
+    const pre = CARGO_PREFIJO[art] ?? '';
+    const options = N.map((o) => ({ kind: 'CARGO_A_GENERICO' as const, template: pre + (sinArticulo ? o.replace(/^una? /, '') : o) }));
+    return { type: 'CARGO', reason: 'LISTA_CARGOS', start, end, options };
+  });
+}
+
+/**
  * AJ-4 (D-12) · R-DIAG-02, el término que sigue a un giro de diagnóstico («diagnóstico de», «diagnosticada con», «padece», «sufre»,
  * «portador de», «tratamiento integral de») aunque no esté en `terminos`: hasta cinco palabras, sin conectores ni palabras de `noTermino`.
  * Opción: «un diagnóstico médico» (no «de baja prevalencia»: el término puede ser frecuente). No se solapa con una bandera DIAGNOSTICO previa.
@@ -853,6 +891,7 @@ function scanBanderasDeTexto(view: ViewLike): FlagHit[] {
     return { type: 'CARGO', reason: 'LISTA_CARGOS', start: m.index, end: endOf(m), options };
   }));
   out.push(...scanCargosExtendidos(rx, t, out));
+  out.push(...scanJuecesTitulares(rx, t, out));
   // R-CIE-01
   out.push(...scan(rx.cie, t, (m): FlagHit | null => {
     const s = m.index, e = endOf(m);

@@ -2329,6 +2329,100 @@ describe('AJ-4 · R-CAR-02 y R-CAR-03: el cargo que R-CAR-01 no cubre (G-08)', (
   });
 });
 
+describe('AJ-6 · R-CAR-04: el juez o la jueza titular del despacho lleva bandera CARGO (D-16, S-7.8, G-08)', () => {
+  const cargos = (t: string) => correr(t, [], { sinLugares: true }).res.flags.filter((x) => x.type === 'CARGO');
+  const textos = (t: string): string[] => cargos(t).map((x) => x.text);
+  const opciones = (t: string): string[] => cargos(t).flatMap((x) => x.options.map((o) => o.template));
+
+  it('C29-A008: «jueza titular del despacho» tras el nombre de la jueza (caso 4 del dictamen de RG-r2)', () => {
+    const t = 'Despacho: Juzgado 996 Civil Municipal de Envigado. Juez: Olga Lucía Ficticia Vargas, jueza titular del despacho.';
+    const fl = cargos(t);
+    expect(fl).toHaveLength(1);
+    expect(fl[0]).toMatchObject({ type: 'CARGO', reason: 'LISTA_CARGOS', text: 'jueza titular del despacho' });
+    expect(fl[0]?.options.map((o) => [o.kind, o.template])).toEqual([['CARGO_A_GENERICO', 'una funcionaria'], ['CARGO_A_GENERICO', 'una autoridad']]);
+  });
+
+  it.each([
+    ['el juez titular firmó el acta', 'el juez titular', ['un funcionario', 'una autoridad']],
+    ['la jueza titular del Juzgado 996 Civil Municipal de Envigado firmó', 'la jueza titular', ['una funcionaria', 'una autoridad']],
+    ['la jueza del despacho firmó el acta', 'la jueza del despacho', ['una funcionaria', 'una autoridad']],
+    ['ante el juez del despacho se presentó', 'el juez del despacho', ['un funcionario', 'una autoridad']],
+    ['la orden del juez titular fue clara', 'del juez titular', ['de un funcionario', 'de una autoridad']],
+    ['lo notificó al juez titular del despacho', 'al juez titular del despacho', ['a un funcionario', 'a una autoridad']],
+    ['actúa como jueza titular del despacho', 'como jueza titular del despacho', ['como funcionaria', 'como autoridad']],
+    ['JUEZ TITULAR DEL DESPACHO: OLGA FICTICIA', 'JUEZ TITULAR DEL DESPACHO', ['un funcionario', 'una autoridad']],
+    ['la jueza titular\ndel despacho firmó', 'la jueza titular\ndel despacho', ['una funcionaria', 'una autoridad']],
+    ['Olga Ficticia, Jueza Titular, firmó', 'Jueza Titular', ['una funcionaria', 'una autoridad']],
+    ['la jueza del despacho titular firmó', 'la jueza del despacho titular', ['una funcionaria', 'una autoridad']],
+  ])('positivo %#: «%s»', (t, texto, opts) => {
+    expect(textos(t)).toEqual([texto]);
+    expect(opciones(t)).toEqual(opts);
+  });
+
+  it.each([
+    'el juez de Villa Ejemplo',
+    'Juez: Olga Lucía Ficticia Vargas.',
+    'el juez de conocimiento resolvió',
+    'la jueza Olga Ficticia dictó la sentencia',
+    'el juez Primero Civil Municipal de Ejemplópolis',
+    'el juez suplente asistió',
+    'el magistrado ponente decidió',
+    'la magistrada titular del despacho decidió',
+    'el magistrado del despacho decidió',
+    'los jueces titulares del circuito',
+    'el titular de la cuenta pidió',
+    'el juzgado titular no respondió',
+    'el despacho del juez no respondió',
+  ])('negativo %#: «%s» sigue sin bandera de cargo', (t) => {
+    expect(textos(t)).toEqual([]);
+  });
+
+  it('no se solapa con una bandera de cargo de la lista y emite una por aparición', () => {
+    const t = 'La jueza titular del despacho y el juez titular firmaron; el gerente general de [EMPRESA_1] también.';
+    expect(textos(t)).toEqual(['La jueza titular del despacho', 'el juez titular', 'el gerente general']);
+  });
+
+  it('INV-R01 la bandera junto a una detección se recorta a su lado libre', () => {
+    const t = 'Juez Olga Ficticia, jueza titular del despacho, firmó';
+    const i = t.indexOf('despacho');
+    const { res } = correr(t, [{ start: i, end: i + 8, type: 'ENTIDAD', canonicalKey: 'ENTIDAD:despacho' }], { sinLugares: true });
+    expect(res.flags.map((f) => f.text)).toEqual(['jueza titular del']);
+  });
+
+  it('con el texto en minúsculas o en mayúsculas el titular se marca igual (vistas de 10.3.3)', () => {
+    const t = 'Juez: Olga Lucía Ficticia Vargas, jueza titular del despacho.';
+    expect(textos(t.toLowerCase())).toEqual(['jueza titular del despacho']);
+    expect(textos(t.toUpperCase())).toEqual(['JUEZA TITULAR DEL DESPACHO']);
+  });
+
+  it('data/cargos.json: los jueces van aparte de los cargos de la lista y el magistrado no está', () => {
+    expect(cargosJson.jueces).toEqual(['juez', 'jueza']);
+    expect(cargosJson.titularidadJuez).toEqual(['titular', 'del despacho']);
+    for (const c of [...cargosJson.jueces, ...cargosJson.titularidadJuez]) expect(c).not.toMatch(/magistrad/i);
+    for (const c of [...cargosJson.privados, ...cargosJson.publicos, ...cargosJson.estructurales]) expect(c).not.toMatch(/juez|jueza|magistrad/i);
+  });
+
+  it('tiempo: 40.000 blancos tras «juez», 4.000 repeticiones de «juez » y de «la » por debajo de 300 ms', () => {
+    correr('la jueza titular del despacho', [], { sinLugares: true });   // construye los patrones antes de medir
+    const casos = [
+      'juez' + ' '.repeat(40_000) + 'titular',
+      'juez' + ' '.repeat(40_000) + 'x',
+      'la' + ' '.repeat(40_000) + 'jueza' + ' '.repeat(40_000) + 'titular' + ' '.repeat(40_000) + 'del' + ' '.repeat(40_000) + 'x',
+      'juez '.repeat(4_000) + 'x',
+      'la '.repeat(4_000) + 'jueza titular',
+      'juez titular '.repeat(4_000),
+    ];
+    for (const texto of casos) {
+      const mejor = Math.min(...[0, 1, 2].map(() => {
+        const t0 = performance.now();
+        generalize({ part: { id: PID, text: texto }, detections: [], options: { referenceDate: REF }, ids: makeIds() });
+        return performance.now() - t0;
+      }));
+      expect(mejor, texto.slice(0, 30)).toBeLessThan(300);
+    }
+  });
+});
+
 describe('AJ-4 · R-DIAG-02: el término tras un giro de diagnóstico (G-10)', () => {
   const diag = (t: string): string[] => correr(t, [], { sinLugares: true }).res.flags.filter((x) => x.type === 'DIAGNOSTICO').map((x) => x.text);
   it.each([
