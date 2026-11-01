@@ -85,7 +85,7 @@ describe('T-ME-05 · el oráculo y la mención ambigua de la lista (D-16)', () =
 
 // PB-3-r4 · Las ambiguas nuevas: el apellido suelto de la lista que lleva otra persona del texto (M-72) y la forma corta del modelo con
 // dos anfitrionas (D-16 en el modelo). El oráculo elige también entre las opciones fuera de la lista (`fuera`), según el gold.
-const TEXTO2 = 'Ana Ficticia Rojas demandó a Luis Rojas. El señor Rojas declaró. Rafael Prueba Cuervo firmó. Marta Prueba Ruiz revisó. '
+const TEXTO2 = 'Ana Ficticia Rojas demandó a Luis Ficticio Rojas. El señor Rojas declaró. Rafael Prueba Cuervo firmó. Marta Prueba Ruiz revisó. '
   + 'Luego Prueba aprobó el plan.';
 
 function documento2() {
@@ -98,7 +98,7 @@ function documento2() {
   const e = (id: string, canonico: string, enLista: boolean): GoldEntity => ({ id: `P03-${id}`, tipo: 'PERSONA', canonico, mismoTitular: [], enLista });
   const anotaciones: GoldAnnotation[] = [
     a('A1', 'Ana Ficticia Rojas', 0, 'E1', { claseVariante: 'exacta' }),
-    a('A2', 'Luis Rojas', 0, 'E2'),
+    a('A2', 'Luis Ficticio Rojas', 0, 'E2'),
     // «El señor Rojas» es Luis (el gold lo da a la persona fuera de la lista).
     a('A3', 'Rojas', 2, 'E2'),
     a('A4', 'Rafael Prueba Cuervo', 0, 'E3'),
@@ -108,17 +108,17 @@ function documento2() {
   ];
   const gold = {
     docId: 'C03', conjunto: 'desarrollo', anotaciones,
-    entidades: [e('E1', 'LISTA:Ana Ficticia Rojas', true), e('E2', 'PER:luis rojas', false), e('E3', 'PER:rafael prueba cuervo', false), e('E4', 'PER:marta prueba ruiz', false)],
+    entidades: [e('E1', 'LISTA:Ana Ficticia Rojas', true), e('E2', 'PER:luis ficticio rojas', false), e('E3', 'PER:rafael prueba cuervo', false), e('E4', 'PER:marta prueba ruiz', false)],
     listaDelCaso: [{ name: 'Ana Ficticia Rojas', role: 'DEMANDANTE' }], esperado: { partes: [] },
   } as unknown as GoldDocument & { listaDelCaso: Array<{ name: string; role: string }>; esperado: { partes: [] } };
   return armarDocumento(gold, { docId: 'C03', partes: [{ kind: 'cuerpo', index: 1, texto: TEXTO2 }] }, idsSecuenciales(1));
 }
 
 describe('T-ME-05 · el oráculo y las ambiguas de PB-3-r4 (M-72 y D-16 en el modelo)', () => {
-  it('T-ME-05 el oráculo da «El señor Rojas» a Luis Rojas y «Prueba» a Rafael Prueba Cuervo, como el gold; la consistencia del modelo queda completa', async () => {
+  it('T-ME-05 el oráculo da «El señor Rojas» a Luis Ficticio Rojas y «Prueba» a Rafael Prueba Cuervo, como el gold; la consistencia del modelo queda completa', async () => {
     const motor = crearMotor();
     const dc = documento2();
-    const spans = ['Luis Rojas', 'Rafael Prueba Cuervo', 'Marta Prueba Ruiz'].map((t) => ({ start: TEXTO2.indexOf(t), end: TEXTO2.indexOf(t) + t.length, label: 'PER' as const, score: 0.95 }));
+    const spans = ['Luis Ficticio Rojas', 'Rafael Prueba Cuervo', 'Marta Prueba Ruiz'].map((t) => ({ start: TEXTO2.indexOf(t), end: TEXTO2.indexOf(t) + t.length, label: 'PER' as const, score: 0.95 }));
     let i = -1; for (let k = 0; k <= 2; k++) i = TEXTO2.indexOf('Prueba', i + 1);
     spans.push({ start: i, end: i + 'Prueba'.length, label: 'PER', score: 0.95 });
     const clave = dc.claveDe.get((dc.doc.parts[0] as DocumentModel['parts'][number]).id) as string;
@@ -130,10 +130,10 @@ describe('T-ME-05 · el oráculo y las ambiguas de PB-3-r4 (M-72 y D-16 en el mo
     expect([rojas, prueba].every((d) => d !== undefined && esAmbigua(p.state, d))).toBe(true);
     const o = await revisarConOraculo({ p, motor });
     const ent = (texto: string) => (enPos2(texto, 0) as Detection).entityId;
-    expect(o.state.detections[(rojas as Detection).id]?.entityId).toBe(ent('Luis Rojas'));
+    expect(o.state.detections[(rojas as Detection).id]?.entityId).toBe(ent('Luis Ficticio Rojas'));
     expect(o.state.detections[(prueba as Detection).id]?.entityId).toBe(ent('Rafael Prueba Cuervo'));
     expect(Object.values(o.state.detections).some((d) => esAmbigua(o.state, d))).toBe(false);
-    // Luis Rojas y Rafael Prueba Cuervo (Marta tiene una sola mención): sin la elección del revisor, ninguna es consistente.
+    // Luis Ficticio Rojas y Rafael Prueba Cuervo (Marta tiene una sola mención): sin la elección del revisor, ninguna es consistente.
     expect(evaluarDocumento(entradaDeEstado(p)).consistenciaPorGrupo.modelo).toEqual({ evaluadas: 2, consistentes: 0 });
     const m = evaluarDocumento(conOraculo(entradaDeEstado(p), o));
     expect(m.consistenciaPorGrupo.modelo).toEqual({ evaluadas: 2, consistentes: 2 });

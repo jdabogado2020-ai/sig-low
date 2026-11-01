@@ -451,19 +451,19 @@ describe('T-MO-07 INV-L03 variantes duplicadas y compartidas', () => {
   it('INV-L03 M-72 esApellidoDeOtraPersona: el apellido suelto de la lista es el apellido de otro nombre del texto; una forma corta de la misma persona no', () => {
     const src = ids();
     const [ana] = refreshVariants([persona('Ana Ficticia Rojas', 'DEMANDANTE', src)]) as [CaseEntity];
-    for (const otro of ['Luis Rojas', 'LUIS ROJAS', 'señor Luis Rojas', 'Luis Ficticia Rojas', 'Luis Alberto Prueba Rojas']) {
+    for (const otro of ['Luis Ficticio Rojas', 'LUIS FICTICIO ROJAS', 'señor Luis Ficticio Rojas', 'Luis Ficticia Rojas', 'Luis Alberto Prueba Rojas']) {
       expect(esApellidoDeOtraPersona('Rojas', ana, otro), otro).toBe(true);
     }
     // El nombre de pila no es un apellido; una forma corta de Ana (con sus palabras, o con una inicial) no es otra persona; una
     // palabra sola no es un nombre.
     for (const otro of ['Rojas Prueba', 'Ana Rojas', 'A. Rojas', 'Ana F. Rojas', 'Rojas', 'Luis Prueba']) expect(esApellidoDeOtraPersona('Rojas', ana, otro), otro).toBe(false);
     // Las variantes activas de la persona también son suyas: un alias del abogado («Anita») no es otra persona.
-    const conAlias: CaseEntity = { ...ana, variants: [...ana.variants, { text: 'Anita Rojas', class: 'exacta', confidence: 'alta', origin: 'manual', enabled: true } satisfies CaseVariant] };
-    expect(esApellidoDeOtraPersona('Rojas', conAlias, 'Anita Rojas')).toBe(false);
-    expect(esApellidoDeOtraPersona('Rojas', ana, 'Anita Rojas')).toBe(true);
+    const conAlias: CaseEntity = { ...ana, variants: [...ana.variants, { text: 'Anita Ficticia Rojas', class: 'exacta', confidence: 'alta', origin: 'manual', enabled: true } satisfies CaseVariant] };
+    expect(esApellidoDeOtraPersona('Rojas', conAlias, 'Anita Ficticia Rojas')).toBe(false);
+    expect(esApellidoDeOtraPersona('Rojas', ana, 'Anita Ficticia Rojas')).toBe(true);
     // Una parte de un apellido con partícula o con guion.
     const [pedro] = refreshVariants([persona('Pedro Ejemplo del Valle', 'DEMANDANTE', src)]) as [CaseEntity];
-    expect(esApellidoDeOtraPersona('del Valle', pedro, 'Luis del Valle')).toBe(true);
+    expect(esApellidoDeOtraPersona('del Valle', pedro, 'Luis Prueba del Valle')).toBe(true);
   });
   it('INV-L03 una variante no compartida conserva su confianza base', () => {
     const src = ids();

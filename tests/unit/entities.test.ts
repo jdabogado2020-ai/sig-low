@@ -1407,7 +1407,7 @@ describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de
       'Comparecen Ana Ficticia Rojas, en nombre de su hija; Pedro Luis Ejemplo Prueba, en nombre propio.',
       // Homógrafos y palabras que son parte de un nombre propio.
       'Pedro Luis Ejemplo Prueba cobró la prima de servicios, la prima de navidad y la prima técnica.',
-      'Pedro Luis Ejemplo Prueba compró la materia prima.', 'Pedro Luis Ejemplo Prueba firmó con Carlos Nieto y con Distribuidora Hermanos Prueba S.A.S.',
+      'Pedro Luis Ejemplo Prueba compró la materia prima.', 'Pedro Luis Ejemplo Prueba firmó con Carlos Prueba Nieto y con Distribuidora Hermanos Prueba S.A.S.',
     ];
     for (const t of si) expect(marcaOtroTitular(t, ...pedroLuis(t)), t).toBe(true);
     for (const t of no) expect(marcaOtroTitular(t, ...pedroLuis(t)), t).toBe(false);
@@ -1484,12 +1484,12 @@ describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de
 
   // ---------------------------------------------------------------- M-72
   const LISTA_ANA: Lista = [['Ana Ficticia Rojas', 'persona', 'DEMANDANTE']];
-  // Apariciones de «Rojas»: 0 en Ana Ficticia Rojas, 1 en Luis Rojas, 2 en «El señor Rojas».
-  const TEXTO_M72 = 'Ana Ficticia Rojas demandó a Luis Rojas. El señor Rojas declaró.';
+  // Apariciones de «Rojas»: 0 en Ana Ficticia Rojas, 1 en Luis Ficticio Rojas, 2 en «El señor Rojas».
+  const TEXTO_M72 = 'Ana Ficticia Rojas demandó a Luis Ficticio Rojas. El señor Rojas declaró.';
 
   it('INV-L03 INV-R12 M-72 el apellido suelto de la lista que también lleva otra persona del texto queda ambiguo, con o sin tramo del modelo en él', async () => {
     type Ventanas = Array<Array<[string, NerSpan['label'], number?]>>;
-    const casos: Ventanas[] = [[[['Luis Rojas', 'PER', 0]]], [[['Luis Rojas', 'PER', 0], ['Rojas', 'PER', 2]]], [[['Luis Rojas', 'PER', 0]], [['Rojas', 'PER', 2]]]];
+    const casos: Ventanas[] = [[[['Luis Ficticio Rojas', 'PER', 0]]], [[['Luis Ficticio Rojas', 'PER', 0], ['Rojas', 'PER', 2]]], [[['Luis Ficticio Rojas', 'PER', 0]], [['Rojas', 'PER', 2]]]];
     for (const ventanas of casos) {
       const { s, caseList } = await tuberia(TEXTO_M72, LISTA_ANA, ventanas);
       const ana = (caseList[0] as CaseEntity).id;
@@ -1500,22 +1500,22 @@ describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de
       expect(d).toMatchObject({ status: 'pendiente', source: 'lista', variantClass: 'apellido_suelto', role: 'OTRA_PERSONA', confidence: 'baja' });
       expect(d.caseEntityId).toBeUndefined();
       expect(s.entities[d.entityId]?.marker).not.toBe('[DEMANDANTE_1]');
-      // Las opciones del revisor: Ana (de la lista) y Luis Rojas (fuera de ella).
-      const luis = enPos(s, TEXTO_M72, 'Luis Rojas').entityId;
+      // Las opciones del revisor: Ana (de la lista) y Luis Ficticio Rojas (fuera de ella).
+      const luis = enPos(s, TEXTO_M72, 'Luis Ficticio Rojas').entityId;
       const anaEnt = (Object.values(s.entities).find((e) => e.caseEntityId === ana) as Entity).id;
       expect(decisionesAmbiguas(s, caseList).find((x) => x.detectionId === d.id)).toMatchObject({ candidatas: [ana], opciones: [anaEnt], fuera: [luis] });
     }
   });
 
   it('INV-G06 M-72 la mención ambigua cierra la puerta; el revisor la da a la otra persona con unir_entidades y la puerta se abre', async () => {
-    const { s: s0, ctx } = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Rojas', 'PER', 0]]]);
+    const { s: s0, ctx } = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Ficticio Rojas', 'PER', 0]]]);
     const d = enPos(s0, TEXTO_M72, 'Rojas', 2);
     let s = aceptarTodo(s0, ctx);
     expect(exportGate(s, sinResiduos(s), TODAS)).toEqual({ ok: false, reasons: ['PENDIENTES'] });
-    const luis = enPos(s, TEXTO_M72, 'Luis Rojas').entityId;
+    const luis = enPos(s, TEXTO_M72, 'Luis Ficticio Rojas').entityId;
     s = act(s, { kind: 'unir_entidades', fromId: d.entityId, intoId: luis }, ctx);
     expect(s.detections[d.id]?.entityId).toBe(luis);
-    expect(marcadorEn(s, TEXTO_M72, 'Rojas', 2)).toBe(marcadorEn(s, TEXTO_M72, 'Luis Rojas'));
+    expect(marcadorEn(s, TEXTO_M72, 'Rojas', 2)).toBe(marcadorEn(s, TEXTO_M72, 'Luis Ficticio Rojas'));
     expect(exportGate(s, sinResiduos(s), TODAS)).toEqual({ ok: true, reasons: [] });
   });
 
@@ -1527,8 +1527,8 @@ describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de
     texto = 'Ana Ficticia Rojas demandó. Ana Rojas firmó. El señor Rojas declaró.';
     r = await tuberia(texto, LISTA_ANA, [[['Ana Rojas', 'PER', 0]]]);
     expect(marcadorEn(r.s, texto, 'Rojas', 2)).toBe('[DEMANDANTE_1]');
-    // Si el revisor ya aceptó la mención antes de que llegue «Luis Rojas», la ventana no la toca.
-    r = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Rojas', 'PER', 0]]], (s, ctx) => act(s, { kind: 'aceptar', detectionId: enPos(s, TEXTO_M72, 'Rojas', 2).id }, ctx));
+    // Si el revisor ya aceptó la mención antes de que llegue «Luis Ficticio Rojas», la ventana no la toca.
+    r = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Ficticio Rojas', 'PER', 0]]], (s, ctx) => act(s, { kind: 'aceptar', detectionId: enPos(s, TEXTO_M72, 'Rojas', 2).id }, ctx));
     const d = enPos(r.s, TEXTO_M72, 'Rojas', 2);
     expect([esAmbigua(r.s, d), d.status, marcadorEn(r.s, TEXTO_M72, 'Rojas', 2)]).toEqual([false, 'aceptada', '[DEMANDANTE_1]']);
   });
@@ -1539,11 +1539,11 @@ describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de
     const doc = mkDoc([['cuerpo', TEXTO_M72]]);
     const lst = (t: string, cls: 'exacta' | 'apellido_suelto', occ = 0) => mc(doc, 0, t, { type: 'PERSONA', source: 'lista', caseEntityId: CAS,
       variantClass: cls, canonicalKey: `LISTA:${CAS}`, role: 'DEMANDANTE' }, occ);
-    const s = buildReviewState(doc, [lst('Ana Ficticia Rojas', 'exacta'), mc(doc, 0, 'Luis Rojas', { type: 'PERSONA', source: 'modelo', nerLabel: 'PER',
-      canonicalKey: personKey('Luis Rojas'), role: 'OTRA_PERSONA' }), lst('Rojas', 'apellido_suelto', 2)], { table: EMPTY, caseList: lista, ids: seqIds(1000) });
+    const s = buildReviewState(doc, [lst('Ana Ficticia Rojas', 'exacta'), mc(doc, 0, 'Luis Ficticio Rojas', { type: 'PERSONA', source: 'modelo', nerLabel: 'PER',
+      canonicalKey: personKey('Luis Ficticio Rojas'), role: 'OTRA_PERSONA' }), lst('Rojas', 'apellido_suelto', 2)], { table: EMPTY, caseList: lista, ids: seqIds(1000) });
     expect(esAmbigua(s, enPos(s, TEXTO_M72, 'Rojas', 2))).toBe(true);
     // Rechazada y vuelta a encontrar por la búsqueda de residuos con la persona de la lista: otra vez ambigua.
-    const { s: s1, ctx, caseList } = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Rojas', 'PER', 0]]]);
+    const { s: s1, ctx, caseList } = await tuberia(TEXTO_M72, LISTA_ANA, [[['Luis Ficticio Rojas', 'PER', 0]]]);
     const d = enPos(s1, TEXTO_M72, 'Rojas', 2);
     const rr = act(s1, { kind: 'rechazar', detectionId: d.id }, ctx);
     const ana = caseList[0] as CaseEntity;
