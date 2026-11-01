@@ -44,6 +44,22 @@ describe('T-IU-01 exportGate · un estado por cada GateReason (6.4.8)', () => {
     expect(exportGate(s, residuo(s.revision), TODAS_MARCADAS)).toEqual({ ok: false, reasons: ['PENDIENTES'] });
   });
 
+  it('INV-G06 PENDIENTES D-16: una mención ambigua de la lista sin persona elegida cuenta como pendiente aunque esté aceptada; rechazada no', () => {
+    // La entidad propia de la mención ambigua lleva la clave de su tramo (`AMBIGUA:`, entities.ts); la de la persona, `LISTA:`.
+    const amb = (n: number, status: DetectionStatus): Detection => ({ id: `det_${n}`, status, entityId: `ent_${n}` } as unknown as Detection);
+    const s = {
+      ...estado({ dets: [] }),
+      detections: { det_1: amb(1, 'aceptada'), det_2: amb(2, 'aceptada'), det_3: amb(3, 'rechazada') },
+      entities: { ent_1: { id: 'ent_1', canonicalKey: 'AMBIGUA:prt_1:10-16' }, ent_2: { id: 'ent_2', canonicalKey: 'LISTA:cas_1' },
+        ent_3: { id: 'ent_3', canonicalKey: 'AMBIGUA:prt_1:40-46' } },
+    } as unknown as ReviewState;
+    expect(contarPendientes(s)).toBe(1);
+    expect(exportGate(s, residuo(s.revision), TODAS_MARCADAS)).toEqual({ ok: false, reasons: ['PENDIENTES'] });
+    // Elegida la persona (la detección ya está en la entidad de la lista), la puerta se abre.
+    const elegida = { ...s, detections: { ...s.detections, det_1: { ...amb(1, 'aceptada'), entityId: 'ent_2' } } } as unknown as ReviewState;
+    expect(exportGate(elegida, residuo(elegida.revision), TODAS_MARCADAS)).toEqual({ ok: true, reasons: [] });
+  });
+
   it('INV-G06 BANDERAS: una bandera sin confirmar cierra la puerta; confirmada no', () => {
     const s = estado({ banderas: [true, false] });
     expect(exportGate(s, residuo(s.revision), TODAS_MARCADAS).reasons).toEqual(['BANDERAS']);

@@ -404,6 +404,23 @@ export function variantOwners(text: string, caseList: readonly CaseEntity[]): Ca
   return out;
 }
 
+/** R-LST-03 al comienzo del texto (vista lista): el tratamiento pegado al nombre («Sr. Prueba», «la doctora Prueba»). */
+const reTratamientoInicial = new RegExp(String.raw`^(?:(?:la|el|los|las|al|del|a la) )?(?:senorita|senora|senor|srta\.?|sra\.?|sr\.?|dona|don|doctora|doctor|dra\.?|dr\.?|ingeniera|ingeniero|ing\.|abogada|abogado|abg\.|licenciada|licenciado|lic\.|magistrada|magistrado|jueza|juez|profesora|profesor|prof\.|mrs\.?|mr\.?|ms\.?)(?: |$)`, 'u');
+
+/**
+ * D-16 (PB-3-r3) · Personas de la lista que comparten la variante `text`: las que tienen una variante activa igual en vista
+ * `lista` (`variantOwners`), sin contar un tratamiento pegado delante («Sr. Prueba» es «Prueba»). Con dos o más, la mención es
+ * ambigua y la decide el revisor: Sig-Low no la asigna (entities.ts la deja sin entidad de la lista). Las organizaciones no
+ * cuentan: entre una persona y una organización sigue decidiendo 7.9.6, paso 5 (tratamiento, menciones fuertes, cercanía).
+ * Lee la lista tal como está (variantes generadas, manuales y apagadas); no la modifica.
+ */
+export function personasDeLaVariante(text: string, caseList: readonly CaseEntity[]): CaseEntityId[] {
+  const lv = fold(text).trim();
+  const sin = lv.replace(reTratamientoInicial, '').trim();
+  const owners = new Set(variantOwners(sin !== lv && sin !== '' ? sin : text, caseList));
+  return caseList.filter((e) => e.kind === 'persona' && owners.has(e.id)).map((e) => e.id);
+}
+
 // ---------------------------------------------------------------------------
 // «Pegar lista» (6.5.2) y alta de entidades
 // ---------------------------------------------------------------------------
@@ -676,6 +693,10 @@ export function findCaseMentions(part: Part, view: SearchView, caseList: readonl
     && (x.cls === 'exacta' || x.cls === 'mayusculas' || x.cls === 'sin_tildes' || x.cls === 'apellidos');
   // PB-3-r1 (propuesta al integrador, medida en la entrada): menciones de nombre completo o `apellidos` no ambiguas de cada
   // entidad en la parte. La variante compartida va a la candidata con más; a igualdad decide la más cercana antes del tramo (b).
+  // D-16 (PB-3-r3): si la comparten dos o más PERSONAS de la lista, la dueña que sale de aquí es solo provisional. La fusión la
+  // necesita (D-03 B y E de merge.ts miran el `caseEntityId` para ceder o extender), pero `buildDetectionSet` deja la detección
+  // sin entidad de la lista y con una decisión obligatoria del revisor (`personasDeLaVariante`). Entre una persona y una
+  // organización la regla sigue decidiendo.
   const fuertes = new Map<CaseEntityId, number>();
   for (const x of acc) if (fuerte(x)) fuertes.set(x.entity, (fuertes.get(x.entity) ?? 0) + 1);
   for (const a of acc) {

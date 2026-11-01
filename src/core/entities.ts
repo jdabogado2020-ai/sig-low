@@ -1,13 +1,14 @@
 // Entidades, claves canónicas, marcadores, tabla del asunto y reductor de la revisión (plan 6.2.1, 6.4.4, 6.6, 7.12). PB-3.
 // Código puro de core/: sin DOM ni red. Los ids salen de un IdSource (6.1.4); nunca del contenido (INV-G05).
 import type {
-  CaseEntity, DataType, DetectableType, Detection, DetectionCandidate, DetectionId, DetectionSet, DocumentModel, Entity,
+  CaseEntity, CaseEntityId, DataType, DetectableType, Detection, DetectionCandidate, DetectionId, DetectionSet, DocumentModel, Entity,
   EntityId, Flag, IdSource, MappingEntry, MappingTable, MarkerFamily, MergedCandidate, ModelProgress, Part, PartId,
   PartKind, ReviewAction, ReviewError, ReviewOutcome, ReviewState, Role, Span, SpanEdit, SpanEditId, Suggestion,
   SearchView, SuggestionId, SuggestionOption, TableIndex, IsoDateTime,
 } from './types.ts';
 import { FLAG_TYPES, MARKER_LABEL, ORG_CLASSES } from './types.ts';
 import { buildAlnumSearchView, buildSearchView, toCanonicalSpan } from './normalize.ts';
+import { personasDeLaVariante } from './caselist.ts';
 
 // ---------------------------------------------------------------------------------------------
 // 6.2.1 · Familia del marcador
@@ -190,6 +191,41 @@ const spanOf = (d: Detection): Span => ({ partId: d.partId, start: d.start, end:
 const isFixed = (e: Entity, table: TableIndex): boolean =>
   table.byKey[e.canonicalKey] !== undefined || e.markerState === 'heredado' || e.markerState === 'definitivo';
 
+// ---------------------------------------------------------------------------------------------
+// D-16 (PB-3-r3) · Mención ambigua de la lista: la decide el revisor
+// ---------------------------------------------------------------------------------------------
+//
+// Una variante que comparten dos o más personas de la lista («Prueba», apellido de la madre y del hijo) no se asigna a ninguna:
+// la mención queda `pendiente`, en una entidad propia (una por mención, con la clave de su tramo y sin texto), sin
+// `caseEntityId`, con rol `OTRA_PERSONA` y confianza baja. Es una decisión obligatoria: cuenta como pendiente para `exportGate`
+// (review/puerta.ts) aunque se acepte, hasta que el revisor elige a la persona con «Unir con otra entidad» (`unir_entidades`
+// hacia la entidad de esa persona), la separa como otra persona (`separar_mencion`) o la rechaza. Reemplaza la asignación «a la
+// de más menciones» de PB-3-r1 (7.9.6 b): esa dueña queda solo como provisional dentro de la fusión (caselist.ts). Las
+// opciones y el mensaje (M-2001) los arma review/ambiguas.ts.
+
+/** Prefijo de la clave de una mención ambigua de la lista (D-16): `AMBIGUA:<parte>:<inicio>-<fin>`, sin texto del documento. */
+export const CLAVE_AMBIGUA = 'AMBIGUA:';
+export const esClaveAmbigua = (k: string): boolean => k.startsWith(CLAVE_AMBIGUA);
+const claveAmbigua = (s: Span): string => `${CLAVE_AMBIGUA}${s.partId}:${s.start}-${s.end}`;
+
+/**
+ * D-16 · Personas de la lista entre las que el revisor tiene que elegir para un candidato de la lista: las dos o más que comparten
+ * la variante del tramo (`personasDeLaVariante` de caselist.ts), o [] si no es ambiguo. Solo una persona como dueña provisional:
+ * con una organización entre las candidatas decide 7.9.6, paso 5. Un tramo que el modelo extendió (D-03 E) ya no es la variante
+ * compartida: la fusión solo lo extiende si el nombre largo es variante de esa persona.
+ */
+export function candidatasAmbiguas(c: Pick<DetectionCandidate, 'source' | 'caseEntityId' | 'type'> & { extended?: boolean },
+  texto: string, caseList: readonly CaseEntity[]): CaseEntityId[] {
+  if (c.source !== 'lista' || c.caseEntityId === undefined || c.type !== 'PERSONA' || c.extended === true) return [];
+  const ps = personasDeLaVariante(texto, caseList);
+  return ps.length >= 2 && ps.includes(c.caseEntityId) ? ps : [];
+}
+
+/** D-16 · ¿La detección es una mención ambigua de la lista sin decidir? Sigue en su entidad propia y no está rechazada. */
+export function esAmbigua(state: ReviewState, d: Detection): boolean {
+  return d.status !== 'rechazada' && esClaveAmbigua(state.entities[d.entityId]?.canonicalKey ?? '');
+}
+
 /** 6.6.2: una mención usa marcador si está pendiente, o aceptada, no cubierta y su plantilla final lleva {m}. */
 function usesMarker(d: Detection): boolean {
   if (d.status === 'pendiente') return true;
@@ -297,24 +333,28 @@ export function buildDetectionSet(doc: DocumentModel, merged: readonly MergedCan
   const naturalNit = new Set<EntityId>();
   for (const c of cands) {
     const part = parts.get(c.partId) as Part;
-    const key = c.type === 'RADICADO' ? fullRadicadoKey(c.canonicalKey, fullRad) : c.canonicalKey;
+    // D-16: la variante que comparten dos o más personas de la lista no es de ninguna; cada mención, su entidad.
+    const ambigua = candidatasAmbiguas(c, part.text.slice(c.start, c.end), ctx.caseList).length > 0;
+    const key = ambigua ? claveAmbigua(c) : c.type === 'RADICADO' ? fullRadicadoKey(c.canonicalKey, fullRad) : c.canonicalKey;
     let e = byKey.get(key);
     if (e === undefined) {
-      const ce = c.caseEntityId === undefined ? undefined : ctx.caseList.find((x) => x.id === c.caseEntityId);
+      const ce = ambigua || c.caseEntityId === undefined ? undefined : ctx.caseList.find((x) => x.id === c.caseEntityId);
       e = { id: ctx.ids.next('ent') as EntityId, canonicalKey: key, type: c.type as DetectableType, family: 'PERSONA',
         marcadorEspecifico: false, mentions: [], sameHolderAs: [], display: ce?.name ?? part.text.slice(c.start, c.end) };
       if (ce !== undefined) { e.caseEntityId = ce.id; e.role = ce.role; }
+      if (ambigua) e.role = 'OTRA_PERSONA';
       byKey.set(key, e); state.entities[e.id] = e;
     }
     const det: Detection = {
       id: ctx.ids.next('det') as DetectionId, docId: doc.id, partId: c.partId, start: c.start, end: c.end,
       text: part.text.slice(c.start, c.end), type: c.type as DetectableType, source: c.source, precedence: c.precedence,
-      confidence: c.confidence, score: c.score, canonicalKey: c.canonicalKey, status: 'pendiente', entityId: e.id,
+      confidence: c.confidence, score: c.score, canonicalKey: ambigua ? key : c.canonicalKey, status: 'pendiente', entityId: e.id,
       replacement: { proposedTemplate: TEMPLATE_M },
     };
     for (const f of ['role', 'ruleId', 'caseEntityId', 'variantClass', 'nerLabel', 'label', 'validator'] as const) {
       if (c[f] !== undefined) (det as unknown as Record<string, unknown>)[f] = c[f];
     }
+    if (ambigua) { delete det.caseEntityId; det.role = 'OTRA_PERSONA'; det.confidence = 'baja'; det.score = Math.min(det.score, 0.3); }
     if (c.type === 'NIT' && c.holderDigits !== undefined) naturalNit.add(e.id);
     state.detections[det.id] = det; e.mentions.push(det.id); state.order.push(det.id);
   }
@@ -508,9 +548,12 @@ function correferir(state: ReviewState, cx: Correferencia): void {
   };
   // M-12: si el usuario rechazó una mención de la entidad que se solapa con una de las que se unirían, ese texto no es esa entidad.
   const rechazos = Object.values(state.detections).filter((o) => o.status === 'rechazada');
+  const rechazoCruza = (a: Entity, b: Entity): boolean => a.mentions.some((m) => rechazos.some((o) => overlaps(spanOf(o), spanOf(det(m)))
+    && (o.entityId === b.id || (b.caseEntityId !== undefined && o.caseEntityId === b.caseEntityId))));
   const puede = (a: Entity, b: Entity): boolean => (cx.cambiadas === undefined || cx.cambiadas.has(a.id) || cx.cambiadas.has(b.id))
-    && !a.mentions.some((m) => rechazos.some((o) => overlaps(spanOf(o), spanOf(det(m)))
-      && (o.entityId === b.id || (b.caseEntityId !== undefined && o.caseEntityId === b.caseEntityId))));
+    && !rechazoCruza(a, b);
+  /** Entidades que recibieron menciones en esta pasada (C0 a C4): para C5 también cuentan como cambiadas en la ventana. */
+  const recibieron = new Set<EntityId>();
   /** La mención que da nombre a la entidad: la primera con la clave de la entidad. Las formas cortas que se le unieron antes van
    *  primero en el orden de lectura y no la definen (D-14, A-2: si no, la anfitriona «Iván Darío Ejemplo Salazar» parecía otra
    *  «Ejemplo Salazar» para C3 y absorbía las formas cortas nuevas aunque hubiera una segunda anfitriona). */
@@ -520,13 +563,15 @@ function correferir(state: ReviewState, cx: Correferencia): void {
     for (const m of e.mentions) for (const w of palabrasDeNombre(det(m).text, kindOf(det(m)))) out.add(w);
     return [...out];
   };
-  const unir = (from: Entity, into: Entity, confianza: Detection['confidence']): void => {
+  const unir = (from: Entity, into: Entity, confianza: Detection['confidence'], entreTipos = false): void => {
     // D-14 (A-2): nunca entre tipos distintos (persona, organización, lugar). Entre clases de organización sí («FESA» → la EMPRESA).
-    if (from !== into && tipoC3(from.type) !== tipoC3(into.type)) return;
+    // La única excepción es C5 (D-15, `entreTipos`), con la misma forma exacta y sus salvaguardas.
+    if (from !== into && !entreTipos && tipoC3(from.type) !== tipoC3(into.type)) return;
+    if (from.mentions.length > 0) recibieron.add(into.id);
     for (const m of from.mentions) {
       const d = det(m);
       d.entityId = into.id; d.confidence = confianza;
-      if (d.type !== into.type && (into.type === 'PERSONA' || isOrg(into.type))) {
+      if (d.type !== into.type && (into.type === 'PERSONA' || isOrg(into.type) || (entreTipos && into.type === 'LUGAR'))) {
         d.type = into.type;
         if (into.role !== undefined) d.role = into.role; else delete d.role;
       }
@@ -702,6 +747,115 @@ function correferir(state: ReviewState, cx: Correferencia): void {
     const host = hosts[0] as Entity;
     if (puede(s, host)) unir(s, host, 'baja');
   }
+
+  // C5 · D-15, punto 3 (PB-3-r3) · La misma forma con otra etiqueta. Una entidad del modelo cuyas menciones dicen todas
+  // exactamente lo mismo (vista `lista`, blancos colapsados) se une a la única anfitriona de otro tipo (persona, organización o
+  // lugar) cuyo nombre completo es esa forma: el texto de sus menciones con su propia clave (o el nombre en la lista y sus formas
+  // completas): «Papelería Ficticia» que el modelo etiquetó PER es la «Papelería Ficticia» ORG de la frase siguiente.
+  // Con dos palabras de nombre o más, también es anfitriona la entidad que ya tiene una mención con ese texto exacto: «Ficticio
+  // Barrera» ORG es la forma corta que S-7.11 ya unió a Héctor Fabio Ficticio Barrera. Con una sola palabra no: un apellido suelto
+  // unido a una persona («el especialista Ficticio», de Ricardo Ficticio Ortiz) no arrastra otro «Ficticio» con otra etiqueta.
+  // Nunca por contención («Ficticia Valencia» ORG no se une a «Elizabeth Ficticia Valencia» si el texto no la escribe así) y solo
+  // sin salvaguardas activas (`seguraEntreTipos`): sin sufijo societario, token de salud ni sigla; sin marcador pegado (R-MOD-04)
+  // ni palabra de lugar; sin parentesco; con una sola anfitriona, también entre las personas que contienen la forma (S-7.11); M-12
+  // y M-62 (`delModelo`, `puede`). El mismo tipo es de C0 y C3.
+  const formaDe = (d: Detection): string => fold(d.text, kindOf(d)).replace(/\s+/gu, ' ').trim();
+  const conTipo = (e: Entity): boolean => e.type === 'PERSONA' || isOrg(e.type) || e.type === 'LUGAR';
+  const ordenTipo = (t: DetectableType): number => { const i = ORDEN_C3.indexOf(t); return i < 0 ? ORDEN_C3.length : i; };
+  const COMPLETAS: ReadonlySet<string> = new Set(['exacta', 'sin_tildes', 'mayusculas']);
+  const porNombre = new Map<string, Set<Entity>>();   // nombre completo → entidades
+  const porForma = new Map<string, Set<Entity>>();    // texto de cualquier mención → entidades
+  const anotar = (mapa: Map<string, Set<Entity>>, f: string, e: Entity): void => {
+    const s = mapa.get(f);
+    if (s === undefined) mapa.set(f, new Set([e])); else s.add(e);
+  };
+  for (const e of vivas()) {
+    if (!conTipo(e) || esClaveAmbigua(e.canonicalKey)) continue;
+    const ce = e.caseEntityId === undefined ? undefined : cx.caseList.find((c) => c.id === e.caseEntityId);
+    if (ce !== undefined) anotar(porNombre, fold(ce.name, 'cuerpo').replace(/\s+/gu, ' ').trim(), e);
+    for (const m of e.mentions) {
+      const d = det(m);
+      if (d.status === 'rechazada') continue;
+      const f = formaDe(d);
+      anotar(porForma, f, e);
+      const propia = ce !== undefined ? d.source === 'lista' && COMPLETAS.has(d.variantClass ?? '') : d.canonicalKey === e.canonicalKey;
+      if (propia) anotar(porNombre, f, e);
+    }
+  }
+  const anfitrionas = (g: Entity, f: string): Entity[] => {
+    const out = new Set<Entity>(porNombre.get(f) ?? []);
+    if (palabrasDeNombre(f).length >= 2) for (const e of porForma.get(f) ?? []) out.add(e);
+    return [...out].filter((o) => o !== g && o.mentions.length > 0);
+  };
+  /** La forma única de un huésped posible (entidad del modelo movible con todas sus menciones iguales), o null. */
+  const huesped = (e: Entity): string | null => {
+    if (!conTipo(e) || !delModelo(e)) return null;
+    const fs = new Set(e.mentions.map((m) => formaDe(det(m))));
+    return fs.size === 1 ? [...fs][0] as string : null;
+  };
+  /** Salvaguardas de D-15 sobre las menciones del huésped y las de la anfitriona con la forma `f`. */
+  const seguraEntreTipos = (g: Entity, h: Entity, f: string): boolean => {
+    if (!formaUnibleEntreTipos(f)) return false;
+    const ds = [...g.mentions.map(det), ...h.mentions.map(det).filter((d) => d.status !== 'rechazada' && formaDe(d) === f)];
+    if (g.mentions.every((m) => RE_SIGLA.test(det(m).text.trim()))) return false;
+    const lugar = g.type === 'LUGAR' || h.type === 'LUGAR';
+    return ds.every((d) => {
+      const p = cx.parts.get(d.partId);
+      return p !== undefined && !marcaOtroTitular(p.text, d.start, d.end, p.kind) && !tocaMarcador(p.text, d.start, d.end)
+        && (!lugar || !lugarIntroducido(p.text, d.start, p.kind));
+    });
+  };
+  let indice5: ReturnType<typeof indicePersonas> | null = null;
+  for (const e0 of vivas()) {
+    const f = huesped(e0);
+    if (f === null) continue;
+    const otras = anfitrionas(e0, f);
+    if (otras.length !== 1) continue;   // ninguna o dos anfitrionas: no se une
+    let g = e0; let h = otras[0] as Entity;
+    if (tipoC3(g.type) === tipoC3(h.type)) continue;
+    // Las dos pueden ser huéspedes: la anfitriona es la de más menciones; a igualdad, la primera en el orden de 7.11.3.
+    if (huesped(h) === f && (h.mentions.length < g.mentions.length
+      || (h.mentions.length === g.mentions.length && ordenTipo(h.type) > ordenTipo(g.type)))) [g, h] = [h, g];
+    if (!seguraEntreTipos(g, h, f)) continue;
+    if (h.type === 'PERSONA') {
+      indice5 ??= indicePersonas();
+      if (indice5.candidatas(g, palabrasDeNombre(f)).some((o) => o !== h)) continue;
+    }
+    // Por ventana: la forma ORG de una ventana anterior se une cuando la anfitriona recibe en esta la forma PER que C4 le unió.
+    const enVentana = cx.cambiadas === undefined || [g, h].some((e) => cx.cambiadas?.has(e.id) === true || recibieron.has(e.id));
+    if (enVentana && !rechazoCruza(g, h)) unir(g, h, 'baja', true);
+  }
+}
+
+/** D-15 · Palabras de lugar (vista `lista`): tipos de lugar y de vía, y los nombres de los departamentos de la DIVIPOLA. */
+const PALABRAS_DE_LUGAR: ReadonlySet<string> = new Set(('calle|carrera|cra|avenida|av|diagonal|transversal|autopista|via|kilometro|km|barrio|'
+  + 'vereda|corregimiento|municipio|departamento|ciudad|localidad|comuna|sector|urbanizacion|conjunto|edificio|torre|manzana|finca|hacienda|'
+  + 'parque|plaza|rio|puerto|isla|cerro|valle|region|provincia|amazonas|antioquia|arauca|atlantico|bolivar|boyaca|caldas|caqueta|casanare|'
+  + 'cauca|cesar|choco|cordoba|cundinamarca|guainia|guaviare|huila|guajira|magdalena|meta|narino|putumayo|quindio|risaralda|santander|'
+  + 'sucre|tolima|vaupes|vichada|bogota').split('|'));
+/** Cualquier sufijo societario de R-LST-05 como palabra suelta (no solo al final). */
+const RE_SUFIJO_SUELTO = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:` + SUFIJO + String.raw`)(?![\p{L}\p{N}])`, 'u');
+/** D-15 · La forma (ya en vista `lista`) puede unir dos tipos: sin sufijo, sin token de salud, sin palabra de lugar, y con alguna
+ *  palabra de nombre de tres letras o más. */
+function formaUnibleEntreTipos(f: string): boolean {
+  if (RE_SUFIJO_SUELTO.test(f) || RE_SALUD_FIRST.test(f)) return false;
+  const w = palabrasDeNombre(f);
+  return w.some((x) => x.length >= 3) && !f.split(/[^\p{L}\p{N}]+/u).some((x) => PALABRAS_DE_LUGAR.has(x));
+}
+/** 6.2.3 (R-MOD-04): un marcador de Sig-Low. */
+const MARCADOR = String.raw`\[(?:${Object.values(MARKER_LABEL).join('|')})_[1-9][0-9]{0,3}\]`;
+const RE_MARCADOR_ANTES = new RegExp(MARCADOR + String.raw`[ \t\-‐‑]*$`, 'u');
+const RE_MARCADOR_DESPUES = new RegExp(String.raw`^[ \t\-‐‑]*` + MARCADOR, 'u');
+/** D-15 · La mención contiene un marcador o va pegada a uno en la misma línea (texto reprocesado, R-RES-03). Ventanas fijas. */
+function tocaMarcador(text: string, start: number, end: number): boolean {
+  return /[[\]]/u.test(text.slice(start, end)) || RE_MARCADOR_ANTES.test(text.slice(Math.max(0, start - 24), start))
+    || RE_MARCADOR_DESPUES.test(text.slice(end, end + 24));
+}
+/** D-15 · Un lugar introducido justo antes de la mención («vive en…», «hacia la…», «del barrio…»). Vista `lista`, ventana fija. */
+const RE_LUGAR_ANTES = new RegExp(String.raw`(?:^|[^\p{L}\p{N}])(?:en|hacia|desde|hasta|barrio|vereda|municipio|ciudad|corregimiento|departamento|localidad|sector)`
+  + String.raw`(?: (?:de|del))?(?: (?:el|la|los|las))? ?$`, 'u');
+function lugarIntroducido(text: string, start: number, kind: PartKind): boolean {
+  return RE_LUGAR_ANTES.test(fold(text.slice(Math.max(0, start - 32), start), kind).replace(/\s+/gu, ' '));
 }
 
 function esSubsecuencia(sub: readonly string[], seq: readonly string[]): boolean {
@@ -931,17 +1085,25 @@ export function esVarianteDebil(c: { source: DetectionCandidate['source']; varia
  * - ninguna sugerencia, bandera ni edición de tramo la nombra o la toca.
  * Límite: `restablecer` devuelve la detección al estado de nacimiento sin dejar rastro (6.4.4), así que después de
  * aceptar y restablecer vuelve a contar como intacta; igual si se cambia el rol y se devuelve al de la lista.
+ * D-16: una mención ambigua (sin `caseEntityId`) está intacta mientras siga sola en su entidad propia, con la clave de su tramo,
+ * persona y `OTRA_PERSONA`: el nombre completo del modelo que la contiene puede tomarla como a cualquier variante débil (D-03 B).
  */
 export function listaIntacta(state: ReviewState, d: Detection, caseList: readonly CaseEntity[]): boolean {
-  if (d.source !== 'lista' || d.status !== 'pendiente' || d.caseEntityId === undefined) return false;
+  if (d.source !== 'lista' || d.status !== 'pendiente') return false;
   if (d.decidedBy !== undefined || d.rejectReason !== undefined || d.replacement.edited !== undefined
     || d.replacement.generalized !== undefined || d.coveredBy !== undefined || d.suggestionId !== undefined) return false;
-  const ce = caseList.find((c) => c.id === d.caseEntityId);
   const e = state.entities[d.entityId];
-  if (ce === undefined || e === undefined) return false;
-  const key = `LISTA:${ce.id}`;
-  if (d.canonicalKey !== key || e.canonicalKey !== key || !e.mentions.includes(d.id)) return false;
-  if (d.type !== (ce.kind === 'persona' ? 'PERSONA' : ce.role) || d.role !== ce.role || e.role !== ce.role) return false;
+  if (e === undefined || !e.mentions.includes(d.id)) return false;
+  if (d.caseEntityId === undefined) {
+    if (!esClaveAmbigua(d.canonicalKey) || e.canonicalKey !== d.canonicalKey || e.mentions.length !== 1 || e.caseEntityId !== undefined
+      || d.type !== 'PERSONA' || e.type !== 'PERSONA' || d.role !== 'OTRA_PERSONA' || e.role !== 'OTRA_PERSONA') return false;
+  } else {
+    const ce = caseList.find((c) => c.id === d.caseEntityId);
+    if (ce === undefined) return false;
+    const key = `LISTA:${ce.id}`;
+    if (d.canonicalKey !== key || e.canonicalKey !== key) return false;
+    if (d.type !== (ce.kind === 'persona' ? 'PERSONA' : ce.role) || d.role !== ce.role || e.role !== ce.role) return false;
+  }
   for (const x of Object.values(state.suggestions)) {
     if ((x.target.kind === 'deteccion' ? x.target.detectionId : x.target.relatedDetectionId) === d.id) return false;
   }
@@ -993,8 +1155,10 @@ export function esPropuestaSobreLista(state: ReviewState, d0: Detection): boolea
  * extensión e `incorporarModelo` la entrega como el tramo del modelo que es, con su propia entidad.
  */
 export function extensionSobreRechazada(state: ReviewState, d0: Detection): boolean {
+  // D-16: también una mención ambigua rechazada; el revisor dijo que ese texto no es de la lista, y la extensión se lo daría a una.
   return d0.source === 'lista' && d0.caseEntityId !== undefined && Object.values(state.detections).some((o) => o.status === 'rechazada'
-    && o.source === 'lista' && o.caseEntityId === d0.caseEntityId && overlaps(spanOf(o), spanOf(d0)));
+    && o.source === 'lista' && (o.caseEntityId === d0.caseEntityId || (o.caseEntityId === undefined && esClaveAmbigua(o.canonicalKey)))
+    && overlaps(spanOf(o), spanOf(d0)));
 }
 const blocks = (state: ReviewState, span: Span): boolean =>
   Object.values(state.detections).some((d) => d.status !== 'rechazada' && overlaps(spanOf(d), span))
@@ -1111,6 +1275,8 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
       const ff = isFixed(from, ctx.table); const fi = isFixed(into, ctx.table);
       if (ff && fi) return 'ROL_FIJADO_EN_ASUNTO';
       if (ff) [from, into] = [into, from];
+      // D-16: unir una mención ambigua con una entidad es elegir a esa persona; la que se mueve es siempre la ambigua.
+      else if (esClaveAmbigua(into.canonicalKey) && !esClaveAmbigua(from.canonicalKey)) [from, into] = [into, from];
       for (const m of [...from.mentions]) attach(s, s.detections[m] as Detection, into);
       into.sameHolderAs = [...new Set([...into.sameHolderAs, ...from.sameHolderAs])];
       for (const o of Object.values(s.entities)) o.sameHolderAs = o.sameHolderAs.map((x) => (x === from.id ? into.id : x));
@@ -1202,7 +1368,7 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
         const part = parts.get(c.partId);
         const span: Span = { partId: c.partId, start: c.start, end: c.end };
         if (part === undefined || c.start < 0 || c.end > part.text.length || c.start >= c.end || FLAG_SET.has(c.type) || blocks(s, span)) continue;
-        fromCandidate(s, c, part, ids);
+        fromCandidate(s, c, part, ids, ctx.caseList);
       }
       return null;
     }
@@ -1292,7 +1458,7 @@ function applySuggestion(s: ReviewState, sug: Suggestion, o: SuggestionOption, i
   return null;
 }
 
-function fromCandidate(s: ReviewState, c: DetectionCandidate, part: Part, ids: IdSource): Detection {
+function fromCandidate(s: ReviewState, c: DetectionCandidate, part: Part, ids: IdSource, caseList: readonly CaseEntity[]): Detection {
   const d: Detection = { id: ids.next('det') as DetectionId, docId: s.docId, partId: c.partId, start: c.start, end: c.end,
     text: part.text.slice(c.start, c.end), type: c.type as DetectableType, source: c.source, precedence: precedenceOf(c),
     confidence: c.confidence, score: c.score, canonicalKey: c.canonicalKey, status: 'pendiente', entityId: '' as EntityId,
@@ -1301,6 +1467,13 @@ function fromCandidate(s: ReviewState, c: DetectionCandidate, part: Part, ids: I
     if (c[f] !== undefined) (d as unknown as Record<string, unknown>)[f] = c[f];
   }
   s.detections[d.id] = d;
+  // D-16: la búsqueda de residuos tampoco asigna una variante que comparten dos o más personas de la lista.
+  if (candidatasAmbiguas(c, d.text, caseList).length > 0) {
+    delete d.caseEntityId; d.role = 'OTRA_PERSONA'; d.confidence = 'baja'; d.score = Math.min(d.score, 0.3);
+    d.canonicalKey = claveAmbigua(d);
+    attach(s, d, entityByKey(s, d.canonicalKey) ?? newEntity(s, ids, d.canonicalKey, d, 'OTRA_PERSONA'));
+    return d;
+  }
   const ce = c.caseEntityId === undefined ? undefined : entityByKey(s, `LISTA:${c.caseEntityId}`);
   attach(s, d, ce ?? entityByKey(s, c.canonicalKey) ?? newEntity(s, ids, c.canonicalKey, d, c.role));
   return d;

@@ -4,11 +4,16 @@
 //   DETECCIONES_NUEVAS · RECORDATORIO.
 // No lee texto del documento: solo estados, conteos y la revisión del resultado de residuos.
 import type { ExportGate, ExportGateFn, GateReason, ResidueResult, ReviewState } from '../types.ts';
+import { esAmbigua } from '../entities.ts';
 
-/** Detecciones con estado `pendiente` (incluye las que llegan del modelo y los residuos incorporados). */
+/**
+ * Detecciones con estado `pendiente` (incluye las que llegan del modelo y los residuos incorporados). D-16 (PB-3-r3): una mención
+ * ambigua de la lista (la variante que comparten dos o más personas) cuenta aunque el revisor la haya aceptado, hasta que elige a
+ * la persona, la separa o la rechaza (review/ambiguas.ts): es una decisión obligatoria y cierra la puerta con `PENDIENTES`.
+ */
 export function contarPendientes(state: ReviewState): number {
   let n = 0;
-  for (const d of Object.values(state.detections)) if (d.status === 'pendiente') n++;
+  for (const d of Object.values(state.detections)) if (d.status === 'pendiente' || esAmbigua(state, d)) n++;
   return n;
 }
 

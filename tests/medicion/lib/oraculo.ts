@@ -1,13 +1,16 @@
 // Revisión simulada con oráculo (plan 10.3.4): hace lo que haría un abogado cuidadoso con las propuestas, sin agregar datos que el
 // motor no propuso, salvo los que le señala la búsqueda de residuos. Solo Node; usa el reductor, `render` y `runResidueCheck` de
-// producción. El gold solo decide aceptar o rechazar; nada de él sale de este módulo (ni a la consola ni al informe).
+// producción. El gold solo decide aceptar o rechazar y, en una mención ambigua de la lista (D-16), a cuál de las personas
+// sugeridas corresponde; nada de él sale de este módulo (ni a la consola ni al informe).
 import { render } from '../../../src/core/render.ts';
 import { createRuleRegistry } from '../../../src/core/pipeline.ts';
 import { runResidueCheck } from '../../../src/core/residue.ts';
 import { applyReviewAction } from '../../../src/core/entities.ts';
 import type { ReviewContext } from '../../../src/core/entities.ts';
+import { decisionesAmbiguas } from '../../../src/core/review/ambiguas.ts';
 import type {
-  Detection, DetectionSet, DocumentModel, ReviewAction, ReviewState, RenderedOutput, ResidueRun, RuleRegistry, Span,
+  CaseEntityId, Detection, DetectionId, DetectionSet, DocumentModel, EntityId, ReviewAction, ReviewState, RenderedOutput, ResidueRun,
+  RuleRegistry, Span,
 } from '../../../src/core/types.ts';
 import { claveParte, esPositiva, esVerdadera } from '../../../scripts/metrics.ts';
 import type { EntradaDocumento, GoldAnnotation, SalidaParte, HallazgoEscaner } from '../../../scripts/metrics.ts';
@@ -36,6 +39,9 @@ export interface ResultadoOraculo {
   convergio: boolean;
   /** Acciones del reductor que se rechazaron (código): informativo; nunca texto. */
   rechazadas: string[];
+  /** D-16 · Menciones ambiguas de la lista que decidió el oráculo, con la entidad que les quedó (la persona elegida, o la propia
+   *  si las separó como otra persona). */
+  ambiguas: Array<{ detectionId: DetectionId; entityId: EntityId }>;
 }
 
 /** `detect` de la búsqueda de residuos: la misma ida y vuelta al worker `detect` (+ `fusionar` con `ner = null`) del producto. */
@@ -106,6 +112,39 @@ export async function revisarConOraculo(a: ArgsOraculo): Promise<ResultadoOracul
   const generaliza = (s: Tramo & { partId: Span['partId'] }): boolean =>
     dc.gold.anotaciones.some((g) => g.debe_generalizarse && claveParte(g.parte) === dc.claveDe.get(s.partId) && solapa(g, s));
 
+  // D-16 · La mención que comparten dos o más personas de la lista la decide el revisor, que lee el contexto: si alguna de las
+  // personas sugeridas es la del gold, la elige («Unir con otra entidad»); si el gold la da a otra persona, la separa. Una que no
+  // es dato personal la rechaza `decidirPendientes`. La entidad gold de cada persona de la lista es la de `LISTA:<nombre>`.
+  const nfc = (s: string): string => s.normalize('NFC').replace(/\s+/gu, ' ').trim();
+  const goldDeCaso = new Map<CaseEntityId, string>();
+  for (const ce of dc.caseList) {
+    const ge = dc.gold.entidades.find((e) => e.enLista && nfc(e.canonico) === `LISTA:${nfc(ce.name)}`);
+    if (ge !== undefined) goldDeCaso.set(ce.id, ge.id);
+  }
+  const entidadGold = (d: Detection): string | undefined => {
+    let mejor: { entidad: string } | undefined;
+    let largo = 0;
+    for (const g of tramos(d) as Array<Tramo & { entidad: string }>) {
+      const i = Math.min(g.end, d.end) - Math.max(g.start, d.start);
+      if (i > largo) { largo = i; mejor = g; }
+    }
+    return mejor?.entidad;
+  };
+  const decididas = new Set<DetectionId>();
+  const resolverAmbiguas = (): void => {
+    for (const x of decisionesAmbiguas(st, dc.caseList)) {
+      const d = st.detections[x.detectionId];
+      if (d === undefined || decididas.has(d.id) || !verdadera(d)) continue;
+      const g = entidadGold(d);
+      const elegida = x.opciones.find((id) => { const c = st.entities[id]?.caseEntityId; return c !== undefined && goldDeCaso.get(c) === g; });
+      const ok = elegida !== undefined
+        ? act({ kind: 'unir_entidades', fromId: x.entityId, intoId: elegida })
+        : act({ kind: 'separar_mencion', detectionId: d.id });
+      if (ok) decididas.add(d.id);
+    }
+  };
+
+  resolverAmbiguas();
   decidirPendientes();
   // Banderas: la cita se mantiene (rechaza el radicado vinculado), salvo que el gold marque ese expediente como dato positivo del
   // propio caso (7.3.3: quien sigue la guía lo conserva anonimizado; PB-2-r7, A-1): entonces se resuelve como «reemplazar», que
@@ -155,6 +194,7 @@ export async function revisarConOraculo(a: ArgsOraculo): Promise<ResultadoOracul
     ultima = r;
     if (r.run.result.hits.length === 0 && r.run.nuevas.length === 0) { convergio = true; break; }
     act({ kind: 'incorporar_residuos', residueRevision: r.run.result.revision, candidates: r.run.nuevas });
+    resolverAmbiguas();
     decidirPendientes();
   }
   if (!convergio) {
@@ -185,13 +225,21 @@ export async function revisarConOraculo(a: ArgsOraculo): Promise<ResultadoOracul
     vueltas,
     convergio,
     rechazadas,
+    ambiguas: [...decididas].flatMap((id) => { const d = st.detections[id]; return d === undefined ? [] : [{ detectionId: id, entityId: d.entityId }]; }),
   };
 }
 
-/** Completa la entrada de las métricas con lo que dejó el oráculo (10.3.4). */
+/**
+ * Completa la entrada de las métricas con lo que dejó el oráculo (10.3.4). D-16: la entidad de una mención ambigua de la lista es
+ * la que eligió el revisor (el motor no la asigna), así que la consistencia y las colisiones la miden con esa elección. Las demás
+ * detecciones conservan la entidad que les dio el motor.
+ */
 export function conOraculo(entrada: EntradaDocumento, o: ResultadoOraculo): EntradaDocumento {
+  const elegida = new Map<string, string>(o.ambiguas.map((a) => [a.detectionId, a.entityId]));
   return {
     ...entrada,
+    detecciones: elegida.size === 0 ? entrada.detecciones
+      : entrada.detecciones.map((d) => { const e = elegida.get(d.id); return e === undefined ? d : { ...d, entidad: e }; }),
     salida: o.salidaPrimera, salidaFinal: o.salidaFinal,
     hitsPrimeraVuelta: o.hitsPrimeraVuelta, hitsUltimaVuelta: o.hitsUltimaVuelta, hitsResidue: o.hitsResidue,
   };

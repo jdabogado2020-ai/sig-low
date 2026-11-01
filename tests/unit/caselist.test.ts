@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   LST, findCaseMentions, generateVariants, hasTreatment, inferOrgClass, isPossessive, nameUnits, newCaseEntity,
-  parseOrg, parsePastedList, refreshVariants, searchCaseList, sharedVariantWarnings, variantOwners,
+  parseOrg, parsePastedList, personasDeLaVariante, refreshVariants, searchCaseList, sharedVariantWarnings, variantOwners,
 } from '../../src/core/caselist';
 import { buildSearchView } from '../../src/core/normalize';
 import type {
@@ -413,6 +413,8 @@ describe('T-MO-07 INV-L03 variantes duplicadas y compartidas', () => {
   it('INV-L03 PB-3-r1 la variante compartida va a la entidad con más menciones de nombre completo o apellidos; a igualdad, a la más cercana antes', () => {
     const src = ids();
     const { list, short } = listOf([persona('Adriana Prueba Torres', 'DEMANDANTE', src), 'ADR'], [persona('Nicolás Prueba Mora', 'PACIENTE', src), 'NIC']);
+    // D-16 (PB-3-r3): entre dos PERSONAS esta dueña es solo provisional, para la fusión (D-03 B y E miran el `caseEntityId`). La
+    // detección queda sin persona y la decide el revisor (entities.ts; prueba en tests/unit/entities.test.ts, bloque PB-3-r3).
     // Nicolás es el protagonista (3 menciones fuertes frente a 1): «Prueba» suelto es suyo aunque Adriana se nombre justo antes.
     let t = 'Nicolás Prueba Mora, Prueba Mora y NICOLÁS PRUEBA MORA. Así lo dijo Adriana Prueba Torres.\nCabe resaltar que Prueba recibió amenazas.';
     expect(format(t, list, short).filter((x) => x.startsWith('Prueba|'))).toEqual(['Prueba|NIC|apellido_suelto|baja|alt:ADR']);
@@ -426,6 +428,25 @@ describe('T-MO-07 INV-L03 variantes duplicadas y compartidas', () => {
     t = 'Comercial Prueba S.A.S. y Comercial Prueba firmaron. Luego la señora Prueba llamó.';
     const ms = searchCaseList(part(t), l2).filter((m) => t.slice(m.start, m.end) === 'Prueba');
     expect(ms.map((m) => m.caseEntityId)).toEqual([l2[0]?.id]);
+  });
+  it('INV-L03 D-16 personasDeLaVariante: las personas que comparten la variante, también con un tratamiento pegado; una organización o una variante apagada no cuentan', () => {
+    const src = ids();
+    const a = persona('Adriana Prueba Torres', 'DEMANDANTE', src);
+    const b = persona('Nicolás Prueba Mora', 'PACIENTE', src);
+    const o = organizacion('Comercial Prueba S.A.S.', 'EMPRESA', src);
+    const l = refreshVariants([a, b, o]);
+    for (const t of ['Prueba', 'PRUEBA', 'Sr. Prueba', 'la doctora Prueba', 'señor Prueba']) expect(personasDeLaVariante(t, l), t).toEqual([a.id, b.id]);
+    expect(personasDeLaVariante('Prueba Torres', l)).toEqual([a.id]);
+    expect(personasDeLaVariante('Adriana Prueba Torres', l)).toEqual([a.id]);
+    expect(personasDeLaVariante('Comercial Prueba', l)).toEqual([]);
+    // «Don» solo como palabra: «Dona» o «Donato» no son tratamientos.
+    expect(personasDeLaVariante('Donato Prueba', l)).toEqual([]);
+    const apagada = refreshVariants(l.map((e) => (e.id === b.id ? { ...e, variants: e.variants.map((v) => (v.text === 'Prueba' ? { ...v, enabled: false } : v)) } : e)) as CaseEntity[]);
+    expect(personasDeLaVariante('Prueba', apagada)).toEqual([a.id]);
+    // La lista recibida no cambia.
+    const antes = JSON.stringify(l);
+    personasDeLaVariante('Sr. Prueba', l);
+    expect(JSON.stringify(l)).toBe(antes);
   });
   it('INV-L03 una variante no compartida conserva su confianza base', () => {
     const src = ids();
