@@ -1444,7 +1444,7 @@
       "tarea": "PB-3-r1 con PB-2",
       "accion": "re-medir tras las correcciones de la fusión; revisar la agrupación de las formas del modelo",
       "cierre": true,
-      "estado": "abierta",
+      "estado": "cerrada",
       "corrida": "20261031-2307-x-large-natural-8h+20261031-2307-x-large-mayusculas-8h+20261031-2307-x-large-minusculas-8h"
     },
     {
@@ -2000,7 +2000,7 @@
       "accion": "informativa (cierre: false) mientras el integrador decide si bloquea; fijo de 7 cifras con rótulo, rótulo diferido y prefijo +57 con salto de línea; repetir npm run medir; nunca ajustar mirando el texto de la reserva (D-01)",
       "cierre": false,
       "estado": "abierta",
-      "corrida": "20261031-2308-x-large-mayusculas-8h-desarrollo+20261031-2308-x-large-natural-8h-desarrollo+20261031-2308-x-large-minusculas-8h-desarrollo+20261031-2308-x-large-mayusculas-8h-reserva+20261031-2309-x-large-minusculas-8h-reserva+20261031-2308-x-large-natural-8h-reserva"
+      "corrida": "20261101-1958-x-large-mayusculas-8h-desarrollo+20261101-1958-x-large-natural-8h-desarrollo+20261101-1958-x-large-minusculas-8h-desarrollo+20261101-1959-x-large-mayusculas-8h-reserva+20261101-1959-x-large-minusculas-8h-reserva+20261101-1959-x-large-natural-8h-reserva"
     },
     {
       "fila": "POSIBLE_SOBREAJUSTE:DIRECCIONES",
