@@ -44,7 +44,10 @@ const pasos = [
   ['1 typecheck (workers)', N, [bin.tsc, '--noEmit', '-p', 'tsconfig.worker.json']],
   ['1 typecheck (pruebas y scripts)', N, [bin.tsc, '--noEmit', '-p', 'tsconfig.node.json']],
   ['2 lint', N, [bin.eslint, '.']],
-  ['3 test:unit', N, [bin.vitest, 'run']],
+  // Las pruebas de tiempo lineal del catálogo (T-MO-01, B-62) corren solas: con los demás archivos en paralelo, la carga ajena
+  // las pasa del tope de 250 ms aunque el código sea lineal. El tope no cambia.
+  ['3 test:unit', N, [bin.vitest, 'run', '--exclude', 'tests/unit/rules-catalogo.test.ts']],
+  ['3 test:unit (catálogo y tiempos, solo)', N, [bin.vitest, 'run', 'tests/unit/rules-catalogo.test.ts']],
   ['4 build', N, [bin.vite, 'build']],
   ['5 check-dist', N, ['scripts/check-dist.mjs']],
   ['5 INV-G13 sobre el build recién hecho', N, [bin.vitest, 'run', 'tests/unit/mensajes.test.ts', '-t', 'INV-G13 dist'], { SIGLOW_DIST_RECIENTE: '1' }],
