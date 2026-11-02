@@ -67,7 +67,7 @@ Cómo hacerlo:
 
 El modelo revisa el documento por bloques, mientras usted ya puede empezar a revisar con las reglas y la lista del caso. Antes de empezar, la aplicación le dice cuántos bloques son y cuánto tardará, para su equipo.
 
-Como referencia, la meta del producto es revisar 10 páginas en **2 minutos o menos con 8 hilos de procesador o más**, y en **4 minutos o menos con 4 a 7 hilos**. Los tiempos medidos hasta ahora se tomaron con la máquina ocupada y **no son definitivos**: [VERIFICAR en P0-5: tiempos por 10 páginas con 1, 4 y 8 hilos con el modelo completo y con el reducido]. Si su navegador no permite acelerar el modelo, la aplicación avisa que será más lento.
+Como referencia, la meta del producto es que el modelo revise cada página en **15 segundos o menos en equipos de 12 hilos de procesador o más**, y en **20 segundos o menos con 4 a 11 hilos**. Las reglas y la lista del caso tardan menos de 1 segundo por página, y sus resultados aparecen primero. En el equipo de referencia (16 hilos) se midieron unos 11 segundos por página: un expediente de 60 páginas toma unos 11 minutos. Con 4 hilos, unos 19 segundos por página. Si su navegador no permite acelerar el modelo, la aplicación avisa que será más lento.
 
 ## Parte 3. Comprobación en modo avión
 
@@ -130,7 +130,7 @@ Siga además el protocolo 04 del Kit de Política de Uso de IA: herramientas aut
 | «No hay espacio suficiente para guardar la tabla» | Exporte ahora una copia cifrada de la tabla para no perderla y libere espacio. |
 | El navegador podría borrar los datos de Sig-Low («no persistente») | Exporte copias cifradas de las tablas que necesite. Un uso frecuente en una ventana normal ayuda. |
 | **Equipo con poca memoria** (menos de 8 GB) o «se le acabó la memoria al modelo» | Cierre otras pestañas y programas. Sig-Low usa la versión reducida o sigue con reglas y lista del caso, y el informe lo dice. En ese caso, **lea todo el documento con mucho cuidado** antes de copiar. Puede elegir «Seguir sin el modelo» (los nombres que no estén en la lista solo se encontrarán con las reglas). |
-| El análisis es lento | Cierre otras aplicaciones, use un equipo con más hilos de procesador o trabaje con documentos más cortos. Mientras tanto, puede revisar los resultados de las reglas. [VERIFICAR en P0-5: tiempos de referencia.] |
+| El análisis es lento | Cierre otras aplicaciones, use un equipo con más hilos de procesador o trabaje con documentos más cortos. Mientras tanto, puede revisar los resultados de las reglas. Referencia: unos 11 segundos por página con 16 hilos y unos 19 con 4. |
 | **Edge con el modo de protección mejorada** (el modelo no carga o falla) | Ese modo desactiva funciones que el modelo necesita. Pida al área de sistemas una **excepción para la dirección oficial**, o trabaje sin el modelo (reglas y lista del caso, con más cuidado). No desactive el modo para todos los sitios. [VERIFICAR: nombre exacto del ajuste y de la excepción en la versión instalada de Edge.] |
 | Hay una versión nueva de Sig-Low | Se aplica sola la próxima vez que abra Sig-Low con **todas sus pestañas cerradas**. Para aplicarla ya, guarde o exporte la tabla: la página se recargará y se borrará lo que esté solo en memoria. |
 | Olvidó la frase de paso | No hay recuperación. Si exportó una copia cifrada, necesita esa misma frase. Por eso conviene guardar la frase en un lugar propio y confiable, fuera del navegador. |
