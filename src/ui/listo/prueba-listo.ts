@@ -6,6 +6,7 @@ import { ir } from '../estado.ts';
 import { fijarRevision, obtenerRevision } from '../documento.ts';
 import type { ModelProgress, ResidueResult } from '../../core/types.ts';
 import { despachar } from '../review/base/almacen.ts';
+import { esAmbigua } from '../../core/entities.ts';
 import { actualizarListo, obtenerListo } from './almacen.ts';
 import { puertaDe } from './almacen.ts';
 
@@ -13,9 +14,17 @@ function decidirUnoAUno(): number {
   const s = obtenerRevision();
   if (s === null) return -1;
   let n = 0;
-  for (const id of s.order) {
-    const d = obtenerRevision()?.detections[id];
-    if (d?.status === 'pendiente' && despachar({ kind: 'aceptar', detectionId: id }).ok) n++;
+  // D-16: una mención ambigua no se acepta sin persona; el revisor simulado la separa como otra persona, como el oráculo. Separar
+  // puede dejar la mención con otro id, así que se repite la pasada mientras algo cambie.
+  for (let pasada = 0, cambio = true; cambio && pasada < 5; pasada++) {
+    cambio = false;
+    for (const id of obtenerRevision()?.order ?? []) {
+      const s1 = obtenerRevision();
+      const d = s1?.detections[id];
+      if (s1 === null || d === undefined) continue;
+      if (esAmbigua(s1, d)) { if (despachar({ kind: 'separar_mencion', detectionId: id }).ok) cambio = true; continue; }
+      if (d.status === 'pendiente' && despachar({ kind: 'aceptar', detectionId: id }).ok) { n++; cambio = true; }
+    }
   }
   for (const f of Object.values(obtenerRevision()?.flags ?? {})) {
     if (!f.acknowledged && despachar({ kind: 'resolver_bandera', flagId: f.id, resolution: 'mantener' }).ok) n++;

@@ -779,7 +779,7 @@ testMedicion.describe('Revisión I (PC-3)', () => {
     const panel = panelTexto(page);
     await expect(panel.locator('[data-det]')).toHaveCount(9);
     await expect(page.locator('[data-prueba="numeracion-provisional"]')).toHaveText('Los números de los marcadores pueden cambiar hasta que copie o exporte por primera vez.');
-    await expect(panel.getByRole('button', { name: 'Persona, pendiente, confianza alta: Ana Ficticia Rojas' }).first()).toBeVisible();
+    await expect(panel.getByRole('button', { name: 'Persona, pendiente, confianza alta: Señora Ana Ficticia Rojas' }).first()).toBeVisible();
     await expect(page.getByRole('treegrid', { name: 'Detecciones' })).toBeVisible();
     await expect(page.getByRole('row', { name: 'Persona, [DEMANDANTE_1], 2 menciones, 2 pendientes' })).toBeVisible();
     // Sin detecciones: M-69 y ningún resaltado.
@@ -796,7 +796,7 @@ testMedicion.describe('Revisión I (PC-3)', () => {
     expect(await gancho(page).revision()).toBe(0);
     await marcas.nth(0).focus();
     await page.keyboard.press('a');
-    await expect(marcas.nth(0)).toHaveAccessibleName('Persona, aceptada como [DEMANDANTE_1], confianza alta: Ana Ficticia Rojas');
+    await expect(marcas.nth(0)).toHaveAccessibleName('Persona, aceptada como [DEMANDANTE_1], confianza alta: Señora Ana Ficticia Rojas');
     expect(await gancho(page).revision()).toBe(1);
     await marcas.nth(1).focus();
     await page.keyboard.press('r');
@@ -1476,7 +1476,14 @@ testMedicion.describe('Listo (PC-5)', () => {
     expect(e.banderas).toBeGreaterThan(0);
     await expect(page.locator('[data-motivo="BANDERAS"]')).toHaveText(/^Quedan \d+ banderas sin confirmar\.$/);
     await g.decidir();
-    await esperarBusqueda(page);
+    // CIERRE-1 (M-82): «Ejemplo» de «Luis Ejemplo» ya no es de Pedro; la búsqueda de residuos trae «Luis» como detección nueva. El
+    // revisor la decide y la búsqueda vuelve a correr.
+    await expect.poll(async () => {
+      const t = (await page.locator('[data-prueba="residuos-estado"]').textContent()) ?? '';
+      if (t.startsWith('Pendiente')) await g.decidir();
+      return t;
+    }, { timeout: 30_000 })
+      .toContain('Búsqueda de residuos: ninguno de los');
     await marcarRecordatorio(page);
     expect((await g.estado()).ok).toBe(true);
   });
