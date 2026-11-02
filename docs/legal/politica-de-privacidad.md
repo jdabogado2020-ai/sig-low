@@ -1,6 +1,6 @@
 # Política de privacidad de Sig-Low
 
-Versión 1 · Fecha de vigencia: {FECHA_V1}
+Versión 1 · Fecha de vigencia: 2 de noviembre de 2026
 
 ## 1. Qué es Sig-Low y a quién se dirige este texto
 

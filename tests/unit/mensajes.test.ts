@@ -236,12 +236,13 @@ describe('T-IU-02 T-PV-26 aviso de privacidad de «Acerca de» y textos legales 
     expect(hallazgos(textos)).toEqual([]);
   });
 
-  it('T-PV-26 los dos textos legales no dejan ningún [VERIFICAR] y conservan el marcador {FECHA_V1} de la vigencia', () => {
+  it('T-PV-26 los dos textos legales no dejan ningún [VERIFICAR] ni el marcador {FECHA_V1}, y fijan la vigencia de la v1.0.0 (DOC-5)', () => {
     const politica = leer('politica-de-privacidad.md');
     const terminos = leer('terminos-de-uso.md');
     for (const texto of [politica, terminos]) {
       expect(texto).not.toMatch(/\[VERIFICAR/);
-      expect(texto).toContain('Fecha de vigencia: {FECHA_V1}');
+      expect(texto).not.toContain('{FECHA_V1}');
+      expect(texto).toContain('Fecha de vigencia: 2 de noviembre de 2026');
     }
   });
 
