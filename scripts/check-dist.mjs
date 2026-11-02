@@ -247,10 +247,22 @@ for (const p of archivos) {
   if (r.startsWith('ort/') && !Object.hasOwn(ORT_ARCHIVOS, r.slice(4))) fallar(`${r}: archivo no permitido en ort/`);
 }
 
+// Auxiliares del modelo (P0-5): `models/<id>/tokenizer*.json` son datos que el worker `ner` lee como JSON, no código, y su
+// vocabulario trae palabras como «localStorage» o «console». No se barren solo si su SHA-256 es el del manifiesto de su modelo
+// (fijado en H0-5/H0-6, el mismo que exige MODELO_INTEGRIDAD al cargar); uno alterado se barre como cualquier otro archivo.
+const auxiliarVerificado = (r, p) => {
+  const m = /^models\/([\w-]+)\/(tokenizer(?:_config)?\.json)$/.exec(r);
+  if (!m) return false;
+  const manifiesto = leerJson(join(DIR, 'models', m[1], 'manifest.json'));
+  const aux = manifiesto?.auxiliares?.find((a) => a.ruta === m[2]);
+  return aux !== undefined && aux.sha256 === sha256(readFileSync(p));
+};
+
 // ===== Contenido =====
 for (const p of archivos) {
   const r = rel(p);
   if (!/\.(m?js|html|json|txt|webmanifest|css)$/.test(p) && basename(p) !== '_headers') continue;
+  if (auxiliarVerificado(r, p)) continue;
   const t = readFileSync(p, 'utf8');
   // Literales de la guardia: se quitan del texto (una vez cada uno) solo en el chunk de entrada y en los workers propios, y
   // solo si están exactos. En esos archivos son obligatorios: si falta uno o se repite, la guardia no es su primer import.

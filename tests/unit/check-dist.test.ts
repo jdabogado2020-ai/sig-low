@@ -5,6 +5,7 @@
 // T-CD-01 es el paso 5 de `npm run verify` (check-dist sobre el build real). Los canarios se generan aquí, no en
 // tests/fixtures/dist-malo/: uno es un archivo de 26 MiB. Solo datos ficticios.
 // Incluye, sin cambios en sus aserciones, las pruebas de la excepción de pdf.js que PE-4-r2 dejó en check-dist-pdfjs.test.ts.
+import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { closeSync, copyFileSync, existsSync, ftruncateSync, linkSync, mkdirSync, mkdtempSync, openSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -177,6 +178,16 @@ describe.concurrent('T-CD-02 un canario por regla de contenido: check-dist sale 
   for (const [regla, contenido] of CANARIOS) {
     it(`canario ${regla}: ${contenido}`, async () => { await falla(chunkUi(contenido), `assets/ui-Cx0Prueba.js: ${regla} ×`); });
   }
+
+  it('P0-5 auxiliares del modelo: tokenizer.json con el SHA-256 de su manifiesto no se barre; alterado, sí', async () => {
+    const tok = '{"vocab":["localStorage.x=1;","console.log"]}';
+    const manifiesto = (huella: string): string => JSON.stringify({ id: 'm', auxiliares: [{ ruta: 'tokenizer.json', tamano: tok.length, sha256: huella }] });
+    const huella = createHash('sha256').update(tok).digest('hex');
+    expect((await correr({ archivos: { 'models/m/tokenizer.json': tok, 'models/m/manifest.json': manifiesto(huella) } })).salida).toBe(0);
+    await falla({ archivos: { 'models/m/tokenizer.json': tok, 'models/m/manifest.json': manifiesto('0'.repeat(64)) } }, 'models/m/tokenizer.json: localStorage ×');
+    // Fuera de models/<id>/ el mismo contenido se barre siempre.
+    await falla({ archivos: { 'assets/tokenizer.json': tok } }, 'assets/tokenizer.json: localStorage ×');
+  });
 
   it('B-50 sw-registro: el build tiene un solo navigator.serviceWorker.register, con la cadena literal /sw.js como primer argumento', async () => {
     const reg = (llamada: string): Caso => ({ archivos: { [REGISTRO_SW]: llamada } });
