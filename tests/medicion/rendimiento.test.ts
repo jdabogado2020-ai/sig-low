@@ -22,8 +22,9 @@ const filasDe = (modelo: string): FilaLatencia[] =>
   readdirSync(join(RAIZ, 'metricas')).filter((f) => f.startsWith(`latencia-${modelo}-chromium`) && f.endsWith('.json'))
     .flatMap((f) => leer<ArchivoLatencia>(`metricas/${f}`).filas.filter((x) => x.hilos > 0 && x.ventanasMs !== undefined));
 
-/** Meta de rendimiento por 10 páginas (≈ 5.000 palabras): ≤ 2 min con 8 hilos o más, ≤ 4 min con 4 a 7 hilos (A.11, 10.4.1). */
-const META_MS = (hilos: number): number => (hilos >= 8 ? 120_000 : 240_000);
+/** Meta de rendimiento por 10 páginas (≈ 5.000 palabras), D-20 (aprobada por el dueño el 2-nov): ≤ 15 s por página con 12 hilos o
+ *  más y ≤ 20 s con 4 a 11 hilos. Reemplaza a la de A.11 (≤ 2 min con 8 hilos o más, ≤ 4 min con 4 a 7). */
+const META_MS = (hilos: number): number => (hilos >= 12 ? 150_000 : 200_000);
 
 describe('T-ME-04 · meta de rendimiento (preliminar) con x-large', () => {
   const diez = filasDe('x-large').filter((f) => f.palabras >= 5000);
@@ -45,9 +46,13 @@ describe('T-ME-04 · meta de rendimiento (preliminar) con x-large', () => {
     }
   });
 
-  const silenciosas = diez.filter((f) => typeof f.nucleosAjenos === 'number' && f.nucleosAjenos < 1);
-  it.skipIf(silenciosas.length === 0)('T-ME-04 meta: 10 páginas en <= 2 min con 8 hilos y <= 4 min con 4 hilos (solo corridas con < 1 núcleo ajeno)', () => {
-    for (const f of silenciosas) expect(f.totalMs, `${f.hilos} hilos`).toBeLessThanOrEqual(META_MS(f.hilos));
+  // La cifra definitiva es la de P0-5, con los agentes parados (metricas/latencia-x-large-chromium-p05*.json). `nucleosAjenos`
+  // no sirve para elegirla: cuenta como ajeno el propio navegador de la prueba (chrome-headless-shell), unos 8 núcleos (D-20).
+  const p05 = readdirSync(join(RAIZ, 'metricas')).filter((f) => /^latencia-x-large-chromium-p05.*\.json$/.test(f))
+    .flatMap((f) => leer<ArchivoLatencia>(`metricas/${f}`).filas.filter((x) => x.palabras >= 5000));
+  it('T-ME-04 meta (D-20, P0-5): 10 páginas en <= 150 s con 12 hilos o más y <= 200 s con 4 a 11 hilos, con 4, 8 y 16 hilos', () => {
+    for (const h of [4, 8, 16]) expect(p05.some((f) => f.hilos === h), `${h} hilos`).toBe(true);
+    for (const f of p05) expect(f.totalMs, `${f.hilos} hilos`).toBeLessThanOrEqual(META_MS(f.hilos));
   });
 
   it('T-ME-04 cada corrida preliminar guarda su navegador, su memoria de WebAssembly y su carga ajena (si se midió)', () => {

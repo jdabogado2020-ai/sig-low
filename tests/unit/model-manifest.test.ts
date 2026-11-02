@@ -9,7 +9,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { GlinerEngine, HILOS_AISLADO, type GlinerEngineDeps, type OrtModule, type OrtSession } from '../../src/core/ner/engine';
+import { GlinerEngine, HILOS_AISLADO, HILOS_MAXIMO, hilosAislado, type GlinerEngineDeps, type OrtModule, type OrtSession } from '../../src/core/ner/engine';
 import { createGlinerTokenizer } from '../../src/core/ner/gliner';
 import { decidirFallo, entregarModelo, ordenDeVariantes, trozosEnOrden, type PuertosEntrega } from '../../src/core/ner/entrega';
 import { crearManejadorNer } from '../../src/core/ner/handler';
@@ -566,5 +566,17 @@ describe('T-AB-05 · el reensamblado no duplica el búfer (R-31)', () => {
     const sw = readFileSync(join('src', 'sw.ts'), 'utf8');
     expect(sw).toContain('{ highWaterMark: 0 }');
     expect(sw).not.toMatch(/new Blob|\.concat\(/);
+  });
+});
+
+describe('D-20 · hilos del modelo según el equipo', () => {
+  it('usa todos los hilos lógicos entre 4 y 16; sin dato, 4', () => {
+    expect(hilosAislado(16)).toBe(16);
+    expect(hilosAislado(8)).toBe(8);
+    expect(hilosAislado(12.5)).toBe(12);
+    expect(hilosAislado(2)).toBe(HILOS_AISLADO);
+    expect(hilosAislado(64)).toBe(HILOS_MAXIMO);
+    expect(hilosAislado(undefined)).toBe(HILOS_AISLADO);
+    expect(hilosAislado(Number.NaN)).toBe(HILOS_AISLADO);
   });
 });

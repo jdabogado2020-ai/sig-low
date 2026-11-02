@@ -92,8 +92,16 @@ export interface OrtModule {
   Tensor: new (type: string, data: ArrayBufferView, dims: readonly number[]) => unknown;
 }
 
-/** Hilos por defecto con `crossOriginIsolated` (4 a 8 en 3.3; PF-3 calibra la cifra). Sin él, 1. */
+/** Hilos mínimos con `crossOriginIsolated` (3.3), y los de un equipo que no informa los suyos. Sin él, 1. */
 export const HILOS_AISLADO = 4;
+/** Tope de hilos del modelo (D-20). */
+export const HILOS_MAXIMO = 16;
+
+/** Hilos con `crossOriginIsolated` (D-20): todos los hilos lógicos del equipo, entre `HILOS_AISLADO` y `HILOS_MAXIMO`. */
+export function hilosAislado(hardwareConcurrency: number | undefined): number {
+  const n = typeof hardwareConcurrency === 'number' && Number.isFinite(hardwareConcurrency) ? Math.floor(hardwareConcurrency) : HILOS_AISLADO;
+  return Math.min(Math.max(n, HILOS_AISLADO), HILOS_MAXIMO);
+}
 
 export interface GlinerEngineDeps {
   /** Importa ORT-web (build CPU, sin bundle de WebAssembly). Lo aporta `ner.worker.ts`. */
@@ -103,6 +111,8 @@ export interface GlinerEngineDeps {
   /** Rutas locales de los dos archivos del build CPU de ORT, fijadas antes del primer uso (V-09). */
   wasmPaths: { mjs: string; wasm: string };
   crossOriginIsolated: boolean;
+  /** `navigator.hardwareConcurrency` del worker; fija los hilos con `crossOriginIsolated` (D-20). */
+  hardwareConcurrency?: number;
   /** Fuerza el número de hilos (pruebas, PF-3). */
   threads?: number;
   now?: () => number;
@@ -185,7 +195,7 @@ export class GlinerEngine implements NerEngine {
     // 3. Runtime sin red: rutas locales y número de hilos fijados antes del primer uso (V-09)
     onProgress({ phase: 'cargando_runtime', done: 0, total: 1 });
     const ort = await this.d.loadOrt();
-    this.hilos = this.d.threads ?? (this.d.crossOriginIsolated ? HILOS_AISLADO : 1);
+    this.hilos = this.d.threads ?? (this.d.crossOriginIsolated ? hilosAislado(this.d.hardwareConcurrency) : 1);
     ort.env.wasm.wasmPaths = { ...this.d.wasmPaths };
     ort.env.wasm.proxy = false;
     ort.env.wasm.numThreads = this.hilos;

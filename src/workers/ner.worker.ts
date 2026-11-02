@@ -77,6 +77,7 @@ const manejar = crearManejadorNer({
       fetcher: fetcherDe(manifest),
       wasmPaths: { mjs: rutaOrt('ort-wasm-simd-threaded.mjs'), wasm: rutaOrt('ort-wasm-simd-threaded.wasm') },
       crossOriginIsolated: self.crossOriginIsolated === true,
+      hardwareConcurrency: self.navigator.hardwareConcurrency,
     };
     return new GlinerEngine(manifest, deps);
   },

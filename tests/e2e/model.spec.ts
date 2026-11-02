@@ -135,7 +135,9 @@ test.describe('PF-1b · worker ner real con ORT-web (arnés)', () => {
     expect(final.kind, JSON.stringify(final)).toBe('resultado');
     expect(final['payload'].kind).toBe('cargar');
     const load = final['payload'].load;
-    expect(load).toMatchObject({ engineId: 'gliner-x-base', decoder: 'gliner-spans', crossOriginIsolated: true, threads: 4, modelId: 'gliner-x-base' });
+    // D-20: todos los hilos lógicos del equipo, entre 4 y 16.
+    const hilos = await page.evaluate(() => Math.min(Math.max(Math.floor(navigator.hardwareConcurrency || 4), 4), 16));
+    expect(load).toMatchObject({ engineId: 'gliner-x-base', decoder: 'gliner-spans', crossOriginIsolated: true, threads: hilos, modelId: 'gliner-x-base' });
     expect(load.warmupWindowMs).toBeGreaterThan(0);
     expect(carga.some((m) => m.kind === 'progreso' && m['stage'] === 'modelo_carga' && m['unit'] === 'bytes')).toBe(true);
 
