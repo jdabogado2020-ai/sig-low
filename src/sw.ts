@@ -15,6 +15,8 @@
 //    coincide, responde con el código y no guarda nada. Servir el modelo es de solo lectura: tokenizador y
 //    `onnx/model_quantized.onnx` salen de esa caché (el ONNX reensamblado trozo a trozo, un trozo en memoria por vez); lo que
 //    falta recibe Response.error(), nunca se pide a la red. La lista blanca del modelo sale de los manifiestos del precache.
+//    F0: la lectura avisa el avance en bytes y se corta si pasa `SILENCIO_LECTURA_MS` sin un bloque; los reintentos y la
+//    reanudación (los archivos ya verificados no se vuelven a pedir) los decide la página (src/core/ner/entrega.ts).
 // Los mensajes a la página no llevan contenido: { tipo: 'avance', done, total } y { tipo: 'offlineReady' }; la respuesta
 // a SKIP_WAITING, por el puerto que trae, es { tipo: 'SKIP_WAITING', aplicada, motivo? } (`otras_pestanas`, `sin_espera`).
 // vite-plugins/precache.ts escribe la lista, las cabeceras de public/_headers y los tipos en lugar de __SIGLOW_SW__.
@@ -290,6 +292,13 @@ async function servirModelo(id: string, rel: string, v: Version): Promise<Respon
 }
 
 let descargaModelo: AbortController | null = null;
+let descargaEnCurso: Promise<unknown> | null = null;
+/**
+ * F0: sin un bloque de bytes en este tiempo (ni la respuesta, ni el siguiente bloque), la descarga del archivo se corta y responde
+ * MODELO_NO_DESCARGADO; la página la reintenta. El reloj se reinicia con cada bloque, así que una conexión lenta pero con avance
+ * no se corta. El build de medición lo acorta para las E2E de red lenta (`__SIGLOW_MEDICION__`, nunca en dist/).
+ */
+const SILENCIO_LECTURA_MS = __SIGLOW_MEDICION__ ? 3_000 : 120_000;
 
 type RespuestaModelo = { ok: true; [k: string]: unknown } | { ok: false; code: string; cancelado?: boolean };
 
@@ -325,11 +334,20 @@ async function atenderModelo(d: Record<string, unknown>, puerto: MessagePort): P
         const ruta = typeof d['ruta'] === 'string' ? d['ruta'] : '';
         const a = [...m.auxiliares, ...m.trozos].find((x) => x.ruta === ruta);
         if (!a) throw new TypeError('MODELO');
-        r = await descargarArchivo(m, a, puerto);
+        if (descargaModelo !== null) { r = { ok: false, code: 'ERROR_INTERNO' }; break; }
+        const enCurso = descargarArchivo(m, a, puerto);
+        descargaEnCurso = enCurso;
+        try {
+          r = await enCurso;
+        } finally {
+          if (descargaEnCurso === enCurso) descargaEnCurso = null;
+        }
         break;
       }
       case 'MODELO_CANCELAR':
+        // Responde cuando la descarga en curso ya soltó su candado: la página puede pedir el siguiente intento enseguida (F0).
         descargaModelo?.abort();
+        await descargaEnCurso?.catch(() => undefined);
         r = { ok: true };
         break;
       case 'MODELO_BORRAR': // una caché por modelo (parciales o completa); nunca toca `siglow-app-*`
@@ -360,12 +378,24 @@ async function descargarArchivo(m: ManifiestoSw, a: ArchivoModelo, puerto: Messa
     }
     const bytes = new Uint8Array(a.tamano); // búfer del tamaño declarado: lo que sobre o falte es una alteración
     let escrito = 0;
+    // Vigía de silencio (F0): se arma antes de pedir y se rearma con cada bloque recibido.
+    let porSilencio = false;
+    let reloj: ReturnType<typeof setTimeout> | undefined;
+    const vigilar = (): void => {
+      clearTimeout(reloj);
+      reloj = setTimeout(() => { porSilencio = true; control.abort(); }, SILENCIO_LECTURA_MS);
+    };
     try {
+      vigilar();
       const res = await pedirAlOrigen(url, 'no-store', control.signal);
-      if (res.status !== 200 || res.type !== 'basic' || !res.body) return { ok: false, code: 'MODELO_NO_DESCARGADO' };
+      if (res.status !== 200 || res.type !== 'basic' || !res.body) {
+        await res.body?.cancel().catch(() => undefined);
+        return { ok: false, code: 'MODELO_NO_DESCARGADO' };
+      }
       const lector = res.body.getReader();
       let ultimo = 0;
       for (;;) {
+        vigilar();
         const { done, value } = await lector.read();
         if (done) break;
         if (escrito + value.byteLength > a.tamano) {
@@ -378,8 +408,10 @@ async function descargarArchivo(m: ManifiestoSw, a: ArchivoModelo, puerto: Messa
         if (t - ultimo >= 100) { ultimo = t; puerto.postMessage({ tipo: 'avance', bytes: escrito }); }
       }
     } catch (e) {
-      if (control.signal.aborted) return { ok: false, code: 'ENTRADA_INVALIDA', cancelado: true };
+      if (control.signal.aborted && !porSilencio) return { ok: false, code: 'ENTRADA_INVALIDA', cancelado: true };
       return { ok: false, code: e instanceof RangeError ? 'MEMORIA' : 'MODELO_NO_DESCARGADO' };
+    } finally {
+      clearTimeout(reloj);
     }
     if (escrito !== a.tamano || (await sha256Hex(bytes)) !== a.sha256) return { ok: false, code: 'MODELO_INTEGRIDAD' };
     try {

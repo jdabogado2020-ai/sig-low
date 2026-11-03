@@ -6,7 +6,10 @@
  *   no cabe en la cuota (`CUOTA_EXCEDIDA` o espacio libre menor que el modelo), el respaldo. Si tampoco cabe: plan B.
  * - Una descarga con un trozo alterado (`MODELO_INTEGRIDAD`) no prueba el respaldo: se borran los parciales y se declara el
  *   plan B con aviso (V-44). Un fallo de red tampoco.
- * - Siempre se borran los parciales de lo que no terminó (nunca queda un modelo a medias en la caché).
+ * - F0: un archivo que falla por la red (`MODELO_NO_DESCARGADO`: corte, respuesta que no es 200 o silencio) se reintenta hasta
+ *   `REINTENTOS_POR_ARCHIVO` veces. Si aun así falla, los archivos ya verificados (tamaño y SHA-256 en el service worker) se
+ *   conservan: «Reintentar» sigue desde ahí, porque el SW no vuelve a pedir uno guardado y correcto. Con integridad, cuota o
+ *   cancelación se borran los parciales, como antes. Un modelo a medias nunca se usa: solo cuenta como instalado el completo.
  */
 
 import { SiglowError, type ErrorCode, type ModelManifest, type PlanBCause } from '../types';
@@ -14,6 +17,11 @@ import { bytesGuardados, IDS_MODELO, rutasDeDescarga, type IdModelo } from './ma
 
 /** Memoria del equipo (GB) por debajo de la cual se elige el respaldo (3.3). */
 export const MEMORIA_MINIMA_PRINCIPAL_GB = 8;
+
+/** Reintentos de un archivo que falló por la red, además del primer intento (F0). */
+export const REINTENTOS_POR_ARCHIVO = 2;
+/** Pausa antes de cada reintento (se multiplica por el número de intento): da tiempo a que la conexión se recupere. */
+export const PAUSA_REINTENTO_MS = 2_000;
 
 /** Orden en que se intentan los modelos. `memoriaGb` es `navigator.deviceMemory` (solo existe en Chromium; null = no se sabe). */
 export function ordenDeVariantes(memoriaGb: number | null): IdModelo[] {
@@ -44,6 +52,8 @@ export interface EntradaEntrega {
   alAvance(a: AvanceEntrega): void;
   /** Se pasa al respaldo por falta de espacio (la interfaz muestra M-32 y M-168). */
   alRespaldo?(motivo: 'memoria_del_equipo' | 'sin_espacio'): void;
+  /** Pausa antes del reintento `n` (1 o 2); por defecto `PAUSA_REINTENTO_MS × n`. Las pruebas la acortan. */
+  pausaReintentoMs?(n: number): number;
 }
 
 export type ResultadoEntrega =
@@ -51,6 +61,18 @@ export type ResultadoEntrega =
   | { tipo: 'plan_b'; causa: 'espacio' | 'integridad' | 'red' | 'cancelado'; codigo: ErrorCode };
 
 const esAbort = (senal: AbortSignal): boolean => senal.aborted;
+
+/** Código de una excepción de `descargarArchivo` (solo por clase y `name`; su texto no sale). */
+const codigoDe = (x: unknown): ErrorCode =>
+  x instanceof SiglowError ? x.code : x instanceof Error && x.name === 'QuotaExceededError' ? 'CUOTA_EXCEDIDA' : 'MODELO_NO_DESCARGADO';
+
+/** Espera `ms` o hasta que se cancele. */
+const pausa = (ms: number, senal: AbortSignal): Promise<void> => new Promise((ok) => {
+  if (ms <= 0 || senal.aborted) { ok(); return; }
+  const fin = (): void => { clearTimeout(t); senal.removeEventListener('abort', fin); ok(); };
+  const t = setTimeout(fin, ms);
+  senal.addEventListener('abort', fin, { once: true });
+});
 
 /** Descarga con respaldo automático (3.3). No lanza: todo desenlace es un `ResultadoEntrega`. */
 export async function entregarModelo(p: PuertosEntrega, e: EntradaEntrega): Promise<ResultadoEntrega> {
@@ -76,18 +98,31 @@ export async function entregarModelo(p: PuertosEntrega, e: EntradaEntrega): Prom
     let acumulado = 0;
     try {
       for (const ruta of rutasDeDescarga(m)) {
-        if (esAbort(e.senal)) throw new SiglowError('ENTRADA_INVALIDA');
-        let previo = 0;
-        await p.descargarArchivo(id, ruta, (n) => {
-          acumulado += n - previo;
-          previo = n;
-          e.alAvance({ id, hechoBytes: acumulado, totalBytes: total, respaldo });
-        }, e.senal);
+        for (let intento = 0; ; intento++) {
+          if (esAbort(e.senal)) throw new SiglowError('ENTRADA_INVALIDA');
+          let previo = 0;
+          try {
+            await p.descargarArchivo(id, ruta, (n) => {
+              acumulado += n - previo;
+              previo = n;
+              e.alAvance({ id, hechoBytes: acumulado, totalBytes: total, respaldo });
+            }, e.senal);
+            break;
+          } catch (x) {
+            // Lo recibido en el intento fallido no cuenta: el siguiente vuelve a empezar ese archivo.
+            acumulado -= previo;
+            if (esAbort(e.senal) || intento >= REINTENTOS_POR_ARCHIVO || codigoDe(x) !== 'MODELO_NO_DESCARGADO') throw x;
+            e.alAvance({ id, hechoBytes: acumulado, totalBytes: total, respaldo });
+            await pausa(e.pausaReintentoMs?.(intento + 1) ?? PAUSA_REINTENTO_MS * (intento + 1), e.senal);
+          }
+        }
       }
     } catch (x) {
-      await p.borrar(id).catch(() => undefined);
+      const codigo = codigoDe(x);
+      // F0: tras un fallo de red se conservan los archivos ya verificados, para reanudar.
+      const conservar = !esAbort(e.senal) && codigo !== 'MODELO_INTEGRIDAD' && codigo !== 'CUOTA_EXCEDIDA';
+      if (!conservar) await p.borrar(id).catch(() => undefined);
       if (esAbort(e.senal)) return { tipo: 'plan_b', causa: 'cancelado', codigo: 'ENTRADA_INVALIDA' };
-      const codigo = x instanceof SiglowError ? x.code : x instanceof Error && x.name === 'QuotaExceededError' ? 'CUOTA_EXCEDIDA' : 'MODELO_NO_DESCARGADO';
       if (codigo === 'CUOTA_EXCEDIDA') {
         ultimoCodigo = codigo;
         if (!respaldo) e.alRespaldo?.('sin_espacio');

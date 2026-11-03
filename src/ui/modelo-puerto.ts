@@ -12,8 +12,13 @@ import { actualizar } from './estado.ts';
 import type { ModelUiState, ModelVariant } from './estado.ts';
 import type { ModeloPuerto } from './servicios.ts';
 
-/** Si el service worker no responde en este tiempo (se detuvo a mitad de un archivo), la descarga falla y se puede reintentar. */
-const SILENCIO_MAXIMO_MS = 120_000;
+/**
+ * Si el service worker no manda nada en este tiempo (ni avance ni respuesta: se detuvo a mitad de un archivo), ese intento falla
+ * y la entrega lo reintenta. El reloj se reinicia con cada aviso de avance, que el SW manda con cada bloque de bytes recibido
+ * (F0). Es mayor que el vigía de silencio del SW (`SILENCIO_LECTURA_MS`, 120 s), que normalmente responde antes. El build de
+ * medición lo acorta para las E2E de red lenta.
+ */
+const SILENCIO_MAXIMO_MS = __SIGLOW_MEDICION__ ? 6_000 : 150_000;
 
 type Respuesta = { ok: true; [k: string]: unknown } | { ok: false; code?: unknown; cancelado?: unknown };
 
@@ -150,7 +155,14 @@ const puertosEntrega: PuertosEntrega = {
     const alAbortar = (): void => { void pedirSw({ tipo: 'MODELO_CANCELAR' }).catch(() => undefined); };
     senal.addEventListener('abort', alAbortar, { once: true });
     try {
-      const r = await pedirSw({ tipo: 'MODELO_ARCHIVO', id, ruta }, onBytes);
+      let r: Respuesta;
+      try {
+        r = await pedirSw({ tipo: 'MODELO_ARCHIVO', id, ruta }, onBytes);
+      } catch (e) {
+        // Silencio del SW (F0): se suelta su candado antes de que la entrega reintente; si el SW se detuvo, el que arranca responde.
+        if (e instanceof SiglowError && e.code === 'MODELO_NO_DESCARGADO') await pedirSw({ tipo: 'MODELO_CANCELAR' }).catch(() => undefined);
+        throw e;
+      }
       if (!r.ok) throw falla(r);
     } finally {
       senal.removeEventListener('abort', alAbortar);

@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest';
 
 import { GlinerEngine, HILOS_AISLADO, HILOS_MAXIMO, hilosAislado, type GlinerEngineDeps, type OrtModule, type OrtSession } from '../../src/core/ner/engine';
 import { createGlinerTokenizer } from '../../src/core/ner/gliner';
-import { decidirFallo, entregarModelo, ordenDeVariantes, trozosEnOrden, type PuertosEntrega } from '../../src/core/ner/entrega';
+import { decidirFallo, entregarModelo, ordenDeVariantes, REINTENTOS_POR_ARCHIVO, trozosEnOrden, type PuertosEntrega } from '../../src/core/ner/entrega';
 import { crearManejadorNer } from '../../src/core/ner/handler';
 import {
   esManifiesto, MAX_ARCHIVO_DIST, MAX_TROZO, mbDelManifiesto, RUTA_AUXILIAR, RUTA_ONNX, RUTA_TROZO, validarEntrega, type IdModelo,
@@ -412,6 +412,7 @@ function puertosSimulados(sobre: Partial<PuertosEntrega> & { falla?: (id: IdMode
 }
 const ENTRADA = (memoriaGb: number | null, r?: Registro, senal: AbortSignal = new AbortController().signal) => ({
   memoriaGb, senal, alAvance: (a: { hechoBytes: number }) => { r?.avances.push(a.hechoBytes); }, alRespaldo: (m: string) => { r?.respaldos.push(m); },
+  pausaReintentoMs: () => 0,
 });
 const CUOTA_LLENA = (): SiglowError => new SiglowError('CUOTA_EXCEDIDA');
 
@@ -489,12 +490,79 @@ describe('T-PV-08 · un trozo alterado → MODELO_INTEGRIDAD y plan B con aviso 
     expect(await entregarModelo(p, ENTRADA(16, r))).toMatchObject({ tipo: 'plan_b', causa: 'integridad' });
     expect(r.descargas).toEqual([]);
   });
-  it('T-PV-08 red caída: plan B (red) con MODELO_NO_DESCARGADO y los parciales borrados; una excepción con texto sale sin él', async () => {
-    const { p, r } = puertosSimulados({ falla: (_id, ruta) => (ruta.endsWith('part002') ? new Error('GET /models/x falló: Ana Ficticia') : null) });
+  it('T-PV-08 F0 red caída: tras 2 reintentos, plan B (red) con MODELO_NO_DESCARGADO y los archivos verificados se conservan; una excepción con texto sale sin él', async () => {
+    let intentos = 0;
+    const { p, r } = puertosSimulados({ falla: (_id, ruta) => (ruta.endsWith('part002') ? (intentos++, new Error('GET /models/x falló: Ana Ficticia')) : null) });
     const res = await entregarModelo(p, ENTRADA(16, r));
     expect(res).toEqual({ tipo: 'plan_b', causa: 'red', codigo: 'MODELO_NO_DESCARGADO' });
     expect(JSON.stringify(res)).not.toContain('Ana');
+    expect(intentos).toBe(1 + REINTENTOS_POR_ARCHIVO);
+    expect(REINTENTOS_POR_ARCHIVO).toBe(2);
+    // Los 2 auxiliares y los trozos 0 y 1 ya verificados quedan en la caché para reanudar; el respaldo no se prueba.
+    expect(r.borrados).toEqual([]);
+    expect(r.descargas).toHaveLength(4);
+    expect(r.descargas.some((d) => d.startsWith('gliner-x-base/'))).toBe(false);
+  });
+});
+
+describe('F0 · descarga robusta: reintentos por archivo y reanudación', () => {
+  it('F0 un trozo que falla una vez por la red se reintenta y la entrega termina; el avance no cuenta dos veces lo del intento fallido', async () => {
+    const vistas = new Map<string, number>();
+    const { p, r } = puertosSimulados();
+    const m = manifiestoReal('gliner-x-large');
+    p.descargarArchivo = (id, ruta, onBytes) => {
+      const n = (vistas.get(ruta) ?? 0) + 1;
+      vistas.set(ruta, n);
+      const t = [...m.auxiliares, ...m.trozos].find((x) => x.ruta === ruta)!.tamano;
+      if (ruta.endsWith('part005') && n === 1) { onBytes(Math.floor(t / 2)); return Promise.reject(new SiglowError('MODELO_NO_DESCARGADO')); }
+      onBytes(Math.floor(t / 3));
+      onBytes(t);
+      r.descargas.push(`${id}/${ruta}`);
+      return Promise.resolve();
+    };
+    const res = await entregarModelo(p, ENTRADA(16, r));
+    expect(res).toEqual({ tipo: 'listo', id: 'gliner-x-large', respaldo: false, persistido: true });
+    expect(vistas.get('onnx/model_quantized.onnx.part005')).toBe(2);
+    expect(r.descargas).toHaveLength(27);
+    expect(r.borrados).toEqual([]);
+    const total = [...m.auxiliares, ...m.trozos].reduce((s, x) => s + x.tamano, 0);
+    expect(r.avances.at(-1)).toBe(total);
+    expect(Math.max(...r.avances)).toBe(total);
+  });
+  it('F0 dos fallos seguidos del mismo trozo también se recuperan; el tercero ya no se reintenta', async () => {
+    let n = 0;
+    const { p } = puertosSimulados({ falla: (_id, ruta) => (ruta.endsWith('part010') && n++ < 2 ? new SiglowError('MODELO_NO_DESCARGADO') : null) });
+    expect(await entregarModelo(p, ENTRADA(16))).toMatchObject({ tipo: 'listo', id: 'gliner-x-large' });
+    expect(n).toBe(3);
+  });
+  it('F0 la integridad, la cuota y el error interno no se reintentan', async () => {
+    for (const codigo of ['MODELO_INTEGRIDAD', 'CUOTA_EXCEDIDA', 'ERROR_INTERNO'] as const) {
+      let n = 0;
+      const { p } = puertosSimulados({ falla: (id, ruta) => (id === 'gliner-x-large' && ruta.endsWith('part001') ? (n++, new SiglowError(codigo)) : null) });
+      await entregarModelo(p, ENTRADA(16));
+      expect(n, codigo).toBe(1);
+    }
+  });
+  it('F0 cancelar durante la pausa del reintento termina en «cancelado» sin otro intento, y borra los parciales', async () => {
+    const ac = new AbortController();
+    let n = 0;
+    const { p, r } = puertosSimulados({ falla: (_id, ruta) => (ruta.endsWith('part003') ? (n++, new SiglowError('MODELO_NO_DESCARGADO')) : null) });
+    const entrada = { ...ENTRADA(16, r, ac.signal), pausaReintentoMs: () => 60_000 };
+    const promesa = entregarModelo(p, entrada);
+    await new Promise((ok) => { setTimeout(ok, 20); });
+    ac.abort();
+    expect(await promesa).toMatchObject({ tipo: 'plan_b', causa: 'cancelado' });
+    expect(n).toBe(1);
     expect(r.borrados).toEqual(['gliner-x-large']);
+  });
+  it('F0 reanudar: tras un fallo de red, una segunda entrega vuelve a pedir cada archivo al SW (que no trae de nuevo los ya guardados) y termina', async () => {
+    let caida = true;
+    const { p, r } = puertosSimulados({ falla: (_id, ruta) => (caida && ruta.endsWith('part012') ? new SiglowError('MODELO_NO_DESCARGADO') : null) });
+    expect(await entregarModelo(p, ENTRADA(16, r))).toMatchObject({ tipo: 'plan_b', causa: 'red' });
+    expect(r.borrados).toEqual([]);
+    caida = false;
+    expect(await entregarModelo(p, ENTRADA(16, r))).toMatchObject({ tipo: 'listo', id: 'gliner-x-large' });
+    expect(r.borrados).toEqual([]);
   });
   it('T-PV-08 sin manifiesto (precache incompleto) → plan B (red), sin descargar nada', async () => {
     const { p, r } = puertosSimulados({ manifiesto: () => Promise.reject(new SiglowError('ENTRADA_INVALIDA')) });
