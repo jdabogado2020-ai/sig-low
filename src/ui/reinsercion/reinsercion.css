@@ -7,18 +7,18 @@
 .reinsercion .propuesta { overflow-wrap: anywhere; }
 
 .lista-alertas { list-style: none; padding: 0; margin: 0.4rem 0; }
-.alerta { border: 1px solid var(--sl-borde-suave); border-radius: 0.375rem; padding: 0.5rem 0.75rem; margin: 0.5rem 0; background: var(--sl-fondo-2); }
+.alerta { border: 1px solid var(--sl-borde-suave); border-radius: 0; padding: 0.5rem 0.75rem; margin: 0.5rem 0; background: var(--sl-fondo-2); }
 .alerta p { margin: 0.2rem 0; }
 .grupo-cabecera { border-left: 4px solid var(--sl-borde); padding: 0.1rem 0.75rem; margin: 0.75rem 0 0.25rem; }
 .exactos { margin: 0.75rem 0; }
 .exactos summary { cursor: pointer; font-weight: 600; }
 
-.motivos { border: 2px solid var(--sl-aviso-borde); background: var(--sl-aviso-fondo); border-radius: 0.375rem; padding: 0.5rem 0.9rem; }
-.aviso-real { border: 2px solid var(--hl-residuo); border-radius: 0.375rem; padding: 0.5rem 0.9rem; font-weight: 600; }
+.motivos { border: 2px solid var(--sl-aviso-borde); background: var(--sl-aviso-fondo); border-radius: 0; padding: 0.5rem 0.9rem; }
+.aviso-real { border: 2px solid var(--hl-residuo); border-radius: 0; padding: 0.5rem 0.9rem; font-weight: 600; }
 
 .vista-real {
   max-height: 26rem; overflow: auto; padding: 0.6rem 0.75rem;
-  background: var(--sl-fondo-2); border: 1px solid var(--sl-borde-suave); border-radius: 0.375rem;
+  background: var(--sl-fondo-2); border: 1px solid var(--sl-borde-suave); border-radius: 0;
 }
 .linea-real { min-height: 1.6rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; content-visibility: auto; contain-intrinsic-size: auto 1.6rem; }
 .dato-real, .vista-real mark {

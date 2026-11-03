@@ -64,9 +64,11 @@ function lab([r, g, b]: Rgb): [number, number, number] {
 const deltaE76 = (a: Rgb, b: Rgb): number => { const [p, q] = [lab(a), lab(b)]; return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]); };
 
 const CATEGORIAS = ['per', 'org', 'ide', 'exp', 'con', 'bie', 'fec', 'ban'] as const;
-// Oráculo: las razones mínimas «recalculadas para esta versión» de 8.4.2.
+// Oráculo: las razones mínimas «recalculadas para esta versión» de 8.4.2. F1 (D-25): el fondo claro pasó de #ffffff a #f3f0e9 (el del sitio)
+// y `borde/página` claro bajó de 3,36 a 3,26 (el mínimo ahora es el borde de «contacto», #438cb5). El borde de «fecha» (#968f29, 2,95 sobre el
+// fondo nuevo) se oscureció a #8c8625 (3,32); los demás bordes y todos los rellenos, textos e insignias quedan como estaban.
 const PLAN = {
-  claro: { textoRelleno: 12.53, bordePagina: 3.36, bordeRelleno: 3.13, insignia: 5.11, de: 13.2 },
+  claro: { textoRelleno: 12.53, bordePagina: 3.26, bordeRelleno: 3.13, insignia: 5.11, de: 13.2 },
   oscuro: { textoRelleno: 6.59, bordePagina: 4.18, bordeRelleno: 3.08, insignia: 4.89, de: 13.6 },
 } as const;
 const PAGINA: Record<Tema, string> = { claro: '--sl-fondo', oscuro: '--sl-fondo' };
@@ -112,7 +114,8 @@ describe.each(['claro', 'oscuro'] as const)('T-AX-05 contraste y daltonismo · t
     const fondo = pagina();
     const texto: Array<[string, string, string]> = [
       ['texto/fondo', v('--sl-texto'), fondo], ['texto secundario/fondo', v('--sl-texto-2'), fondo],
-      ['texto/superficie', v('--sl-texto'), v('--sl-fondo-2')], ['texto secundario/superficie', v('--sl-texto-2'), v('--sl-fondo-2')],
+      ['texto/superficie', v('--sl-texto'), v('--sl-fondo-2')], ['niebla/fondo', v('--sl-niebla'), fondo], ['niebla/superficie', v('--sl-niebla'), v('--sl-fondo-2')],
+      ['texto de botón secundario sobre el campo', v('--sl-texto'), v('--sl-lente')], ['texto secundario/superficie', v('--sl-texto-2'), v('--sl-fondo-2')],
       ['botón principal', v('--sl-primario-texto'), v('--sl-primario')], ['enlace/fondo', v('--sl-primario'), fondo],
       ['error/fondo', v('--sl-error'), fondo], ['texto/aviso', v('--sl-texto'), v('--sl-aviso-fondo')],
       ['texto de insignia de residuo/fondo', v('--hl-residuo'), fondo], ['texto/superficie de paneles', v('--hl-texto'), v('--hl-superficie')],
@@ -121,6 +124,7 @@ describe.each(['claro', 'oscuro'] as const)('T-AX-05 contraste y daltonismo · t
     for (const [nombre, a, b] of texto) expect(razon(a, b), nombre).toBeGreaterThanOrEqual(4.5);
     const noTexto: Array<[string, string, string]> = [
       ['foco/fondo', v('--sl-foco'), fondo], ['foco/superficie', v('--sl-foco'), v('--sl-fondo-2')], ['borde de campos/fondo', v('--sl-borde'), fondo],
+      ['borde de campos/superficie', v('--sl-borde'), v('--sl-fondo-2')], ['borde de campos/campo', v('--sl-borde'), v('--sl-lente')],
       ['borde de aviso/aviso', v('--sl-aviso-borde'), v('--sl-aviso-fondo')], ['borde de aviso/fondo', v('--sl-aviso-borde'), fondo],
       ['residuo/fondo', v('--hl-residuo'), fondo], ['rechazada/superficie', v('--hl-rechazada'), v('--hl-superficie')],
     ];
@@ -129,6 +133,23 @@ describe.each(['claro', 'oscuro'] as const)('T-AX-05 contraste y daltonismo · t
 });
 
 describe('T-AX-05 la paleta del plan', () => {
+  it('T-AX-05 F1: los tokens --sl-* del tema claro son los del sitio vergarameloabogado.site y los del oscuro, sus valores oscuros', () => {
+    const { claro, oscuro } = tokens();
+    const sitioClaro: Record<string, string> = {
+      '--sl-fondo': '#f3f0e9', '--sl-fondo-2': '#e9e5dc', '--sl-lente': '#faf8f4', '--sl-borde-suave': '#d6d1c6', '--sl-linea-fuerte': '#bdb7aa',
+      '--sl-texto': '#101214', '--sl-texto-2': '#33363b', '--sl-niebla': '#5f646a', '--sl-primario': '#b5342a', '--sl-error': '#b3261e',
+    };
+    const sitioOscuro: Record<string, string> = {
+      '--sl-fondo': '#101214', '--sl-fondo-2': '#1a1d21', '--sl-lente': '#0b0c0e', '--sl-borde-suave': '#2c3036', '--sl-linea-fuerte': '#3a3f46',
+      '--sl-texto': '#edeae3', '--sl-texto-2': '#c9c6bf', '--sl-niebla': '#9aa0a6', '--sl-primario': '#e0483b', '--sl-error': '#f07a6e',
+    };
+    for (const [k, h] of Object.entries(sitioClaro)) expect(claro.get(k), `claro ${k}`).toBe(h);
+    for (const [k, h] of Object.entries(sitioOscuro)) expect(oscuro.get(k), `oscuro ${k}`).toBe(h);
+    expect(claro.get('--sl-foco')).toBe(claro.get('--sl-primario'));
+    expect(oscuro.get('--sl-foco')).toBe(oscuro.get('--sl-primario'));
+  });
+
+
   it('T-AX-05 los hexadecimales de las ocho categorías y de los tokens auxiliares coinciden con 8.4.2', () => {
     const { claro, oscuro } = tokens();
     expect(claro.get('--hl-per-borde')).toBe('#00446b');

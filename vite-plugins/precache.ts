@@ -32,6 +32,11 @@ export const TIPOS: Readonly<Record<string, string>> = {
   '.ico': 'image/x-icon', '.txt': 'text/plain; charset=utf-8', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json',
 };
 
+/** Fuentes autoalojadas de la marca: rutas relativas a dist/ (scripts/check-dist.mjs fija además su SHA-256). */
+export const FUENTES: readonly string[] = [
+  'fonts/Geist-Variable.woff2', 'fonts/GeistMono-Medium.woff2', 'fonts/GeistMono-Regular.woff2', 'fonts/InstrumentSerif-Regular.woff2',
+];
+
 /**
  * Destino de cada archivo de dist/ (ruta relativa con «/»): 'precache' entra a la lista; 'fuera' nunca se cachea;
  * null es un archivo no previsto y detiene el build. Nunca en el precache: sw.js, _headers ni trozos del modelo (3.2).
@@ -39,6 +44,8 @@ export const TIPOS: Readonly<Record<string, string>> = {
 export function clasificar(rel: string): 'precache' | 'fuera' | null {
   if (rel === 'index.html' || rel === 'tt-policy.js' || rel.startsWith('assets/')) return 'precache';
   if (rel === 'ort/ort-wasm-simd-threaded.mjs' || rel === 'ort/ort-wasm-simd-threaded.wasm') return 'precache';
+  // Fuentes de la marca (F1, SIL OFL 1.1): solo las cuatro de public/fonts/, que la hoja src/ui/fuentes.css pide por ruta fija.
+  if (FUENTES.includes(rel)) return 'precache';
   if (rel === 'sw.js' || rel === '_headers' || rel === 'precache.json') return 'fuera';
   // Modelo (PF-2, 3.2): solo los dos manifiestos entran al precache (con ellos el SW arma la lista blanca del modelo y la
   // tarjeta muestra el tamaño real sin red). Los trozos y los auxiliares se descargan a pedido a siglow-modelo-<sha>: fuera.
@@ -49,7 +56,7 @@ export function clasificar(rel: string): 'precache' | 'fuera' | null {
 
 /** Entradas que todo build debe tener (3.2): sin ellas la app no funcionaría sin conexión. */
 const OBLIGATORIAS = [
-  '/', '/tt-policy.js', '/ort/ort-wasm-simd-threaded.mjs', '/ort/ort-wasm-simd-threaded.wasm',
+  '/', '/tt-policy.js', '/ort/ort-wasm-simd-threaded.mjs', '/ort/ort-wasm-simd-threaded.wasm', ...FUENTES.map((f) => `/${f}`),
   '/models/gliner-x-large/manifest.json', '/models/gliner-x-base/manifest.json',
 ];
 // Solo caracteres que el navegador no codifica en `URL.pathname`: el SW compara la ruta pedida tal cual.

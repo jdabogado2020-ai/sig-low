@@ -8,6 +8,7 @@ import { actualizar, useShell, type Screen } from './estado.ts';
 import { evaluarFrase } from './frase.ts';
 import { mostrarAvisoGlobal, ocultarAvisoGlobal, useAvisoGlobal } from './globales.ts';
 import { calcularHuellas, compilacionCorta } from './huellas.ts';
+import { MARCA } from './marca-textos.ts';
 import { mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
 import { obtenerListaDelCaso, obtenerTabla, quitarAvisoAsunto, agregarAvisoAsunto, registrarLimpieza, useAvisosAsunto, useFraseEscrita, useListaDelCaso } from './sesion.ts';
 import { codigoDeError, puertos } from './servicios.ts';
@@ -225,6 +226,7 @@ function Pie() {
         {' '}
         <button type="button" class="enlace" onClick={() => { actualizar({ dialog: 'acerca' }); }}>{t(ROTULOS.acerca_de)}</button>
       </p>
+      <p class="pie-operador" data-prueba="operador">{t(MARCA.operador)}</p>
     </footer>
   );
 }
@@ -276,7 +278,11 @@ export function Armazon({ pantalla, children }: { pantalla: Screen; children: Co
     <div class="app">
       <button type="button" class="salto" onClick={() => { principal.current?.focus(); }}>{t(X.irAlContenido)}</button>
       <header class="cabecera">
-        <p class="marca">{t(ROTULOS.sig_low)}</p>
+        <p class="marca">
+          <span class="marca-nombre">{t(ROTULOS.sig_low)}</span>
+          <span class="marca-punto" aria-hidden="true" />
+          <span class="marca-por">{t(MARCA.descriptor)}</span>
+        </p>
         {asunto ? (
           <p class="chip" data-prueba="chip-asunto">
             {t(X.asuntoChip, { codigo: asunto.codigo })}
@@ -291,7 +297,7 @@ export function Armazon({ pantalla, children }: { pantalla: Screen; children: Co
         </p>
         <div class="herramientas">
           {asunto ? <MenuAsunto alElegir={setIntencion} /> : null}
-          {asunto ? <button type="button" onClick={() => { bloquear(true); }}>{t(ROTULOS.bloquear)}</button> : null}
+          {asunto ? <button type="button" class="secundario" onClick={() => { bloquear(true); }}>{t(ROTULOS.bloquear)}</button> : null}
         </div>
       </header>
       {enPasos ? <Pasos actual={pantalla} /> : null}

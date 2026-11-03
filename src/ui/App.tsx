@@ -1,4 +1,5 @@
 // Shell de la aplicación (PC-1): arranque, navegación por estado (sin rutas), armazón común y pantallas.
+import './fuentes.css';
 import './base.css';
 import { useEffect } from 'preact/hooks';
 import { Armazon } from './Armazon.tsx';

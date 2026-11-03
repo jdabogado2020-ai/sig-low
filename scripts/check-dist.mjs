@@ -33,6 +33,16 @@ const ORT_ARCHIVOS = {
 const WASM_PERMITIDO = 'ort-wasm-simd-threaded.wasm';
 const esOrtMjs = (r) => r === 'ort/ort-wasm-simd-threaded.mjs';
 
+// Fuentes autoalojadas de la marca Vergara Melo · Abogado (F1, SIL OFL 1.1; src/ui/fuentes.css y LICENSES.md). Datos binarios: no
+// se barren como código, pero su nombre y su SHA-256 quedan fijados (Geist y Geist Mono del paquete `geist` 1.8.1 y de
+// @fontsource/geist-mono 5.3.0; Instrument Serif de @fontsource/instrument-serif 5.3.0, byte por byte la de la plantilla de vídeo).
+const FUENTES_FIJADAS = {
+  'Geist-Variable.woff2': '9ce2d97863cab59a0c7522534112d6c42a4e25c0e6b2ab37766761b0f82cfbd6',
+  'GeistMono-Medium.woff2': '72971bd4908d3984fa1b1426bb363730e4957e16a0f58bfbca76993095715488',
+  'GeistMono-Regular.woff2': '3f98383b122fe015a48536cd4a1cda855a201718923ffe74931a01597107b9b5',
+  'InstrumentSerif-Regular.woff2': '5eb09b5ac0e28b67c2f041c8ba6d244604ca0c0980d65912ab2d47fed84ddc31',
+};
+
 // Chunk de ORT-web empaquetado por Vite (aprobado en la P0-6a de PF-1b, 30-oct): `blob:` ×2 son comparaciones
 // `startsWith('blob:')`/`indexOf('blob:')` que excluyen esas URL, y la única URL externa es el texto de un Error de
 // rolldown que nunca se pide. Se admiten solo con esas cuentas exactas, en ese chunk y con la versión de ORT fijada.
@@ -247,6 +257,7 @@ for (const p of archivos) {
   if (/asyncify|jsep|jspi/i.test(r)) fallar(`${r}: variante de ORT no permitida (asyncify, jsep, jspi)`);
   if (/(^|\/)(standard_fonts|cmaps|iccs|wasm)\//.test(r)) fallar(`${r}: recursos de pdf.js que el lector no usa`);
   if (r.startsWith('ort/') && !Object.hasOwn(ORT_ARCHIVOS, r.slice(4))) fallar(`${r}: archivo no permitido en ort/`);
+  if (r.startsWith('fonts/') && !Object.hasOwn(FUENTES_FIJADAS, r.slice(6))) fallar(`${r}: archivo no permitido en fonts/ (solo .woff2 de la marca)`);
 }
 
 // Auxiliares del modelo (P0-5): `models/<id>/tokenizer*.json` son datos que el worker `ner` lee como JSON, no código, y su
@@ -342,6 +353,13 @@ for (const [nombre, fijado] of Object.entries(ORT_ARCHIVOS)) {
   const delPaquete = join('node_modules', 'onnxruntime-web', 'dist', nombre);
   if (hash !== fijado) fallar(`ort/${nombre}: sha256 distinto del fijado`);
   if (!existsSync(delPaquete) || sha256(readFileSync(delPaquete)) !== hash) fallar(`ort/${nombre}: sha256 distinto del paquete instalado`);
+}
+
+// ===== Fuentes de la marca (F1): solo las cuatro de fonts/, con el SHA-256 fijado =====
+for (const [nombre, fijado] of Object.entries(FUENTES_FIJADAS)) {
+  const enDist = join(DIR, 'fonts', nombre);
+  if (!existsSync(enDist)) { fallar(`fonts/${nombre}: falta`); continue; }
+  if (sha256(readFileSync(enDist)) !== fijado) fallar(`fonts/${nombre}: sha256 distinto del fijado`);
 }
 
 // ===== index.html (8.7, V-04, V-05, V-27, V-43) =====

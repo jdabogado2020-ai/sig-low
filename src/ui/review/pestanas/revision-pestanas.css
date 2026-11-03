@@ -13,7 +13,7 @@
 
 /* Parte superior */
 .revision-barra { margin: 0.5rem 0; }
-.banda { border: 1px solid var(--sl-borde-suave); border-inline-start: 0.35rem solid var(--ba-borde); border-radius: 0.5rem; padding: 0.5rem 0.75rem; margin: 0.5rem 0; background: var(--ba-fondo); }
+.banda { border: 1px solid var(--sl-borde-suave); border-inline-start: 0.35rem solid var(--ba-borde); border-radius: 0; padding: 0.5rem 0.75rem; margin: 0.5rem 0; background: var(--ba-fondo); }
 .banda p { margin: 0.2rem 0; }
 .banda-titulo { margin: 0 0 0.25rem; font-size: 1rem; }
 .banda-plegada { padding-block: 0.25rem; }
@@ -28,7 +28,7 @@
 .busqueda-revision .fila, .filtros-campos { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
 .busqueda-revision input { flex: 1 1 12rem; min-inline-size: 8rem; }
 .estado-busqueda { min-inline-size: 5rem; }
-.filtros-revision { border: 1px solid var(--sl-borde-suave); border-radius: 0.5rem; padding: 0.4rem 0.75rem; margin: 0; }
+.filtros-revision { border: 1px solid var(--sl-borde-suave); border-radius: 0; padding: 0.4rem 0.75rem; margin: 0; }
 .filtros-revision summary { cursor: pointer; font-weight: 600; }
 .filtros-campos { margin-block-start: 0.4rem; }
 .filtros-campos .campo { flex: 1 1 9rem; margin: 0.2rem 0; }
@@ -41,11 +41,12 @@
 /* Pestañas del panel lateral */
 .pestanas-laterales { margin-block-start: 1rem; }
 .pestanas-laterales [role='tablist'] { display: flex; flex-wrap: wrap; gap: 0.25rem; border-block-end: 1px solid var(--sl-borde-suave); }
-.pestana { border: 1px solid var(--sl-borde-suave); border-block-end: 0; border-radius: 0.375rem 0.375rem 0 0; background: var(--sl-fondo-2); font-weight: 600; }
-.pestana[aria-selected='true'] { background: var(--sl-fondo); border-block-end: 3px solid var(--sl-primario); }
+.pestana { border: 1px solid var(--sl-borde-suave); border-block-end: 0; border-radius: 0; background: var(--sl-fondo-2); color: var(--sl-texto); font-weight: 500; }
+.pestana:hover:not([disabled]) { background: var(--sl-fondo); border-color: var(--sl-borde-suave); color: var(--sl-texto); }
+.pestana[aria-selected='true'] { background: var(--sl-fondo); border-block-end: 3px solid var(--sl-texto); }
 .panel-pestana { padding: 0.5rem 0; }
 .tarjetas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-.tarjeta { border: 1px solid var(--sl-borde-suave); border-radius: 0.5rem; padding: 0.5rem 0.75rem; background: var(--sl-fondo-2); }
+.tarjeta { border: 1px solid var(--sl-borde-suave); border-radius: 0; padding: 0.5rem 0.75rem; background: var(--sl-fondo-2); }
 .tarjeta:focus-visible { outline: 3px solid var(--sl-foco); outline-offset: 2px; }
 .tarjeta h4 { margin: 0 0 0.25rem; display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; align-items: baseline; }
 .etiqueta-tarjeta { font-size: 0.8rem; font-weight: 700; padding: 0 0.4rem; border: 1px solid currentColor; border-radius: 0.25rem; }

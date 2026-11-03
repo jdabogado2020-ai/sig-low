@@ -26,6 +26,11 @@ const TEXTO_APACHE = [
   'Se conserva el archivo NOTICE de cada componente cuando lo trae.',
 ];
 
+const TEXTO_OFL = [
+  'Este software de fuentes se licencia bajo la SIL Open Font License, versión 1.1. Se permite usar, estudiar, copiar, fusionar, incrustar, modificar y redistribuir las fuentes, solas o con otro software, y no se pueden vender por sí solas. Cada copia conserva el aviso de derechos de autor y esta licencia, y las versiones modificadas no usan los nombres de fuente reservados sin permiso. El texto íntegro de la licencia está en LICENSES.md.',
+  'LAS FUENTES SE PROPORCIONAN «TAL CUAL», SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUIDAS LAS DE COMERCIABILIDAD, IDONEIDAD PARA UN FIN PARTICULAR Y NO INFRACCIÓN DE DERECHOS DE AUTOR, PATENTES, MARCAS U OTROS DERECHOS. EN NINGÚN CASO LOS TITULARES SERÁN RESPONSABLES DE RECLAMACIÓN, DAÑO U OTRA RESPONSABILIDAD DERIVADA DEL USO DE LAS FUENTES.',
+];
+
 export const GRUPOS_LICENCIAS: GrupoLicencias[] = [
   {
     titulo: 'Bibliotecas incluidas en Sig-Low (MIT)',
@@ -55,6 +60,15 @@ export const GRUPOS_LICENCIAS: GrupoLicencias[] = [
       { componente: 'pdf.js (pdfjs-dist, versión legacy)', version: '6.4.299', licencia: 'Apache-2.0', aviso: ['Copyright 2024 Mozilla Foundation. No se incluyen los recursos opcionales de pdf.js (fuentes estándar, cmaps ni wasm), que tienen otras licencias.', ...TEXTO_APACHE] },
       { componente: '@huggingface/tokenizers', version: '0.2.0', licencia: 'Apache-2.0', aviso: ['Autor: Hugging Face. El paquete trae el texto completo de la Licencia Apache 2.0 sin línea de derechos de autor propia.', ...TEXTO_APACHE] },
       { componente: 'TypeScript', version: '6.0.3', licencia: 'Apache-2.0', aviso: ['Copyright Microsoft Corporation. Herramienta de compilación; no se distribuye dentro de la aplicación.', ...TEXTO_APACHE] },
+    ],
+  },
+  {
+    titulo: 'Fuentes de la marca (SIL OFL 1.1)',
+    intro: 'Archivos woff2 que van en el build, sin modificar. Se sirven desde el mismo origen: la página no pide fuentes a ningún otro sitio.',
+    avisos: [
+      { componente: 'Instrument Serif, peso 400 (títulos)', version: '5.3.0', licencia: 'SIL OFL 1.1', aviso: ['Copyright 2022 The Instrument Serif Project Authors. Subconjunto latino, tomado del paquete @fontsource/instrument-serif.', ...TEXTO_OFL] },
+      { componente: 'Geist, pesos 300 a 700 (interfaz y cuerpo)', version: '1.8.1', licencia: 'SIL OFL 1.1', aviso: ['Copyright (c) 2023 Vercel, en colaboración con basement.studio. Fuente variable del paquete geist.', ...TEXTO_OFL] },
+      { componente: 'Geist Mono, pesos 400 y 500 (etiquetas y tipos de dato)', version: '5.3.0', licencia: 'SIL OFL 1.1', aviso: ['Copyright 2024 The Geist Project Authors. Subconjunto latino, tomado del paquete @fontsource/geist-mono.', ...TEXTO_OFL] },
     ],
   },
   {

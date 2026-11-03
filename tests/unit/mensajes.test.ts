@@ -23,7 +23,7 @@ const RAIZ = process.cwd();
 const UI = join(RAIZ, 'src', 'ui');
 /** Módulos que registran textos con `registrarMensajes()`: la prueba de abajo falla si aparece uno que no está importado arriba. */
 const MODULOS_CON_TEXTOS = [
-  'mensajes-entrada.ts', 'boveda/textos.ts', 'listo/textos.ts', 'reinsercion/textos.ts', 'review/base/textos.ts', 'review/pestanas/textos.ts',
+  'mensajes-entrada.ts', 'marca-textos.ts', 'boveda/textos.ts', 'listo/textos.ts', 'reinsercion/textos.ts', 'review/base/textos.ts', 'review/pestanas/textos.ts',
 ];
 
 function* archivos(dir: string): Generator<string> {

@@ -76,6 +76,7 @@ function correr(c: Caso = {}): Promise<{ salida: number; texto: string }> {
     enlazar(join(REPO, 'node_modules/onnxruntime-web/dist', f), join(base, 'node_modules/onnxruntime-web/dist', f));
     enlazar(join(REPO, 'public/ort', f), join(dist, 'ort', f));
   }
+  for (const f of readdirSync(join(REPO, 'public/fonts'))) enlazar(join(REPO, 'public/fonts', f), join(dist, 'fonts', f));
   const html = readFileSync(join(REPO, 'index.html'), 'utf8').replace(
     '<script type="module" src="/src/main.tsx"></script>', `<script type="module" crossorigin src="/${ENTRADA}"></script>`);
   escribir(join(dist, 'index.html'), c.html ? c.html(html) : html);
@@ -273,6 +274,11 @@ describe.concurrent('T-CD-02 y T-CD-03 reglas de archivos', () => {
     }, 'assets/grande.bin: tamaño 27262976 B supera 25 MiB');
   });
   it('canario: un .wasm distinto del de ORT', async () => { await falla({ archivos: { 'assets/otro.wasm': 'x' } }, 'assets/otro.wasm: wasm no permitido'); });
+  it('canario: una fuente de la marca alterada, ausente o un archivo de más en fonts/ (F1)', async () => {
+    await falla({ archivos: { 'fonts/Geist-Variable.woff2': 'wOF2 alterada' } }, 'fonts/Geist-Variable.woff2: sha256 distinto del fijado');
+    await falla({ archivos: { 'fonts/GeistMono-Medium.woff2': null } }, 'fonts/GeistMono-Medium.woff2: falta');
+    await falla({ archivos: { 'fonts/otra.woff2': 'wOF2' } }, 'fonts/otra.woff2: archivo no permitido en fonts/');
+  });
   it('canario: un mapa de fuentes', async () => { await falla({ archivos: { 'assets/index-Cx0Prueba.js.map': '{}' } }, 'mapa de fuentes'); });
   it('canario: variantes asyncify, jsep y jspi de ORT', async () => {
     await falla({ archivos: { 'ort/ort-wasm-simd-threaded.jsep.mjs': 'x' } }, 'variante de ORT no permitida', 'archivo no permitido en ort/');
