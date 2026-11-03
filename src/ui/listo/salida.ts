@@ -6,8 +6,14 @@ import { consolidate, emptyTable } from '../../core/entities.ts';
 import { joinOutput, render } from '../../core/render.ts';
 import { buildReport, isoBogota, reportToJson, reportToText } from '../../core/report.ts';
 import type { AsuntoId, MappingTable, ReviewState, DocumentModel } from '../../core/types.ts';
+import { SiglowError } from '../../core/types.ts';
 import { exportarDocx } from '../../io/docx-write.ts';
+import { exportarDocxFiel } from '../../io/docx-write-fiel.ts';
+import { originalDe } from '../../io/original.ts';
+import { construirPdfTachado, descargarPdfTachado } from '../../io/pdf-tachar.ts';
+import { exportarPdf } from '../../io/pdf-write.ts';
 import { descargarBytes, exportarTxt, nombreDescarga, revocarUrlsVivas } from '../../io/txt-write.ts';
+import type { ResultadoExportacion } from '../../io/txt-write.ts';
 import { OPCIONES_DETECCION } from '../analisis.ts';
 import { obtenerDocumento, obtenerRevision, fijarRevision } from '../documento.ts';
 import { actualizar, obtener } from '../estado.ts';
@@ -143,6 +149,66 @@ export function descargarDocx(): void {
     const avisos: AvisoListo[] = [{ id: 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
     for (const a of r.avisos) if (a.code === 'CARACTERES_CONTROL') avisos.push({ id: 'M-313', params: { n: a.count ?? 0 }, rol: 'status' });
     ponerAviso(avisos);
+    respaldarTabla(tabla);
+  } catch (e) {
+    errorDeAccion(e);
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// F4 (D-22) · Salida fiel. F3 conecta estos manejadores a «Descargar documento (.docx)» y «Descargar PDF»; las pantallas no cambian
+// aquí. Usan el original en memoria (`io/original.ts`): sin él (texto pegado, original ya soltado), la salida simple de siempre.
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** «Descargar documento (.docx)»: el .docx idéntico al original con solo los datos cambiados; si no se puede, el .docx simple. */
+export function descargarDocxFiel(): void {
+  const v = conPuertaAbierta();
+  if (v === null) return;
+  const original = v.doc.source === 'docx' ? originalDe(v.doc.id) : null;
+  if (original === null) { descargarDocx(); return; }
+  try {
+    const out = render(v.doc, v.state);
+    const tabla = consolidarAhora(v);
+    let r: ResultadoExportacion;
+    try {
+      r = exportarDocxFiel(original.bytes, v.doc, out);
+    } catch (e) {
+      // El documento no admite la reescritura fiel (codificación, mapa): el .docx simple, que no lleva nada del original.
+      if (!(e instanceof SiglowError) || e.code !== 'FORMATO_NO_ADMITIDO') throw e;
+      r = exportarDocx(out);
+    }
+    const avisos: AvisoListo[] = [{ id: 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
+    for (const a of r.avisos) if (a.code === 'CARACTERES_CONTROL') avisos.push({ id: 'M-313', params: { n: a.count ?? 0 }, rol: 'status' });
+    ponerAviso(avisos);
+    respaldarTabla(tabla);
+  } catch (e) {
+    errorDeAccion(e);
+  }
+}
+
+/**
+ * «Descargar PDF»: con un PDF original, el PDF tachado (cada página como imagen, con recuadros); con .docx o texto, el PDF de
+ * texto. Asíncrona por el dibujo de las páginas: la puerta se evalúa y la numeración se consolida antes de la primera espera.
+ */
+export async function descargarPdfSalida(): Promise<void> {
+  const v = conPuertaAbierta();
+  if (v === null) return;
+  try {
+    const out = render(v.doc, v.state);
+    const tabla = consolidarAhora(v);
+    const original = v.doc.source === 'pdf' ? originalDe(v.doc.id) : null;
+    let r: ResultadoExportacion;
+    if (original === null) r = exportarPdf(out);
+    else {
+      // Copia: el original en memoria puede ponerse en cero (bloqueo, `pagehide`) mientras se dibujan las páginas.
+      const copia = original.bytes.slice();
+      try {
+        r = descargarPdfTachado(await construirPdfTachado(copia, v.doc, out));
+      } finally {
+        copia.fill(0);
+      }
+    }
+    ponerAviso([{ id: 'M-88', params: { archivo: r.nombre }, rol: 'status' }]);
     respaldarTabla(tabla);
   } catch (e) {
     errorDeAccion(e);

@@ -88,7 +88,12 @@ export function codigoPdf(e: unknown): SiglowError | LecturaCancelada {
   return new SiglowError('PDF_DANADO');
 }
 
-interface Pagina { texto: string; saltosOrden: number }
+/**
+ * F4 · Un tramo [ini, fin) del texto canónico de la página que viene del ítem `item` de `getTextContent`, desde su carácter `desde`.
+ * Con la caja del ítem (`transform`, `width`, `height`) `pdf-tachar.ts` sabe dónde pintar el recuadro.
+ */
+export interface PiezaPdf { ini: number; fin: number; item: number; desde: number }
+export interface Pagina { texto: string; saltosOrden: number; piezas: PiezaPdf[] | null }
 
 /**
  * Aviso de PE-4 (PB-2-r10; CIERRE-1, D-19.9) · Hueco ancho entre dos fragmentos del mismo renglón, en múltiplos de la altura de la
@@ -111,14 +116,20 @@ function posicionDe(it: Record<string, unknown>): { x: number; y: number; ancho:
  * la posición, el lector emite un tabulador en lugar de los blancos que pdf.js puso (o de nada): las celdas de una fila de tabla
  * quedan separadas como en un .docx, y R-RAD_ADMIN-03 (M-70) las ve aunque pdf.js entregue un solo espacio. Lo demás no cambia.
  */
-function textoDePagina(items: ReadonlyArray<unknown>): Pagina {
+export function textoDePagina(items: ReadonlyArray<unknown>): Pagina {
   let texto = '';
   let saltos = 0;
   let yAnterior: number | null = null;
   let altoAnterior = 0;
+  /** F4: de qué ítem viene cada tramo de `texto` (antes de `canonicoPdf`). */
+  let piezas: PiezaPdf[] = [];
+  const pegar = (s: string, item: number, desde: number): void => {
+    if (s !== '') piezas.push({ ini: texto.length, fin: texto.length + s.length, item, desde });
+    texto += s;
+  };
   /** El último fragmento con letras, si desde él no hubo fin de renglón: dónde acaba en la página y dónde acaba en `texto`. */
   let previo: { finX: number; y: number; alto: number; finTexto: number } | null = null;
-  for (const it of items) {
+  for (const [n, it] of items.entries()) {
     if (!esObjeto(it) || typeof it.str !== 'string') continue;
     const conLetras = it.str.trim() !== '';
     const pos = conLetras ? posicionDe(it) : null;
@@ -128,10 +139,13 @@ function textoDePagina(items: ReadonlyArray<unknown>): Pagina {
       const entre = texto.slice(previo.finTexto);
       const inicioBlancos = it.str.length - it.str.trimStart().length;
       if (mismoRenglon && hueco >= HUECO_DE_CELDA * Math.max(pos.alto, previo.alto) && /^[ \t ]*$/u.test(entre)) {
-        texto = `${texto.slice(0, previo.finTexto)}\t`;
-        texto += it.str.slice(inicioBlancos);
-      } else texto += it.str;
-    } else texto += it.str;
+        const corte = previo.finTexto;
+        texto = `${texto.slice(0, corte)}\t`;
+        // Lo cortado eran blancos: las piezas que caían ahí se recortan o se van.
+        piezas = piezas.filter((p) => p.ini < corte).map((p) => (p.fin > corte ? { ...p, fin: corte } : p));
+        pegar(it.str.slice(inicioBlancos), n, inicioBlancos);
+      } else pegar(it.str, n, 0);
+    } else pegar(it.str, n, 0);
     if (conLetras) {
       previo = pos === null ? null : { finX: pos.x + pos.ancho, y: pos.y, alto: pos.alto, finTexto: texto.length - (it.str.length - it.str.trimEnd().length) };
     }
@@ -145,7 +159,30 @@ function textoDePagina(items: ReadonlyArray<unknown>): Pagina {
     if (y !== null && yAnterior !== null && y - yAnterior > Math.max(altoAnterior, 4)) saltos++;
     if (y !== null) { yAnterior = y; altoAnterior = alto; }
   }
-  return { texto: canonicoPdf(texto), saltosOrden: saltos };
+  const can = canonicoPdf(texto);
+  return { texto: can, saltosOrden: saltos, piezas: piezasCanonicas(texto, piezas, can) };
+}
+
+/**
+ * Posiciones de las piezas en el texto canónico. Sin cambios de NFC, las mismas (recortadas al final, que pierde los saltos);
+ * con cambios, pieza a pieza. null si no cuadra: el tachado de esa página cubre entonces toda la página.
+ */
+function piezasCanonicas(crudo: string, piezas: PiezaPdf[], can: string): PiezaPdf[] | null {
+  const recortar = (ps: PiezaPdf[]): PiezaPdf[] => ps.filter((p) => p.ini < can.length).map((p) => (p.fin > can.length ? { ...p, fin: can.length } : p));
+  if (crudo.startsWith(can) && canonico(crudo) === crudo) return recortar(piezas);
+  let out = '';
+  let pos = 0;
+  const res: PiezaPdf[] = [];
+  for (const p of piezas) {
+    out += canonico(crudo.slice(pos, p.ini));
+    const t = canonico(crudo.slice(p.ini, p.fin));
+    // Con NFC el largo de la pieza puede cambiar: `desde` sigue contando en el `str` original y el tachado cubre el ítem entero.
+    res.push({ ini: out.length, fin: out.length + t.length, item: p.item, desde: t.length === p.fin - p.ini ? p.desde : -1 });
+    out += t;
+    pos = p.fin;
+  }
+  out += canonico(crudo.slice(pos));
+  return out.replace(/\n+$/u, '') === can ? recortar(res) : null;
 }
 
 /**

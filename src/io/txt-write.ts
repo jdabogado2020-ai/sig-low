@@ -1,6 +1,6 @@
 // PE-5 · Exportación a .txt y descargas (3.8, 6.9, 6.9.1; V-36, V-40, V-48). Hilo principal: usa DOM mínimo (Blob, <a download>).
 // Este archivo también aloja lo que comparten las dos exportaciones: el nombre neutro de descarga, el registro de URL `blob:` vivas
-// y la descarga misma (`docx-write.ts` los importa). PC-5 llama a `exportarTxt` y `exportarDocx` desde la pantalla Listo, detrás de
+// y la descarga misma (`docx-write.ts`, y desde F4 `docx-write-fiel.ts`, `pdf-write.ts` y `pdf-tachar.ts`, los importan). PC-5 llama a `exportarTxt` y `exportarDocx` desde la pantalla Listo, detrás de
 // `exportGate`; el bloqueo y `pagehide` (PC-6) llaman a `revocarUrlsVivas`.
 //
 // Sin red, sin consola, sin almacenamiento. Los errores salen solo como `SiglowError` con `ErrorCode`.
@@ -12,7 +12,7 @@ import type { ParseWarning, RenderedOutput } from '../core/types';
 export type ContenidoExportable = RenderedOutput | string;
 
 export type ClaseDescarga = 'anonimizado' | 'reinsertado' | 'informe' | 'tabla';
-export type ExtensionDescarga = 'txt' | 'docx' | 'json' | 'siglow';
+export type ExtensionDescarga = 'txt' | 'docx' | 'pdf' | 'json' | 'siglow';
 
 export interface OpcionesExportacion {
   /** `anonimizado` (por defecto) o `reinsertado`: solo cambia el nombre del archivo. */
@@ -30,9 +30,9 @@ export interface ResultadoExportacion {
   avisos: ParseWarning[];
 }
 
-/** 6.9: nombres neutros; nunca el original, el código del asunto ni nombres de partes. */
+/** 6.9: nombres neutros; nunca el original, el código del asunto ni nombres de partes. F4 (D-22) suma el PDF anonimizado. */
 export const NOMBRE_DESCARGA =
-  /^sig-low-(?:(?:anonimizado|reinsertado)-\d{8}-\d{4}\.(?:txt|docx)|informe-\d{8}-\d{4}\.(?:json|txt)|tabla-\d{8}-\d{4}\.siglow)$/;
+  /^sig-low-(?:(?:anonimizado|reinsertado)-\d{8}-\d{4}\.(?:txt|docx|pdf)|informe-\d{8}-\d{4}\.(?:json|txt)|tabla-\d{8}-\d{4}\.siglow)$/;
 
 const dos = (n: number): string => String(n).padStart(2, '0');
 

@@ -5,6 +5,10 @@
 // Reglas de privacidad que cumple (9.1): sin consola (xmldom con `onError` silencioso), ningún `message` ni `stack` sale de
 // aquí (solo SiglowError con ErrorCode), el nombre del archivo no se lee, los ids son aleatorios y las etiquetas son neutras.
 // El inventario de metadatos y los avisos de PE-3 (campos, texto oculto, marcas de agua, altChunk, Strict) NO están aquí.
+//
+// F4 (D-22): `leerDocxMapeado` lee igual y además devuelve el mapa de desplazamientos de cada parte (posición en `Part.text` →
+// archivo XML y nodo `w:t` o `w:sym`) y el XML decodificado de cada parte abierta, para que `docx-write-fiel.ts` reescriba solo el
+// texto de esos nodos. Los ayudantes del ZIP y del XML que ese escritor reutiliza se exportan.
 import { Inflate } from 'fflate';
 import { DOMParser } from '@xmldom/xmldom';
 import type { Element, Node } from '@xmldom/xmldom';
@@ -185,6 +189,11 @@ function leerEntrada(d: Uint8Array, e: EntradaZip, limits: IoLimits, acum: Acumu
 
 /** Decodifica una parte XML por su BOM, por el patrón de NUL (UTF-16 sin BOM) o por su declaración `encoding`. */
 export function decodificarXml(b: Uint8Array): string {
+  return decodificarXmlCon(b).texto;
+}
+
+/** Como `decodificarXml`, y además la codificación usada y si traía BOM (el escritor fiel solo reescribe partes UTF-8). */
+export function decodificarXmlCon(b: Uint8Array): { texto: string; codificacion: string; bom: boolean } {
   let enc: string;
   let salto = 0;
   if (empieza(b, 0xef, 0xbb, 0xbf)) { enc = 'utf-8'; salto = 3; }
@@ -213,7 +222,8 @@ export function decodificarXml(b: Uint8Array): string {
   } catch {
     throw new SiglowError('XML_INVALIDO'); // codificación desconocida o bytes inválidos
   }
-  return texto.charCodeAt(0) === 0xfeff ? texto.slice(1) : texto;
+  const bom = salto > 0 || texto.charCodeAt(0) === 0xfeff;
+  return { texto: texto.charCodeAt(0) === 0xfeff ? texto.slice(1) : texto, codificacion: enc, bom };
 }
 
 /** Rechaza cualquier DTD (V-41): entidades, «billion laughs». Se busca en el texto ya decodificado. */
@@ -236,12 +246,15 @@ function analizarXml(texto: string): Element {
   return raiz;
 }
 
+/** XML ya decodificado de una parte: el texto exacto (sin BOM), su raíz y cómo venía codificado. */
+export interface XmlDocx { texto: string; raiz: Element; codificacion: string; bom: boolean }
+
 /** Decodifica, rechaza DTD y analiza. Pone en cero el buffer descomprimido al terminar. */
-function xmlDe(bytes: Uint8Array): Element {
+export function xmlDe(bytes: Uint8Array): XmlDocx {
   try {
-    const texto = decodificarXml(bytes);
+    const { texto, codificacion, bom } = decodificarXmlCon(bytes);
     rechazarDtd(texto);
-    return analizarXml(texto);
+    return { texto, raiz: analizarXml(texto), codificacion, bom };
   } finally {
     bytes.fill(0);
   }
@@ -363,23 +376,30 @@ function simbolo(el: Element): string {
   return cp <= 0x10ffff && !(cp >= 0xd800 && cp <= 0xdfff) ? String.fromCodePoint(cp) : '';
 }
 
+/** Un tramo del texto (antes de `canonico`) que viene de un `w:t` o de un `w:sym`: [ini, fin) y su nodo. */
+interface PiezaCruda { ini: number; fin: number; el: Element; tipo: 't' | 'sym' }
+interface Bufer { buf: string; piezas: PiezaCruda[] }
+
 /**
  * Texto de una raíz (cuerpo, encabezado, nota o comentario): un párrafo por línea, unidos con '\n' y sin '\n' final.
  * `w:tab` → '\t'; `w:br`/`w:cr` → '\n'; `w:noBreakHyphen` → U+2011; `w:softHyphen` → nada; `w:sym` → su carácter.
  * Excluye `w:del`/`w:moveFrom` (se cuentan), `w:instrText` y las propiedades. Un cuadro de texto anidado corta el
  * párrafo en su anclaje y aporta sus líneas. `mc:AlternateContent` lee solo `mc:Choice` (Fallback si no hay), sin duplicar.
  */
-function extraerTexto(raiz: Element): { texto: string } & Contadores {
-  const lineas: string[] = [];
-  const parrafos: Array<{ buf: string; anidado: boolean }> = [];
-  let suelto = '';
+function extraerTexto(raiz: Element): { texto: string; piezas: PiezaCruda[] } & Contadores {
+  const lineas: Bufer[] = [];
+  const parrafos: Array<Bufer & { anidado: boolean }> = [];
+  const suelto: Bufer = { buf: '', piezas: [] };
   const cont = contadoresVacios();
   let corrida: { oculto: boolean; contada: boolean } | null = null;
-  const anadir = (s: string): void => {
-    const p = parrafos[parrafos.length - 1];
-    if (p !== undefined) p.buf += s; else suelto += s;
+  // F4: cada `w:t` y `w:sym` deja su pieza (posición dentro de la línea) para el mapa de desplazamientos.
+  const anadir = (s: string, el?: Element, tipo?: 't' | 'sym'): void => {
+    const b = parrafos[parrafos.length - 1] ?? suelto;
+    if (el !== undefined && tipo !== undefined && s !== '') b.piezas.push({ ini: b.buf.length, fin: b.buf.length + s.length, el, tipo });
+    b.buf += s;
   };
-  const vaciarSuelto = (): void => { if (suelto !== '') { lineas.push(suelto); suelto = ''; } };
+  const sacarLinea = (b: Bufer): void => { lineas.push({ buf: b.buf, piezas: b.piezas }); b.buf = ''; b.piezas = []; };
+  const vaciarSuelto = (): void => { if (suelto.buf !== '') sacarLinea(suelto); };
 
   const pila: Marco[] = [{ nodos: raiz.childNodes, i: 0, cierra: null }];
   for (let m = pila[pila.length - 1]; m !== undefined; m = pila[pila.length - 1]) {
@@ -415,14 +435,14 @@ function extraerTexto(raiz: Element): { texto: string } & Contadores {
       case 'p': {
         const externo = parrafos[parrafos.length - 1];
         if (externo !== undefined) {
-          if (externo.buf !== '') { lineas.push(externo.buf); externo.buf = ''; }
+          if (externo.buf !== '') sacarLinea(externo);
           externo.anidado = true;
         } else vaciarSuelto();
-        const p = { buf: '', anidado: false };
+        const p = { buf: '', piezas: [] as PiezaCruda[], anidado: false };
         parrafos.push(p);
         pila.push({
           nodos: n.childNodes, i: 0,
-          cierra: () => { parrafos.pop(); if (p.buf !== '' || !p.anidado) lineas.push(p.buf); },
+          cierra: () => { parrafos.pop(); if (p.buf !== '' || !p.anidado) sacarLinea(p); },
         });
         break;
       }
@@ -435,7 +455,7 @@ function extraerTexto(raiz: Element): { texto: string } & Contadores {
       case 'altChunk': cont.importados++; break; // contenido importado de otro archivo: no se lee
       case 't': {
         const t = el.textContent ?? '';
-        anadir(t);
+        anadir(t, el, 't');
         if (corrida !== null && corrida.oculto && !corrida.contada && t !== '') { corrida.contada = true; cont.ocultos++; }
         break;
       }
@@ -443,13 +463,20 @@ function extraerTexto(raiz: Element): { texto: string } & Contadores {
       case 'br': case 'cr': anadir('\n'); break;
       case 'noBreakHyphen': anadir('‑'); break;
       case 'softHyphen': break;
-      case 'sym': anadir(simbolo(el)); break;
+      case 'sym': anadir(simbolo(el), el, 'sym'); break;
       default: pila.push({ nodos: n.childNodes, i: 0, cierra: null });
     }
   }
   vaciarSuelto();
-  while (lineas.length > 0 && lineas[lineas.length - 1] === '') lineas.pop();
-  return { texto: lineas.join('\n'), ...cont };
+  while (lineas.length > 0 && lineas[lineas.length - 1]?.buf === '') lineas.pop();
+  let texto = '';
+  const piezas: PiezaCruda[] = [];
+  lineas.forEach((l, i) => {
+    if (i > 0) texto += '\n';
+    for (const x of l.piezas) piezas.push({ ...x, ini: x.ini + texto.length, fin: x.fin + texto.length });
+    texto += l.buf;
+  });
+  return { texto, piezas, ...cont };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -521,12 +548,57 @@ const ETIQUETA: Partial<Record<PartKind, string>> = {
 /** Canónico (6.1.1): CRLF y CR a LF, y NFC. Nada más. */
 const canonico = (t: string): string => t.replace(/\r\n?/g, '\n').normalize('NFC');
 
-interface Hallazgo extends Contadores { kind: PartKind; texto: string; }
+interface Hallazgo extends Contadores { kind: PartKind; texto: string; piezas: PiezaCruda[]; ruta: string }
 
 export type ProgresoLectura = (done: number, total: number) => void;
 
 /** Lee un .docx completo. Lanza SiglowError(code); nunca devuelve ni registra texto del documento en un error. */
 export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: IoLimits, progress?: ProgresoLectura): DocumentModel {
+  return leerDocxMapeado(input, ctx, limits, progress).modelo;
+}
+
+/** F4 · Un tramo [ini, fin) de `Part.text` (canónico) que viene de un nodo `w:t` o `w:sym` de la parte XML `ruta`. */
+export interface PiezaDocx {
+  ini: number; fin: number;
+  /** El texto canónico de la pieza (`Part.text.slice(ini, fin)`). */
+  texto: string;
+  el: Element; tipo: 't' | 'sym';
+  /** Clave de la parte XML (`clave(nombre)`). */
+  ruta: string;
+}
+/** F4 · Parte del modelo con su mapa; `piezas` es null si la normalización (NFC) no deja mapear pieza a pieza. */
+export interface ParteDocxMapeada { kind: PartKind; texto: string; piezas: PiezaDocx[] | null }
+/** F4 · Lectura con mapa: el modelo, una entrada de `partes` por cada `modelo.parts[i]` y el XML de cada parte abierta. */
+export interface DocxMapeado {
+  modelo: DocumentModel;
+  partes: ParteDocxMapeada[];
+  /** Por clave: el nombre de la entrada tal como está en el ZIP y su XML decodificado. */
+  xml: Map<string, XmlDocx & { nombre: string }>;
+  entradas: Map<string, EntradaZip>;
+  /** Clave de la parte principal. */
+  principal: string;
+}
+
+/** Posiciones de las piezas en el texto canónico. Si NFC no cambia nada son las mismas; si cambia, se normaliza pieza a pieza. */
+function mapearCanonico(crudo: string, piezas: PiezaCruda[], ruta: string): PiezaDocx[] | null {
+  const can = canonico(crudo);
+  if (can === crudo) return piezas.map((p) => ({ ...p, texto: crudo.slice(p.ini, p.fin), ruta }));
+  let out = '';
+  let pos = 0;
+  const res: PiezaDocx[] = [];
+  for (const p of piezas) {
+    out += canonico(crudo.slice(pos, p.ini));
+    const t = canonico(crudo.slice(p.ini, p.fin));
+    res.push({ ini: out.length, fin: out.length + t.length, texto: t, el: p.el, tipo: p.tipo, ruta });
+    out += t;
+    pos = p.fin;
+  }
+  out += canonico(crudo.slice(pos));
+  return out === can ? res : null;
+}
+
+/** F4 · Lee un .docx como `readDocx` y devuelve además el mapa de desplazamientos y el XML de las partes abiertas. */
+export function leerDocxMapeado(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: IoLimits, progress?: ProgresoLectura): DocxMapeado {
   const d = input instanceof Uint8Array ? input : new Uint8Array(input);
   if (d.length === 0) throw new SiglowError('ARCHIVO_VACIO');
   if (d.length > limits.maxFileBytes) throw new SiglowError('ARCHIVO_DEMASIADO_GRANDE');
@@ -542,12 +614,14 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
   }
   const acum: Acumulado = { total: 0, consumido: 0 };
   const avanzar = (): void => { progress?.(Math.min(acum.consumido, d.length), d.length); };
+  const xmls = new Map<string, XmlDocx & { nombre: string }>();
   const abrir = (nombre: string): Element | null => {
     const e = entradas.get(clave(nombre));
     if (e === undefined) return null;
-    const raiz = xmlDe(leerEntrada(d, e, limits, acum));
+    const x = xmlDe(leerEntrada(d, e, limits, acum));
+    xmls.set(clave(nombre), { ...x, nombre: e.nombre });
     avanzar();
-    return raiz;
+    return x.raiz;
   };
   const relacionesDe = (parte: string): Relacion[] => {
     const raiz = abrir(rutaRels(parte));
@@ -630,11 +704,11 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
   });
 
   const hallazgos: Hallazgo[] = [];
-  const unaParte = (kind: PartKind, raiz: Element): void => {
-    const { texto, ...cont } = extraerTexto(raiz);
-    hallazgos.push({ kind, texto, ...cont });
+  const unaParte = (kind: PartKind, raiz: Element, ruta: string): void => {
+    const { texto, piezas, ...cont } = extraerTexto(raiz);
+    hallazgos.push({ kind, texto, piezas, ruta: clave(ruta), ...cont });
   };
-  unaParte('cuerpo', cuerpo);
+  unaParte('cuerpo', cuerpo, principal);
   registrar(principal, raizDoc, false);
 
   // 3. Partes por tipo de relación (último segmento); los nombres de las partes son libres.
@@ -655,7 +729,7 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
       const raiz = abrir(ruta);
       if (raiz === null) continue;
       registrar(ruta, raiz, true);
-      unaParte(kind, raiz);
+      unaParte(kind, raiz, ruta);
     }
   }
   const hijosDe = (raiz: Element, nombre: string, vistaPrevia?: (el: Element) => boolean): Element[] => {
@@ -680,7 +754,7 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
       const raiz = abrir(ruta);
       if (raiz === null) continue;
       registrar(ruta, raiz, true);
-      for (const nota of hijosDe(raiz, hijo, filtro)) unaParte(kind, nota);
+      for (const nota of hijosDe(raiz, hijo, filtro)) unaParte(kind, nota, ruta);
     }
   }
 
@@ -713,6 +787,7 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
   const indice: Partial<Record<PartKind, number>> = {};
   const warnings: ParseWarning[] = [];
   const parts: Part[] = [];
+  const partes: ParteDocxMapeada[] = [];
   for (const x of ordenadas) {
     let id: PartId | undefined;
     if (x.texto.trim() !== '') {
@@ -724,6 +799,7 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
         id, docId: ctx.docId, kind, order: parts.length, index, included: true, text: x.texto,
         label: ETIQUETA[kind] === undefined ? 'Cuerpo del documento' : `${ETIQUETA[kind]} ${index}`,
       });
+      partes.push({ kind, texto: x.texto, piezas: mapearCanonico(x.h.texto, x.h.piezas, x.h.ruta) });
     }
     // Un aviso de una parte sin texto (p. ej. un encabezado que solo tiene la marca de agua) se conserva, sin partId.
     const avisos: Array<[ParseWarningCode, number]> = [
@@ -734,5 +810,14 @@ export function readDocx(input: ArrayBuffer | Uint8Array, ctx: ReadCtx, limits: 
   }
   if (estrictas > 0) warnings.push({ code: 'OOXML_STRICT', count: estrictas });
   progress?.(d.length, d.length);
-  return { id: ctx.docId, label: ctx.label, source: 'docx', parts, metadata: { categories }, warnings };
+  const modelo: DocumentModel = { id: ctx.docId, label: ctx.label, source: 'docx', parts, metadata: { categories }, warnings };
+  return { modelo, partes, xml: xmls, entradas, principal: clave(principal) };
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// F4 · Lo que `docx-write-fiel.ts` reutiliza (mismas reglas de lectura acotada y de XML sin DTD)
+// ---------------------------------------------------------------------------------------------------------------------
+
+export type { EntradaZip, Relacion };
+export { W_NS, clave, leerEntrada, leerRelaciones, nombreW, resolver, rutaRels, ultimoSegmento };
+export type { Acumulado };

@@ -1,8 +1,9 @@
 // Documento en memoria [M] (6.6.5): el borrador de Entrada, el DocumentModel analizado y el ReviewState de la revisión.
 // Nada de esto se serializa ni sale de la pestaña. Se vacía en bloqueo, «Cerrar asunto», `pagehide` y «Borrar todo»
-// (INV-G09) por `registrarLimpieza()` de sesion.ts. Revisión (PC-3/PC-4), Listo (PC-5) y Reinserción leen de aquí.
+// (INV-G09) por `registrarLimpieza()` de sesion.ts; con ellos, el original en memoria del archivo cargado (D-22, `io/original.ts`). Revisión (PC-3/PC-4), Listo (PC-5) y Reinserción leen de aquí.
 import { useEffect, useState } from 'preact/hooks';
 import type { DocumentModel, ErrorCode, ReviewState } from '../core/types.ts';
+import { docIdDelOriginal, soltarOriginal } from '../io/original.ts';
 import { registrarLimpieza } from './sesion.ts';
 
 export type PestanaEntrada = 'pegar' | 'cargar';
@@ -36,7 +37,13 @@ export function obtenerBorrador(): BorradorEntrada {
 }
 export function actualizarBorrador(parche: Partial<BorradorEntrada>): void {
   borrador = { ...borrador, ...parche };
+  soltarOriginalHuerfano();
   avisar();
+}
+/** D-22 · El original en memoria (`io/original.ts`) vive solo mientras el borrador tiene ese mismo documento; si no, queda en cero. */
+function soltarOriginalHuerfano(): void {
+  const id = docIdDelOriginal();
+  if (id !== null && borrador.archivo?.id !== id) soltarOriginal();
 }
 /** El documento en análisis o en revisión; `null` antes de «Analizar» y tras descartarlo. */
 export function obtenerDocumento(): DocumentModel | null {
@@ -64,11 +71,12 @@ export function vaciarDocumento(): void {
   revision = null;
   avisar();
 }
-/** Vacía todo, incluido el texto pegado. */
+/** Vacía todo, incluido el texto pegado, y pone en cero el original en memoria (D-22). */
 export function vaciarTodoElDocumento(): void {
   borrador = inicial();
   documento = null;
   revision = null;
+  soltarOriginal();
   avisar();
 }
 registrarLimpieza(vaciarTodoElDocumento);

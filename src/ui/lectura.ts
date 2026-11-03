@@ -1,10 +1,13 @@
 // Lectura de lo que se carga o se pega en Entrada (8.2.4, 6.11.4 a 6.11.6). El formato sale de los bytes mágicos y de la
 // extensión; el nombre del archivo no se guarda ni se pasa a nadie (V-37). Los .txt y .docx se leen en el worker `io`;
 // el PDF, por el puerto `pdf` (PE-4), que mientras no se conecte responde FORMATO_NO_ADMITIDO.
+// D-22 (F4): los lectores ponen en cero lo que reciben; antes se copia el original, que tras una lectura correcta queda en memoria
+// (`io/original.ts`) para la salida fiel (.docx idéntico y PDF tachado). Si la lectura falla o se cancela, la copia queda en cero.
 import { SiglowError } from '../core/types.ts';
 import type { DocId, DocumentModel, ErrorCode, IdSource, IoLimits, Part, PartId } from '../core/types.ts';
 import { cryptoIds } from '../core/entities.ts';
 import { IO_LIMITS_POR_DEFECTO, LecturaCancelada, leerArchivo, type WorkerIo } from '../io/io-client.ts';
+import { guardarOriginal } from '../io/original.ts';
 import { canonico } from '../io/txt-read.ts';
 import { puertos } from './servicios.ts';
 
@@ -72,6 +75,13 @@ export async function leerContenido(o: LecturaOpciones): Promise<ResultadoLectur
   if ('error' in f) throw new SiglowError(f.error);
   const docId = ids.next('doc') as DocId;
   let doc: DocumentModel;
+  let copia: Uint8Array;
+  try {
+    copia = new Uint8Array(buffer.slice(0));
+  } catch {
+    new Uint8Array(buffer).fill(0);
+    throw new SiglowError('MEMORIA');
+  }
   try {
     if (f.formato === 'pdf') {
       doc = await puertos.pdf(buffer, { docId, label: o.label, limits: limites }, (h, t) => { o.alAvanzar(h, t, 'paginas'); }, o.signal);
@@ -83,12 +93,15 @@ export async function leerContenido(o: LecturaOpciones): Promise<ResultadoLectur
       doc = await leerArchivo(o.crearWorker === undefined ? opciones : { ...opciones, crearWorker: o.crearWorker });
     }
   } catch (e) {
+    copia.fill(0);
     // Una cancelación puede llegar como cualquier rechazo del lector: manda la señal.
     if (o.signal.aborted || e instanceof LecturaCancelada) throw new LecturaCancelada();
     if (e instanceof SiglowError) throw e;
     const c = typeof e === 'object' && e !== null && 'code' in e ? (e as { code: unknown }).code : undefined;
     throw new SiglowError(typeof c === 'string' && /^[A-Z][A-Z_]{2,40}$/u.test(c) ? (c as ErrorCode) : 'ERROR_INTERNO');
   }
+  if (o.signal.aborted) { copia.fill(0); throw new LecturaCancelada(); }
+  guardarOriginal(doc.id, f.formato, copia);
   return { doc, formato: f.formato, bytes };
 }
 
