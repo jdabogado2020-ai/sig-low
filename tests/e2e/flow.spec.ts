@@ -1476,14 +1476,17 @@ testMedicion.describe('Listo (PC-5)', () => {
     expect(e.banderas).toBeGreaterThan(0);
     await expect(page.locator('[data-motivo="BANDERAS"]')).toHaveText(/^Quedan \d+ banderas sin confirmar\.$/);
     await g.decidir();
-    // CIERRE-1 (M-82): «Ejemplo» de «Luis Ejemplo» ya no es de Pedro; la búsqueda de residuos trae «Luis» como detección nueva. El
-    // revisor la decide y la búsqueda vuelve a correr.
-    await expect.poll(async () => {
-      const t = (await page.locator('[data-prueba="residuos-estado"]').textContent()) ?? '';
-      if (t.startsWith('Pendiente')) await g.decidir();
-      return t;
-    }, { timeout: 30_000 })
-      .toContain('Búsqueda de residuos: ninguno de los');
+    // CIERRE-1 (M-82): «Ejemplo» de «Luis Ejemplo» ya no es de Pedro; la búsqueda de residuos trae «Luis» como detección nueva y,
+    // como en el producto, vuelve a Revisión con el pendiente (M-78). El revisor lo decide, regresa a Listo y la búsqueda corre de
+    // nuevo (F0: el «Buscando…» de P0-5 era la prueba, que esperaba el estado de Listo estando ya en Revisión). Una sola vuelta: una
+    // segunda querría decir que cada decisión trae otro residuo (un ciclo del producto).
+    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('[data-prueba="aviso-M-78"]')).toContainText('La búsqueda de residuos encontró');
+    expect(await g.decidir()).toBe(1);
+    await g.ir();
+    await expect(h1(page, 'Listo')).toBeVisible();
+    await esperarBusqueda(page);
+    await expect(h1(page, 'Listo')).toBeVisible();
     await marcarRecordatorio(page);
     expect((await g.estado()).ok).toBe(true);
   });
