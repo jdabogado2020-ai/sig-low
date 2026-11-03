@@ -98,7 +98,9 @@ const server = createServer(async (req, res) => {
   try {
     const s = await stat(archivo);
     if (!s.isFile()) throw new Error('no');
-    res.setHeader('Content-Type', MIME[extname(archivo)] ?? 'application/octet-stream');
+    // Como Cloudflare Pages: una extensión que no conoce sale sin tipo, salvo que `_headers` lo ponga (los trozos del modelo, F0).
+    const tipo = MIME[extname(archivo)];
+    if (tipo !== undefined) res.setHeader('Content-Type', tipo);
     res.setHeader('Content-Length', s.size);
     res.end(req.method === 'HEAD' ? undefined : await readFile(archivo));
   } catch {

@@ -2,7 +2,7 @@ import { test, expect, type Browser, type BrowserContext, type Page, type Worker
 import { spawn } from 'node:child_process';
 import { createSocket, type Socket } from 'node:dgram';
 import { createServer, type Server as ServidorTcp } from 'node:net';
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
@@ -777,6 +777,23 @@ test.describe('T-CS-06 y T-CS-07 Trusted Types y CSP de respaldo', () => {
       expect({ ruta, csp: h['content-security-policy'], tipo: h['content-type'], cache: h['cache-control'], acao: h['access-control-allow-origin'] })
         .toEqual({ ruta, csp: `${CSP_CANONICA}, ${CSP_RUTAS}`, tipo, cache, acao: undefined });
       for (const [k, v] of Object.entries(canonicas)) expect(h[k], `${ruta}: ${k}`).toBe(v);
+    }
+    // F0: un trozo del modelo (`.part000`, sin extensión conocida) sale con Content-Type por la regla de `_headers`, no por la
+    // extensión (server.mjs, como Cloudflare Pages, no pone tipo a lo que no conoce). Trozo ficticio en una copia del build.
+    {
+      const conTrozo = join(tmp, `con-trozo-${Date.now()}`);
+      cpSync(DIST, conTrozo, { recursive: true });
+      const rutaTrozo = '/models/gliner-x-large/onnx/model_quantized.onnx.part000';
+      mkdirSync(join(conTrozo, 'models', 'gliner-x-large', 'onnx'), { recursive: true });
+      writeFileSync(join(conTrozo, rutaTrozo), Buffer.from('bytes ficticios de un trozo'));
+      const srvTrozo = await levantar(conTrozo);
+      try {
+        const h = (await request.get(`${srvTrozo.origen}${rutaTrozo}`)).headers();
+        expect({ tipo: h['content-type'], csp: h['content-security-policy'], corp: h['cross-origin-resource-policy'] })
+          .toEqual({ tipo: 'application/octet-stream', csp: `${CSP_CANONICA}, ${CSP_RUTAS}`, corp: 'same-origin' });
+      } finally {
+        await srvTrozo.parar();
+      }
     }
     // Permissions-Policy (3.6 y PD-2-r2): el navegador reconoce cada rasgo de la cabecera, sin aviso en la consola («Unrecognized
     // feature»), y los que van con `()` quedan apagados en la página y en un iframe que la herede.

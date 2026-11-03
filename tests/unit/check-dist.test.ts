@@ -345,6 +345,12 @@ describe.concurrent('T-CD-03 _headers (3.6, T-CS-07)', () => {
     await falla({ cabeceras: (h) => h.replace(/(\/sw\.js\s*\n\s*Cache-Control: )no-cache, no-transform/, '$1max-age=86400') }, '_headers: /sw.js debe llevar solo Cache-Control: no-cache, no-transform');
     await falla({ cabeceras: (h) => `${h}\n/ort/*\n  Cache-Control: no-cache\n` }, '_headers: regla /ort/* no aprobada');
   });
+  it('canario (F0): los trozos del modelo sin Content-Type: application/octet-stream, con otro tipo o con otra cabecera', async () => {
+    const motivo = '_headers: /models/*/onnx/* debe llevar solo Content-Type: application/octet-stream';
+    await falla({ cabeceras: (h) => h.replace(/\/models\/\*\/onnx\/\*\s*\n\s*Content-Type: application\/octet-stream\n?/, '') }, motivo);
+    await falla({ cabeceras: (h) => h.replace('Content-Type: application/octet-stream', 'Content-Type: text/plain') }, motivo);
+    await falla({ cabeceras: (h) => h.replace('Content-Type: application/octet-stream', 'Content-Type: application/octet-stream\n  Cache-Control: no-cache') }, motivo);
+  });
   it('canario: una cabecera que llega desde dos reglas (Cloudflare uniría; el SW y server.mjs se quedarían con la última)', async () => {
     await falla({ cabeceras: (h) => h.replace(/(\/assets\/\*\s*\n\s*Cache-Control: [^\n]*)/, '$1\n  X-Frame-Options: DENY') },
       '_headers: X-Frame-Options llega a /assets/x.js desde dos reglas (/* y /assets/*)');

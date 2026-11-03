@@ -37,3 +37,7 @@
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Trozos del modelo (`.part000` y siguientes, F0): sin extensión conocida, Cloudflare Pages los servía sin Content-Type.
+/models/*/onnx/*
+  Content-Type: application/octet-stream

@@ -196,9 +196,11 @@ const CACHE = {
   '/sw.js': 'no-cache, no-transform',
   '/assets/*': 'public, max-age=31536000, immutable',
 };
+// F0: los trozos del modelo no tienen extensión conocida y Cloudflare Pages los servía sin Content-Type.
+const TIPOS = { '/models/*/onnx/*': 'application/octet-stream' };
 // Rutas de muestra para comprobar que ninguna cabecera llega desde dos reglas (Cloudflare uniría los valores; el SW y
 // server.mjs se quedan con el último).
-const RUTAS_MUESTRA = ['/', '/index.html', '/sw.js', '/assets/x.js', '/ort/ort-wasm-simd-threaded.wasm', '/tt-policy.js', '/precache.json', '/models/x/manifest.json', '/otra'];
+const RUTAS_MUESTRA = ['/', '/index.html', '/sw.js', '/assets/x.js', '/ort/ort-wasm-simd-threaded.wasm', '/tt-policy.js', '/precache.json', '/models/x/manifest.json', '/models/x/onnx/model_quantized.onnx.part000', '/otra'];
 
 // ===== Dependencias (T-PV-14, V-06; 4.1 y 5.2.2). Lista blanca de ejecución con sus versiones, y el cierre exacto de
 // paquetes de ejecución del lockfile (incluidos los opcionales). Un cambio exige aprobación (F-04). =====
@@ -397,7 +399,11 @@ else {
     const x = reglasH.find((y) => y.patron === patron);
     if (!x || x.pares.length !== 1 || x.pares[0][0] !== 'Cache-Control' || x.pares[0][1] !== valor) fallar(`_headers: ${patron} debe llevar solo Cache-Control: ${valor}`);
   }
-  for (const x of reglasH) if (x.patron !== '/*' && !Object.hasOwn(CACHE, x.patron)) fallar(`_headers: regla ${x.patron} no aprobada`);
+  for (const [patron, valor] of Object.entries(TIPOS)) {
+    const x = reglasH.find((y) => y.patron === patron);
+    if (!x || x.pares.length !== 1 || x.pares[0][0] !== 'Content-Type' || x.pares[0][1] !== valor || x.quitar.length) fallar(`_headers: ${patron} debe llevar solo Content-Type: ${valor}`);
+  }
+  for (const x of reglasH) if (x.patron !== '/*' && !Object.hasOwn(CACHE, x.patron) && !Object.hasOwn(TIPOS, x.patron)) fallar(`_headers: regla ${x.patron} no aprobada`);
   for (const ruta of RUTAS_MUESTRA) {
     const vistas = new Map();
     for (const x of reglasH) {
