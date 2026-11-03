@@ -13,6 +13,7 @@ import { build, defaultClientConditions } from 'vite';
 
 import type { ModelManifest } from '../../src/core/types';
 import { delModelo, distConModelos, modeloSintetico, rutasDelManifiesto } from './harness/dist-modelo';
+import { construirMedicion } from './lib/medicion';
 import { levantarServidor, type Servidor } from './lib/servidores';
 
 const RAIZ = process.cwd();
@@ -604,6 +605,86 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       await navegador.close();
       await srv.parar();
     }
+  });
+
+  // F0 · red lenta simulada. En producción los relojes son 120 s (vigía del SW, por bloque) y 150 s (página); el build de medición
+  // los acorta a 3 s y 6 s (`__SIGLOW_MEDICION__`), con el mismo código. Así una descarga de unos 25 s con avance continuo dura
+  // más de 4 veces el silencio de la página y más de 8 el del SW, como una de 10 minutos con los relojes reales. El servidor de
+  // pruebas entrega los trozos por bloques (`route.fulfill` de Playwright solo da el cuerpo entero, sin avance).
+  test.describe('F0 · descarga con red lenta (build de medición, relojes acortados)', () => {
+    test.describe.configure({ timeout: 180_000 });
+    const DIST_MEDICION = resolve('dist-medicion');
+    const LENTO = modeloSintetico('gliner-x-large', { trozos: 4, tamTrozo: 60_000, semilla: 13 });
+    const BASE_F0 = modeloSintetico('gliner-x-base', { trozos: 2, tamTrozo: 20_000, semilla: 15 });
+    let D_LENTO = '';
+    test.beforeAll(() => {
+      construirMedicion();
+      D_LENTO = join(tmp, 'lento');
+      distConModelos(DIST_MEDICION, D_LENTO, [LENTO, BASE_F0]);
+    });
+    const vecesPedido = (ps: { u: string }[]): Record<string, number> =>
+      Object.fromEntries(rutasDelManifiesto(LENTO.manifest).map((r) => [r, ps.filter((p) => p.u === r).length]));
+
+    test('F0 4 KiB cada 500 ms (cada trozo de 60 kB tarda unos 7 s, más que los dos relojes): termina bien, sin reintentos ni avisos', async ({ page }) => {
+      n += 1;
+      const srv = await levantarServidor({ dir: D_LENTO, registro: join(tmp, `peticiones-${n}.jsonl`), lento: 500 });
+      try {
+        const obs = await observar(page, srv.origen);
+        await abrirInicio(page, srv.origen);
+        const corte = srv.peticiones().length;
+        const t0 = Date.now();
+        await botonDescargar(page).click();
+        await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 150_000 });
+        const duracion = Date.now() - t0;
+        expect(duracion).toBeGreaterThan(18_000); // > 3 × el silencio de la página (6 s) y > 6 × el del SW (3 s)
+        expect(Object.values(vecesPedido(delModelo(srv.peticiones().slice(corte))))).toEqual([1, 1, 1, 1, 1, 1]);
+        await expect(tarjeta(page).getByRole('alert')).toHaveCount(0);
+        expect((await cachesDelModelo(page))[0]?.rutas).toEqual(rutasDelManifiesto(LENTO.manifest));
+        expect(obs.ajenas).toEqual([]);
+        expect(await obs.violaciones()).toEqual([]);
+      } finally {
+        await srv.parar();
+      }
+    });
+
+    test('F0 un trozo que se queda callado a mitad (más que el vigía del SW) se corta, se reintenta y la descarga termina', async ({ page }) => {
+      n += 1;
+      const srv = await levantarServidor({ dir: D_LENTO, registro: join(tmp, `peticiones-${n}.jsonl`), atascarUnaVez: 'part001' });
+      try {
+        await observar(page, srv.origen);
+        await abrirInicio(page, srv.origen);
+        const corte = srv.peticiones().length;
+        await botonDescargar(page).click();
+        await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
+        const veces = vecesPedido(delModelo(srv.peticiones().slice(corte)));
+        expect(veces['/models/gliner-x-large/onnx/model_quantized.onnx.part001']).toBe(2);
+        expect(Object.values(veces).reduce((s, x) => s + x, 0)).toBe(7);
+        await expect(tarjeta(page).getByRole('alert')).toHaveCount(0);
+      } finally {
+        await srv.parar();
+      }
+    });
+
+    test('F0 un trozo cuya conexión se corta una vez se recupera solo, sin aviso', async ({ page, context }) => {
+      n += 1;
+      const srv = await levantarServidor({ dir: D_LENTO, registro: join(tmp, `peticiones-${n}.jsonl`), lento: 50 });
+      try {
+        await observar(page, srv.origen);
+        let intentos = 0;
+        await context.route('**/models/gliner-x-large/onnx/model_quantized.onnx.part002', async (r) => {
+          intentos += 1;
+          if (intentos === 1) await r.abort('connectionreset'); else await r.fallback();
+        });
+        await abrirInicio(page, srv.origen);
+        await botonDescargar(page).click();
+        await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
+        expect(intentos).toBe(2);
+        await expect(tarjeta(page).getByRole('alert')).toHaveCount(0);
+        expect((await cachesDelModelo(page))[0]?.rutas).toEqual(rutasDelManifiesto(LENTO.manifest));
+      } finally {
+        await srv.parar();
+      }
+    });
   });
 });
 

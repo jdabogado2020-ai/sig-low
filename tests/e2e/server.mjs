@@ -7,6 +7,7 @@
 //   --reporte-csp añade `report-uri /csp-report` a cada política (también en las del CSP de un worker, que la ventana no ve) y
 //                 recibe los informes en POST /csp-report. Solo en pruebas: producción no lleva report-uri (V-21).
 //   --padre pid   se apaga si ese proceso desaparece (una corrida cancelada no deja servidores abiertos).
+//   --lento ms, --atascar-una-vez sufijo   red lenta simulada para los trozos del modelo (F0, ver abajo).
 // Con SIGLOW_REGISTRO_PETICIONES=<archivo> anota cada petición, una línea JSON: { t, m, u, p, q, b, c?, h }.
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
@@ -27,6 +28,27 @@ const SIN_CSP = marca('--sin-csp');
 const REPORTE_CSP = marca('--reporte-csp');
 const PADRE = Number(arg('--padre', '0'));
 const MAX_CUERPO = 64 * 1024; // del cuerpo se anota hasta aquí (los bytes se cuentan completos)
+// Red lenta simulada para la descarga del modelo (F0; solo pruebas): `--lento <ms>` envía cada archivo de /models/*/onnx/ en
+// bloques de 4 KiB con esa pausa entre bloques (avance continuo); `--atascar-una-vez <sufijo>` hace que el PRIMER GET de la ruta
+// que termina así envíe un bloque y se quede callado con la conexión abierta (los siguientes, normales).
+const LENTO_MS = Number(arg('--lento', '0'));
+const ATASCAR = arg('--atascar-una-vez', '');
+const BLOQUE_LENTO = 4096;
+const atascadas = new Set();
+const TROZO_DEL_MODELO = /^\/models\/[^/]+\/onnx\//;
+
+function enviarPorBloques(res, datos, atascar) {
+  let i = 0;
+  const paso = () => {
+    if (res.destroyed) return;
+    if (i >= datos.length) { res.end(); return; }
+    res.write(datos.subarray(i, i + BLOQUE_LENTO));
+    i += BLOQUE_LENTO;
+    if (atascar) return; // callado: el cliente decide cuándo cortar
+    setTimeout(paso, LENTO_MS);
+  };
+  paso();
+}
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
@@ -102,6 +124,11 @@ const server = createServer(async (req, res) => {
     const tipo = MIME[extname(archivo)];
     if (tipo !== undefined) res.setHeader('Content-Type', tipo);
     res.setHeader('Content-Length', s.size);
+    if (req.method === 'GET' && TROZO_DEL_MODELO.test(url.pathname) && (LENTO_MS > 0 || ATASCAR !== '')) {
+      const atascar = ATASCAR !== '' && url.pathname.endsWith(ATASCAR) && !atascadas.has(url.pathname);
+      if (atascar) atascadas.add(url.pathname);
+      return enviarPorBloques(res, await readFile(archivo), atascar);
+    }
     res.end(req.method === 'HEAD' ? undefined : await readFile(archivo));
   } catch {
     res.statusCode = 404;

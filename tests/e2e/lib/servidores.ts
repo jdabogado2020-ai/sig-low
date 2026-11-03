@@ -35,6 +35,10 @@ export interface OpcionesServidor {
   sinCsp?: boolean;
   /** Añade `report-uri /csp-report` a cada política y registra los informes (cubre los workers; solo con conexión). */
   reporteCsp?: boolean;
+  /** F0: pausa (ms) entre bloques de 4 KiB al servir los trozos de /models/ (red lenta con avance continuo). */
+  lento?: number;
+  /** F0: el primer GET de la ruta que termina así envía un bloque y se queda callado. */
+  atascarUnaVez?: string;
   /** Archivo del registro (por defecto uno temporal propio, que `parar()` borra). */
   registro?: string;
 }
@@ -69,6 +73,8 @@ export async function levantarServidor(opciones: OpcionesServidor = {}): Promise
   if (opciones.senuelo) args.push('--senuelo');
   if (opciones.sinCsp) args.push('--sin-csp');
   if (opciones.reporteCsp) args.push('--reporte-csp');
+  if (opciones.lento !== undefined) args.push('--lento', String(opciones.lento));
+  if (opciones.atascarUnaVez !== undefined) args.push('--atascar-una-vez', opciones.atascarUnaVez);
   const hijo: ChildProcess = spawn(process.execPath, args, {
     env: { ...process.env, SIGLOW_REGISTRO_PETICIONES: registro },
     stdio: ['ignore', 'pipe', 'ignore'],
