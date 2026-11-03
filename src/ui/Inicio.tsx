@@ -67,11 +67,16 @@ function TarjetaModelo() {
     setError(undefined);
     try { await puertos.modelo.descargar(); } catch (e) { setError(mensajeDeCodigo(codigoDeError(e), 'modelo')); }
   };
+  // F0: tras un fallo, UN solo mensaje con el motivo (red: M-2102; integridad: M-31; el motor no pudo usarlo: M-30) y «Reintentar».
+  // El error de una excepción inesperada solo se muestra si no hay ya un fallo a la vista.
+  const fallo = model.state === 'fallo'
+    ? t(model.motivo === 'red' ? 'M-2102' : model.motivo === 'integridad' ? 'M-31' : 'M-30')
+    : null;
   return (
     <section class="tarjeta" aria-labelledby="tm-titulo" data-prueba="tarjeta-modelo">
       <h2 id="tm-titulo">{t(X.modeloDeApoyo)}</h2>
       <p>{t('M-24', { mb })}</p>
-      {descargable ? <p>{t('M-160', { mb })}</p> : null}
+      {model.state === 'no_descargado' ? <p>{t('M-160', { mb })}</p> : null}
       {descargable && reducido ? <p>{t('M-168')}</p> : null}
       {model.state === 'descargando' ? (
         <p role="status">{t('M-27', { hecho: Math.round((model.doneBytes ?? 0) / 1_000_000), mb })}</p>
@@ -82,14 +87,16 @@ function TarjetaModelo() {
       {model.state === 'listo' && persistente !== null ? (
         <p data-prueba="persistencia-modelo" data-persistente={persistente ? 'si' : 'no'}>{persistente ? t('M-107') : alterno('M-107', 0)}</p>
       ) : null}
-      {model.state === 'fallo' ? <p role="alert">{t('M-30')}</p> : null}
+      {fallo !== null ? <p role="alert" data-prueba="fallo-modelo" data-motivo={model.motivo ?? 'carga'}>{fallo}</p> : null}
       {model.state === 'sin_espacio' ? <p role="alert">{t('M-32')}</p> : null}
       {model.state === 'sin_memoria' ? <p role="alert">{t('M-169')}</p> : null}
-      {error ? <p role="alert" class="error-campo">{error}</p> : null}
+      {error && fallo === null ? <p role="alert" class="error-campo">{error}</p> : null}
       <p class="ayuda">{t('M-33')}</p>
       <div class="acciones">
         {descargable ? (
-          <button type="button" disabled={!puertos.modelo.disponible()} onClick={() => { void lanzar(); }}>{t('M-25', { mb })}</button>
+          <button type="button" disabled={!puertos.modelo.disponible()} onClick={() => { void lanzar(); }}>
+            {model.state === 'fallo' ? t('M-2101') : t('M-25', { mb })}
+          </button>
         ) : null}
         {model.state === 'descargando' ? (
           <button type="button" class="secundario" onClick={() => { puertos.modelo.cancelar(); }}>{t(ROTULOS.cancelar_descarga)}</button>

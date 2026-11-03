@@ -9,7 +9,7 @@ import {
 import { esManifiesto, IDS_MODELO, mbDelManifiesto, validarEntrega, type IdModelo } from '../core/ner/manifest.ts';
 import { SiglowError, type ErrorCode, type ModelManifest } from '../core/types.ts';
 import { actualizar } from './estado.ts';
-import type { ModelUiState, ModelVariant } from './estado.ts';
+import type { ModelUiState, ModelVariant, MotivoFalloModelo } from './estado.ts';
 import type { ModeloPuerto } from './servicios.ts';
 
 /**
@@ -74,7 +74,7 @@ let descarga: AbortController | null = null;
 
 const variantePorId = (id: IdModelo): ModelVariant => (id === 'gliner-x-base' ? 'respaldo' : 'principal');
 
-function fijar(estado: ModelUiState, extra: { variant?: ModelVariant; doneBytes?: number; totalBytes?: number } = {}): void {
+function fijar(estado: ModelUiState, extra: { variant?: ModelVariant; doneBytes?: number; totalBytes?: number; motivo?: MotivoFalloModelo } = {}): void {
   local = { state: estado, ...(extra.variant ? { variant: extra.variant } : {}), mb: local.mb };
   actualizar({ model: { state: estado, ...extra } });
 }
@@ -190,11 +190,11 @@ function desenlace(r: ResultadoEntrega): void {
       fijar('listo', { variant: variantePorId(r.id) });
       return;
     case 'plan_b':
-      // Cancelado por el abogado, sin espacio ni para el respaldo (M-169), modelo alterado (M-31) o red caída (M-30).
+      // Cancelado por el abogado, sin espacio ni para el respaldo (M-169), modelo alterado (M-31) o red caída (M-2102). F0: el
+      // motivo va en el estado y la tarjeta muestra UN mensaje; antes también se lanzaba el código y salían M-30 y M-214 a la vez.
       if (r.causa === 'cancelado') fijar('no_descargado');
       else if (r.causa === 'espacio') fijar('sin_memoria');
-      else fijar('fallo');
-      if (r.causa === 'integridad' || r.causa === 'red') throw new SiglowError(r.codigo);
+      else fijar('fallo', { motivo: r.causa });
   }
 }
 

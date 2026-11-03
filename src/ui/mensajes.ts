@@ -101,6 +101,9 @@ const EXTRA = {
   'M-2003': 'Otras personas del documento',
   'M-2004': 'Unir con {opcion}',
   'M-2005': 'Ninguna de esas personas tiene otra mención en el documento con la que unirla: sepárela si es otra persona o recházela.',
+  // Tarjeta del modelo tras una descarga fallida (F0; rango M-21xx): un solo mensaje con el motivo y el botón «Reintentar».
+  'M-2101': 'Reintentar',
+  'M-2102': 'No se pudo terminar la descarga del modelo de apoyo: la conexión se cortó o estuvo detenida demasiado tiempo. Lo ya descargado y comprobado quedó guardado en este navegador; pulse «Reintentar» para seguir desde ahí. Mientras tanto, Sig-Low sigue con reglas y lista del caso.',
 } as const;
 
 const TODO: Record<string, string> = { ...CATALOGO, ...EXTRA };

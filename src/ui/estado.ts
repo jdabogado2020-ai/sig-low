@@ -15,6 +15,8 @@ export type SaveMode = 'guardar' | 'no_guardar';
 export type ModelUiState = 'no_descargado' | 'descargando' | 'verificando' | 'listo' | 'fallo' | 'sin_espacio' | 'sin_memoria';
 /** Qué modelo hay en el equipo: el principal o la versión reducida de respaldo (3.3). */
 export type ModelVariant = 'principal' | 'respaldo';
+/** Por qué falló la última descarga (F0): la tarjeta muestra un solo mensaje con ese motivo y «Reintentar». */
+export type MotivoFalloModelo = 'red' | 'integridad';
 /** Diálogos sin ruta (8.2.11). */
 export type Dialog = 'acerca' | 'creditos' | null;
 
@@ -40,7 +42,7 @@ export interface ShellState {
   offlineReady: boolean;                 // el SW confirmó el precache (mensaje sin contenido)
   updateWaiting: boolean;                // hay un SW nuevo en espera
   asunto: OpenAsunto | null;
-  model: { state: ModelUiState; variant?: ModelVariant; doneBytes?: number; totalBytes?: number };
+  model: { state: ModelUiState; variant?: ModelVariant; doneBytes?: number; totalBytes?: number; motivo?: MotivoFalloModelo };
   modelRun: ModelProgress | null;        // avance del análisis con el modelo (6.4.8); null fuera de una revisión. Lo refleja el ReviewState
   singleKeyShortcuts: boolean;           // 8.6.2; solo en memoria; true al cargar
   error: UiError | null;

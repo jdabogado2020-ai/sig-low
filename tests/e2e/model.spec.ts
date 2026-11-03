@@ -248,6 +248,8 @@ const DIST = resolve('dist');
 const M_LISTO = 'Modelo de apoyo listo en este equipo.';
 const M_31 = 'El modelo descargado no superó la comprobación de integridad y se descartó.';
 const M_30 = 'No se pudo preparar el modelo de apoyo.';
+const M_214 = 'El modelo de apoyo no está descargado.';
+const M_2102 = 'No se pudo terminar la descarga del modelo de apoyo';
 const M_169 = 'Este equipo no tiene memoria o espacio suficiente para el modelo de apoyo.';
 const M_170 = 'Se está usando la versión reducida del modelo de apoyo.';
 
@@ -411,7 +413,11 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       const corte = srv.peticiones().length;
       await botonDescargar(page).click();
       await expect(tarjeta(page).getByRole('alert').filter({ hasText: M_31 })).toBeVisible({ timeout: 60_000 });
-      await expect(tarjeta(page)).toContainText(M_30);
+      // F0: un solo mensaje, con el motivo, y «Reintentar» (antes salían M-30 y el del código a la vez).
+      await expect(tarjeta(page).getByRole('alert')).toHaveCount(1);
+      await expect(tarjeta(page)).not.toContainText(M_30);
+      await expect(tarjeta(page)).not.toContainText(M_214);
+      await expect(tarjeta(page).getByRole('button', { name: 'Reintentar' })).toBeEnabled();
       await expect(tarjeta(page)).not.toContainText(M_LISTO);
       expect(await cachesDelModelo(page)).toEqual([]); // los parciales (los 2 auxiliares y el trozo 0, bien) se borraron
       // Pidió hasta el trozo alterado y paró: ni los trozos siguientes ni el respaldo.
@@ -421,6 +427,40 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       // Plan B con aviso: la casilla del modelo está deshabilitada y el análisis sigue con reglas y lista del caso.
       await irAEntrada(page);
       await expect(page.getByRole('checkbox', { name: 'Usar el modelo de apoyo' })).toBeDisabled();
+      expect(obs.ajenas).toEqual([]);
+      expect(await obs.violaciones()).toEqual([]);
+    } finally {
+      await srv.parar();
+    }
+  });
+
+  test('F0 @cero-red la red corta un trozo tres veces (el intento y sus 2 reintentos) → UN mensaje con el motivo y «Reintentar», lo verificado se conserva y el reintento sigue desde ahí', async ({ page, context }) => {
+    const srv = await servir(D_OK);
+    try {
+      const obs = await observar(page, srv.origen);
+      let cortes = 0;
+      // Las peticiones del SW pasan por `context.route` (Chromium): el trozo 1 se corta sin respuesta, como un reinicio de la conexión.
+      await context.route('**/models/gliner-x-large/onnx/model_quantized.onnx.part001', async (r) => {
+        if (cortes < 3) { cortes += 1; await r.abort('connectionreset'); } else await r.fallback();
+      });
+      await abrirInicio(page, srv.origen);
+      const corte = srv.peticiones().length;
+      await botonDescargar(page).click();
+      await expect(tarjeta(page).locator('[data-prueba="fallo-modelo"]')).toContainText(M_2102, { timeout: 60_000 });
+      expect(cortes).toBe(3);
+      await expect(tarjeta(page).getByRole('alert')).toHaveCount(1);
+      await expect(tarjeta(page)).not.toContainText(M_30);
+      await expect(tarjeta(page)).not.toContainText(M_214);
+      // Los 2 auxiliares y el trozo 0, verificados, siguen en la caché del modelo; el respaldo no se pidió.
+      expect((await cachesDelModelo(page))[0]?.rutas).toEqual(['/models/gliner-x-large/onnx/model_quantized.onnx.part000', '/models/gliner-x-large/tokenizer.json', '/models/gliner-x-large/tokenizer_config.json']);
+      expect(delModelo(srv.peticiones().slice(corte)).some((p) => p.u.includes('gliner-x-base'))).toBe(false);
+      // «Reintentar»: solo se piden los que faltan, y el modelo queda listo y completo.
+      const segundo = srv.peticiones().length;
+      await tarjeta(page).getByRole('button', { name: 'Reintentar' }).click();
+      await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
+      await expect(tarjeta(page).getByRole('alert')).toHaveCount(0);
+      expect(delModelo(srv.peticiones().slice(segundo)).map((p) => p.u).sort()).toEqual(GRANDE.manifest.trozos.slice(1).map((t) => `/models/gliner-x-large/${t.ruta}`));
+      expect((await cachesDelModelo(page))[0]?.rutas).toEqual(rutasDelManifiesto(GRANDE.manifest));
       expect(obs.ajenas).toEqual([]);
       expect(await obs.violaciones()).toEqual([]);
     } finally {
