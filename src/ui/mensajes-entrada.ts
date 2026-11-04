@@ -5,12 +5,12 @@ import { registrarMensajes, type MessageId } from './mensajes.ts';
 registrarMensajes({
   'M-1301': 'Texto del documento',
   'M-1302': '{n} caracteres',
-  'M-1303': 'Suelte aquí un archivo .txt, .docx o PDF, o use el botón.',
-  'M-1304': 'Partes encontradas',
+  'M-1303': 'Suelte aquí un archivo .docx, .pdf o .txt, o use el botón.',
+  'M-1304': 'Partes del documento',
   'M-1305': '{etiqueta} · {n} caracteres',
-  'M-1306': 'La revisión del modelo tarda unos minutos y puede revisar mientras llega.',
-  'M-1307': 'Pegue texto o cargue un archivo con texto para poder analizar.',
-  'M-1308': 'Forma de entrada del documento',
+  'M-1306': 'La revisión del detector de nombres adicional tarda unos minutos; puede ir revisando mientras llega.',
+  'M-1307': 'Pegue texto o cargue un archivo con texto para poder anonimizar.',
+  'M-1308': 'Forma de cargar el documento',
   'M-1309': 'Zona para soltar un archivo',
   'M-1310': 'Etapas del análisis',
   'M-1311': '{etapa}: {unidad} {hecho} de {total}',
@@ -27,7 +27,7 @@ registrarMensajes({
   'M-1323': 'Avisos de la lectura',
   'M-1324': 'Estado de cada etapa',
   // CONTENIDO_PDF_NO_LEIDO (contrato del integrador, 30-oct): 8.5.3 aún no le asigna mensaje.
-  'M-1325': 'El PDF tiene adjuntos, vínculos o marcadores ({n}) cuyo contenido Sig-Low no lee. Revíselos en el original.',
+  'M-1325': 'El PDF tiene adjuntos, vínculos o índices ({n}) cuyo contenido Sig-Low no lee. Revíselos en el original.',
 });
 
 export const E = {
