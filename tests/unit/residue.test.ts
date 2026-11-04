@@ -617,6 +617,25 @@ describe('7.13.6 · decisiones del revisor y entidades distintas', () => {
     const rojas = r.out.sections[0]?.text.indexOf('Rojas (otra persona)') ?? -1;
     expect(r.run.nuevas.some((c) => c.start <= rojas && rojas < c.end)).toBe(false);
   });
+
+  it('F9 B-171 · rechazosDelRevisor: dentro de un nombre mostrado con límites de más, la cédula que se comió sigue siendo impacto', async () => {
+    // El abogado mostró «Sergio Ficticio 41.000.001» (un tramo del modelo que se comió la cédula). La cédula, oculta en «C.C.
+    // 41.000.001», también queda a la vista dentro del nombre mostrado: es otro dato y debe volver a buscarse.
+    const text = 'Firmó Sergio Ficticio 41.000.001 ayer. Su C.C. 41.000.001 consta en el expediente.';
+    const marks: Mark[] = [
+      { p: 0, sub: 'Sergio Ficticio 41.000.001', type: 'PERSONA', key: 'PER:sergio ficticio', src: 'modelo', decide: { rechazar: undefined } },
+      { p: 0, sub: '41.000.001', occ: 1, type: 'CC', key: 'CC:41000001' },
+    ];
+    const s = scenario([['cuerpo', text, 'Cuerpo del documento']], marks);
+    const r = await conRevisor(s);
+    const dentro = text.indexOf('41.000.001');
+    const cedula = r.run.result.hits.filter((h) => h.partStart === dentro);
+    expect(cedula, 'la cédula dentro del nombre mostrado es impacto').toHaveLength(1);
+    expect(cedula[0] === undefined ? undefined : s.state.entities[cedula[0].entityId]?.type).toBe('CC');
+    expect(r.run.nuevas.some((c) => c.start === dentro && c.end === dentro + '41.000.001'.length)).toBe(true);
+    // El nombre mostrado, en cambio, sigue sin volver.
+    expect(r.run.nuevas.some((c) => c.start <= text.indexOf('Sergio') && text.indexOf('Sergio') < c.end)).toBe(false);
+  });
 });
 
 // =============================================================================================================

@@ -606,9 +606,13 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
   const rejected = detections.filter((d) => d.status === 'rechazada');
   /** El tramo del acierto es el de la detección rechazada o está dentro de él (las variantes de un nombre rechazado caen dentro). */
   const insideRejected = (r: Detection, partId: PartId, ps: number, pe: number): boolean => r.partId === partId && r.start <= ps && pe <= r.end;
-  // F8 · Con `rechazosDelRevisor`, nada de lo que queda dentro del tramo de una detección rechazada vuelve (ver ResidueCtxExtra).
-  const dentroDeRechazo = (partId: PartId, ps: number, pe: number): boolean =>
-    ctx.rechazosDelRevisor === true && rejected.some((r) => insideRejected(r, partId, ps, pe));
+  // F8 · Con `rechazosDelRevisor`, lo que queda dentro del tramo de una detección rechazada no vuelve (ver ResidueCtxExtra).
+  // F9 (B-171): solo el dato rechazado. Vale para un acierto del mismo tipo o, si los dos son nombres (persona u organización), de
+  // otra entidad: la mención ambigua «señora Rojas» muestra también el «Rojas» de la persona de la lista. Un dato de otro tipo dentro
+  // del tramo (la cédula o el correo que se comió un nombre con límites de más) se sigue buscando y ocultando.
+  const mismoDato = (rechazado: string, acierto: string): boolean => rechazado === acierto || (isNameType(rechazado) && isNameType(acierto));
+  const dentroDeRechazo = (partId: PartId, ps: number, pe: number, tipo: string): boolean =>
+    ctx.rechazosDelRevisor === true && rejected.some((r) => insideRejected(r, partId, ps, pe) && mismoDato(r.type, tipo));
   const keyOfEntity = (r: Detection): string => state.entities[r.entityId]?.canonicalKey ?? r.canonicalKey;
   // PB-4-r1 · Un rechazo que contiene el acierto solo lo excluye si todo lo que rechazó es nombre de esa entidad: rechazar
   // «Ana Ficticia Rojas» decide también sobre «Ana Ficticia»; rechazar «Sergio primero» (límites de más) no dice nada de «Sergio».
@@ -652,7 +656,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     const excluded = rejected.some((r) => (t !== undefined ? rejectionCovers(r, t.entity, sv.cand.partId, loc.partStart, loc.partEnd)
       : insideRejected(r, sv.cand.partId, loc.partStart, loc.partEnd) && (keyOfEntity(r) === sv.cand.canonicalKey || r.canonicalKey === sv.cand.canonicalKey
         || deLaAmbigua(r, sv.cand.caseEntityId))));
-    if (excluded || dentroDeRechazo(sv.cand.partId, loc.partStart, loc.partEnd)) return false;
+    if (excluded || dentroDeRechazo(sv.cand.partId, loc.partStart, loc.partEnd, sv.cand.type)) return false;
     kept.push(sv);
     if (t !== undefined) {
       push({ si: sv.si, start: sv.start, end: sv.end, target: t, mode: 'variante', loc, conf: sv.cand.confidence, p3: true,
@@ -674,7 +678,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
   const pushDecided = (si: number, s: number, e: number, t: Target, loc: Loc, conf: Confidence, cls?: VariantClass): void => {
     if (loc.kind === 'marker') return;
     const partId = (secs[si] as Sec).section.partId;
-    if (loc.kind === 'copy' && (dentroDeRechazo(partId, loc.partStart, loc.partEnd)
+    if (loc.kind === 'copy' && (dentroDeRechazo(partId, loc.partStart, loc.partEnd, t.entity.type)
       || rejected.some((r) => rejectionCovers(r, t.entity, partId, loc.partStart, loc.partEnd)))) return;
     push({ si, start: s, end: e, target: t, mode: 'variante', loc, conf, p3: true, derived: true, ...(cls !== undefined ? { cls } : {}) });
   };
@@ -738,7 +742,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
   const live: RawHit[] = [];
   for (const h of raw) {
     if (h.loc.kind === 'marker') continue;
-    if (h.loc.kind === 'copy' && dentroDeRechazo((secs[h.si] as Sec).section.partId, h.loc.partStart, h.loc.partEnd)) continue;
+    if (h.loc.kind === 'copy' && dentroDeRechazo((secs[h.si] as Sec).section.partId, h.loc.partStart, h.loc.partEnd, h.target.entity.type)) continue;
     if (h.loc.kind === 'copy' && h.p3 !== true) {
       const loc = h.loc;
       const partId = (secs[h.si] as Sec).section.partId;
