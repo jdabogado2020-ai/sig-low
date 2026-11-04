@@ -9,7 +9,7 @@ import { minutosRestantes, textoAgregados, textoRestante } from '../../src/ui/fl
 import type { WorkerIo } from '../../src/io/io-client';
 import { iniciarAnalisis, obtenerVistaAnalisis, seguirSinModelo, cancelarAnalisis, estadoDeConjunto, fechaDeReferencia } from '../../src/ui/analisis';
 import { fijarRevision, obtenerBorrador, obtenerDocumento, obtenerRevision } from '../../src/ui/documento';
-import { actualizar, obtener, reiniciarEstado, type ShellState } from '../../src/ui/estado';
+import { actualizar, obtener, oyentesDelArmazon, reiniciarEstado, type ShellState } from '../../src/ui/estado';
 import { documentoDeTextoPegado, detectarFormato, extensionDe } from '../../src/ui/lectura';
 import { instalarPuertos, puertos, type NerHooks, type NerPuerto } from '../../src/ui/servicios';
 import { vaciarEstadoM } from '../../src/ui/sesion';
@@ -322,6 +322,32 @@ describe('F10 descarga del detector al anonimizar', () => {
     await esperar(() => obtener().screen === 'revision' && obtenerRevision()?.modelo.kind === 'plan_b');
     expect(obtenerRevision()?.modelo).toEqual({ kind: 'plan_b', causa: 'desactivado' });
     expect(modelo.llamadas).toBe(0);
+  });
+});
+
+describe('F11 B-180 bloquear durante la descarga del detector', () => {
+  const original = { ...puertos };
+  beforeEach(() => { reiniciarEstado(); });
+  afterEach(() => { vaciarEstadoM(); instalarPuertos(original); });
+
+  it('«Bloquear» (vaciar el estado [M]) suelta la espera: quita su oyente, no deja el documento en memoria y el detector no corre al terminar la descarga', async () => {
+    const modelo = modeloSinDescargar();
+    const ner = nerFalso();
+    instalarPuertos({ modelo, ner });
+    const base = oyentesDelArmazon();
+    iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 1'), usarModelo: true, crearWorker: crearFalso });
+    await esperar(() => obtener().screen === 'revision' && obtenerVistaAnalisis().descargaModelo);
+    await esperar(() => oyentesDelArmazon() > base);   // la espera escucha el estado del detector
+    vaciarEstadoM();
+    expect(oyentesDelArmazon()).toBe(base);
+    expect(obtenerDocumento()).toBeNull();
+    expect(obtenerRevision()).toBeNull();
+    expect(obtenerVistaAnalisis().descargaModelo).toBe(false);
+    // La descarga del detector sigue (es para el próximo documento); al terminar, no hay documento sobre el que correr.
+    modelo.terminar(true);
+    await new Promise((r) => setTimeout(r, 20));
+    expect(ner.hooks).toBeNull();
+    expect(oyentesDelArmazon()).toBe(base);
   });
 });
 

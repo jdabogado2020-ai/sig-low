@@ -314,14 +314,17 @@ export function CasillaModelo() {
   const modeloListo = shell.model.state === 'listo';
   // F10: sin el detector descargado la casilla también se puede usar: marcada, «Anonimizar» lo descarga; desmarcada, no.
   const usable = modeloListo || puertos.modelo.disponible();
+  // F11 (B-181): mientras se comprueba al arrancar si el detector ya está guardado, la casilla muestra lo que hará «Anonimizar»
+  // (marcada si el abogado no la desmarcó: espera la comprobación y usa el detector o lo descarga) y lo dice, sin M-51.
+  const comprobando = !modeloListo && puertos.modelo.comprobando?.() === true;
   return (
-    <div class="campo-modelo">
+    <div class="campo-modelo" data-prueba="casilla-modelo" data-comprobando={comprobando ? 'si' : undefined}>
       <Casilla
         etiqueta={tf('M-2314')}
-        marcada={b.usarModelo && usable}
+        marcada={b.usarModelo && (usable || comprobando)}
         onCambio={(v) => { actualizarBorrador({ usarModelo: v }); }}
-        deshabilitado={!usable}
-        ayuda={modeloListo ? t(E.ayudaModelo) : usable ? tf('M-2340') : t('M-51')}
+        deshabilitado={!usable || comprobando}
+        ayuda={comprobando ? tf('M-2344') : modeloListo ? t(E.ayudaModelo) : usable ? tf('M-2340') : t('M-51')}
       />
     </div>
   );

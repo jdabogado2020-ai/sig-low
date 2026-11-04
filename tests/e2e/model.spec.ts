@@ -622,6 +622,44 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
     }
   });
 
+  test('F11 B-181 durante la comprobación de arranque la casilla dice «Comprobando…» y muestra lo que hará «Anonimizar» (marcada); «Anonimizar» en ese rato espera y descarga, como mostraba', async ({ page }) => {
+    const srv = await servir(D_OK);
+    try {
+      const obs = await observar(page, srv.origen);
+      await abrirInicio(page, srv.origen);
+      // La comprobación de arranque espera a navigator.serviceWorker.ready: se alarga 4 s para verla.
+      await page.addInitScript(() => {
+        const original = Object.getOwnPropertyDescriptor(ServiceWorkerContainer.prototype, 'ready');
+        Object.defineProperty(ServiceWorkerContainer.prototype, 'ready', {
+          configurable: true,
+          get(this: ServiceWorkerContainer) {
+            const p = original?.get?.call(this) as Promise<ServiceWorkerRegistration>;
+            return p.then((r) => new Promise<ServiceWorkerRegistration>((ok) => { setTimeout(() => { ok(r); }, 4000); }));
+          },
+        });
+      });
+      await page.reload();
+      await expect(h1(page, TITULO.cargar)).toBeVisible();
+      // Lo que se ve: marcada (lo que hará «Anonimizar») y «Comprobando…», no M-51 («no está descargado»).
+      await expect(casilla(page)).toBeChecked();
+      await expect(casilla(page)).toBeDisabled();
+      await expect(page.getByText('Comprobando si el detector de nombres ya está en este equipo…').first()).toBeVisible();
+      await expect(page.getByText('el detector de nombres adicional no está descargado', { exact: false })).toHaveCount(0);
+      await expect(page.locator('[data-prueba="casilla-modelo"]')).toHaveAttribute('data-comprobando', 'si');
+      // «Anonimizar» en ese rato hace lo que muestra la casilla: espera la comprobación y, como el detector no está, lo descarga.
+      await irAEntrada(page);
+      await page.getByRole('textbox', { name: 'Texto del documento' }).fill(TEXTO_F10);
+      await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+      await expect(h1(page, TITULO.vista)).toBeVisible({ timeout: 30_000 });
+      await expect.poll(() => ninguno(srv).length, { timeout: 30_000 }).toBeGreaterThan(0);
+      await expect(banda(page)).not.toContainText('el detector no está descargado');
+      expect(obs.ajenas).toEqual([]);
+      expect(await obs.violaciones()).toEqual([]);
+    } finally {
+      await srv.parar();
+    }
+  });
+
   test('F10 @cero-red con ahorro de datos (saveData) «Anonimizar» no descarga: la vista previa avisa y pregunta; la descarga empieza solo con el clic y al terminar ofrece «Volver a analizar con el detector»', async ({ page }) => {
     const srv = await servir(D_OK);
     try {

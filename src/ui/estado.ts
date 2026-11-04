@@ -103,6 +103,8 @@ export function fijarAvisoInicio(a: AvisoInicio): void {
   avisoInicio = a;
   avisar();
 }
+/** Cuántos oyentes tiene el armazón. Para las pruebas de B-180: una espera soltada no deja el suyo. */
+export const oyentesDelArmazon = (): number => oyentes.size;
 export function suscribir(fn: () => void): () => void {
   oyentes.add(fn);
   return () => { oyentes.delete(fn); };

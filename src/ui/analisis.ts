@@ -10,7 +10,7 @@ import { declararPlanB, incorporarModelo, modeloInicial } from '../core/review/m
 import { applyReviewAction } from '../core/entities.ts';
 import { UMBRALES_MODELO } from '../core/umbrales.ts';
 import type {
-  AsuntoId, CaseEntity, DetectOptions, DetectResult, DetectionSet, DocumentModel, ErrorCode, IdSource, MappingTable, NerSpan, PartId,
+  AsuntoId, CaseEntity, DetectOptions, DocId, DetectResult, DetectionSet, DocumentModel, ErrorCode, IdSource, MappingTable, NerSpan, PartId,
   PlanBCause, ProgressUnit, RequestId, ReviewState, Stage,
 } from '../core/types.ts';
 import type { WorkerIo } from '../io/io-client.ts';
@@ -318,7 +318,7 @@ function alTerminarReglas(s: Sesion, doc: DocumentModel, set: DetectionSet, d: D
   actualizar({ phase: 'revision', error: null, modelRun: estado.modelo });
   ir('revision');
   if (d.conModelo && d.ner !== null && d.descargar === true) {
-    descargarYCorrer(s, doc, d.ner, d.puedeDescargar !== false);
+    descargarYCorrer(s, doc.id, d.ner, d.puedeDescargar !== false);
   } else if (d.conModelo && d.ner !== null) {
     iniciarModelo(s, doc, d.ner);
   } else {
@@ -369,25 +369,38 @@ export function sinConexion(): boolean {
   return typeof navigator !== 'undefined' && navigator.onLine === false;
 }
 
-/** F10: espera a que el detector quede listo (true) o a que la descarga termine sin él (false). La descarga es la de F0. */
-async function esperarDetector(puedeDescargar: boolean): Promise<boolean> {
-  // Primero, lo que ya está guardado (la comprobación de arranque): un detector descargado antes no se vuelve a descargar.
-  await puertos.modelo.esperarComprobacion?.();
-  const ya = obtener().model.state;
-  if (ya === 'listo') return true;
-  if (!puedeDescargar || !puertos.modelo.disponible() || !DESCARGABLE.has(ya)) return false;
-  void puertos.modelo.descargar().catch(() => undefined);
-  return new Promise((resolver) => {
-    let quitar: (() => void) | null = null;
-    const ver = (): boolean => {
+/**
+ * F10: espera a que el detector quede listo (true) o a que la descarga termine sin él (false). La descarga es la de F0.
+ * F11 (B-180): `soltar` la resuelve en false y quita el oyente del armazón (se llama al bloquear o al borrar todo).
+ */
+function esperarDetector(puedeDescargar: boolean): { listo: Promise<boolean>; soltar: () => void } {
+  let quitar: (() => void) | null = null;
+  let resolver: (v: boolean) => void = () => undefined;
+  let hecho = false;
+  const listo = new Promise<boolean>((r) => { resolver = r; });
+  const fin = (v: boolean): void => {
+    if (hecho) return;
+    hecho = true;
+    quitar?.();
+    quitar = null;
+    resolver(v);
+  };
+  void (async () => {
+    // Primero, lo que ya está guardado (la comprobación de arranque): un detector descargado antes no se vuelve a descargar.
+    await puertos.modelo.esperarComprobacion?.();
+    if (hecho) return;
+    const ya = obtener().model.state;
+    if (ya === 'listo') { fin(true); return; }
+    if (!puedeDescargar || !puertos.modelo.disponible() || !DESCARGABLE.has(ya)) { fin(false); return; }
+    void puertos.modelo.descargar().catch(() => undefined);
+    const ver = (): void => {
       const st = obtener().model.state;
-      if (st === 'descargando' || st === 'verificando') return false;
-      quitar?.();
-      resolver(st === 'listo');
-      return true;
+      if (st !== 'descargando' && st !== 'verificando') fin(st === 'listo');
     };
-    if (!ver()) quitar = suscribir(() => { ver(); });
-  });
+    quitar = suscribir(ver);
+    ver();
+  })();
+  return { listo, soltar: () => { fin(false); } };
 }
 
 /**
@@ -396,15 +409,21 @@ async function esperarDetector(puedeDescargar: boolean): Promise<boolean> {
  * al detector» (`seguirSinModelo`). Si se terminó de descargar y el documento sigue abierto y esperando, el detector corre sobre él
  * por las mismas ventanas (`incorporar_modelo` y la propuesta), sin deshacer lo que el abogado ya corrigió. Si la descarga falla, el
  * análisis sigue con reglas y lista (plan B «no descargado»); el aviso y «Reintentar» son los de F0.
+ * F11 (B-180): mientras se espera, aquí solo queda el id del documento (el documento se vuelve a tomar del almacén al terminar), y
+ * bloquear o borrar todo suelta la espera y su oyente: no queda nada del documento retenido por la descarga.
  */
-function descargarYCorrer(s: Sesion, doc: DocumentModel, ner: NerPuerto, puedeDescargar: boolean): void {
+function descargarYCorrer(s: Sesion, docId: DocId, ner: NerPuerto, puedeDescargar: boolean): void {
   cambiarVista({ descargaModelo: true });
-  void esperarDetector(puedeDescargar).then((listo) => {
+  const espera = esperarDetector(puedeDescargar);
+  const quitarLimpieza = registrarLimpieza(espera.soltar);
+  void espera.listo.then((listo) => {
+    quitarLimpieza();
     if (sesion !== s) return;
+    const doc = obtenerDocumento();
     const vigente = obtenerRevision();
-    const esperando = vigente !== null && vigente.docId === doc.id && vigente.modelo.kind === 'en_curso';
+    const esperando = doc !== null && doc.id === docId && vigente !== null && vigente.docId === docId && vigente.modelo.kind === 'en_curso';
     cambiarVista({ descargaModelo: false });
-    if (!esperando) return;   // «Descargar sin esperar»: la descarga queda para el próximo documento
+    if (!esperando || doc === null) return;   // «Descargar sin esperar»: la descarga queda para el próximo documento
     if (listo) iniciarModelo(s, doc, ner);
     else s.cola = s.cola.then(() => cerrarEnPlanB(s, doc, 'no_descargado')).then(() => undefined, () => undefined);
   });
