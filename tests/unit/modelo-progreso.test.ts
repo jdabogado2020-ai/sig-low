@@ -1353,7 +1353,7 @@ describe('T-MO-12 · cancelación y progreso', () => {
 });
 
 describe('T-MO-12 · exportGate con el avance del modelo (INV-R11, PC-5)', () => {
-  const todas = { biometricos: true, reservaLegal: true, estrategia: true };
+  const todas = { revisado: true };
   const residuoDe = (s: ReviewState): ResidueResult => ({ revision: s.revision, ranAt: '2026-10-30T10:00:00-05:00', valuesSearched: 3,
     modes: ['literal', 'normalizado', 'digitos', 'variante'], hits: [], newDetections: 0 });
 

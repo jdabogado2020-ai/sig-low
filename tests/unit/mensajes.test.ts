@@ -12,6 +12,7 @@ import { GRUPOS_LICENCIAS } from '../../src/ui/licencias';
 import { ALIAS, CAUSA_PLAN_B, ETIQUETA_ID } from '../../src/ui/mensajes-catalogo';
 import { idDeCodigo, registrarMensajes, t, todasLasCadenas, type MessageId } from '../../src/ui/mensajes';
 import '../../src/ui/mensajes-entrada';
+import '../../src/ui/flujo/textos';
 import '../../src/ui/boveda/textos';
 import '../../src/ui/listo/textos';
 import '../../src/ui/reinsercion/textos';
@@ -23,7 +24,7 @@ const RAIZ = process.cwd();
 const UI = join(RAIZ, 'src', 'ui');
 /** Módulos que registran textos con `registrarMensajes()`: la prueba de abajo falla si aparece uno que no está importado arriba. */
 const MODULOS_CON_TEXTOS = [
-  'mensajes-entrada.ts', 'marca-textos.ts', 'boveda/textos.ts', 'listo/textos.ts', 'reinsercion/textos.ts', 'review/base/textos.ts', 'review/pestanas/textos.ts',
+  'mensajes-entrada.ts', 'marca-textos.ts', 'flujo/textos.ts', 'boveda/textos.ts', 'listo/textos.ts', 'reinsercion/textos.ts', 'review/base/textos.ts', 'review/pestanas/textos.ts',
 ];
 
 function* archivos(dir: string): Generator<string> {
@@ -175,7 +176,8 @@ describe('T-IU-02 cobertura de 8.5: un mensaje para cada valor de las enumeracio
     expect(erroresDeRevision.length).toBe(7);
     for (const c of erroresDeRevision) expect(existe(idDeCodigo(c)) && idDeCodigo(c) !== 'M-205', c).toBe(true);
     for (const id of rango(601, 606)) expect(existe(id), id).toBe(true);
-    expect(valoresDeUnion('GateReason').length).toBe(8);
+    // D-24: BANDERAS ya no es un motivo de la puerta (M-502 queda en el catálogo para la revisión dato por dato).
+    expect(valoresDeUnion('GateReason').length).toBe(7);
     for (const id of rango(501, 508)) expect(existe(id), id).toBe(true);
     expect(valoresDeUnion('MetadataCategory').length).toBe(19);
     for (const id of rango(401, 419)) expect(existe(id), id).toBe(true);

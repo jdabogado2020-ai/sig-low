@@ -420,6 +420,40 @@ describe('T-MO-06 · reductor applyReviewAction (6.4.4, 7.12.6)', () => {
     expect(r.flags[cargo.id]).toMatchObject({ acknowledged: true, resolution: 'reemplazar' });
     expect(Object.values(r.spanEdits)).toMatchObject([{ text: 'una directiva', originalText: 'vive', origin: { kind: 'bandera', flagId: cargo.id } }]);
   });
+  it('INV-R06 D-24 aplicar_propuesta (única excepción): oculta todo lo pendiente de una vez, sin tocar lo que el revisor decidió, y una segunda vez no cambia nada', () => {
+    const { s, ctx } = base();
+    const [d0, d1] = dets(s) as [Detection, Detection];
+    const r0 = act({ ...s, modelo: { kind: 'plan_b', causa: 'desactivado' } }, { kind: 'rechazar', detectionId: d0.id, reason: 'DATO_PUBLICO' }, ctx);
+    const r = act(r0, { kind: 'aplicar_propuesta' }, ctx);
+    expect(r.revision).toBe(r0.revision + 1);
+    expect(r.detections[d0.id]).toMatchObject({ status: 'rechazada', rejectReason: 'DATO_PUBLICO' });
+    expect(r.detections[d1.id]).toMatchObject({ status: 'aceptada', decidedBy: 'propuesta' });
+    expect(dets(r).filter((d) => d.status === 'pendiente')).toEqual([]);
+    // Idempotente: nada por aplicar → el mismo estado, sin subir la revisión.
+    const o = applyReviewAction(r, { kind: 'aplicar_propuesta' }, ctx);
+    expect(o.ok && o.state).toBe(r);
+    // Con el modelo en curso la propuesta espera (D-03 B y E: lo de la lista debe seguir intacto para ceder ante el modelo).
+    const enCurso: ReviewState = { ...s, modelo: { kind: 'en_curso', ventanas: 1, ventanasTotales: 4 } };
+    const e = applyReviewAction(enCurso, { kind: 'aplicar_propuesta' }, ctx);
+    expect(e.ok && e.state).toBe(enCurso);
+  });
+
+  it('INV-R06 D-24 aplicar_propuesta reemplaza la bandera con opción y deja la cita sin confirmar, con su número oculto', () => {
+    const { s, doc, ctx } = base();
+    const cc = dets(s)[1] as Detection;
+    const partId = (doc.parts[0] as DocumentModel['parts'][number]).id;
+    const t = (doc.parts[0] as DocumentModel['parts'][number]).text; const k = t.indexOf('vive');
+    const cita: Flag = { id: 'flg_000000000000000000000000000000d1' as FlagId, type: 'CITA_JURISPRUDENCIAL', span: { partId, start: cc.start, end: cc.end },
+      text: cc.text, reason: 'RADICADO_EN_CITA', detectionId: cc.id, options: [], acknowledged: false };
+    const cargo: Flag = { id: 'flg_000000000000000000000000000000d2' as FlagId, type: 'CARGO', span: { partId, start: k, end: k + 4 }, text: 'vive',
+      reason: 'LISTA_CARGOS', options: [{ id: 'o1', kind: 'CARGO_A_GENERICO', template: 'una directiva' }], acknowledged: false };
+    const r = act({ ...s, flags: { [cita.id]: cita, [cargo.id]: cargo }, modelo: { kind: 'plan_b', causa: 'no_descargado' } }, { kind: 'aplicar_propuesta' }, ctx);
+    expect(r.flags[cargo.id]).toMatchObject({ acknowledged: true, resolution: 'reemplazar' });
+    expect(Object.values(r.spanEdits).map((x) => x.text)).toEqual(['una directiva']);
+    expect(r.flags[cita.id]?.acknowledged).toBe(false);
+    expect(r.detections[cc.id]?.status).toBe('aceptada');
+    expect(render(doc, r).sections[0]?.text).toContain('una directiva');
+  });
 
   it('incorporar_residuos: revisión desactualizada y candidatos nuevos sin tocar los existentes', () => {
     const { s, doc, ctx } = base();
@@ -1111,7 +1145,7 @@ describe('T-MO-06 · PB-3-r3: la variante ambigua la decide el revisor (D-16) y 
   const listo = (s: ReviewState): ReviewState => ({ ...s, modelo: { kind: 'terminado', ventanas: 1, respaldo: false } });
   const sinResiduos = (s: ReviewState): ResidueResult => ({ revision: s.revision, ranAt: '2026-10-31T10:00:00.000Z', valuesSearched: 1,
     modes: ['literal'], hits: [], newDetections: 0 });
-  const TODAS = { biometricos: true, reservaLegal: true, estrategia: true };
+  const TODAS = { revisado: true };
   const grupos = (s: ReviewState): string[][] => {
     const out = new Map<string, string[]>();
     for (const d of dets(s)) out.set(d.entityId, [...(out.get(d.entityId) ?? []), d.text]);
@@ -1356,6 +1390,28 @@ describe('T-MO-06 · PB-3-r3: la variante ambigua la decide el revisor (D-16) y 
     expect(personasDeLaVariante(`${blancos}Prueba`, lista)).toHaveLength(2);
     expect(performance.now() - t1).toBeLessThan(300);
   });
+  it('INV-R06 INV-G06 D-24 aplicar_propuesta separa cada mención ambigua como persona aparte, con etiqueta propia, y la puerta ya no la cuenta', async () => {
+    const { s: s0, ctx, doc } = await tuberia(TEXTO_C02, LISTA_PRUEBA);
+    const a1 = enPos(s0, TEXTO_C02, 'Prueba', 1);
+    const a2 = enPos(s0, TEXTO_C02, 'Prueba', 2);
+    const s = act(listo(s0), { kind: 'aplicar_propuesta' }, ctx);
+    expect(contarAmbiguas(s)).toBe(0);
+    expect(dets(s).every((d) => d.status === 'aceptada' && d.decidedBy === 'propuesta')).toBe(true);
+    // Lado seguro de D-15: cada una con su entidad y su marcador, distinto del de las dos personas de la lista.
+    const e1 = s.entities[s.detections[a1.id]?.entityId as Entity['id']] as Entity;
+    const e2 = s.entities[s.detections[a2.id]?.entityId as Entity['id']] as Entity;
+    expect(e1.id).not.toBe(e2.id);
+    expect(e1.mentions).toEqual([a1.id]);
+    expect(markers(s).map(([, m]) => m)).toEqual(['[DEMANDANTE_1]', '[PACIENTE_1]', '[PERSONA_1]', '[PERSONA_2]']);
+    // La detección conserva su clave AMBIGUA: un rechazo posterior sigue valiendo para la búsqueda de residuos (S-7.12).
+    expect(s.detections[a1.id]?.canonicalKey.startsWith('AMBIGUA:')).toBe(true);
+    expect(exportGate(s, sinResiduos(s), TODAS)).toEqual({ ok: true, reasons: [] });
+    // El revisor la corrige después: «Es la misma que…» la une a una persona de la lista.
+    const nicolas = Object.values(s.entities).find((e) => e.marker === '[PACIENTE_1]') as Entity;
+    const u = act(s, { kind: 'unir_entidades', fromId: e1.id, intoId: nicolas.id }, ctx);
+    expect(u.entities[u.detections[a1.id]?.entityId as Entity['id']]?.marker).toBe('[PACIENTE_1]');
+    expect(render(doc, u).sections[0]?.text).not.toMatch(/Prueba/u);
+  });
 });
 
 describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de otra persona (M-72), D-16 en el modelo y el rastro de unir_entidades (B-92)', () => {
@@ -1406,7 +1462,7 @@ describe('T-MO-06 · PB-3-r4: el parentesco en la oración (A-4), el apellido de
   const listo = (s: ReviewState): ReviewState => ({ ...s, modelo: { kind: 'terminado', ventanas: 1, respaldo: false } });
   const sinResiduos = (s: ReviewState): ResidueResult => ({ revision: s.revision, ranAt: '2026-10-31T10:00:00.000Z', valuesSearched: 1,
     modes: ['literal'], hits: [], newDetections: 0 });
-  const TODAS = { biometricos: true, reservaLegal: true, estrategia: true };
+  const TODAS = { revisado: true };
   const aceptarTodo = (s0: ReviewState, ctx: ReviewContext): ReviewState => {
     let s = listo(s0);
     for (const e of Object.values(s.entities)) s = act(s, { kind: 'aceptar_entidad', entityId: e.id }, ctx);

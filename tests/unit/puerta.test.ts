@@ -1,18 +1,18 @@
-// T-IU-01 (parte de unidad) · exportGate (6.4.8): un caso por cada GateReason, la puerta abierta solo con los ocho puntos resueltos,
+// T-IU-01 (parte de unidad) · exportGate (6.4.8, D-24): un caso por cada GateReason, la puerta abierta solo con todos los puntos resueltos,
 // INV-G06 (no se copia ni exporta con la puerta cerrada), INV-R07 (residuos desactualizados y detecciones nuevas) e INV-R11
-// (MODELO_EN_CURSO). Datos ficticios; el estado se arma a mano porque la puerta solo lee estados y conteos.
+// (MODELO_EN_CURSO). D-24: las banderas sin confirmar ya no cierran la puerta y el recordatorio es una sola confirmación. Datos ficticios; el estado se arma a mano porque la puerta solo lee estados y conteos.
 import { describe, expect, it } from 'vitest';
 import { contarBanderasSinConfirmar, contarPendientes, exportGate } from '../../src/core/review/puerta';
 import type {
   Detection, DetectionStatus, Flag, GateReason, ModelProgress, ReminderConfirmation, ResidueResult, ReviewState,
 } from '../../src/core/types';
 
-const TODAS: readonly GateReason[] = ['PENDIENTES', 'BANDERAS', 'MODELO_EN_CURSO', 'RESIDUOS_NO_EJECUTADA', 'RESIDUOS_DESACTUALIZADA',
+const TODAS: readonly GateReason[] = ['PENDIENTES', 'MODELO_EN_CURSO', 'RESIDUOS_NO_EJECUTADA', 'RESIDUOS_DESACTUALIZADA',
   'RESIDUOS_ENCONTRADOS', 'DETECCIONES_NUEVAS', 'RECORDATORIO'];
 
 const terminado: ModelProgress = { kind: 'terminado', ventanas: 3, respaldo: false };
-const casillas = (b: boolean, r: boolean, e: boolean): ReminderConfirmation => ({ biometricos: b, reservaLegal: r, estrategia: e });
-const TODAS_MARCADAS = casillas(true, true, true);
+const confirmacion = (revisado: boolean): ReminderConfirmation => ({ revisado });
+const TODAS_MARCADAS = confirmacion(true);
 
 const deteccion = (n: number, status: DetectionStatus): Detection => ({ id: `det_${n}`, status } as unknown as Detection);
 const bandera = (n: number, acknowledged: boolean): Flag => ({ id: `flg_${n}`, acknowledged } as unknown as Flag);
@@ -34,7 +34,7 @@ const residuo = (revision: number, hits = 0, nuevas = 0): ResidueResult => ({
 });
 
 describe('T-IU-01 exportGate · un estado por cada GateReason (6.4.8)', () => {
-  it('INV-G06 con los ocho puntos resueltos la puerta está abierta y no trae motivos', () => {
+  it('INV-G06 con todos los puntos resueltos la puerta está abierta y no trae motivos', () => {
     const s = estado();
     expect(exportGate(s, residuo(s.revision), TODAS_MARCADAS)).toEqual({ ok: true, reasons: [] });
   });
@@ -60,11 +60,10 @@ describe('T-IU-01 exportGate · un estado por cada GateReason (6.4.8)', () => {
     expect(exportGate(elegida, residuo(elegida.revision), TODAS_MARCADAS)).toEqual({ ok: true, reasons: [] });
   });
 
-  it('INV-G06 BANDERAS: una bandera sin confirmar cierra la puerta; confirmada no', () => {
+  it('INV-G06 D-24: una bandera sin confirmar ya no cierra la puerta (queda como punto para revisar)', () => {
     const s = estado({ banderas: [true, false] });
-    expect(exportGate(s, residuo(s.revision), TODAS_MARCADAS).reasons).toEqual(['BANDERAS']);
-    const ok = estado({ banderas: [true, true] });
-    expect(exportGate(ok, residuo(ok.revision), TODAS_MARCADAS).ok).toBe(true);
+    expect(contarBanderasSinConfirmar(s)).toBe(1);
+    expect(exportGate(s, residuo(s.revision), TODAS_MARCADAS)).toEqual({ ok: true, reasons: [] });
   });
 
   it('INV-R11 MODELO_EN_CURSO: mientras el modelo está en curso la puerta sigue cerrada aunque no haya pendientes', () => {
@@ -113,26 +112,24 @@ describe('T-IU-01 exportGate · un estado por cada GateReason (6.4.8)', () => {
     expect(exportGate(s, residuo(s.revision, 0, 3), TODAS_MARCADAS)).toEqual({ ok: false, reasons: ['DETECCIONES_NUEVAS'] });
   });
 
-  it('INV-G06 RECORDATORIO: basta una casilla sin marcar (cada una por separado)', () => {
+  it('INV-G06 RECORDATORIO D-24: sin la confirmación única «Revisé la vista previa…» la puerta está cerrada', () => {
     const s = estado();
-    for (const c of [casillas(false, true, true), casillas(true, false, true), casillas(true, true, false), casillas(false, false, false)]) {
-      expect(exportGate(s, residuo(s.revision), c)).toEqual({ ok: false, reasons: ['RECORDATORIO'] });
-    }
+    expect(exportGate(s, residuo(s.revision), confirmacion(false))).toEqual({ ok: false, reasons: ['RECORDATORIO'] });
+    expect(exportGate(s, residuo(s.revision), confirmacion(true))).toEqual({ ok: true, reasons: [] });
   });
 
   it('T-IU-01 cada GateReason aparece en algún estado y solo cuando corresponde; los motivos se acumulan en el orden de 6.4.8', () => {
     const vistos = new Set<GateReason>();
     const casos: Array<[ReviewState, ResidueResult | null, ReminderConfirmation]> = [
-      [estado({ dets: ['pendiente'] }), null, casillas(false, false, false)],
-      [estado({ banderas: [false] }), residuo(7), TODAS_MARCADAS],
+      [estado({ dets: ['pendiente'] }), null, confirmacion(false)],
       [estado({ modelo: { kind: 'en_curso', ventanas: 1, ventanasTotales: 4 } }), residuo(7), TODAS_MARCADAS],
       [estado(), residuo(1, 1, 1), TODAS_MARCADAS],
     ];
     for (const [s, r, c] of casos) for (const m of exportGate(s, r, c).reasons) vistos.add(m);
     expect([...vistos].sort()).toEqual([...TODAS].sort());
     const todo = exportGate(estado({ dets: ['pendiente'], banderas: [false], modelo: { kind: 'en_curso', ventanas: 0, ventanasTotales: 0 } }),
-      residuo(1, 1, 1), casillas(false, false, false));
-    expect(todo.reasons).toEqual(['PENDIENTES', 'BANDERAS', 'MODELO_EN_CURSO', 'RESIDUOS_DESACTUALIZADA', 'RESIDUOS_ENCONTRADOS',
+      residuo(1, 1, 1), confirmacion(false));
+    expect(todo.reasons).toEqual(['PENDIENTES', 'MODELO_EN_CURSO', 'RESIDUOS_DESACTUALIZADA', 'RESIDUOS_ENCONTRADOS',
       'DETECCIONES_NUEVAS', 'RECORDATORIO']);
     expect(todo.ok).toBe(false);
   });
@@ -146,7 +143,7 @@ describe('T-IU-01 exportGate · un estado por cada GateReason (6.4.8)', () => {
   it('la puerta es pura: no modifica sus argumentos y da el mismo resultado al repetir', () => {
     const s = estado({ dets: ['pendiente'] });
     const r = residuo(7, 1);
-    const c = casillas(true, false, true);
+    const c = confirmacion(false);
     const antes = JSON.stringify([s, r, c]);
     const a = exportGate(s, r, c);
     const b = exportGate(s, r, c);

@@ -367,11 +367,10 @@ describe('worker detect (6.11.8)', () => {
 // ---------------------------------------------------------------------------------------------------------------------------
 // Informe (6.8)
 
-/** `exportGate` según 6.4.8 (el real es de PC-5): la prueba del informe no depende de él. */
+/** `exportGate` según 6.4.8 con D-24 (el real es de PC-5): la prueba del informe no depende de él. */
 const puertaAbierta: ExportGateFn = (state, residue, reminder) => {
   const reasons: GateReason[] = [];
   if (Object.values(state.detections).some((d) => d.status === 'pendiente')) reasons.push('PENDIENTES');
-  if (Object.values(state.flags).some((f) => !f.acknowledged)) reasons.push('BANDERAS');
   if (state.modelo.kind === 'en_curso') reasons.push('MODELO_EN_CURSO');
   if (residue === null) reasons.push('RESIDUOS_NO_EJECUTADA');
   else {
@@ -379,13 +378,13 @@ const puertaAbierta: ExportGateFn = (state, residue, reminder) => {
     if (residue.hits.length > 0) reasons.push('RESIDUOS_ENCONTRADOS');
     if (residue.newDetections > 0) reasons.push('DETECCIONES_NUEVAS');
   }
-  if (!(reminder.biometricos && reminder.reservaLegal && reminder.estrategia)) reasons.push('RECORDATORIO');
+  if (!reminder.revisado) reasons.push('RECORDATORIO');
   return { ok: reasons.length === 0, reasons };
 };
 
 const HASH = 'ab'.repeat(32);
 const AHORA = new Date('2026-10-22T20:40:12.000Z');   // 15:40:12 en Colombia
-const recordatorio = { biometricos: true, reservaLegal: true, estrategia: true };
+const recordatorio = { revisado: true };
 
 interface Escenario { doc: DocumentModel; state: ReviewState; originales: string[]; ctx: ReviewContext }
 /** Documento revisado de punta a punta: reglas, ventanas del modelo, decisiones del abogado y un rechazo. */
@@ -498,12 +497,14 @@ describe('informe de anonimización (6.8)', () => {
     // sin búsqueda de residuos, con residuos desactualizados o sin recordatorio, la puerta (6.4.8) se cierra y no hay informe
     expect(() => buildReport(entradaInforme(e, { residue: null }), { exportGate: puertaAbierta })).toThrow(SiglowError);
     expect(() => buildReport(entradaInforme(e, { residue: { ...residuoDe(e.state), revision: e.state.revision - 1 } }), { exportGate: puertaAbierta })).toThrow(SiglowError);
-    expect(() => buildReport(entradaInforme(e, { reminder: { ...recordatorio, estrategia: false } }), { exportGate: puertaAbierta })).toThrow(SiglowError);
+    expect(() => buildReport(entradaInforme(e, { reminder: { revisado: false } }), { exportGate: puertaAbierta })).toThrow(SiglowError);
     const ok = buildReport(entradaInforme(e), { exportGate: puertaAbierta });
     expect(ok.residuos.resultado).toBe('sin_residuos');
     expect(ok.residuos).toEqual({ resultado: 'sin_residuos', valoresBuscados: 24, modos: ['literal', 'normalizado', 'digitos', 'variante'], ejecutada: '2026-10-22T15:39:58-05:00' });
     expect(ok.generado).toBe('2026-10-22T15:40:12-05:00');
-    expect(ok.recordatorio).toEqual({ biometricos: true, reservaLegal: true, estrategia: true, confirmado: '2026-10-22T15:40:12-05:00' });
+    expect(ok.recordatorio).toEqual({ revisado: true, confirmado: '2026-10-22T15:40:12-05:00' });
+    // D-24 · lo que aceptó `aplicar_propuesta` queda contado aparte en el informe (excepción de INV-R06)
+    expect(ok.propuestaAplicada).toBe(Object.values(e.state.detections).filter((d) => d.status === 'aceptada' && d.decidedBy === 'propuesta').length);
     // aun con una puerta mal implementada, un informe con pendientes no se construye
     const pendiente = JSON.parse(JSON.stringify(e.state)) as ReviewState;
     Object.values(pendiente.detections)[0]!.status = 'pendiente';
@@ -540,8 +541,8 @@ describe('informe de anonimización (6.8)', () => {
       const inf = buildReport(entradaInforme(e, { avanceDelModelo: { ventanas: 1, ventanasTotales: 3 } }), { exportGate: puertaAbierta });
       expect(inf.motor.modelo.planB, causa).toBe(true);
       expect(inf.motor.modelo.estado, causa).toBe(causa);
-      expect(reportToText(inf), causa).toContain('Modelo de apoyo: no se completó (');
-      expect(reportToText(inf), causa).toContain('La revisión se apoyó solo en las reglas y en la lista del caso.');
+      expect(reportToText(inf), causa).toContain('Detector de nombres adicional: no se completó (');
+      expect(reportToText(inf), causa).toContain('La revisión se apoyó solo en las reglas y en los nombres que siempre deben ocultarse.');
     }
     expect(reportToText(a)).not.toContain('no se completó');
     // con el modelo en curso no hay informe
@@ -585,8 +586,8 @@ describe('informe de anonimización (6.8)', () => {
     expect(txt.startsWith('﻿INFORME DE ANONIMIZACIÓN · Sig-Low 1.0.0\r\n')).toBe(true);
     expect(txt.endsWith('\r\n')).toBe(true);
     expect(txt.replace(/\r\n/gu, '')).not.toMatch(/[\r\n]/u);
-    const orden = ['DATOS REEMPLAZADOS', 'LO QUE USTED RECHAZÓ', 'LO QUE QUEDÓ A SU CRITERIO', 'BÚSQUEDA DE RESIDUOS',
-      'METADATOS DEL ARCHIVO ORIGINAL (no se copian a la salida)', 'RECORDATORIO CONFIRMADO', 'Este informe no contiene los datos originales.'];
+    const orden = ['DATOS REEMPLAZADOS', 'LO QUE USTED DEJÓ A LA VISTA', 'LO QUE QUEDÓ A SU CRITERIO', 'BÚSQUEDA DE DATOS QUE SE ESCAPARON',
+      'METADATOS DEL ARCHIVO ORIGINAL (no se copian a la salida)', 'CONFIRMACIÓN ANTES DE DESCARGAR', 'Este informe no contiene los datos originales.'];
     let pos = -1;
     for (const s of orden) { const i = txt.indexOf(s); expect(i, s).toBeGreaterThan(pos); pos = i; }
     expect(txt).toContain('Fecha: 2026-10-22 15:40 (hora de Colombia)');

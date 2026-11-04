@@ -68,7 +68,7 @@ describe('análisis en la interfaz', () => {
     vi.restoreAllMocks();
   });
 
-  it('sin modelo descargado, Procesando pasa a Revisión con el modelo en plan B (no_descargado) sin esperar nada más', async () => {
+  it('sin modelo descargado, Procesando pasa a la vista previa con el modelo en plan B (no_descargado) y todo aplicado (D-24)', async () => {
     const w = crearFalso();
     iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 1'), usarModelo: true, crearWorker: () => w });
     expect(obtener().screen).toBe('procesando');
@@ -79,6 +79,8 @@ describe('análisis en la interfaz', () => {
     expect(Object.keys(r?.detections ?? {}).length).toBeGreaterThan(0);
     expect(r?.order).toHaveLength(Object.keys(r?.detections ?? {}).length);
     expect(obtener().modelRun).toEqual({ kind: 'plan_b', causa: 'no_descargado' });
+    // D-24: la vista previa llega con la propuesta aplicada: nada por revisar y cada decisión marcada como de la propuesta.
+    expect(Object.values(r?.detections ?? {}).every((d) => d.status === 'aceptada' && d.decidedBy === 'propuesta')).toBe(true);
     await esperar(() => w.enviados.some((e) => e.kind === 'liberar'));
     expect(w.enviados.map((e) => e.kind)).toEqual(['detectar', 'fusionar', 'liberar']);
   });
@@ -108,8 +110,12 @@ describe('análisis en la interfaz', () => {
     await esperar(() => (obtenerRevision()?.modelo.kind === 'en_curso' && obtenerRevision()?.modelo.ventanas === 1));
     expect(obtenerRevision()?.revision).toBeGreaterThan(revisionInicial);
     expect(obtener().screen).toBe('revision');                      // el foco y la pantalla no se mueven (8.8)
+    // Con el modelo en curso la propuesta espera (D-03: lo de la lista debe seguir intacto para ceder ante el modelo).
+    expect(Object.values(obtenerRevision()?.detections ?? {}).some((d) => d.status === 'pendiente')).toBe(true);
     ner.hooks?.alVentana({ ventana: 2, ventanasTotales: 2, ner: { [parte]: [] }, engineId: 'gliner-x-large' });
     await esperar(() => obtenerRevision()?.modelo.kind === 'terminado');
+    // Al terminar el modelo, todo queda aplicado.
+    expect(Object.values(obtenerRevision()?.detections ?? {}).some((d) => d.status === 'pendiente')).toBe(false);
     ner.hooks?.alTerminar({ respaldo: false });
     await esperar(() => w.enviados.some((e) => e.kind === 'liberar'));
     expect(obtener().modelRun?.kind).toBe('terminado');
@@ -153,7 +159,7 @@ describe('análisis en la interfaz', () => {
     expect(obtenerBorrador().texto).toBe('');
   });
 
-  it('cancelar sin respuesta del worker lo termina a los 2 s y vuelve a Entrada con el texto conservado', async () => {
+  it('cancelar sin respuesta del worker lo termina a los 2 s y vuelve a «Cargar documento» con el texto conservado', async () => {
     vi.useFakeTimers();
     try {
       const w: Falso = { terminado: false, enviados: [], onmessage: null, onerror: null, onmessageerror: null, postMessage(m: unknown) { w.enviados.push({ kind: (m as { kind: string }).kind }); }, terminate() { w.terminado = true; } };
@@ -165,21 +171,21 @@ describe('análisis en la interfaz', () => {
       expect(w.terminado).toBe(false);
       vi.advanceTimersByTime(2);
       expect(w.terminado).toBe(true);
-      expect(obtener().screen).toBe('entrada');
+      expect(obtener().screen).toBe('inicio');
       expect(obtenerBorrador().analisisCancelado).toBe(true);
     } finally {
       vi.useRealTimers();
     }
   });
 
-  it('un error del worker `detect` vuelve a Entrada con solo el código (sin texto del documento)', async () => {
+  it('un error del worker `detect` vuelve a «Cargar documento» con solo el código (sin texto del documento)', async () => {
     const w: Falso = {
       terminado: false, enviados: [], onmessage: null, onerror: null, onmessageerror: null,
       postMessage(m: unknown) { const r = (m as { reqId: string }).reqId; setTimeout(() => w.onmessage?.({ data: { v: 1, reqId: r, kind: 'error', code: 'MEMORIA', retryable: true } }), 0); },
       terminate() { w.terminado = true; },
     };
     iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 1'), usarModelo: false, crearWorker: () => w });
-    await esperar(() => obtener().screen === 'entrada');
+    await esperar(() => obtener().screen === 'inicio');
     expect(obtener().error).toEqual({ code: 'MEMORIA', context: 'procesando' });
     expect(JSON.stringify(obtener().error)).not.toContain('Ficticia');
     expect(w.terminado).toBe(true);
