@@ -203,7 +203,7 @@ describe('T-LE-10 .docx mínimo (6.9.2)', () => {
 // --- descarga y URL blob: -------------------------------------------------------------------------------------------------
 describe('T-LE-10 descarga (3.8, V-48)', () => {
   const bitacora: string[] = [];
-  let ancla: { href: string; download: string; rel: string; hidden: boolean; click: () => void; remove: () => void } | undefined;
+  let ancla: { href: string; download: string; rel: string; hidden: boolean; atributos: Record<string, string>; setAttribute: (n: string, v: string) => void; click: () => void; remove: () => void } | undefined;
   let blobs: Blob[] = [];
 
   function instalar(opciones: { fallaClick?: boolean } = {}): void {
@@ -221,7 +221,9 @@ describe('T-LE-10 descarga (3.8, V-48)', () => {
       createElement: (tag: string) => {
         expect(tag).toBe('a');
         ancla = {
-          href: '', download: '', rel: '', hidden: false,
+          href: '', download: '', rel: '', hidden: false, atributos: {},
+          // F8: el enlace se marca como nodo propio (data-siglow) para que el aviso de extensión no lo tome por ajeno.
+          setAttribute: (n: string, v: string) => { if (ancla !== undefined) ancla.atributos[n] = v; },
           click: () => { bitacora.push('click ' + (ancla?.href ?? '')); if (opciones.fallaClick) throw new Error('fallo del clic'); },
           remove: () => { bitacora.push('retira'); },
         };
@@ -239,6 +241,7 @@ describe('T-LE-10 descarga (3.8, V-48)', () => {
     expect(bitacora).toEqual(['crea blob:https://localhost/1', 'agrega', 'click blob:https://localhost/1', 'revoca blob:https://localhost/1', 'retira']);
     expect(urlsBlobVivas()).toBe(0);
     expect(ancla?.download).toBe('sig-low-anonimizado-20261022-1540.txt');
+    expect(ancla?.atributos['data-siglow']).toBe('');   // F8: nodo propio, no una extensión
     expect(r.nombre).toBe('sig-low-anonimizado-20261022-1540.txt');
     expect(NOMBRE_DESCARGA.test(r.nombre)).toBe(true);
     expect(blobs[0]?.type).toBe('text/plain;charset=utf-8');
