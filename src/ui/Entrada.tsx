@@ -1,6 +1,7 @@
 // Carga del documento (8.2.4; F2: va dentro de Inicio = «Cargar documento», D-23): cargar un .docx, PDF o .txt o pegar texto; partes con casillas; aviso de metadatos solo por
 // categoría (INV-D04); avisos de lectura. El nombre del archivo nunca se muestra ni se guarda (V-37): solo se mira su
 // extensión y su tamaño, y el `input` se vacía tras leer (F-08).
+import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { DocumentModel, MetadataCategory, ParseWarning, ParseWarningCode } from '../core/types.ts';
 import { renovarActividad } from './bloqueo.ts';
@@ -146,7 +147,7 @@ function Pestanas({ actual, onCambio, deshabilitado }: { actual: PestanaEntrada;
 interface Avance { hecho: number; total: number; unidad: 'KB' | 'paginas' }
 
 /** Zona de carga, pestaña «Pegar texto», avisos de lectura y «Anonimizar». Al anonimizar abre el caso efímero si no hay uno (D-23). */
-export function CargaDocumento() {
+export function CargaDocumento({ detector }: { detector?: ComponentChildren } = {}) {
   const b = useBorrador();
   const shell = useShell();
   const [leyendo, setLeyendo] = useState<Avance | null>(null);
@@ -287,6 +288,8 @@ export function CargaDocumento() {
       {codigoError !== null ? <p role="alert" class="error-campo" data-prueba="error-entrada">{mensajeDeCodigo(codigoError)}</p> : null}
       {b.analisisCancelado ? <p role="status" data-prueba="analisis-cancelado">{t('M-61')}</p> : null}
 
+      {/* F8 (v1.1.1): el detector de nombres, a la vista antes de «Anonimizar». */}
+      {detector}
       <div class="acciones">
         <button type="button" disabled={!puedeAnalizar} aria-describedby={analizable ? undefined : 'ayuda-analizar'} onClick={analizar}>{t('M-944')}</button>
       </div>
@@ -295,7 +298,7 @@ export function CargaDocumento() {
   );
 }
 
-/** Casilla «Usar el detector de nombres adicional en este documento» (en opciones avanzadas de Inicio). */
+/** Casilla «Usar el detector de nombres en este documento» (en la tarjeta del detector de Cargar, F8). */
 export function CasillaModelo() {
   const b = useBorrador();
   const shell = useShell();
@@ -303,7 +306,7 @@ export function CasillaModelo() {
   return (
     <div class="campo-modelo">
       <Casilla
-        etiqueta={t('M-943')}
+        etiqueta={tf('M-2314')}
         marcada={b.usarModelo && modeloListo}
         onCambio={(v) => { actualizarBorrador({ usarModelo: v }); }}
         deshabilitado={!modeloListo}

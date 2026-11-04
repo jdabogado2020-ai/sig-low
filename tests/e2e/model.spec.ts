@@ -14,7 +14,7 @@ import { build, defaultClientConditions } from 'vite';
 import type { ModelManifest } from '../../src/core/types';
 import { delModelo, distConModelos, modeloSintetico, rutasDelManifiesto } from './harness/dist-modelo';
 import { construirMedicion } from './lib/medicion';
-import { abrirAvanzadas, aDetalle, h1, TITULO, vistaPrevia } from './lib/flujo';
+import { aDetalle, h1, TITULO, vistaPrevia } from './lib/flujo';
 import { levantarServidor, type Servidor } from './lib/servidores';
 
 const RAIZ = process.cwd();
@@ -324,14 +324,15 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
   }
 
   const tarjeta = (page: Page) => page.locator('[data-prueba="tarjeta-modelo"]');
-  const botonDescargar = (page: Page) => page.getByRole('button', { name: /^Descargar el detector de nombres adicional/ });
+  const botonDescargar = (page: Page) => page.getByRole('button', { name: /^Descargar detector de nombres/ });
 
   async function abrirInicio(page: Page, origen: string): Promise<void> {
     await page.goto(`${origen}/`);
     await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
     await expect(h1(page, TITULO.cargar)).toBeVisible();
-    // F2 (D-23): la tarjeta del modelo vive dentro de «Opciones avanzadas» (plegado por defecto).
-    await abrirAvanzadas(page);
+    // F8 (v1.1.1): la tarjeta del detector está a la vista en Cargar, junto a la zona de carga, fuera de «Opciones avanzadas».
+    await expect(tarjeta(page)).toBeVisible();
+    expect(await tarjeta(page).evaluate((el) => el.closest('details') === null)).toBe(true);
     await expect(botonDescargar(page)).toBeEnabled({ timeout: 20_000 });
   }
 
@@ -350,7 +351,6 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
    */
   async function irAEntrada(page: Page): Promise<void> {
     await expect(h1(page, TITULO.cargar)).toBeVisible();
-    await abrirAvanzadas(page);
     await page.getByRole('tab', { name: 'Pegar texto' }).click();
   }
 
@@ -432,7 +432,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       expect(pedidas.some((u) => u.includes('gliner-x-base') || u.endsWith('part002') || u.endsWith('part003'))).toBe(false);
       // Plan B con aviso: la casilla del modelo está deshabilitada y el análisis sigue con reglas y lista del caso.
       await irAEntrada(page);
-      await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' })).toBeDisabled();
+      await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeDisabled();
       expect(obs.ajenas).toEqual([]);
       expect(await obs.violaciones()).toEqual([]);
     } finally {
@@ -474,6 +474,40 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
     }
   });
 
+  test('F8 @cero-red analizado sin el detector: la vista previa avisa sin bloquear; la descarga desde el aviso la pide el clic y al terminar ofrece «Volver a analizar con el detector»', async ({ page }) => {
+    const srv = await servir(D_OK);
+    try {
+      const obs = await observar(page, srv.origen);
+      await abrirInicio(page, srv.origen);
+      await expect(tarjeta(page)).toContainText('Encuentra nombres de personas y empresas que no están en su lista');
+      await expect(tarjeta(page)).toContainText('No está descargado.');
+      await expect(tarjeta(page)).toContainText('se descarga una sola vez y queda guardado en este navegador');
+      await irAEntrada(page);
+      await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor Pedro Ejemplo Prueba firmó el contrato con la empresa Ejemplo Ficticia S.A.S.');
+      await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+      await expect(h1(page, TITULO.vista)).toBeVisible({ timeout: 30_000 });
+      const aviso = page.locator('[data-prueba="aviso-sin-detector"]');
+      await expect(aviso).toContainText('Analizado sin el detector de nombres: revise los nombres con más cuidado.');
+      // No bloquea: se puede seguir a Descargar. Y nada se descargó solo.
+      await expect(page.getByRole('button', { name: 'Continuar a descargar' })).toBeEnabled();
+      // (Al arrancar solo se leen los manifiestos, para saber el tamaño; ningún archivo del modelo.)
+      expect(delModelo(srv.peticiones()).filter((p) => !p.u.endsWith('/manifest.json'))).toEqual([]);
+      await expect(aviso.getByRole('button', { name: 'Volver a analizar con el detector' })).toHaveCount(0);
+      await aviso.getByRole('button', { name: /^Descargar detector de nombres/ }).click();
+      await expect(aviso).toContainText('El detector de nombres está listo.', { timeout: 60_000 });
+      await expect(aviso).toContainText('no se conservan al volver a analizar');
+      await aviso.getByRole('button', { name: 'Volver a analizar con el detector' }).click();
+      await expect(h1(page, TITULO.vista)).toBeVisible({ timeout: 30_000 });
+      // El análisis se repitió pidiendo el detector: el plan B, si lo hay, ya no es «no está descargado».
+      await expect(page.locator('[data-prueba="banda-modelo"]')).toBeVisible({ timeout: 30_000 });
+      await expect(page.locator('[data-prueba="banda-modelo"]')).not.toContainText('el detector no está descargado');
+      expect(obs.ajenas).toEqual([]);
+      expect(await obs.violaciones()).toEqual([]);
+    } finally {
+      await srv.parar();
+    }
+  });
+
   test('T-PV-08 @cero-red un trozo alterado en la caché después de descargar → el análisis con modelo cae al plan B (fallo_carga) y el modelo alterado se descarta (V-44)', async ({ page }) => {
     const srv = await servir(D_TOK);
     try {
@@ -491,7 +525,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       }, [`siglow-modelo-${GRANDE_TOK.manifest.sha256}`, '/models/gliner-x-large/onnx/model_quantized.onnx.part002']);
       await irAEntrada(page);
       await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor Pedro Ejemplo Prueba firmó el contrato con la empresa Ejemplo Ficticia S.A.S.');
-      await page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' }).check();
+      await page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' }).check();
       await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
       await expect(page.getByRole('heading', { level: 1, name: TITULO.vista })).toBeVisible({ timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('no se pudo preparar', { timeout: 30_000 });
@@ -597,7 +631,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       const corte = srv.peticiones().length;
       await irAEntrada(page);
       await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor Pedro Ejemplo Prueba firmó el contrato con la empresa Ejemplo Ficticia S.A.S.');
-      await page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' }).check();
+      await page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' }).check();
       await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
       await expect(page.getByRole('heading', { level: 1, name: TITULO.vista })).toBeVisible({ timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('no se pudo preparar', { timeout: 30_000 });
@@ -734,7 +768,7 @@ test.describe('PF-2 · modelo real en la app', () => {
       await page.goto(`${srv.origen}/`);
       await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
       const tarjeta = page.locator('[data-prueba="tarjeta-modelo"]');
-      const boton = page.getByRole('button', { name: /^Descargar el detector de nombres adicional/ });
+      const boton = page.getByRole('button', { name: /^Descargar detector de nombres/ });
       await expect(boton).toBeEnabled({ timeout: 20_000 });
       await expect(boton).toContainText(v.mb);
       const corte = srv.peticiones().length;
@@ -752,11 +786,11 @@ test.describe('PF-2 · modelo real en la app', () => {
       await page.reload();
       await page.waitForFunction(() => navigator.serviceWorker?.controller != null);
       await expect(tarjeta).toContainText('Detector de nombres adicional listo en este equipo.', { timeout: 20_000 });
-      // F2 (D-23): sin caso que crear. La casilla del detector está en «Opciones avanzadas».
-      await abrirAvanzadas(page);
+      // F2 (D-23): sin caso que crear. F8 (v1.1.1): la casilla del detector está en su tarjeta, a la vista en Cargar, y viene marcada.
+      await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeChecked();
       await page.getByRole('tab', { name: 'Pegar texto' }).click();
       await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor PEDRO EJEMPLO GÓMEZ, mayor de edad y vecino de Bucaramanga, interpuso acción de tutela contra la EPS Salud Ficticia S.A.S. por la negativa de un procedimiento ordenado por su médico tratante.');
-      await page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' }).check();
+      await page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' }).check();
       await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
       await expect(page.getByRole('heading', { level: 1, name: TITULO.vista })).toBeVisible({ timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-modelo"]')).toHaveAttribute('data-estado', 'terminado', { timeout: 420_000 });

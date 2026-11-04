@@ -9,6 +9,7 @@ import { useRevision } from './documento.ts';
 import { tf } from './flujo/textos.ts';
 import { evaluarFrase } from './frase.ts';
 import { mostrarAvisoGlobal, ocultarAvisoGlobal, useAvisoGlobal } from './globales.ts';
+import { useExtensionDetectada } from './extensiones.ts';
 import { calcularHuellas, compilacionCorta } from './huellas.ts';
 import { MARCA } from './marca-textos.ts';
 import { mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
@@ -268,6 +269,28 @@ function Avisos() {
   );
 }
 
+/** F8 (v1.1.1) · Aviso de extensión del navegador en la página (extensiones.ts): arriba, claro y sin bloquear. */
+function AvisoExtension() {
+  const hay = useExtensionDetectada();
+  const [pasos, setPasos] = useState(false);
+  if (!hay) return null;
+  return (
+    <section class="aviso-extension" role="alert" aria-labelledby="ext-titulo" data-prueba="aviso-extension">
+      <p id="ext-titulo"><strong>{tf('M-2315')}</strong></p>
+      <button type="button" class="enlace" aria-expanded={pasos} aria-controls="ext-pasos" onClick={() => { setPasos(!pasos); }}>
+        {pasos ? tf('M-2325') : tf('M-2316')}
+      </button>
+      {pasos ? (
+        <ol id="ext-pasos" data-prueba="pasos-perfil">
+          <li>{tf('M-2317')}</li>
+          <li>{tf('M-2318')}</li>
+          <li>{tf('M-2324')}</li>
+        </ol>
+      ) : null}
+    </section>
+  );
+}
+
 export function Armazon({ pantalla, children }: { pantalla: Screen; children: ComponentChildren }) {
   const shell = useShell();
   const asunto = shell.asunto;
@@ -320,6 +343,7 @@ export function Armazon({ pantalla, children }: { pantalla: Screen; children: Co
         </div>
       </header>
       {enPasos ? <Pasos actual={pantalla} /> : null}
+      <AvisoExtension />
       {versionCambiada ? <AvisoVersionCambiada alExportar={() => { setIntencion('exportar'); }} /> : null}
       {shell.updateWaiting ? <BandaActualizacion alExportar={() => { setIntencion('exportar'); }} /> : null}
       <Avisos />

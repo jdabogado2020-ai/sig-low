@@ -498,7 +498,7 @@ test.describe('T-IU-05 Entrada: pegar, cargar y estados', () => {
     await page.getByRole('tab', { name: 'Pegar texto' }).click();
     await expect(page.getByText('Pegue aquí el texto del documento. Se analiza en su equipo.')).toBeVisible();
     await abrirAvanzadas(page);
-    await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' })).toBeDisabled();
+    await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeDisabled();
     await expect(page.getByText('El análisis usará reglas y la lista de nombres que siempre deben ocultarse: el detector de nombres adicional no está descargado.')).toBeVisible();
     await areaTexto(page).fill('   \n  ');
     await expect(analizar(page)).toBeDisabled();

@@ -87,6 +87,7 @@ export function descargarBytes(bytes: Uint8Array, mime: string, nombre: string):
     ancla.download = nombre;
     ancla.rel = 'noopener';
     ancla.hidden = true;
+    ancla.setAttribute('data-siglow', '');   // F8: nodo propio de la app (ui/extensiones.ts no lo toma por una extensión)
     document.body.append(ancla);
     ancla.click();
   } finally {

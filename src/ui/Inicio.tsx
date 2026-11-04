@@ -1,6 +1,6 @@
 // Pantalla 1 · Inicio = «Cargar documento» (8.2.2; F2, D-23): promesa, guía de 3 pasos la primera vez, tarjeta «Antes de empezar»,
-// zona de carga y «Pegar texto», y «Opciones avanzadas» plegadas: nombres que siempre deben ocultarse, el detector de nombres
-// adicional (la tarjeta del modelo) y la llave para devolver los datos reales (crear o abrir un caso con contraseña).
+// zona de carga y «Pegar texto» con el detector de nombres a la vista (F8, v1.1.1), y «Opciones avanzadas» plegadas: nombres que
+// siempre deben ocultarse y la llave para devolver los datos reales (crear o abrir un caso con contraseña).
 import './vista/vista.css';
 import { useEffect, useLayoutEffect, useState } from 'preact/hooks';
 import { randomIds } from '../io/txt-read.ts';
@@ -12,7 +12,8 @@ import { alterno, mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
 import { tomarPreseleccion } from './boveda/preseleccion.ts';
 import { persistenciaDelModelo } from './modelo-puerto.ts';
 import { agregarAvisoAsunto, fijarListaDelCaso, fijarTabla, obtenerListaDelCaso, registrarLimpieza, tablaVacia, useFraseEscrita, useListaDelCaso } from './sesion.ts';
-import { CargaDocumento, CasillaModelo } from './Entrada.tsx';
+import { CargaDocumento } from './Entrada.tsx';
+import { TarjetaDetector } from './flujo/Detector.tsx';
 import { asegurarCaso } from './flujo/flujo.ts';
 import { Ayuda } from './flujo/Ayuda.tsx';
 import { tf } from './flujo/textos.ts';
@@ -79,84 +80,6 @@ function GuiaInicial() {
       </ol>
       {/* 2.4.3: la guía sale del árbol; el foco pasa al título de la pantalla. */}
       <button type="button" class="secundario" onClick={() => { guiaCerrada = true; setCerrada(true); queueMicrotask(() => { document.querySelector<HTMLElement>('main h1')?.focus(); }); }}>{tf('M-2209')}</button>
-    </section>
-  );
-}
-
-function memoriaDelEquipo(): number | null {
-  const m = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
-  return typeof m === 'number' ? m : null;
-}
-
-function TarjetaModelo() {
-  const { model } = useShell();
-  const reducido = (memoriaDelEquipo() ?? 8) < 8;
-  const mb = puertos.modelo.estado().mb ?? (model.variant === 'respaldo' || reducido ? 303 : 626);
-  const descargable = model.state === 'no_descargado' || model.state === 'fallo';
-  // Resultado de `navigator.storage.persist()` tras la descarga (PF-2, 3.3: «resultado visible»); null si no se pidió o no existe.
-  const persistente = persistenciaDelModelo();
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [quitar, setQuitar] = useState(false);
-  const lanzar = async (): Promise<void> => {
-    setError(undefined);
-    try { await puertos.modelo.descargar(); } catch (e) { setError(mensajeDeCodigo(codigoDeError(e), 'modelo')); }
-  };
-  // F0: tras un fallo, UN solo mensaje con el motivo (red: M-2102; integridad: M-31; el motor no pudo usarlo: M-30) y «Reintentar».
-  // El error de una excepción inesperada solo se muestra si no hay ya un fallo a la vista.
-  const fallo = model.state === 'fallo'
-    ? t(model.motivo === 'red' ? 'M-2102' : model.motivo === 'integridad' ? 'M-31' : 'M-30')
-    : null;
-  return (
-    <section class="tarjeta" aria-labelledby="tm-titulo" data-prueba="tarjeta-modelo">
-      <h2 id="tm-titulo">{t(X.modeloDeApoyo)}</h2>
-      <p>{t('M-24', { mb })}</p>
-      {model.state === 'no_descargado' ? <p>{t('M-160', { mb })}</p> : null}
-      {descargable && reducido ? <p>{t('M-168')}</p> : null}
-      {model.state === 'descargando' ? (
-        <p role="status">{t('M-27', { hecho: Math.round((model.doneBytes ?? 0) / 1_000_000), mb })}</p>
-      ) : null}
-      {model.state === 'verificando' ? <p role="status">{t('M-28')}</p> : null}
-      {model.state === 'listo' ? <p role="status">{t('M-29')}</p> : null}
-      {model.state === 'listo' && model.variant === 'respaldo' ? <p>{t('M-170')}</p> : null}
-      {model.state === 'listo' && persistente !== null ? (
-        <p data-prueba="persistencia-modelo" data-persistente={persistente ? 'si' : 'no'}>{persistente ? t('M-107') : alterno('M-107', 0)}</p>
-      ) : null}
-      {fallo !== null ? <p role="alert" data-prueba="fallo-modelo" data-motivo={model.motivo ?? 'carga'}>{fallo}</p> : null}
-      {model.state === 'sin_espacio' ? <p role="alert">{t('M-32')}</p> : null}
-      {model.state === 'sin_memoria' ? <p role="alert">{t('M-169')}</p> : null}
-      {error && fallo === null ? <p role="alert" class="error-campo">{error}</p> : null}
-      <p class="ayuda">{t('M-33')}</p>
-      <div class="acciones">
-        {descargable ? (
-          <button type="button" disabled={!puertos.modelo.disponible()} onClick={() => { void lanzar(); }}>
-            {model.state === 'fallo' ? t('M-2101') : t('M-25', { mb })}
-          </button>
-        ) : null}
-        {model.state === 'descargando' ? (
-          <button type="button" class="secundario" onClick={() => { puertos.modelo.cancelar(); }}>{t(ROTULOS.cancelar_descarga)}</button>
-        ) : null}
-        {model.state === 'listo' ? (
-          <button type="button" class="secundario" onClick={() => { setQuitar(true); }}>{t(ROTULOS.quitar_el_modelo_de_este_equipo)}</button>
-        ) : null}
-        <button type="button" class="enlace" onClick={() => { actualizar({ dialog: 'creditos' }); }}>{t(ROTULOS.ver_creditos_y_licencias)}</button>
-      </div>
-      {quitar ? (
-        <div class="confirmacion" role="alertdialog" aria-label={t(ROTULOS.quitar_el_modelo_de_este_equipo)}>
-          <p>{t('M-34')}</p>
-          <div class="acciones">
-            <button
-              type="button"
-              onClick={() => {
-                setQuitar(false);
-                void puertos.modelo.quitar().then(() => { actualizar({ model: { state: 'no_descargado' } }); });
-              }}
-            >
-              {t(ROTULOS.quitar_el_modelo_de_este_equipo)}
-            </button>
-            <button type="button" class="secundario" onClick={() => { setQuitar(false); }}>{t(ROTULOS.cancelar)}</button>
-          </div>
-        </div>
-      ) : null}
     </section>
   );
 }
@@ -395,15 +318,10 @@ export function Inicio() {
       <GuiaInicial />
       <AvisoInicial />
       {caso !== null ? <p role="status" data-prueba="caso-abierto">{tf('M-2224', { codigo: caso.codigo })}</p> : null}
-      <CargaDocumento />
+      <CargaDocumento detector={<TarjetaDetector />} />
       <details class="avanzadas" data-prueba="opciones-avanzadas">
         <summary>{tf('M-2216')}</summary>
         <OpcionLista />
-        <section class="opcion" aria-labelledby="op-modelo" data-prueba="opcion-modelo">
-          <h3 id="op-modelo">{t(X.modeloDeApoyo)} <Ayuda tema={t(X.modeloDeApoyo)} texto={tf('M-2219', { mb: puertos.modelo.estado().mb ?? 626 })} /></h3>
-          <CasillaModelo />
-          <TarjetaModelo />
-        </section>
         <section class="opcion" aria-labelledby="op-llave" data-prueba="opcion-llave">
           <h3 id="op-llave">{tf('M-2220')} <Ayuda tema={tf('M-2220')} texto={tf('M-2221')} /></h3>
           <div class="dos-columnas">

@@ -15,6 +15,7 @@ import { Dialogo } from '../dialogo.tsx';
 import { useRevision } from '../documento.ts';
 import { actualizar, ir } from '../estado.ts';
 import { useBusquedaAutomatica, buscarOtraVez } from '../flujo/busqueda-automatica.ts';
+import { AvisoSinDetector } from '../flujo/Detector.tsx';
 import { cerrarDocumento } from '../flujo/flujo.ts';
 import { tf } from '../flujo/textos.ts';
 import { useListo } from '../listo/almacen.ts';
@@ -288,6 +289,8 @@ export function VistaPrevia() {
       <h1 tabIndex={-1}>{t(X.revision)}</h1>
       <p class="ayuda">{tf('M-2230')}</p>
       <Banda />
+      {/* F8 (v1.1.1): analizado sin el detector de nombres → aviso breve, sin bloquear, con la descarga y el reanálisis. */}
+      {state.modelo.kind === 'plan_b' ? <AvisoSinDetector /> : null}
       <div class="puntos" data-prueba="puntos">
         <p>{puntos.length === 0 ? tf('M-2233') : tf('M-2231', { n: puntos.length })}</p>
         {puntos.length > 0 ? <button type="button" class="secundario" data-prueba="siguiente-punto" onClick={siguiente}>{tf('M-2232')}</button> : null}

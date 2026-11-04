@@ -766,7 +766,7 @@ test.describe('@cero-red fase A3 · descarga del modelo', () => {
       await page.goto('/');
       await a.esperarControlador(page);
       await abrirAvanzadas(page);   // el detector de nombres adicional está en «Opciones avanzadas»
-      const boton = page.getByRole('button', { name: /^Descargar el detector de nombres adicional/ });
+      const boton = page.getByRole('button', { name: /^Descargar detector de nombres/ });
       await expect(boton).toBeEnabled({ timeout: 20_000 });
       const corte = a.app.peticiones().length;
 

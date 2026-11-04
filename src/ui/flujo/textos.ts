@@ -108,6 +108,24 @@ const TEXTOS = {
   // F7 (v1.1.1): el PDF de un .docx conserva el formato del documento.
   'M-2302': 'Se descargó {archivo}. Conserva el formato del documento (página, márgenes, letra, alineación y tablas), con los datos ocultos.',
   'M-2303': 'El PDF no incluye {n} imágenes, dibujos o cuadros de texto del documento. El .docx descargado sí los conserva.',
+  // F8 (v1.1.1) · El detector de nombres a la vista en Cargar y su aviso en la vista previa.
+  'M-2310': 'Detector de nombres',
+  'M-2311': 'Encuentra nombres de personas y empresas que no están en su lista de nombres que siempre deben ocultarse.',
+  'M-2312': 'Pesa unos {mb} MB, se descarga una sola vez y queda guardado en este navegador.',
+  'M-2313': 'Descargar detector de nombres ({mb} MB)',
+  'M-2314': 'Usar el detector de nombres en este documento',
+  'M-2319': 'No está descargado.',
+  'M-2320': 'Analizado sin el detector de nombres: revise los nombres con más cuidado.',
+  'M-2321': 'Volver a analizar con el detector',
+  'M-2322': 'Las correcciones que hizo en esta vista previa no se conservan al volver a analizar.',
+  'M-2323': 'El detector de nombres está listo.',
+  // F8 (v1.1.1) · Aviso de extensión: un nodo ajeno a la app apareció en la página.
+  'M-2315': 'Hay una extensión del navegador en esta página: puede leer sus documentos. Use un perfil del navegador sin extensiones.',
+  'M-2316': 'Cómo crear un perfil sin extensiones',
+  'M-2317': 'Abra el menú del navegador y busque la opción de perfiles.',
+  'M-2318': 'Agregue un perfil nuevo y no instale extensiones en él.',
+  'M-2324': 'Abra Sig-Low en ese perfil. Una ventana de invitado también sirve.',
+  'M-2325': 'Ocultar los pasos',
 } as const satisfies Record<string, string>;
 
 registrarMensajes(TEXTOS);

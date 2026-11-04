@@ -47,8 +47,16 @@ test.describe('T-AX-01 teclado en Cargar documento y Analizando', () => {
     await page.keyboard.press('Tab');
     expect(await activo(page)).toMatchObject({ rol: 'textarea' });
     await page.keyboard.type(TEXTO_PRUEBA);
-    // Tab: «Anonimizar» (la casilla del detector está en «Opciones avanzadas», después).
-    await page.keyboard.press('Tab');
+    // F8 (v1.1.1): antes de «Anonimizar» está la tarjeta del detector de nombres. El Tab recorre sus controles activos (la descarga,
+    // si el detector se puede descargar, y «Ver créditos y licencias»; la casilla, deshabilitada sin el detector, se salta) y llega.
+    const enTarjeta: string[] = [];
+    for (let i = 0; i < 5; i++) {
+      await page.keyboard.press('Tab');
+      if ((await activo(page))?.nombre === 'Anonimizar') break;
+      expect(await page.evaluate(() => document.activeElement?.closest('[data-prueba="tarjeta-modelo"]') != null), 'entre el texto y «Anonimizar» solo la tarjeta del detector').toBe(true);
+      enTarjeta.push((await activo(page))?.nombre ?? '');
+    }
+    expect(enTarjeta).toContain('Ver créditos y licencias');
     expect(await activo(page)).toEqual({ rol: 'button', nombre: 'Anonimizar' });
     await configurarSimulador(page, { retener: 'resultado' });
     await page.keyboard.press('Enter');
@@ -152,7 +160,10 @@ test.describe('T-AX-02 nombres, roles y regiones de Cargar documento y Analizand
     const avanzadas = page.locator('details[data-prueba="opciones-avanzadas"]');
     await expect(avanzadas.locator('summary')).toHaveText('Opciones avanzadas');
     await abrirAvanzadas(page);
-    for (const n of ['Nombres que siempre deben ocultarse', 'Detector de nombres adicional', 'Guardar la llave para devolver los datos reales después']) {
+    // F8 (v1.1.1): el detector de nombres ya no está aquí: es una región con nombre a la vista, junto a la zona de carga.
+    await expect(page.getByRole('region', { name: 'Detector de nombres' })).toBeVisible();
+    expect(await page.locator('[data-prueba="tarjeta-modelo"]').evaluate((el) => el.closest('details') === null)).toBe(true);
+    for (const n of ['Nombres que siempre deben ocultarse', 'Guardar la llave para devolver los datos reales después']) {
       await expect(avanzadas.getByRole('heading', { level: 3, name: new RegExp(`^${n}`) })).toBeVisible();
       await expect(avanzadas.getByRole('button', { name: `Ayuda: ${n}` })).toHaveAttribute('aria-expanded', 'false');
     }
@@ -193,7 +204,7 @@ test.describe('T-AX-02 nombres, roles y regiones de Cargar documento y Analizand
   test('T-AX-02 la zona de soltar y las etiquetas de las casillas no dependen solo del color: texto visible y estado en el nombre', async ({ page }) => {
     await irAEntrada(page);
     await abrirAvanzadas(page);
-    await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' })).toBeDisabled();
+    await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeDisabled();
     await expect(page.getByText('El análisis usará reglas y la lista de nombres que siempre deben ocultarse: el detector de nombres adicional no está descargado.')).toBeVisible();
   });
 });
