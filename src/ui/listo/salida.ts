@@ -217,6 +217,7 @@ export function descargarDocxFiel(): ResumenSalidaFiel | null {
     // F3: el .docx fiel conserva el formato (M-2292); el simple, no (M-88). M-122: las imágenes que pasan sin revisar (V-53), M-2294.
     const avisos: AvisoListo[] = [{ id: resumen.fiel ? 'M-2292' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
     if (resumen.fiel && resumen.imagenes > 0) avisos.push({ id: 'M-2294', params: { n: resumen.imagenes }, rol: 'alert' });
+    if (resumen.vectorialesQuitadas > 0) avisos.push({ id: 'M-2296', params: { n: resumen.vectorialesQuitadas }, rol: 'status' });
     for (const a of r.avisos) if (a.code === 'CARACTERES_CONTROL') avisos.push({ id: 'M-313', params: { n: a.count ?? 0 }, rol: 'status' });
     ponerAviso(avisos);
     respaldarTabla(tabla);
@@ -267,6 +268,10 @@ export async function descargarPdfSalida(): Promise<ResumenSalidaFiel | null> {
     }
     // F3: el PDF tachado es imagen con recuadros (M-2293); el de texto, M-88. M-122: imágenes de las páginas que salen (V-56), M-2294.
     if (resumen.fiel && resumen.imagenes > 0) avisos.push({ id: 'M-2294', params: { n: resumen.imagenes }, rol: 'alert' });
+    // A-20: las demás páginas cubiertas enteras (sin mapa o excluidas), con sus números.
+    const cubiertas = (m: PaginaCubierta['motivo']): string => resumen.paginasCubiertas.filter((c) => c.motivo === m).map((c) => c.page).join(', ');
+    if (cubiertas('sin_mapa') !== '') avisos.push({ id: 'M-2297', params: { paginas: cubiertas('sin_mapa') }, rol: 'alert' });
+    if (cubiertas('excluida') !== '') avisos.push({ id: 'M-2298', params: { paginas: cubiertas('excluida') }, rol: 'status' });
     ponerAviso([{ id: resumen.fiel ? 'M-2293' : 'M-88', params: { archivo: resumen.nombre }, rol: 'status' }, ...avisos]);
     respaldarTabla(tabla);
     return resumen;

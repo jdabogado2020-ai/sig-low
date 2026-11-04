@@ -98,6 +98,10 @@ const TEXTOS = {
   'M-2293': 'Se descargó {archivo}. Cada página es una imagen con recuadros negros sobre los datos, sin texto que se pueda copiar.',
   // M-122 (P0-6a de F4): lo que la salida fiel no revisa, dicho al descargar.
   'M-2295': 'Las páginas {paginas} tienen imágenes (firmas, sellos o documentos pegados) que salen tal cual. Sig-Low no revisa imágenes: mírelas antes de compartir.',
+  'M-2296': 'Se quitaron {n} dibujos del original (formatos EMF, WMF o SVG) porque pueden llevar texto que Sig-Low no revisa. El resto del documento conserva su formato.',
+  'M-2297': 'Las páginas {paginas} salen cubiertas por completo: Sig-Low no pudo ubicar su texto en la página.',
+  'M-2298': 'Las páginas {paginas}, que usted dejó fuera del análisis, salen cubiertas por completo.',
+  'M-2299': 'El documento tiene {n} imágenes que se conservan tal cual en el .docx descargado. Sig-Low no revisa imágenes: mírelas antes de compartirlo.',
   'M-2294': 'El documento descargado conserva {n} imágenes del original tal como estaban. Sig-Low no revisa imágenes: mírelas antes de compartirlo.',
 } as const satisfies Record<string, string>;
 

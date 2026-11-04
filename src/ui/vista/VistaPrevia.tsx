@@ -235,6 +235,7 @@ export function VistaPrevia() {
           <button type="button" class="secundario" onClick={buscarOtraVez}>{t(ROTULOS.buscar_de_nuevo)}</button>
         </div>
       ) : null}
+      {(estructuras?.imagenes ?? 0) > 0 ? <p class="ayuda" role="note" data-prueba="imagenes-docx">{tf('M-2299', { n: estructuras?.imagenes ?? 0 })}</p> : null}
       <div class="barra-vista" role="toolbar" aria-label={tf('M-2268')}>
         <button type="button" class="secundario" aria-expanded={comoLeer} aria-controls="como-leer" onClick={() => { setComoLeer(!comoLeer); }}>{t(ROTULOS.leyenda)}</button>
         {doc.source === 'pdf' && original !== null ? (

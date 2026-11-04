@@ -119,11 +119,13 @@ export function estructuraDeParte(texto: string, piezas: readonly PiezaDocx[]): 
  * Estructura de cada parte del documento analizado, desde el original en memoria. Devuelve un mapa vacío si el original no cuadra
  * con el documento o no se puede leer: la vista previa no depende de esto para mostrar el texto anonimizado.
  */
-export function estructuraDocx(original: Uint8Array, doc: DocumentModel): Map<PartId, EstructuraParte> {
-  const out = new Map<PartId, EstructuraParte>();
+export function estructuraDocx(original: Uint8Array, doc: DocumentModel): Map<PartId, EstructuraParte> & { imagenes?: number } {
+  const out: Map<PartId, EstructuraParte> & { imagenes?: number } = new Map<PartId, EstructuraParte>();
   if (doc.source !== 'docx') return out;
   try {
     const m = leerDocxMapeado(original, { docId: doc.id, label: doc.label }, IO_LIMITS_POR_DEFECTO);
+    // M-122: las imágenes del paquete (word/media) salen tal cual en el .docx fiel; la vista previa lo avisa antes de descargar.
+    out.imagenes = [...m.entradas.keys()].filter((k) => /(^|\/)media\//iu.test(k)).length;
     const partes = [...doc.parts].sort((a, b) => a.order - b.order);
     if (partes.length !== m.partes.length) return out;
     partes.forEach((p, i) => {
