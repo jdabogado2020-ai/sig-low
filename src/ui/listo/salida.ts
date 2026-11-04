@@ -18,6 +18,7 @@ import { OPCIONES_DETECCION } from '../analisis.ts';
 import { obtenerDocumento, obtenerRevision, fijarRevision } from '../documento.ts';
 import { actualizar, obtener } from '../estado.ts';
 import { idDeCodigo } from '../mensajes.ts';
+import { lineasDeAdvertencias } from '../Entrada.tsx';
 import { codigoDeError, puertos } from '../servicios.ts';
 import { fijarTabla, obtenerListaDelCaso, obtenerTabla, registrarLimpieza } from '../sesion.ts';
 import { actualizarListo, obtenerListo, ponerAviso, puertaDe, type AvisoListo } from './almacen.ts';
@@ -179,6 +180,9 @@ export function descargarDocxFiel(): void {
       fiel = false;
     }
     const avisos: AvisoListo[] = [{ id: fiel ? 'M-2292' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
+    // M-122 · Las imágenes pasan sin revisar (V-53): se dice al descargar.
+    const imagenes = 'imagenes' in r && typeof r.imagenes === 'number' ? r.imagenes : 0;
+    if (fiel && imagenes > 0) avisos.push({ id: 'M-2294', params: { n: imagenes }, rol: 'alert' });
     for (const a of r.avisos) if (a.code === 'CARACTERES_CONTROL') avisos.push({ id: 'M-313', params: { n: a.count ?? 0 }, rol: 'status' });
     ponerAviso(avisos);
     respaldarTabla(tabla);
@@ -210,7 +214,10 @@ export async function descargarPdfSalida(): Promise<void> {
         copia.fill(0);
       }
     }
-    ponerAviso([{ id: tachado ? 'M-2293' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }]);
+    // M-122 · Las páginas que pasaron sin tachar (sin capa de texto o ilegibles, V-56) se dicen con el aviso de lectura de siempre.
+    const avisos: AvisoListo[] = [{ id: tachado ? 'M-2293' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
+    for (const l of lineasDeAdvertencias(r.avisos)) avisos.push({ id: l.id, params: l.params, rol: 'alert' });
+    ponerAviso(avisos);
     respaldarTabla(tabla);
   } catch (e) {
     errorDeAccion(e);

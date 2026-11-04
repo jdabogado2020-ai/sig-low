@@ -96,6 +96,8 @@ const TEXTOS = {
   'M-2291': 'Todavía no se puede descargar:',
   'M-2292': 'Se descargó {archivo}. Conserva el formato del original, con los datos ocultos; no lleva autor, comentarios ni control de cambios.',
   'M-2293': 'Se descargó {archivo}. Cada página es una imagen con recuadros negros sobre los datos, sin texto que se pueda copiar.',
+  // M-122 (P0-6a de F4): lo que la salida fiel no revisa, dicho al descargar.
+  'M-2294': 'El documento descargado conserva {n} imágenes del original tal como estaban. Sig-Low no revisa imágenes: mírelas antes de compartirlo.',
 } as const satisfies Record<string, string>;
 
 registrarMensajes(TEXTOS);
