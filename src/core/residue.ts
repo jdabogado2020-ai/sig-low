@@ -610,7 +610,10 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
   // F9 (B-171): solo el dato rechazado. Vale para un acierto del mismo tipo o, si los dos son nombres (persona u organización), de
   // otra entidad: la mención ambigua «señora Rojas» muestra también el «Rojas» de la persona de la lista. Un dato de otro tipo dentro
   // del tramo (la cédula o el correo que se comió un nombre con límites de más) se sigue buscando y ocultando.
-  const mismoDato = (rechazado: string, acierto: string): boolean => rechazado === acierto || (isNameType(rechazado) && isNameType(acierto));
+  // Lo mismo vale para los lugares: «Bogotá» mostrado, llevado a departamento por una sugerencia, vuelve como municipio o lugar.
+  const esLugar = (t: string): boolean => t === 'MUNICIPIO' || t === 'DEPARTAMENTO' || t === 'LUGAR' || t === 'BARRIO';
+  const mismoDato = (rechazado: string, acierto: string): boolean => rechazado === acierto
+    || (isNameType(rechazado) && isNameType(acierto)) || (esLugar(rechazado) && esLugar(acierto));
   const dentroDeRechazo = (partId: PartId, ps: number, pe: number, tipo: string): boolean =>
     ctx.rechazosDelRevisor === true && rejected.some((r) => insideRejected(r, partId, ps, pe) && mismoDato(r.type, tipo));
   const keyOfEntity = (r: Detection): string => state.entities[r.entityId]?.canonicalKey ?? r.canonicalKey;
