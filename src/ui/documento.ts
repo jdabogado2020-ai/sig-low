@@ -81,6 +81,14 @@ export function vaciarTodoElDocumento(): void {
 }
 registrarLimpieza(vaciarTodoElDocumento);
 
+/**
+ * M-123 (P0-6a de F4) · Hay contenido del abogado en memoria: texto pegado, un archivo leído (con su original, D-22), o un documento
+ * en análisis o en revisión. El bloqueo por inactividad lo vigila aunque no haya un caso abierto (antes de «Anonimizar» no hay caso).
+ */
+export function hayDocumentoEnMemoria(): boolean {
+  return borrador.texto !== '' || borrador.archivo !== null || documento !== null || revision !== null || docIdDelOriginal() !== null;
+}
+
 export function useBorrador(): BorradorEntrada {
   const [, forzar] = useState(0);
   useEffect(() => suscribirDocumento(() => { forzar((n) => n + 1); }), []);

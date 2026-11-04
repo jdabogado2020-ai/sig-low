@@ -2,6 +2,7 @@
 // Reloj de pared (Date.now): un equipo suspendido y reanudado bloquea de inmediato, sin esperar a un temporizador.
 import { useEffect, useState } from 'preact/hooks';
 import { actualizar, fijarAvisoInicio, obtener, suscribir } from './estado.ts';
+import { hayDocumentoEnMemoria } from './documento.ts';
 import { hayFraseEscrita, vaciarEstadoM } from './sesion.ts';
 import { puertos } from './servicios.ts';
 
@@ -57,7 +58,8 @@ export function bloquear(difundirAOtras: boolean): void {
   vaciarEstadoM();
   puertos.boveda.cerrar();
   actualizar({ asunto: null, phase: 'vacio', screen: obtener().screen === 'sin_sw' ? 'sin_sw' : 'inicio', dialog: null, modelRun: null, error: null });
-  fijarAvisoInicio(previo?.mode === 'no_guardar' ? 'bloqueado_sin_guardar' : 'bloqueado');
+  // El caso efímero (D-23) no tenía una llave que el abogado haya pedido guardar: basta M-102, sin M-103.
+  fijarAvisoInicio(previo?.mode === 'no_guardar' && previo.efimero !== true ? 'bloqueado_sin_guardar' : 'bloqueado');
   if (difundirAOtras) difundir({ tipo: 'bloquear' });
 }
 
@@ -70,9 +72,12 @@ export function cerrarAsunto(): void {
   fijarAvisoInicio(null);
 }
 
-function evaluar(): void {
-  // Sin asunto abierto solo cuenta una frase escrita en Inicio (M-7): sin ella no hay nada en claro que bloquear.
-  if (obtener().asunto === null && !hayFraseEscrita()) { cerrarAviso(); return; }
+/**
+ * Evalúa la inactividad (también la exportan las pruebas). Sin caso abierto cuentan una frase escrita en Inicio (M-7) y, desde F2
+ * (M-123), un documento en memoria: un archivo cargado antes de «Anonimizar» (con su original retenido, D-22) o texto pegado.
+ */
+export function evaluar(): void {
+  if (obtener().asunto === null && !hayFraseEscrita() && !hayDocumentoEnMemoria()) { cerrarAviso(); return; }
   const inactivo = Date.now() - ultimaActividad;
   if (inactivo >= LIMITE_INACTIVIDAD_MS) bloquear(true);
   else if (inactivo >= AVISO_INACTIVIDAD_MS) abrirAviso();
