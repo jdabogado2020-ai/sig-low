@@ -533,6 +533,31 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     for (const real of REALES_REI) expect(abierta.texto, `portapapeles con «${real}»`).not.toContain(real);
   });
 
+  test('T-PV-11 INV-X05 A-31: tras Ctrl+A, arrastrar desde el título (fuera de la vista previa) no lleva la vista previa, y el menú contextual no ofrece copiarla', async ({ page }) => {
+    await hastaRevision(page, DOCUMENTO_REI, 'PRUEBA-PV-A31');
+    // Registro en la fase de burbuja de la ventana: corre después de cualquier manejador en captura.
+    await page.evaluate(() => {
+      const w = globalThis as unknown as { __a31: string[] };
+      w.__a31 = [];
+      addEventListener('dragstart', (e) => { w.__a31.push(`dragstart:${e.defaultPrevented ? 'prevenido' : 'NO'}`); });
+      addEventListener('contextmenu', (e) => { w.__a31.push(`contextmenu:${e.defaultPrevented ? 'prevenido' : 'NO'}`); });
+    });
+    const titulo = page.getByRole('heading', { level: 1, name: 'Vista previa' });
+    await titulo.click();
+    await page.keyboard.press('Control+A');
+    const caja = await titulo.boundingBox();
+    if (caja === null) throw new Error('sin caja del título');
+    await page.mouse.move(caja.x + 20, caja.y + caja.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(caja.x + 220, caja.y + caja.height / 2 + 160, { steps: 8 });
+    await page.mouse.up();
+    // El menú contextual sobre el título, con la selección que toca la vista previa.
+    await titulo.evaluate((el) => { el.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })); });
+    const registro = await page.evaluate(() => (globalThis as unknown as { __a31: string[] }).__a31);
+    expect(registro.some((x) => x.startsWith('dragstart:')), 'hubo un arrastre').toBe(true);
+    expect(registro.filter((x) => x.endsWith(':NO')), 'arrastre o menú sin prevenir').toEqual([]);
+  });
+
   test('T-PV-11 A-30: en las páginas de un PDF el lienzo no ofrece menú contextual ni se arrastra (ni «Copiar imagen» ni «Guardar imagen como»)', async ({ page }) => {
     await abrirInicio(page);
     await page.locator('input[type=file]').setInputFiles('corpus/docs/C03.pdf');

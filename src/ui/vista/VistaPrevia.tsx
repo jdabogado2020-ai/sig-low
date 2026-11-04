@@ -218,9 +218,28 @@ export function VistaPrevia() {
       const documento = cuerpo.querySelector<HTMLElement>('.documento-vista');
       copiarSeleccion(e, documento === null || r === null || !toca ? null : textoDeSeleccion(documento, r));
     };
+    // A-31 (F23-r2): arrastrar la selección (también tras Ctrl+A, desde el título o la ayuda) armaría un `dataTransfer` con la vista
+    // previa en `text/plain` y `text/html`, y el menú contextual ofrecería «Copiar». Con la misma condición que la copia, no hay ni lo
+    // uno ni lo otro, con la puerta abierta o cerrada: la vista previa solo sale por la puerta.
+    const alArrastrarOMenu = (e: Event): void => {
+      const cuerpo = ancla.current;
+      const sel = getSelection();
+      if (cuerpo === null) return;
+      const r = sel !== null && sel.rangeCount > 0 && !sel.isCollapsed ? sel.getRangeAt(0) : null;
+      const toca = r !== null && r.intersectsNode(cuerpo);
+      const dentro = e.target instanceof Node && cuerpo.contains(e.target);
+      if (toca || dentro) e.preventDefault();
+    };
     document.addEventListener('copy', alCopiar, true);
     document.addEventListener('cut', alCopiar, true);
-    return () => { document.removeEventListener('copy', alCopiar, true); document.removeEventListener('cut', alCopiar, true); };
+    document.addEventListener('dragstart', alArrastrarOMenu, true);
+    document.addEventListener('contextmenu', alArrastrarOMenu, true);
+    return () => {
+      document.removeEventListener('copy', alCopiar, true);
+      document.removeEventListener('cut', alCopiar, true);
+      document.removeEventListener('dragstart', alArrastrarOMenu, true);
+      document.removeEventListener('contextmenu', alArrastrarOMenu, true);
+    };
   }, []);
 
   const original = doc === null ? null : originalDe(doc.id);
