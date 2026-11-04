@@ -47,6 +47,14 @@ export function BandaDescarga() {
   const pct = total > 0 ? Math.min(100, Math.floor((hecho / total) * 100)) : 0;
   const avance = tf('M-2327', { hecho: Math.round(hecho / MB), mb: Math.round(total / MB), pct });
   const restante = inicio.current === null ? null : minutosRestantes(inicio.current, Date.now(), hecho, total);
+  // Al arrancar, primero se comprueba si el detector ya está guardado; en ese rato no hay bytes que contar.
+  if (puertos.modelo.comprobando?.() === true) {
+    return (
+      <section class="banda banda-en-curso" data-prueba="banda-modelo" data-estado="comprobando" aria-label={tf('M-2326')}>
+        <p role="status">{tf('M-2344')}</p>
+      </section>
+    );
+  }
   return (
     <section class="banda banda-en-curso" data-prueba="banda-modelo" data-estado="descargando" aria-label={tf('M-2326')}>
       <h2 class="banda-titulo">{tf('M-2326')}</h2>

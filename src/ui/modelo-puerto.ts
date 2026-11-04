@@ -8,7 +8,7 @@ import {
 } from '../core/ner/entrega.ts';
 import { esManifiesto, IDS_MODELO, mbDelManifiesto, validarEntrega, type IdModelo } from '../core/ner/manifest.ts';
 import { SiglowError, type ErrorCode, type ModelManifest } from '../core/types.ts';
-import { actualizar } from './estado.ts';
+import { actualizar, obtener } from './estado.ts';
 import type { ModelUiState, ModelVariant, MotivoFalloModelo } from './estado.ts';
 import type { ModeloPuerto } from './servicios.ts';
 
@@ -70,6 +70,9 @@ let instalado: IdModelo | null = null;
 let persistido: boolean | null = null;
 let preparado = false;
 let iniciado = false;
+/** F10: la comprobación de arranque (manifiestos y qué hay guardado); se espera antes de decidir si hay que descargar. */
+let preparacion: Promise<void> = Promise.resolve();
+let comprobando = true;
 let descarga: AbortController | null = null;
 
 const variantePorId = (id: IdModelo): ModelVariant => (id === 'gliner-x-base' ? 'respaldo' : 'principal');
@@ -144,7 +147,7 @@ async function preparar(): Promise<void> {
 function iniciar(): void {
   if (iniciado) return;
   iniciado = true;
-  void preparar();
+  preparacion = preparar().finally(() => { comprobando = false; actualizar({ model: { ...obtener().model } }); });
 }
 
 // --- Puertos de la decisión pura ----------------------------------------------------------------------------------------------
@@ -199,6 +202,14 @@ function desenlace(r: ResultadoEntrega): void {
 }
 
 export const modeloPuerto: ModeloPuerto = {
+  comprobando() {
+    iniciar();
+    return comprobando;
+  },
+  async esperarComprobacion() {
+    iniciar();
+    await preparacion;
+  },
   disponible() {
     iniciar();
     return preparado && typeof navigator !== 'undefined' && 'serviceWorker' in navigator && navigator.serviceWorker.controller !== null;

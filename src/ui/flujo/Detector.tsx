@@ -82,7 +82,10 @@ export function TarjetaDetector() {
       <h2 id="tm-titulo">{tf('M-2310')}</h2>
       <p>{tf('M-2311')}</p>
       <p class="ayuda">{tf('M-2312', { mb })}</p>
-      {model.state === 'no_descargado' ? <p data-prueba="estado-detector">{tf('M-2319')}</p> : null}
+      {/* F10: al recargar, hasta saber si ya está guardado, no se dice «No está descargado». */}
+      {puertos.modelo.comprobando?.() === true
+        ? <p role="status" data-prueba="estado-detector">{tf('M-2344')}</p>
+        : model.state === 'no_descargado' ? <p data-prueba="estado-detector">{tf('M-2319')}</p> : null}
       {d.descargable && d.reducido ? <p>{t('M-168')}</p> : null}
       {model.state === 'listo' ? <p role="status" data-prueba="estado-detector">{t('M-29')}</p> : null}
       {model.state === 'listo' && model.variant === 'respaldo' ? <p>{t('M-170')}</p> : null}

@@ -325,6 +325,42 @@ describe('F10 descarga del detector al anonimizar', () => {
   });
 });
 
+describe('F10 detector ya descargado al recargar', () => {
+  const original = { ...puertos };
+  beforeEach(() => { reiniciarEstado(); });
+  afterEach(() => { vaciarEstadoM(); instalarPuertos(original); });
+
+  it('«Anonimizar» antes de que termine la comprobación de arranque espera, encuentra el detector guardado y lo usa sin volver a descargarlo', async () => {
+    let comprobando = true;
+    let terminarComprobacion: () => void = () => undefined;
+    const comprobacion = new Promise<void>((ok) => { terminarComprobacion = ok; });
+    let descargas = 0;
+    const modelo = {
+      comprobando: () => comprobando,
+      esperarComprobacion: () => comprobacion,
+      disponible: () => !comprobando,
+      estado: () => ({ state: (comprobando ? 'no_descargado' : 'listo') as ShellState['model']['state'], mb: 626 }),
+      descargar: () => { descargas++; return Promise.resolve(); },
+      cancelar: () => undefined,
+      quitar: () => Promise.resolve(),
+    };
+    const ner = nerFalso();
+    instalarPuertos({ modelo, ner });
+    iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 1'), usarModelo: true, crearWorker: crearFalso });
+    await esperar(() => obtener().screen === 'revision');
+    // Mientras se comprueba, el modelo espera «en curso» (no se analiza sin él ni se descarga).
+    expect(obtenerRevision()?.modelo.kind).toBe('en_curso');
+    expect(ner.hooks).toBeNull();
+    // La comprobación encuentra el detector guardado.
+    comprobando = false;
+    actualizar({ model: { state: 'listo', variant: 'principal' } });
+    terminarComprobacion();
+    await esperar(() => ner.hooks !== null);
+    expect(descargas).toBe(0);
+    expect(obtenerVistaAnalisis().descargaModelo).toBe(false);
+  });
+});
+
 describe('F10 tiempo estimado de la descarga', () => {
   it('estima con la velocidad medida desde la primera muestra y no antes de 3 s', () => {
     expect(minutosRestantes({ t: 0, b: 0 }, 2000, 10_000_000, 626_000_000)).toBeNull();

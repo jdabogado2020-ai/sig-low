@@ -584,6 +584,44 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
     }
   });
 
+  test('F10 @cero-red detector ya descargado: al recargar la tarjeta nunca dice «No está descargado» y «Anonimizar» enseguida usa el guardado, sin volver a pedirlo', async ({ page }) => {
+    const srv = await servir(D_OK);
+    try {
+      const obs = await observar(page, srv.origen);
+      await abrirInicio(page, srv.origen);
+      await empezarDescarga(page);
+      await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
+      // Desde el arranque de la página recargada: si la tarjeta llega a decir «No está descargado.», queda anotado.
+      await page.addInitScript(() => {
+        const g = globalThis as unknown as { __dijoNoDescargado: boolean };
+        g.__dijoNoDescargado = false;
+        new MutationObserver(() => {
+          const t = document.querySelector('[data-prueba="tarjeta-modelo"]');
+          if (t !== null && (t.textContent ?? '').includes('No está descargado.')) g.__dijoNoDescargado = true;
+        }).observe(document, { subtree: true, childList: true, characterData: true });
+      });
+      const corte = srv.peticiones().length;
+      await page.reload();
+      await expect(h1(page, TITULO.cargar)).toBeVisible();
+      // «Anonimizar» lo antes posible, aunque la comprobación de arranque no haya terminado.
+      await page.getByRole('tab', { name: 'Pegar texto' }).click();
+      await page.getByRole('textbox', { name: 'Texto del documento' }).fill(TEXTO_F10);
+      await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+      await expect(h1(page, TITULO.vista)).toBeVisible({ timeout: 30_000 });
+      // El detector guardado se usa: la banda nunca queda «descargando» ni dice que no está descargado. (Con los pesos sintéticos el
+      // motor no arranca y pasa a «no se pudo preparar», que dice que lo intentó con el guardado.)
+      await expect(banda(page)).toHaveAttribute('data-estado', /^(comprobando|en_curso|terminado|plan_b)$/);
+      await expect(banda(page)).not.toHaveAttribute('data-estado', /^(comprobando|en_curso)$/, { timeout: 60_000 });
+      await expect(banda(page)).not.toContainText('el detector no está descargado');
+      expect(delModelo(srv.peticiones().slice(corte)).filter((p) => !p.u.endsWith('/manifest.json')), 'no se volvió a descargar').toEqual([]);
+      expect(await page.evaluate(() => (globalThis as unknown as { __dijoNoDescargado: boolean }).__dijoNoDescargado), 'la tarjeta dijo «No está descargado» al recargar').toBe(false);
+      expect(obs.ajenas).toEqual([]);
+      expect(await obs.violaciones()).toEqual([]);
+    } finally {
+      await srv.parar();
+    }
+  });
+
   test('F10 @cero-red con ahorro de datos (saveData) «Anonimizar» no descarga: la vista previa avisa y pregunta; la descarga empieza solo con el clic y al terminar ofrece «Volver a analizar con el detector»', async ({ page }) => {
     const srv = await servir(D_OK);
     try {

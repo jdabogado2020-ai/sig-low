@@ -218,7 +218,11 @@ export function iniciarAnalisis(o: IniciarOpciones): void {
   const modeloListo = disponible && estadoModelo === 'listo';
   // F10 (v1.1.3): sin el detector, «Anonimizar» lo descarga en segundo plano y la vista previa sale de inmediato con reglas y lista.
   // Al terminar, el detector corre sobre este documento. No con ahorro de datos (se pregunta en la vista previa) ni si no se puede.
-  const descargar = o.usarModelo && !modeloListo && disponible && ner !== null && !ahorroDeDatos() && !sinConexion() && DESCARGABLE.has(estadoModelo);
+  const puedeDescargar = !ahorroDeDatos() && !sinConexion();
+  // Si todavía se comprueba al arrancar si el detector ya está guardado, se espera esa comprobación (no se descarga de nuevo uno que
+  // ya está, ni se analiza sin él por llegar antes).
+  const comprobando = o.usarModelo && !modeloListo && ner !== null && puertos.modelo.comprobando?.() === true;
+  const descargar = comprobando || (o.usarModelo && !modeloListo && disponible && ner !== null && puedeDescargar && DESCARGABLE.has(estadoModelo));
   const conModelo = o.usarModelo && ner !== null && (modeloListo || descargar);
   fijarDocumento(o.doc);
   fijarRevision(null);
@@ -259,7 +263,7 @@ export function iniciarAnalisis(o: IniciarOpciones): void {
     if (m.kind === 'cancelado' || vista.cancelando) { volverAEntrada({ cancelado: true }); return; }
     const p = m.payload;
     if (m.kind !== 'resultado' || !esObjeto(p) || p.kind !== 'detectar' || !esObjeto(p.set)) { volverAEntrada({ error: 'ERROR_INTERNO' }); return; }
-    alTerminarReglas(s, o.doc, (p as unknown as Extract<DetectResult, { kind: 'detectar' }>).set, { conModelo, ner, usarModelo: o.usarModelo, descargar });
+    alTerminarReglas(s, o.doc, (p as unknown as Extract<DetectResult, { kind: 'detectar' }>).set, { conModelo, ner, usarModelo: o.usarModelo, descargar, puedeDescargar });
   });
   try {
     worker.postMessage({
@@ -285,7 +289,7 @@ function alMensaje(s: Sesion, data: unknown): void {
   if (espera !== undefined && (data.kind === 'resultado' || data.kind === 'error' || data.kind === 'cancelado')) espera(data);
 }
 
-interface DecisionModelo { conModelo: boolean; ner: NerPuerto | null; usarModelo: boolean; descargar?: boolean }
+interface DecisionModelo { conModelo: boolean; ner: NerPuerto | null; usarModelo: boolean; descargar?: boolean; puedeDescargar?: boolean }
 
 /**
  * D-24 (F3) · Todo aplicado de entrada: con el modelo terminado o en plan B, la revisión recibe `aplicar_propuesta` antes de llegar a
@@ -314,7 +318,7 @@ function alTerminarReglas(s: Sesion, doc: DocumentModel, set: DetectionSet, d: D
   actualizar({ phase: 'revision', error: null, modelRun: estado.modelo });
   ir('revision');
   if (d.conModelo && d.ner !== null && d.descargar === true) {
-    descargarYCorrer(s, doc, d.ner);
+    descargarYCorrer(s, doc, d.ner, d.puedeDescargar !== false);
   } else if (d.conModelo && d.ner !== null) {
     iniciarModelo(s, doc, d.ner);
   } else {
@@ -366,7 +370,12 @@ export function sinConexion(): boolean {
 }
 
 /** F10: espera a que el detector quede listo (true) o a que la descarga termine sin él (false). La descarga es la de F0. */
-function esperarDetector(): Promise<boolean> {
+async function esperarDetector(puedeDescargar: boolean): Promise<boolean> {
+  // Primero, lo que ya está guardado (la comprobación de arranque): un detector descargado antes no se vuelve a descargar.
+  await puertos.modelo.esperarComprobacion?.();
+  const ya = obtener().model.state;
+  if (ya === 'listo') return true;
+  if (!puedeDescargar || !puertos.modelo.disponible() || !DESCARGABLE.has(ya)) return false;
   void puertos.modelo.descargar().catch(() => undefined);
   return new Promise((resolver) => {
     let quitar: (() => void) | null = null;
@@ -388,9 +397,9 @@ function esperarDetector(): Promise<boolean> {
  * por las mismas ventanas (`incorporar_modelo` y la propuesta), sin deshacer lo que el abogado ya corrigió. Si la descarga falla, el
  * análisis sigue con reglas y lista (plan B «no descargado»); el aviso y «Reintentar» son los de F0.
  */
-function descargarYCorrer(s: Sesion, doc: DocumentModel, ner: NerPuerto): void {
+function descargarYCorrer(s: Sesion, doc: DocumentModel, ner: NerPuerto, puedeDescargar: boolean): void {
   cambiarVista({ descargaModelo: true });
-  void esperarDetector().then((listo) => {
+  void esperarDetector(puedeDescargar).then((listo) => {
     if (sesion !== s) return;
     const vigente = obtenerRevision();
     const esperando = vigente !== null && vigente.docId === doc.id && vigente.modelo.kind === 'en_curso';

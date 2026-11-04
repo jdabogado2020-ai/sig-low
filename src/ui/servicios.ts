@@ -47,6 +47,10 @@ export interface BovedaPuerto {
 
 export interface EstadoModeloPuerto { state: ModelUiState; variant?: ModelVariant; mb: number | null }
 export interface ModeloPuerto {
+  /** F10: todavía se está comprobando al arrancar si el detector ya está guardado (sin esto, se da por comprobado). */
+  comprobando?(): boolean;
+  /** F10: espera esa comprobación (manifiestos y caché del modelo). */
+  esperarComprobacion?(): Promise<void>;
   disponible(): boolean;
   estado(): EstadoModeloPuerto;
   descargar(): Promise<void>;
