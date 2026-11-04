@@ -41,7 +41,8 @@ export function registrarBusqueda(abrir: () => void): () => void {
   return () => { if (busqueda === abrir) busqueda = null; };
 }
 
-const PANTALLAS_CON_BUSQUEDA = new Set(['revision', 'listo', 'reinsercion']);
+// F3: «Revisar dato por dato» (`detalle`) es la Revisión de la v1.0, con su búsqueda propia (V-29).
+const PANTALLAS_CON_BUSQUEDA = new Set(['revision', 'detalle', 'listo', 'reinsercion']);
 
 function dentroDeZona(e: Event): boolean {
   const o = e.target;

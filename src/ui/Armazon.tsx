@@ -169,7 +169,8 @@ function BandaActualizacion({ alExportar }: { alExportar: () => void }) {
   const [pidiendo, setPidiendo] = useState(false);
   const [otrasPestanas, setOtrasPestanas] = useState(false);
   if (oculta) return null;
-  const respaldada = asunto === null || asunto.backedUpRevision === asunto.tableRevision;
+  // D-23: el caso efímero no tiene una llave que el abogado haya pedido guardar; basta aceptar M-105 si hay trabajo en curso.
+  const respaldada = asunto === null || asunto.efimero === true || asunto.backedUpRevision === asunto.tableRevision;
   const enCurso = asunto !== null && phase !== 'vacio';
   const puede = respaldada && (!enCurso || acepta) && !pidiendo;
   // SKIP_WAITING y recarga (8.2.10). El SW lo rechaza con otra pestaña de Sig-Low abierta (B-11): entonces no se recarga
