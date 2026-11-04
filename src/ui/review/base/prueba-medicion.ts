@@ -12,7 +12,7 @@ import type {
 } from '../../../core/types.ts';
 import { ir } from '../../estado.ts';
 import { obtenerListaDelCaso, obtenerTabla } from '../../sesion.ts';
-import { estadoDeConjunto } from '../../analisis.ts';
+import { conPropuesta, estadoDeConjunto } from '../../analisis.ts';
 import { fijarDocumento, fijarRevision, obtenerRevision } from '../../documento.ts';
 import { obtenerInstantanea } from './almacen.ts';
 
@@ -97,7 +97,9 @@ async function incorporarVentana(textos: readonly string[], ventana: number, ven
   const r = incorporarModelo(actual, ventana, ventanasTotales, d, { table: tableIndexOf(obtenerTabla() ?? emptyTable('asu_' as AsuntoId)),
     caseList: obtenerListaDelCaso(), doc, ids: cryptoIds });
   if (!r.ok) return -1;
-  if (r.state !== actual) fijarRevision(r.state);
+  // F8: como ponerRevision (analisis.ts), con el modelo terminado la vista previa recibe la propuesta (D-24).
+  const final = r.state.modelo.kind === 'en_curso' ? r.state : conPropuesta(r.state, doc, cryptoIds);
+  if (final !== actual) fijarRevision(final);
   return d.detections.length;
 }
 

@@ -584,6 +584,39 @@ describe('7.13.6 · decisiones del revisor y entidades distintas', () => {
     const otra = await check(scenario([['cuerpo', text, 'Cuerpo del documento']], [...base, { ...sinCaso, key: 'PER:rojas', src: 'modelo' }], ANA));
     expect(hitsOf(otra).map((x) => x.split('|').slice(1).join('|'))).toEqual(['variante|Rojas']);
   });
+
+  // F8 (v1.1.1) · En la v1.1 la búsqueda corre sola y la propuesta oculta lo que halla: un rechazo es lo que el abogado decidió
+  // mostrar («Mostrar el dato original aquí»), no un rechazo por error. Con `rechazosDelRevisor` nada dentro del tramo rechazado vuelve.
+  const conRevisor = async (s: Scenario): Promise<{ out: RenderedOutput; run: ResidueRun }> => {
+    const out = render(s.doc, s.state);
+    const ctx: Parameters<typeof runResidueCheck>[3] & ResidueCtxExtra = { table: EMPTY, caseList: s.caseList, rules: registry, detect: makeDetect(s.caseList), rechazosDelRevisor: true };
+    return { out, run: await runResidueCheck(s.doc, s.state, out, ctx) };
+  };
+
+  it('F8 · rechazosDelRevisor: el rechazo sin motivo de una mención con otra oculta ya no vuelve como impacto ni como detección nueva', async () => {
+    const r = await conRevisor(scenario([HEADER, BODY], marks(undefined), PILAR));
+    expect(r.run.result.hits).toEqual([]);
+    expect(r.run.result.newDetections).toBe(0);
+    expect(r.run.nuevas).toEqual([]);
+  });
+
+  it('F8 · rechazosDelRevisor: tampoco vuelve lo que otra entidad deja dentro del tramo rechazado; fuera de él, sí', async () => {
+    const text = 'Ana Ficticia Rojas, C.C. 41.000.001. ANA FICTICIA declaró. La señora Rojas firmó. Rojas (otra persona).';
+    const base: Mark[] = [
+      { p: 0, sub: 'Ana Ficticia Rojas', type: 'PERSONA', key: `LISTA:${CAS}`, role: 'DEMANDANTE', src: 'lista', cas: CAS },
+      { p: 0, sub: '41.000.001', type: 'CC', key: 'CC:41000001' },
+    ];
+    const otra: Mark = { p: 0, sub: 'Rojas', occ: 2, type: 'PERSONA', key: 'PER:rojas', src: 'modelo', decide: { rechazar: undefined } };
+    const s = scenario([['cuerpo', text, 'Cuerpo del documento']], [...base, otra], ANA);
+    const antes = (await check(s)).run.result.hits.map((h) => h.mode);
+    const r = await conRevisor(s);
+    const got = hitsOf(r).map((x) => x.split('|').slice(1).join('|'));
+    // «ANA FICTICIA» y «señora Rojas» siguen a la vista sin decisión: siguen siendo impactos. El «Rojas» mostrado, no.
+    expect(got).toEqual(['variante|ANA FICTICIA', 'variante|señora Rojas']);
+    expect(antes.length).toBeGreaterThanOrEqual(got.length);
+    const rojas = r.out.sections[0]?.text.indexOf('Rojas (otra persona)') ?? -1;
+    expect(r.run.nuevas.some((c) => c.start <= rojas && rojas < c.end)).toBe(false);
+  });
 });
 
 // =============================================================================================================

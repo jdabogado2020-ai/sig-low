@@ -5,7 +5,7 @@
 import { emptyTable, tableIndexOf } from '../../core/entities.ts';
 import { createRuleRegistry } from '../../core/pipeline.ts';
 import { render } from '../../core/render.ts';
-import { runResidueCheck } from '../../core/residue.ts';
+import { runResidueCheck, type ResidueCtxExtra } from '../../core/residue.ts';
 import { contarPendientes } from '../../core/review/puerta.ts';
 import type { AsuntoId, MappingTable, RenderedOutput, ResidueHit, ReviewState } from '../../core/types.ts';
 import { detectarEnSalida, fechaDeReferencia } from '../analisis.ts';
@@ -66,10 +66,13 @@ export async function buscarResiduos(): Promise<void> {
     const out = render(doc, state);
     const tabla = obtenerTabla();
     const tablaIdx = tableIndexOf(tabla ?? emptyTable('asu_' as AsuntoId));
-    const run = await runResidueCheck(doc, state, out, {
+    const ctx: Parameters<typeof runResidueCheck>[3] & ResidueCtxExtra = {
       table: tablaIdx, caseList: obtenerListaDelCaso(), rules: createRuleRegistry(Number(fechaDeReferencia().slice(0, 4))),
       detect: detectarEnSalida, originals: originalesDelAsunto(tabla),
-    });
+      // F8 (v1.1.1): lo que el abogado decidió mostrar no vuelve a ocultarse solo (la búsqueda corre sola y oculta lo que halla).
+      rechazosDelRevisor: true,
+    };
+    const run = await runResidueCheck(doc, state, out, ctx);
     const vigente = obtenerRevision();
     if (vigente === null || vigente.docId !== state.docId) { actualizarListo({ buscando: false }); return; }   // se vació el estado (INV-G09)
     if (vigente.revision !== state.revision) { actualizarListo({ buscando: false }); return; }   // el efecto la lanza de nuevo

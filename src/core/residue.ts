@@ -21,6 +21,14 @@ export interface ResidueCtxExtra {
    * tablas de R-RES-01 y R-RES-02, que miden las pasadas 1 y 2 a solas, como el `detect` vacío apaga la pasada 3.
    */
   formasDerivadas?: boolean;
+  /**
+   * F8 (v1.1.1) · true: todo rechazo es una decisión del abogado («Mostrar el dato original aquí» de la vista previa o un rechazo de
+   * la revisión dato por dato), no un rechazo por error. Lo que queda a la vista dentro del tramo de una detección rechazada no es
+   * residuo ni detección nueva, sea de la entidad que sea y con o sin motivo. Sin esto, en la v1.1 la búsqueda automática encontraba
+   * otra vez el dato que el abogado acababa de mostrar y la propuesta lo volvía a ocultar (D-24). Por defecto apagado: la v1.0, la
+   * medición y T-RS-02, T-RS-10 y T-RS-13 conservan el rechazo «por error» de 7.13.6.
+   */
+  rechazosDelRevisor?: boolean;
 }
 
 type Ctx = Parameters<RunResidueCheckFn>[3];
@@ -598,6 +606,9 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
   const rejected = detections.filter((d) => d.status === 'rechazada');
   /** El tramo del acierto es el de la detección rechazada o está dentro de él (las variantes de un nombre rechazado caen dentro). */
   const insideRejected = (r: Detection, partId: PartId, ps: number, pe: number): boolean => r.partId === partId && r.start <= ps && pe <= r.end;
+  // F8 · Con `rechazosDelRevisor`, nada de lo que queda dentro del tramo de una detección rechazada vuelve (ver ResidueCtxExtra).
+  const dentroDeRechazo = (partId: PartId, ps: number, pe: number): boolean =>
+    ctx.rechazosDelRevisor === true && rejected.some((r) => insideRejected(r, partId, ps, pe));
   const keyOfEntity = (r: Detection): string => state.entities[r.entityId]?.canonicalKey ?? r.canonicalKey;
   // PB-4-r1 · Un rechazo que contiene el acierto solo lo excluye si todo lo que rechazó es nombre de esa entidad: rechazar
   // «Ana Ficticia Rojas» decide también sobre «Ana Ficticia»; rechazar «Sergio primero» (límites de más) no dice nada de «Sergio».
@@ -641,7 +652,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
     const excluded = rejected.some((r) => (t !== undefined ? rejectionCovers(r, t.entity, sv.cand.partId, loc.partStart, loc.partEnd)
       : insideRejected(r, sv.cand.partId, loc.partStart, loc.partEnd) && (keyOfEntity(r) === sv.cand.canonicalKey || r.canonicalKey === sv.cand.canonicalKey
         || deLaAmbigua(r, sv.cand.caseEntityId))));
-    if (excluded) return false;
+    if (excluded || dentroDeRechazo(sv.cand.partId, loc.partStart, loc.partEnd)) return false;
     kept.push(sv);
     if (t !== undefined) {
       push({ si: sv.si, start: sv.start, end: sv.end, target: t, mode: 'variante', loc, conf: sv.cand.confidence, p3: true,
@@ -663,7 +674,8 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
   const pushDecided = (si: number, s: number, e: number, t: Target, loc: Loc, conf: Confidence, cls?: VariantClass): void => {
     if (loc.kind === 'marker') return;
     const partId = (secs[si] as Sec).section.partId;
-    if (loc.kind === 'copy' && rejected.some((r) => rejectionCovers(r, t.entity, partId, loc.partStart, loc.partEnd))) return;
+    if (loc.kind === 'copy' && (dentroDeRechazo(partId, loc.partStart, loc.partEnd)
+      || rejected.some((r) => rejectionCovers(r, t.entity, partId, loc.partStart, loc.partEnd)))) return;
     push({ si, start: s, end: e, target: t, mode: 'variante', loc, conf, p3: true, derived: true, ...(cls !== undefined ? { cls } : {}) });
   };
   for (const sec of derivadas ? secs : []) {
@@ -726,6 +738,7 @@ async function run(doc: DocumentModel, state: ReviewState, out: RenderedOutput, 
   const live: RawHit[] = [];
   for (const h of raw) {
     if (h.loc.kind === 'marker') continue;
+    if (h.loc.kind === 'copy' && dentroDeRechazo((secs[h.si] as Sec).section.partId, h.loc.partStart, h.loc.partEnd)) continue;
     if (h.loc.kind === 'copy' && h.p3 !== true) {
       const loc = h.loc;
       const partId = (secs[h.si] as Sec).section.partId;
