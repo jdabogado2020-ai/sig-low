@@ -1313,7 +1313,10 @@ testMedicion.describe('Revisión II (PC-4)', () => {
     let vistoBandera = false;
     for (let i = 0; i < 10 && !vistoBandera; i++) {
       await page.getByRole('button', { name: 'Siguiente por revisar' }).click();
-      vistoBandera = await page.evaluate(() => (document.activeElement as HTMLElement | null)?.hasAttribute('data-bandera') ?? false);
+      // El foco se mueve después de pintar: se lee pasados dos cuadros (con el equipo cargado, leerlo enseguida daba falsos negativos).
+      vistoBandera = await page.evaluate(() => new Promise<boolean>((listo) => {
+        requestAnimationFrame(() => { requestAnimationFrame(() => { listo((document.activeElement as HTMLElement | null)?.hasAttribute('data-bandera') ?? false); }); });
+      }));
     }
     expect(vistoBandera).toBe(true);
     await expect(ban).toHaveAttribute('aria-selected', 'true');
