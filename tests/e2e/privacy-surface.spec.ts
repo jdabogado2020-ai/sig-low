@@ -551,7 +551,9 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     await page.mouse.down();
     await page.mouse.move(caja.x + 220, caja.y + caja.height / 2 + 160, { steps: 8 });
     await page.mouse.up();
-    // El menú contextual sobre el título, con la selección que toca la vista previa.
+    // El menú contextual sobre el título, con la selección que toca la vista previa (el arrastre bloqueado la deshizo: otra vez Ctrl+A).
+    await page.keyboard.press('Control+A');
+    expect(await page.evaluate(() => getSelection()?.isCollapsed), 'selección de toda la página').toBe(false);
     await titulo.evaluate((el) => { el.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })); });
     const registro = await page.evaluate(() => (globalThis as unknown as { __a31: string[] }).__a31);
     expect(registro.some((x) => x.startsWith('dragstart:')), 'hubo un arrastre').toBe(true);
