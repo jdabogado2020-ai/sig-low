@@ -14,9 +14,9 @@ import { ATRIBUTO_ZONA_SOLTAR } from './globales.ts';
 import { documentoDeTextoPegado, leerContenido, LecturaCancelada, partesAnalizables } from './lectura.ts';
 import { mensajeDeCodigo, ROTULOS, t, X, type MessageId } from './mensajes.ts';
 import { E } from './mensajes-entrada.ts';
-import { iniciarAnalisis } from './analisis.ts';
+import { ahorroDeDatos, iniciarAnalisis } from './analisis.ts';
 import { obtenerTabla } from './sesion.ts';
-import { codigoDeError } from './servicios.ts';
+import { codigoDeError, puertos } from './servicios.ts';
 
 const ETIQUETA_METADATO: Readonly<Record<MetadataCategory, MessageId>> = {
   propiedades_documento: 'M-401', propiedades_aplicacion: 'M-402', propiedades_personalizadas: 'M-403', xml_personalizado: 'M-404',
@@ -294,23 +294,34 @@ export function CargaDocumento({ detector }: { detector?: ComponentChildren } = 
         <button type="button" disabled={!puedeAnalizar} aria-describedby={analizable ? undefined : 'ayuda-analizar'} onClick={analizar}>{t('M-944')}</button>
       </div>
       {!analizable ? <p id="ayuda-analizar" class="ayuda">{t(E.ayudaAnalizar)}</p> : null}
+      {/* F10 (v1.1.3): «Anonimizar» descarga el detector la primera vez; se dice antes del clic. */}
+      {seDescargaraAlAnonimizar(shell.model.state, b.usarModelo)
+        ? <p class="ayuda" data-prueba="nota-descarga">{tf('M-2338', { mb: puertos.modelo.estado().mb ?? 626 })}</p>
+        : null}
     </section>
   );
 }
 
 /** Casilla «Usar el detector de nombres en este documento» (en la tarjeta del detector de Cargar, F8). */
+/** F10 (v1.1.3): ¿«Anonimizar» empezará la descarga del detector? (Disponible, no descargado o con fallo, sin ahorro de datos.) */
+export function seDescargaraAlAnonimizar(estado: string, usarModelo: boolean): boolean {
+  return usarModelo && (estado === 'no_descargado' || estado === 'fallo') && puertos.modelo.disponible() && !ahorroDeDatos();
+}
+
 export function CasillaModelo() {
   const b = useBorrador();
   const shell = useShell();
   const modeloListo = shell.model.state === 'listo';
+  // F10: sin el detector descargado la casilla también se puede usar: marcada, «Anonimizar» lo descarga; desmarcada, no.
+  const usable = modeloListo || puertos.modelo.disponible();
   return (
     <div class="campo-modelo">
       <Casilla
         etiqueta={tf('M-2314')}
-        marcada={b.usarModelo && modeloListo}
+        marcada={b.usarModelo && usable}
         onCambio={(v) => { actualizarBorrador({ usarModelo: v }); }}
-        deshabilitado={!modeloListo}
-        ayuda={modeloListo ? t(E.ayudaModelo) : t('M-51')}
+        deshabilitado={!usable}
+        ayuda={modeloListo ? t(E.ayudaModelo) : usable ? tf('M-2340') : t('M-51')}
       />
     </div>
   );

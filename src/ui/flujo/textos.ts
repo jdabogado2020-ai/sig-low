@@ -126,6 +126,23 @@ const TEXTOS = {
   'M-2318': 'Agregue un perfil nuevo y no instale extensiones en él.',
   'M-2324': 'Abra Sig-Low en ese perfil. Una ventana de invitado también sirve.',
   'M-2325': 'Ocultar los pasos',
+  // F10 (v1.1.3) · El detector se descarga al pulsar «Anonimizar».
+  'M-2326': 'Descargando el detector de nombres',
+  'M-2327': '{hecho} de {mb} MB ({pct} %)',
+  'M-2328': 'Faltan unos {n} minutos.',
+  'M-2329': 'Falta menos de un minuto.',
+  'M-2330': 'Falta cerca de un minuto.',
+  'M-2331': 'La vista previa ya muestra lo que encontraron las reglas y su lista de nombres. Cuando termine la descarga, el detector revisará este documento y agregará lo que encuentre, sin cambiar lo que usted ya corrigió.',
+  'M-2332': 'Descargar sin esperar al detector',
+  'M-2333': 'Si descarga sin esperar, los nombres que no estén en su lista solo se buscan con las reglas: revise los nombres con más cuidado. El detector se sigue descargando para el próximo documento.',
+  'M-2334': 'Esperar al detector',
+  'M-2335': 'El detector de nombres agregó {n} datos.',
+  'M-2336': 'El detector de nombres agregó 1 dato.',
+  'M-2337': 'El detector de nombres no encontró datos nuevos.',
+  'M-2338': 'La primera vez se descarga el detector de nombres ({mb} MB, una sola vez).',
+  'M-2339': 'Su conexión está en modo de ahorro de datos: el detector de nombres no se descarga solo. Puede descargarlo aquí.',
+  'M-2340': 'Al pulsar «Anonimizar», el detector se descarga y revisa este documento.',
+  'M-2341': 'Midiendo la velocidad de la descarga…',
 } as const satisfies Record<string, string>;
 
 registrarMensajes(TEXTOS);

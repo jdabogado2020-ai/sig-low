@@ -3,11 +3,13 @@
 // `fusionar` + `incorporar_modelo`, el plan B por fallo y por «Seguir sin el modelo», y que INV-G09 termina el worker. Datos ficticios.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDetectHandler } from '../../src/core/pipeline';
-import type { NerSpan, PartId } from '../../src/core/types';
+import type { AsuntoId, Detection, NerSpan, PartId, ReviewState } from '../../src/core/types';
+import { applyReviewAction, emptyTable, tableIndexOf } from '../../src/core/entities';
+import { minutosRestantes, textoAgregados, textoRestante } from '../../src/ui/flujo/DescargaDetector';
 import type { WorkerIo } from '../../src/io/io-client';
 import { iniciarAnalisis, obtenerVistaAnalisis, seguirSinModelo, cancelarAnalisis, estadoDeConjunto, fechaDeReferencia } from '../../src/ui/analisis';
-import { obtenerBorrador, obtenerDocumento, obtenerRevision } from '../../src/ui/documento';
-import { obtener, reiniciarEstado } from '../../src/ui/estado';
+import { fijarRevision, obtenerBorrador, obtenerDocumento, obtenerRevision } from '../../src/ui/documento';
+import { actualizar, obtener, reiniciarEstado, type ShellState } from '../../src/ui/estado';
 import { documentoDeTextoPegado, detectarFormato, extensionDe } from '../../src/ui/lectura';
 import { instalarPuertos, puertos, type NerHooks, type NerPuerto } from '../../src/ui/servicios';
 import { vaciarEstadoM } from '../../src/ui/sesion';
@@ -189,6 +191,145 @@ describe('análisis en la interfaz', () => {
     expect(obtener().error).toEqual({ code: 'MEMORIA', context: 'procesando' });
     expect(JSON.stringify(obtener().error)).not.toContain('Ficticia');
     expect(w.terminado).toBe(true);
+  });
+});
+
+// ===== F10 (v1.1.3) · el detector se descarga al pulsar «Anonimizar» =====
+
+interface ModeloDescargable {
+  disponible(): boolean; estado(): { state: ShellState['model']['state']; mb: number }; descargar(): Promise<void>; cancelar(): void; quitar(): Promise<void>;
+  llamadas: number; terminar(ok: boolean): void;
+}
+/** Puerto `modelo` que no está descargado: `descargar` pasa a «descargando» y espera a `terminar` (listo o fallo), como el de F0. */
+function modeloSinDescargar(): ModeloDescargable {
+  let estado: ShellState['model']['state'] = 'no_descargado';
+  let fin: (() => void) | null = null;
+  const m: ModeloDescargable = {
+    llamadas: 0,
+    disponible: () => true,
+    estado: () => ({ state: estado, mb: 626 }),
+    descargar() {
+      m.llamadas++;
+      estado = 'descargando';
+      actualizar({ model: { state: 'descargando', doneBytes: 0, totalBytes: 626_000_000 } });
+      return new Promise<void>((ok) => { fin = ok; });
+    },
+    cancelar: () => undefined,
+    quitar: () => Promise.resolve(),
+    terminar(ok) {
+      estado = ok ? 'listo' : 'fallo';
+      actualizar({ model: ok ? { state: 'listo', variant: 'principal' } : { state: 'fallo', motivo: 'red' } });
+      fin?.();
+    },
+  };
+  return m;
+}
+
+describe('F10 descarga del detector al anonimizar', () => {
+  const original = { ...puertos };
+  beforeEach(() => { reiniciarEstado(); });
+  afterEach(() => {
+    vaciarEstadoM();
+    instalarPuertos(original);
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('sin el detector: la vista previa sale con reglas y lista mientras se descarga; al terminar corre sobre el documento, suma lo suyo y no deshace lo corregido', async () => {
+    const modelo = modeloSinDescargar();
+    const ner = nerFalso();
+    instalarPuertos({ modelo, ner });
+    const doc = documentoDeTextoPegado(TEXTO, 'Documento 1');
+    const w = crearFalso();
+    iniciarAnalisis({ doc, usarModelo: true, crearWorker: () => w });
+    expect(obtenerVistaAnalisis().conModelo).toBe(true);
+    await esperar(() => obtener().screen === 'revision');
+    // Vista previa de inmediato, con el modelo «en curso» (la puerta sigue cerrada por MODELO_EN_CURSO) y la descarga empezada.
+    expect(obtenerRevision()?.modelo.kind).toBe('en_curso');
+    expect(modelo.llamadas).toBe(1);
+    expect(obtenerVistaAnalisis().descargaModelo).toBe(true);
+    expect(ner.hooks).toBeNull();
+    // El abogado corrige mientras tanto: muestra un dato.
+    const r0 = obtenerRevision() as ReviewState;
+    const det = Object.values(r0.detections).find((d) => d.type === 'CC') as Detection;
+    const out = applyReviewAction(r0, { kind: 'rechazar', detectionId: det.id }, { table: tableIndexOf(emptyTable('asu_' as AsuntoId)), caseList: [], doc });
+    if (!out.ok) throw new Error(out.code);
+    fijarRevision(out.state);
+    // Termina la descarga: el detector arranca sobre este documento.
+    modelo.terminar(true);
+    await esperar(() => ner.hooks !== null);
+    expect(obtenerVistaAnalisis().descargaModelo).toBe(false);
+    const parte = doc.parts[0]?.id as PartId;
+    ner.hooks?.alTotal(1, 0);
+    // «La señora Ana Ficticia Rojas»: el detector encuentra a la persona (aquí, una que no está en ninguna lista).
+    const ini = TEXTO.indexOf('Ana Ficticia Rojas');
+    ner.hooks?.alVentana({ ventana: 1, ventanasTotales: 1, ner: { [parte]: [{ start: ini, end: ini + 'Ana Ficticia Rojas'.length, label: 'PER', score: 0.95 }] }, engineId: 'gliner-x-large' });
+    await esperar(() => obtenerRevision()?.modelo.kind === 'terminado');
+    const final = obtenerRevision() as ReviewState;
+    expect(Object.values(final.detections).some((d) => d.source === 'modelo')).toBe(true);
+    expect(textoAgregados(final)).toMatch(/^El detector de nombres agregó (1 dato|\d+ datos)\.$/);
+    // Lo que el abogado mostró sigue a la vista y, con el detector terminado, la propuesta quedó aplicada.
+    expect(final.detections[det.id]?.status).toBe('rechazada');
+    expect(Object.values(final.detections).some((d) => d.status === 'pendiente')).toBe(false);
+  });
+
+  it('si la descarga falla, la vista previa sigue con reglas y lista (plan B «no descargado») y el detector no arranca', async () => {
+    const modelo = modeloSinDescargar();
+    const ner = nerFalso();
+    instalarPuertos({ modelo, ner });
+    iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 1'), usarModelo: true, crearWorker: crearFalso });
+    await esperar(() => obtener().screen === 'revision' && obtenerVistaAnalisis().descargaModelo);
+    modelo.terminar(false);
+    await esperar(() => obtenerRevision()?.modelo.kind === 'plan_b');
+    expect(obtenerRevision()?.modelo).toMatchObject({ kind: 'plan_b', causa: 'no_descargado' });
+    expect(obtener().model.state).toBe('fallo');
+    expect(ner.hooks).toBeNull();
+    expect(Object.values(obtenerRevision()?.detections ?? {}).every((d) => d.status === 'aceptada')).toBe(true);
+  });
+
+  it('«Descargar sin esperar al detector»: plan B «cancelado» enseguida; la descarga sigue y, al terminar, no toca ese documento', async () => {
+    const modelo = modeloSinDescargar();
+    const ner = nerFalso();
+    instalarPuertos({ modelo, ner });
+    iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 1'), usarModelo: true, crearWorker: crearFalso });
+    await esperar(() => obtener().screen === 'revision' && obtenerVistaAnalisis().descargaModelo);
+    seguirSinModelo();
+    await esperar(() => obtenerRevision()?.modelo.kind === 'plan_b');
+    expect(obtenerRevision()?.modelo).toMatchObject({ kind: 'plan_b', causa: 'cancelado' });
+    expect(obtenerVistaAnalisis().descargaModelo).toBe(false);
+    modelo.terminar(true);
+    await new Promise((r) => setTimeout(r, 20));
+    expect(obtener().model.state).toBe('listo');   // queda para el próximo documento
+    expect(ner.hooks).toBeNull();
+    expect(obtenerRevision()?.modelo.kind).toBe('plan_b');
+  });
+
+  it('con ahorro de datos (saveData) o con la casilla desmarcada, «Anonimizar» no descarga nada', async () => {
+    const modelo = modeloSinDescargar();
+    instalarPuertos({ modelo, ner: nerFalso() });
+    vi.stubGlobal('navigator', { connection: { saveData: true } });
+    iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 1'), usarModelo: true, crearWorker: crearFalso });
+    await esperar(() => obtener().screen === 'revision');
+    expect(obtenerRevision()?.modelo).toEqual({ kind: 'plan_b', causa: 'no_descargado' });
+    expect(modelo.llamadas).toBe(0);
+    vi.unstubAllGlobals();
+    iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 2'), usarModelo: false, crearWorker: crearFalso });
+    await esperar(() => obtener().screen === 'revision' && obtenerRevision()?.modelo.kind === 'plan_b');
+    expect(obtenerRevision()?.modelo).toEqual({ kind: 'plan_b', causa: 'desactivado' });
+    expect(modelo.llamadas).toBe(0);
+  });
+});
+
+describe('F10 tiempo estimado de la descarga', () => {
+  it('estima con la velocidad medida desde la primera muestra y no antes de 3 s', () => {
+    expect(minutosRestantes({ t: 0, b: 0 }, 2000, 10_000_000, 626_000_000)).toBeNull();
+    // 60 MB en 60 s = 1 MB/s; faltan 566 MB → unos 9,4 minutos.
+    const min = minutosRestantes({ t: 0, b: 0 }, 60_000, 60_000_000, 626_000_000) as number;
+    expect(min).toBeCloseTo(566 / 60, 1);
+    expect(textoRestante(min)).toBe('Faltan unos 9 minutos.');
+    expect(textoRestante(0.5)).toBe('Falta menos de un minuto.');
+    expect(textoRestante(1.2)).toBe('Falta cerca de un minuto.');
+    expect(textoRestante(null)).toBe('Midiendo la velocidad de la descarga…');
   });
 });
 

@@ -12,6 +12,7 @@ import { obtenerVistaAnalisis, useAnalisis } from '../../analisis.ts';
 import { useRevisionUi } from '../base/almacen.ts';
 import { useBanda } from './banda.ts';
 import { tp } from './textos.ts';
+import { BandaDescarga, textoAgregados } from '../../flujo/DescargaDetector.tsx';
 
 /** Texto del plan B declarado (M-172; M-171 si se acabó la memoria con el avance conocido; M-169 si no cupo ni empezó). */
 export function textoDePlanB(m: Extract<ModelProgress, { kind: 'plan_b' }>): string {
@@ -37,6 +38,8 @@ export function Banda() {
     return (
       <section class="banda banda-plegada" data-prueba="banda-modelo" data-estado="terminado" aria-label={tp('M-1825')}>
         <p role="status">{t('M-167')}{m.respaldo ? ` ${t('M-170')}` : ''}</p>
+        {/* F10 (v1.1.3): lo que sumó el detector a la vista previa. */}
+        <p data-prueba="datos-agregados">{textoAgregados(state)}</p>
       </section>
     );
   }
@@ -51,6 +54,8 @@ export function Banda() {
     );
   }
 
+  // F10 (v1.1.3): «Anonimizar» empezó la descarga del detector; corre sobre este documento al terminar.
+  if (analisis.descargaModelo) return <BandaDescarga />;
   const total = m.ventanasTotales;
   const k = Math.min(m.ventanas + 1, Math.max(1, total));
   const avance = total > 0 ? t('M-165', { k, n: total }) : tp('M-1830');

@@ -16,7 +16,7 @@ import type {
 import type { WorkerIo } from '../io/io-client.ts';
 import { renovarActividad } from './bloqueo.ts';
 import { actualizarBorrador, fijarDocumento, fijarRevision, obtenerDocumento, obtenerRevision, vaciarDocumento } from './documento.ts';
-import { actualizar, ir } from './estado.ts';
+import { actualizar, ir, obtener, suscribir } from './estado.ts';
 import { obtenerListaDelCaso, obtenerTabla, registrarLimpieza } from './sesion.ts';
 import { obtenerListo, reiniciarEntrada } from './listo/almacen.ts';
 import { puertos, type NerPuerto } from './servicios.ts';
@@ -34,6 +34,8 @@ export interface VistaAnalisis {
   modelo: { ventanasTotales: number; calentamientoMs: number } | null;
   /** El modelo correrá en segundo plano. */
   conModelo: boolean;
+  /** F10 (v1.1.3): el detector se está descargando para este documento; al terminar, corre sobre él. */
+  descargaModelo: boolean;
 }
 
 /** Tiempo para que el worker confirme una cancelación antes de terminarlo (6.11.6). */
@@ -46,7 +48,7 @@ const etapasIniciales = (conModelo: boolean): Etapa[] => ORDEN_ETAPAS.map((etapa
   total: etapa === 'lectura' ? 1 : 0,
   unidad: 'partes',
 }));
-const vistaInicial = (): VistaAnalisis => ({ activo: false, etapas: etapasIniciales(false), cancelando: false, estuvoOculta: false, modelo: null, conModelo: false });
+const vistaInicial = (): VistaAnalisis => ({ activo: false, etapas: etapasIniciales(false), cancelando: false, estuvoOculta: false, modelo: null, conModelo: false, descargaModelo: false });
 
 let vista: VistaAnalisis = vistaInicial();
 const oyentes = new Set<() => void>();
@@ -211,14 +213,19 @@ export function iniciarAnalisis(o: IniciarOpciones): void {
   liberarSesion();
   const ids = o.ids ?? cryptoIds;
   const ner = o.ner === undefined ? puertos.ner : o.ner;
-  const modeloListo = puertos.modelo.disponible() && puertos.modelo.estado().state === 'listo';
-  const conModelo = o.usarModelo && modeloListo && ner !== null;
+  const disponible = puertos.modelo.disponible();
+  const estadoModelo = puertos.modelo.estado().state;
+  const modeloListo = disponible && estadoModelo === 'listo';
+  // F10 (v1.1.3): sin el detector, «Anonimizar» lo descarga en segundo plano y la vista previa sale de inmediato con reglas y lista.
+  // Al terminar, el detector corre sobre este documento. No con ahorro de datos (se pregunta en la vista previa) ni si no se puede.
+  const descargar = o.usarModelo && !modeloListo && disponible && ner !== null && !ahorroDeDatos() && DESCARGABLE.has(estadoModelo);
+  const conModelo = o.usarModelo && ner !== null && (modeloListo || descargar);
   fijarDocumento(o.doc);
   fijarRevision(null);
   // Documento nuevo: ni la búsqueda, ni sus hallazgos, ni la confirmación del anterior valen para este.
   reiniciarEntrada(obtenerListo().compilacion);
   actualizarBorrador({ analisisCancelado: false, errorLectura: null });
-  vista = { activo: true, etapas: etapasIniciales(conModelo), cancelando: false, estuvoOculta: false, modelo: null, conModelo };
+  vista = { activo: true, etapas: etapasIniciales(conModelo), cancelando: false, estuvoOculta: false, modelo: null, conModelo, descargaModelo: false };
   actualizar({ phase: 'procesando', error: null, modelRun: null });
   ir('procesando');
   avisarYa();
@@ -252,7 +259,7 @@ export function iniciarAnalisis(o: IniciarOpciones): void {
     if (m.kind === 'cancelado' || vista.cancelando) { volverAEntrada({ cancelado: true }); return; }
     const p = m.payload;
     if (m.kind !== 'resultado' || !esObjeto(p) || p.kind !== 'detectar' || !esObjeto(p.set)) { volverAEntrada({ error: 'ERROR_INTERNO' }); return; }
-    alTerminarReglas(s, o.doc, (p as unknown as Extract<DetectResult, { kind: 'detectar' }>).set, { conModelo, ner, usarModelo: o.usarModelo });
+    alTerminarReglas(s, o.doc, (p as unknown as Extract<DetectResult, { kind: 'detectar' }>).set, { conModelo, ner, usarModelo: o.usarModelo, descargar });
   });
   try {
     worker.postMessage({
@@ -278,7 +285,7 @@ function alMensaje(s: Sesion, data: unknown): void {
   if (espera !== undefined && (data.kind === 'resultado' || data.kind === 'error' || data.kind === 'cancelado')) espera(data);
 }
 
-interface DecisionModelo { conModelo: boolean; ner: NerPuerto | null; usarModelo: boolean }
+interface DecisionModelo { conModelo: boolean; ner: NerPuerto | null; usarModelo: boolean; descargar?: boolean }
 
 /**
  * D-24 (F3) · Todo aplicado de entrada: con el modelo terminado o en plan B, la revisión recibe `aplicar_propuesta` antes de llegar a
@@ -306,7 +313,9 @@ function alTerminarReglas(s: Sesion, doc: DocumentModel, set: DetectionSet, d: D
   avisarYa();
   actualizar({ phase: 'revision', error: null, modelRun: estado.modelo });
   ir('revision');
-  if (d.conModelo && d.ner !== null) {
+  if (d.conModelo && d.ner !== null && d.descargar === true) {
+    descargarYCorrer(s, doc, d.ner);
+  } else if (d.conModelo && d.ner !== null) {
     iniciarModelo(s, doc, d.ner);
   } else {
     // Sin modelo no hay más ventanas: se cierra la fusión y se libera la sesión de `detect`.
@@ -339,6 +348,52 @@ async function cerrarEnPlanB(s: Sesion, doc: DocumentModel, causa: PlanBCause): 
     if (r.ok) ponerRevision(r.state);
   }
   await esperar(s, 'liberar', { sessionId: s.sessionId }).then(() => undefined, () => undefined);
+}
+
+/** F10: estados del detector desde los que «Anonimizar» puede descargarlo (`descargando`: ya va, se espera la misma descarga). */
+const DESCARGABLE: ReadonlySet<string> = new Set(['no_descargado', 'fallo', 'descargando', 'verificando']);
+
+/** F10: la conexión pide ahorrar datos (`navigator.connection.saveData`): el detector no se descarga solo. */
+export function ahorroDeDatos(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const c = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+  return c?.saveData === true;
+}
+
+/** F10: espera a que el detector quede listo (true) o a que la descarga termine sin él (false). La descarga es la de F0. */
+function esperarDetector(): Promise<boolean> {
+  void puertos.modelo.descargar().catch(() => undefined);
+  return new Promise((resolver) => {
+    let quitar: (() => void) | null = null;
+    const ver = (): boolean => {
+      const st = obtener().model.state;
+      if (st === 'descargando' || st === 'verificando') return false;
+      quitar?.();
+      resolver(st === 'listo');
+      return true;
+    };
+    if (!ver()) quitar = suscribir(() => { ver(); });
+  });
+}
+
+/**
+ * F10 (v1.1.3) · El detector se descarga después de pulsar «Anonimizar» (nunca al abrir la página). Mientras tanto el modelo está
+ * `en_curso`: la vista previa ya muestra reglas y lista, y la puerta sigue cerrada por MODELO_EN_CURSO salvo «Descargar sin esperar
+ * al detector» (`seguirSinModelo`). Si se terminó de descargar y el documento sigue abierto y esperando, el detector corre sobre él
+ * por las mismas ventanas (`incorporar_modelo` y la propuesta), sin deshacer lo que el abogado ya corrigió. Si la descarga falla, el
+ * análisis sigue con reglas y lista (plan B «no descargado»); el aviso y «Reintentar» son los de F0.
+ */
+function descargarYCorrer(s: Sesion, doc: DocumentModel, ner: NerPuerto): void {
+  cambiarVista({ descargaModelo: true });
+  void esperarDetector().then((listo) => {
+    if (sesion !== s) return;
+    const vigente = obtenerRevision();
+    const esperando = vigente !== null && vigente.docId === doc.id && vigente.modelo.kind === 'en_curso';
+    cambiarVista({ descargaModelo: false });
+    if (!esperando) return;   // «Descargar sin esperar»: la descarga queda para el próximo documento
+    if (listo) iniciarModelo(s, doc, ner);
+    else s.cola = s.cola.then(() => cerrarEnPlanB(s, doc, 'no_descargado')).then(() => undefined, () => undefined);
+  });
 }
 
 function iniciarModelo(s: Sesion, doc: DocumentModel, ner: NerPuerto): void {
@@ -395,6 +450,8 @@ export function seguirSinModelo(causa: PlanBCause = 'cancelado'): void {
   }
   s.ner?.cancelar();
   s.ner = null;
+  // F10: si el detector se estaba descargando, la descarga sigue en segundo plano (para el próximo documento).
+  if (vista.descargaModelo) cambiarVista({ descargaModelo: false });
   s.cola = s.cola.then(() => cerrarEnPlanB(s, doc, causa)).then(() => undefined, () => undefined);
 }
 

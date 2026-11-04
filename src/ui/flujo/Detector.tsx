@@ -1,12 +1,12 @@
 // F8 (v1.1.1) · El detector de nombres adicional (el modelo de apoyo) a la vista en el momento de anonimizar.
-// - En Cargar, junto a la zona de carga: tarjeta con su estado, para qué sirve, su tamaño, la descarga y la casilla para usarlo.
-//   Con el detector listo, la casilla viene marcada.
+// - En Cargar, junto a la zona de carga: tarjeta con su estado, para qué sirve, su tamaño y la casilla para usarlo. F10 (v1.1.3):
+//   sin botón de descarga aparte (la empieza «Anonimizar»; analisis.ts), salvo «Reintentar» tras un fallo.
 // - En la vista previa, si se analizó sin él: un aviso breve que no bloquea, con la descarga y, al terminar, «Volver a analizar
 //   con el detector».
 // La descarga es la de F0 (un solo aviso por fallo, «Reintentar», reanudación y respaldo por memoria o cuota) y siempre la empieza
 // el clic del abogado: nada aquí la lanza solo.
 import { useState } from 'preact/hooks';
-import { iniciarAnalisis } from '../analisis.ts';
+import { ahorroDeDatos, iniciarAnalisis } from '../analisis.ts';
 import { actualizarBorrador, obtenerDocumento } from '../documento.ts';
 import { CasillaModelo } from '../Entrada.tsx';
 import { actualizar, useShell, type ShellState } from '../estado.ts';
@@ -92,7 +92,10 @@ export function TarjetaDetector() {
       <EstadoDescarga model={model} mb={mb} fallo={d.fallo} error={d.error} />
       <CasillaModelo />
       <div class="acciones">
-        <BotonesDescarga d={d} />
+        {/* F10 (v1.1.3): la tarjeta solo muestra el estado; la descarga la empieza «Anonimizar». Tras un fallo, «Reintentar» (F0). */}
+        {model.state === 'fallo' ? (
+          <button type="button" data-prueba="reintentar-detector" disabled={!puertos.modelo.disponible()} onClick={() => { void d.lanzar(); }}>{t('M-2101')}</button>
+        ) : null}
         {model.state === 'listo' ? (
           <button type="button" class="secundario" onClick={() => { setQuitar(true); }}>{t(ROTULOS.quitar_el_modelo_de_este_equipo)}</button>
         ) : null}
@@ -135,6 +138,8 @@ export function AvisoSinDetector() {
   return (
     <section class="aviso-detector" aria-labelledby="sd-titulo" data-prueba="aviso-sin-detector">
       <p id="sd-titulo"><strong>{tf('M-2320')}</strong></p>
+      {/* F10: con ahorro de datos la descarga no empieza sola: aquí se pregunta. */}
+      {d.descargable && ahorroDeDatos() ? <p data-prueba="ahorro-de-datos">{tf('M-2339')}</p> : null}
       {listo ? <p role="status">{tf('M-2323')}</p> : null}
       <EstadoDescarga model={d.model} mb={d.mb} fallo={d.fallo} error={d.error} />
       <div class="acciones">

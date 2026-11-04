@@ -74,7 +74,10 @@ function parar(): void {
 
 function evaluar(): void {
   const st = obtenerRevision();
-  if (st === null || st.modelo.kind !== 'en_curso' || t0 === null) { parar(); return; }
+  if (st === null || st.modelo.kind !== 'en_curso') { parar(); return; }
+  // F10 (v1.1.3): mientras el detector se descarga no corre el presupuesto de 6.11.3; empieza cuando el detector arranca.
+  if (obtenerVistaAnalisis().descargaModelo) { t0 = null; return; }
+  if (t0 === null) { t0 = Date.now(); return; }
   const ahora = Date.now();
   const transcurrido = ahora - t0;
   const calentamiento = obtenerVistaAnalisis().modelo?.calentamientoMs ?? 0;
@@ -106,12 +109,12 @@ function alCambiar(): void {
   const m = st.modelo;
   if (m.kind === 'en_curso') {
     const ahora = Date.now();
-    if (t0 === null) t0 = ahora;
+    if (t0 === null && !obtenerVistaAnalisis().descargaModelo) t0 = ahora;
     if (m.ventanas >= 1 && t1 === null) t1 = ahora;
     const calentamiento = obtenerVistaAnalisis().modelo?.calentamientoMs ?? 0;
     if (m.ventanas !== ventanasVistas) {
       ventanasVistas = m.ventanas;
-      poner({ restante: restanteMs(t0, ahora, calentamiento, m.ventanas, m.ventanasTotales) });
+      poner({ restante: t0 === null ? null : restanteMs(t0, ahora, calentamiento, m.ventanas, m.ventanasTotales) });
     }
     poner({ conModelo: true });
     if (temporizador === undefined) temporizador = setInterval(evaluar, 1000);
