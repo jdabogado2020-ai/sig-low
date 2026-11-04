@@ -14,6 +14,7 @@ import { build, defaultClientConditions } from 'vite';
 import type { ModelManifest } from '../../src/core/types';
 import { delModelo, distConModelos, modeloSintetico, rutasDelManifiesto } from './harness/dist-modelo';
 import { construirMedicion } from './lib/medicion';
+import { abrirAvanzadas, aDetalle, h1, TITULO, vistaPrevia } from './lib/flujo';
 import { levantarServidor, type Servidor } from './lib/servidores';
 
 const RAIZ = process.cwd();
@@ -247,12 +248,12 @@ test.describe('PF-1b · worker ner real con ORT-web (arnés)', () => {
 
 const DIST = resolve('dist');
 const M_LISTO = 'Detector de nombres adicional listo en este equipo.';
-const M_31 = 'El modelo descargado no superó la comprobación de integridad y se descartó.';
-const M_30 = 'No se pudo preparar el modelo de apoyo.';
-const M_214 = 'El modelo de apoyo no está descargado.';
-const M_2102 = 'No se pudo terminar la descarga del modelo de apoyo';
-const M_169 = 'Este equipo no tiene memoria o espacio suficiente para el modelo de apoyo.';
-const M_170 = 'Se está usando la versión reducida del modelo de apoyo.';
+const M_31 = 'El detector descargado no pasó la comprobación y se descartó.';
+const M_30 = 'No se pudo preparar el detector de nombres adicional.';
+const M_214 = 'El detector de nombres adicional no está descargado.';
+const M_2102 = 'No se pudo terminar la descarga del detector de nombres adicional';
+const M_169 = 'Este equipo no tiene memoria o espacio suficiente para el detector de nombres adicional.';
+const M_170 = 'Se está usando la versión reducida del detector de nombres adicional.';
 
 test.describe('PF-2 · entrega del modelo en el build real', () => {
   test.describe.configure({ mode: 'default', timeout: 120_000 });
@@ -323,12 +324,14 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
   }
 
   const tarjeta = (page: Page) => page.locator('[data-prueba="tarjeta-modelo"]');
-  const botonDescargar = (page: Page) => page.getByRole('button', { name: /^Descargar modelo de apoyo/ });
+  const botonDescargar = (page: Page) => page.getByRole('button', { name: /^Descargar el detector de nombres adicional/ });
 
   async function abrirInicio(page: Page, origen: string): Promise<void> {
     await page.goto(`${origen}/`);
     await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
-    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
+    await expect(h1(page, TITULO.cargar)).toBeVisible();
+    // F2 (D-23): la tarjeta del modelo vive dentro de «Opciones avanzadas» (plegado por defecto).
+    await abrirAvanzadas(page);
     await expect(botonDescargar(page)).toBeEnabled({ timeout: 20_000 });
   }
 
@@ -341,12 +344,14 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       return salida;
     });
 
-  /** Crea un asunto sin guardar y llega a Entrada. */
+  /**
+   * F2 (D-23): ya no hay que crear un caso (al anonimizar se abre uno efímero). Se queda en «Cargar documento», con «Opciones
+   * avanzadas» abiertas (ahí está la casilla del detector) y la pestaña «Pegar texto».
+   */
   async function irAEntrada(page: Page): Promise<void> {
-    await page.getByLabel('Código del caso').fill('PRUEBA-MODELO');
-    await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await page.getByRole('button', { name: 'Crear caso' }).click();
-    await page.getByRole('button', { name: 'Continuar' }).click();
+    await expect(h1(page, TITULO.cargar)).toBeVisible();
+    await abrirAvanzadas(page);
+    await page.getByRole('tab', { name: 'Pegar texto' }).click();
   }
 
   test('T-AB-05 T-PV-08 @cero-red descarga: solo las rutas del manifiesto, caché por modelo, el ONNX reensamblado idéntico y todo sin conexión', async ({ page, context }) => {
@@ -488,7 +493,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor Pedro Ejemplo Prueba firmó el contrato con la empresa Ejemplo Ficticia S.A.S.');
       await page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' }).check();
       await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
-      await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByRole('heading', { level: 1, name: TITULO.vista })).toBeVisible({ timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('no se pudo preparar', { timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('el informe lo dirá');
       // El modelo alterado se descartó (V-44): la caché del modelo ya no existe.
@@ -594,7 +599,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor Pedro Ejemplo Prueba firmó el contrato con la empresa Ejemplo Ficticia S.A.S.');
       await page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' }).check();
       await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
-      await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByRole('heading', { level: 1, name: TITULO.vista })).toBeVisible({ timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('no se pudo preparar', { timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('el informe lo dirá');
       // No es una falla de integridad: el modelo sigue guardado (con integridad rota se habría descartado) y no hubo más red.
@@ -729,7 +734,7 @@ test.describe('PF-2 · modelo real en la app', () => {
       await page.goto(`${srv.origen}/`);
       await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
       const tarjeta = page.locator('[data-prueba="tarjeta-modelo"]');
-      const boton = page.getByRole('button', { name: /^Descargar modelo de apoyo/ });
+      const boton = page.getByRole('button', { name: /^Descargar el detector de nombres adicional/ });
       await expect(boton).toBeEnabled({ timeout: 20_000 });
       await expect(boton).toContainText(v.mb);
       const corte = srv.peticiones().length;
@@ -747,19 +752,23 @@ test.describe('PF-2 · modelo real en la app', () => {
       await page.reload();
       await page.waitForFunction(() => navigator.serviceWorker?.controller != null);
       await expect(tarjeta).toContainText('Detector de nombres adicional listo en este equipo.', { timeout: 20_000 });
-      await page.getByLabel('Código del caso').fill('PRUEBA-REAL');
-      await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-      await page.getByRole('button', { name: 'Crear caso' }).click();
-      await page.getByRole('button', { name: 'Continuar' }).click();
+      // F2 (D-23): sin caso que crear. La casilla del detector está en «Opciones avanzadas».
+      await abrirAvanzadas(page);
+      await page.getByRole('tab', { name: 'Pegar texto' }).click();
       await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor PEDRO EJEMPLO GÓMEZ, mayor de edad y vecino de Bucaramanga, interpuso acción de tutela contra la EPS Salud Ficticia S.A.S. por la negativa de un procedimiento ordenado por su médico tratante.');
       await page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' }).check();
       await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
-      await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByRole('heading', { level: 1, name: TITULO.vista })).toBeVisible({ timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-modelo"]')).toHaveAttribute('data-estado', 'terminado', { timeout: 420_000 });
       await expect(page.locator('[data-prueba="banda-modelo"]')).toContainText('terminó de revisar el documento');
+      // D-24: la persona en MAYÚSCULAS no la encuentra ninguna regla: la trae el modelo y la vista previa ya la muestra oculta (etiqueta),
+      // sin el nombre en el texto ni en el nombre accesible.
+      await expect(vistaPrevia(page).getByRole('button', { name: /^Etiqueta \[.+\], Persona\./ }).first()).toBeVisible();
+      await expect(vistaPrevia(page)).not.toContainText('PEDRO EJEMPLO GÓMEZ');
+      // En «Revisar dato por dato» sí se ve el original, como detección aceptada por la propuesta.
+      await aDetalle(page);
       await expect(page.getByRole('region', { name: 'Documento con datos encontrados' })).toContainText('PEDRO EJEMPLO GÓMEZ');
-      // La persona en MAYÚSCULAS no la encuentra ninguna regla: la trae el modelo, como detección pendiente (M-166).
-      await expect(page.getByRole('region', { name: 'Documento con datos encontrados' }).getByRole('button', { name: /^Persona, pendiente.*PEDRO EJEMPLO GÓMEZ/ })).toBeVisible();
+      await expect(page.getByRole('region', { name: 'Documento con datos encontrados' }).getByRole('button', { name: /^Persona, aceptada.*PEDRO EJEMPLO GÓMEZ/ })).toBeVisible();
       await expect(page.getByRole('status', { name: 'Avisos de la revisión' })).toContainText('El modelo de apoyo agregó');
       // Salvo GET /sw.js exacto (la búsqueda de versión del navegador, metadato sin contenido: 3.2), nada llegó al servidor.
       expect(srv.peticiones().slice(antes).filter((p) => !(p.m === 'GET' && p.u === '/sw.js'))).toEqual([]);
