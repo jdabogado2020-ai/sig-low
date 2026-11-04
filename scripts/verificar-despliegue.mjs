@@ -14,8 +14,13 @@
 //                    Sin ella, la referencia es el build local: `<dist>/precache.json`, `<dist>/sw.js` y la huella de `precache.json`.
 //   --dist <dir>     build local de referencia cuando no hay lista (por defecto `dist`).
 //   --headers <f>    `_headers` de referencia (por defecto `public/_headers` de este repositorio, la fuente de verdad de 3.6).
-//   --todo           con lista, además descarga y compara todos los demás archivos de la lista (los trozos del modelo: cientos de MB).
-//   --tiempo <s>     espera máxima por archivo (60 s por defecto).
+//   --todo           además descarga los trozos y auxiliares de cada modelo y los compara (tamaño, SHA-256 y cabeceras) con su
+//                    manifiesto publicado, que a su vez coincide con la referencia (cientos de MB). Con lista, también los demás
+//                    archivos de la lista, y cada archivo del modelo que esté en ella debe tener la misma huella que en el manifiesto.
+//   --tiempo <s>     espera máxima por archivo (60 s por defecto; 10 min como mínimo para los archivos del modelo).
+//
+// Cloudflare Pages responde `/index.html` con un 308 hacia `/`: se acepta solo ese (308, hacia `/` del mismo sitio), y entonces
+// los bytes del build se comprueban en `/`. Cualquier otra redirección es una diferencia.
 //
 // La lista debe salir de las notas de la versión publicadas con la etiqueta firmada, nunca de la dirección que se verifica.
 // Los datos que llegan del servidor (precache.json publicado) son entrada no confiable: sus rutas se validan antes de pedirse.
@@ -35,6 +40,12 @@ const RUTA_SEGURA = /^\/(?:[A-Za-z0-9_-][A-Za-z0-9._-]*(?:\/[A-Za-z0-9_-][A-Za-z
 const FUERA_DEL_PRECACHE = [/^\/(?:sw\.js|_headers|precache\.json)$/, /^\/models\/[^/]+\/(?:onnx\/[^/]+|tokenizer\.json|tokenizer_config\.json)$/];
 // Content-Type por extensión (3.6 y tests/e2e/lib/cabeceras-esperadas.ts); se compara el tipo, sin parámetros como `charset`.
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm' };
+// Modelo (las formas de src/core/ner/manifest.ts y src/sw.ts): manifiesto en el precache; trozos y auxiliares fuera, a pedido.
+const RUTA_MANIFIESTO = /^\/models\/(gliner-x-large|gliner-x-base)\/manifest\.json$/;
+const ARCHIVO_DEL_MODELO = /^\/models\/[^/]+\/(?:onnx\/[^/]+|tokenizer\.json|tokenizer_config\.json|gliner_config\.json)$/;
+const RUTA_AUXILIAR = /^(tokenizer|tokenizer_config|gliner_config)\.json$/;
+const RUTA_TROZO = /^onnx\/model_quantized\.onnx\.part\d{3}$/;
+const TIEMPO_MINIMO_MODELO_MS = 600_000;
 
 const sha256 = (datos) => createHash('sha256').update(datos).digest('hex');
 
@@ -142,6 +153,8 @@ async function descargar(base, ruta, tiempoMs, pedir) {
     if (resp.status !== 200) {
       await resp.body?.cancel().catch(() => undefined);
       const destino = resp.headers.get('location');
+      // F0: el 308 de Cloudflare Pages de /index.html a / (del mismo sitio); los bytes se comprueban en «/».
+      if (ruta === '/index.html' && resp.status === 308 && destino !== null && aMismaRaiz(destino, base)) return { redirigeA: '/', cabeceras: resp.headers };
       return { error: `HTTP ${resp.status}${destino ? ` hacia ${destino.slice(0, 120)}` : ''}` };
     }
     const largo = Number(resp.headers.get('content-length') ?? 0);
@@ -153,6 +166,33 @@ async function descargar(base, ruta, tiempoMs, pedir) {
     const causa = e instanceof Error ? (e.cause && typeof e.cause === 'object' && 'code' in e.cause ? String(e.cause.code) : e.name) : 'error';
     return { error: `no se pudo descargar (${causa})` };
   }
+}
+
+/** ¿`destino` (Location, relativa o absoluta) es exactamente la raíz `/` del sitio verificado? */
+function aMismaRaiz(destino, base) {
+  try { return new URL(destino, `${base}/index.html`).href === `${base}/`; } catch { return false; }
+}
+
+/** Archivos que declara un manifiesto del modelo publicado (ruta del sitio → { tamano, sha256 }), o el motivo si no es válido. */
+export function archivosDelManifiesto(ruta, datos) {
+  const id = RUTA_MANIFIESTO.exec(ruta)?.[1];
+  let m;
+  try { m = JSON.parse(datos.toString('utf8')); } catch { m = undefined; }
+  if (!id || m?.formato !== 'sig-low/modelo' || m.id !== id || !Array.isArray(m.trozos) || !Array.isArray(m.auxiliares) || m.trozos.length === 0) {
+    return { error: `${ruta}: no es un manifiesto del modelo válido` };
+  }
+  const archivos = new Map();
+  for (const [lista, patron] of [[m.auxiliares, RUTA_AUXILIAR], [m.trozos, RUTA_TROZO]]) {
+    for (const a of lista) {
+      if (typeof a?.ruta !== 'string' || !patron.test(a.ruta) || !Number.isInteger(a.tamano) || a.tamano < 1 || a.tamano > MAX_BYTES || !/^[0-9a-f]{64}$/.test(String(a.sha256))) {
+        return { error: `${ruta}: el manifiesto trae un archivo no válido (${JSON.stringify(String(a?.ruta).slice(0, 80))})` };
+      }
+      archivos.set(`/models/${id}/${a.ruta}`, { tamano: a.tamano, sha256: a.sha256 });
+    }
+  }
+  const suma = m.trozos.reduce((s, t) => s + t.tamano, 0);
+  if (suma !== m.tamano) return { error: `${ruta}: la suma de los trozos (${suma}) no es el tamaño del modelo (${m.tamano})` };
+  return { archivos };
 }
 
 async function enParalelo(items, n, tarea) {
@@ -195,13 +235,20 @@ export async function verificarDespliegue(url, opciones) {
   for (const r of propias.keys()) if (!esperadosEnPrecache.has(r)) dif.push(`${r}: está en el precache publicado y no en ${conLista ? 'la lista' : 'el build de referencia'}`);
 
   const rutas = new Set(['/', '/index.html', '/sw.js', '/precache.json', ...propias.keys()]);
-  if (todo) for (const r of referencia.keys()) if (r !== '/_headers') rutas.add(r);
+  // Los archivos del modelo de la lista se piden con su manifiesto (abajo), una sola vez.
+  if (todo) for (const r of referencia.keys()) if (r !== '/_headers' && !ARCHIVO_DEL_MODELO.test(r)) rutas.add(r);
   const ordenadas = [...rutas].sort();
   const resultados = await enParalelo(ordenadas, PARALELO, async (ruta) => [ruta, ruta === '/precache.json' ? publicado : await descargar(base, ruta, tiempoMs, pedir)]);
 
   const cuerpos = new Map();
+  let indiceRedirigido = false;
   for (const [ruta, r] of resultados) {
     if (r.error) { dif.push(`${ruta}: ${r.error}`); continue; }
+    if (r.redirigeA) {
+      indiceRedirigido = true;
+      if (r.cabeceras.get('set-cookie') !== null) dif.push(`${ruta}: la cabecera set-cookie debe faltar y llegó ${JSON.stringify(r.cabeceras.get('set-cookie'))}`);
+      continue;
+    }
     cuerpos.set(ruta, r.datos);
     const huella = sha256(r.datos);
     const esperada = referencia.get(ruta);
@@ -218,8 +265,47 @@ export async function verificarDespliegue(url, opciones) {
   const inicio = cuerpos.get('/');
   const indice = cuerpos.get('/index.html');
   if (inicio && indice && !inicio.equals(indice)) dif.push('/ y /index.html no sirven los mismos bytes');
+  if (indiceRedirigido && !inicio) dif.push('/index.html redirige a /, y / no se pudo comprobar');
   if (inicio && inicio.includes('/cdn-cgi/')) dif.push('/: el HTML contiene /cdn-cgi/ (inyección del alojamiento)');
-  return { diferencias: dif, archivos: ordenadas.length };
+
+  let archivos = ordenadas.length;
+  if (todo) {
+    const delModelo = await verificarModelo(base, cuerpos, referencia, reglas, Math.max(tiempoMs, TIEMPO_MINIMO_MODELO_MS), pedir, dif);
+    archivos += delModelo;
+  }
+  return { diferencias: dif, archivos };
+}
+
+/**
+ * --todo (F0): cada trozo y auxiliar que declara un manifiesto publicado (ya comparado con la referencia) se descarga y se compara
+ * con el manifiesto: tamaño, SHA-256 y cabeceras (el Content-Type de los trozos sale de `_headers`). Un archivo del modelo de la
+ * lista que ningún manifiesto declara también se pide y se compara con la lista. Devuelve cuántos archivos pidió.
+ */
+async function verificarModelo(base, cuerpos, referencia, reglas, tiempoMs, pedir, dif) {
+  const esperados = new Map(); // ruta → { tamano?, sha256 (manifiesto), lista? }
+  for (const [ruta, datos] of cuerpos) {
+    if (!RUTA_MANIFIESTO.test(ruta)) continue;
+    if (referencia.get(ruta) !== sha256(datos)) continue; // ya es una diferencia: su contenido no es de fiar
+    const m = archivosDelManifiesto(ruta, datos);
+    if (m.error) { dif.push(m.error); continue; }
+    for (const [r, a] of m.archivos) esperados.set(r, { ...a, lista: referencia.get(r) });
+  }
+  for (const [r, h] of referencia) {
+    if (!ARCHIVO_DEL_MODELO.test(r) || esperados.has(r)) continue;
+    esperados.set(r, { sha256: h, lista: h });
+  }
+  const rutas = [...esperados.keys()].sort();
+  const resultados = await enParalelo(rutas, PARALELO, async (ruta) => [ruta, await descargar(base, ruta, tiempoMs, pedir)]);
+  for (const [ruta, r] of resultados) {
+    if (r.error) { dif.push(`${ruta}: ${r.error}`); continue; }
+    const e = esperados.get(ruta);
+    const huella = sha256(r.datos);
+    if (e.tamano !== undefined && r.datos.length !== e.tamano) dif.push(`${ruta}: ${r.datos.length} bytes (el manifiesto declara ${e.tamano})`);
+    if (huella !== e.sha256) dif.push(`${ruta}: SHA-256 ${huella} (esperado ${e.sha256})`);
+    else if (e.lista !== undefined && e.lista !== e.sha256) dif.push(`${ruta}: la lista de la versión y el manifiesto declaran huellas distintas`);
+    dif.push(...diferenciasDeCabeceras(ruta, r.cabeceras, reglas));
+  }
+  return rutas.length;
 }
 
 function normalizarUrl(url) {
@@ -262,7 +348,6 @@ async function principal() {
       if (!existsSync(a.lista)) throw new UsoIncorrecto(`falta la lista ${a.lista}`);
       referencia = leerLista(readFileSync(a.lista, 'utf8'));
     } else {
-      if (a.todo) throw new UsoIncorrecto('--todo necesita la lista de la versión');
       referencia = referenciaDeDist(a.dist);
     }
   } catch (e) {

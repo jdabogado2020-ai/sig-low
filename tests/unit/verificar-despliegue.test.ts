@@ -11,6 +11,8 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 
+import { cabecerasPara, parseHeaders } from '../e2e/lib/cabeceras.mjs';
+
 const REPO = resolve('.');
 const SCRIPT = join(REPO, 'scripts/verificar-despliegue.mjs');
 const SERVIDOR = join(REPO, 'tests/e2e/server.mjs');
@@ -33,10 +35,23 @@ const ARCHIVOS: Record<string, string | Buffer> = {
   'assets/index-Prueba1.css': 'body { margin: 0 }\n',
   'ort/ort-wasm-simd-threaded.mjs': 'export default 1;\n',
   'ort/ort-wasm-simd-threaded.wasm': Buffer.from([0, 0x61, 0x73, 0x6d, 1, 0, 0, 0]),
-  'models/gliner-x-large/manifest.json': '{"id":"gliner-x-large"}\n',
   'models/gliner-x-large/tokenizer.json': '{"prueba":"ficticio"}\n',
   'models/gliner-x-large/onnx/model_quantized.onnx.part000': Buffer.from('bytes ficticios del modelo'),
+  'models/gliner-x-large/onnx/model_quantized.onnx.part001': Buffer.from('otro trozo ficticio'),
 };
+/** Manifiesto del modelo ficticio (la forma de src/core/ner/manifest.ts, lo que mira --todo), con `cambios` sobre sus archivos. */
+function manifiesto(cambios: Record<string, { tamano?: number; sha256?: string }> = {}): string {
+  const archivo = (ruta: string): { ruta: string; tamano: number; sha256: string } => {
+    const b = ARCHIVOS[`models/gliner-x-large/${ruta}`]!;
+    return { ruta, tamano: Buffer.byteLength(b), sha256: sha(b), ...cambios[ruta] };
+  };
+  const trozos = ['onnx/model_quantized.onnx.part000', 'onnx/model_quantized.onnx.part001'].map(archivo);
+  return JSON.stringify({
+    formato: 'sig-low/modelo', v: 1, id: 'gliner-x-large', archivo: 'onnx/model_quantized.onnx', tamano: trozos.reduce((s, t) => s + t.tamano, 0),
+    sha256: 'c'.repeat(64), trozos, auxiliares: [archivo('tokenizer.json')],
+  }, null, 2) + '\n';
+}
+ARCHIVOS['models/gliner-x-large/manifest.json'] = manifiesto();
 /** Lo que no entra al precache pero sí a la lista de la versión (`find`). */
 const SW = "self.addEventListener('fetch', () => undefined);\n";
 
@@ -287,6 +302,89 @@ describe.concurrent('T-PV-15 cualquier diferencia sale con 1 y dice cuál', () =
   });
 });
 
+/**
+ * Servidor como Cloudflare Pages (F0): aplica `_headers` del directorio, pone tipo solo a las extensiones que conoce, responde
+ * `/index.html` con `redireccion` (por defecto 308 hacia «/») y, con `sinTipoEnTrozos`, ignora el Content-Type de `_headers` en los
+ * trozos (lo que pasaba en producción). Devuelve la dirección y la función que lo apaga.
+ */
+async function servirComoPages(dir: string, o: { redireccion?: { estado: number; destino: string }; sinTipoEnTrozos?: boolean } = {}): Promise<{ url: string; parar: () => void }> {
+  const reglas = parseHeaders(readFileSync(join(dir, '_headers'), 'utf8'));
+  const TIPOS: Record<string, string> = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm' };
+  const { estado, destino } = o.redireccion ?? { estado: 308, destino: '/' };
+  const srv = createServer((q, r) => {
+    const ruta = new URL(q.url ?? '/', 'http://x').pathname;
+    for (const [k, v] of cabecerasPara(reglas, ruta)) if (!(o.sinTipoEnTrozos && k === 'Content-Type')) r.setHeader(k, v);
+    if (ruta === '/index.html') { r.statusCode = estado; r.setHeader('Location', destino); r.end(); return; }
+    const f = join(dir, ruta === '/' ? 'index.html' : ruta);
+    if (ruta.includes('..') || !existsSync(f)) { r.statusCode = 404; r.end(); return; }
+    const tipo = TIPOS[/\.[a-z0-9]+$/.exec(f)?.[0] ?? ''] ?? (ruta === '/' ? TIPOS['.html'] : undefined);
+    if (tipo) r.setHeader('Content-Type', tipo);
+    r.end(readFileSync(f));
+  });
+  await new Promise<void>((ok) => { srv.listen(0, '127.0.0.1', ok); });
+  return { url: `http://127.0.0.1:${(srv.address() as { port: number }).port}`, parar: () => { srv.close(); } };
+}
+
+describe.concurrent('F0 · el 308 de /index.html a / (Cloudflare Pages) y --todo contra los manifiestos del modelo', () => {
+  it('/index.html con 308 hacia «/» y «/» con los bytes del build: sale con 0 (contra el build y contra la lista)', async () => {
+    const a = armar();
+    const s = await servirComoPages(a.dir);
+    try {
+      sale(await correr(s.url, '--dist', a.dir), 0, 'OK');
+      const f = join(RAIZ, `SHA256SUMS-${n++}`);
+      writeFileSync(f, sumas(a));
+      sale(await correr(s.url, f), 0, 'OK');
+    } finally { s.parar(); }
+  });
+
+  it('el 308 no basta si «/» no sirve los bytes del build, y otra redirección sigue siendo una diferencia', async () => {
+    const a = armar();
+    const otro = copiar(a);
+    alterar(otro, 'index.html', ARCHIVOS['index.html'] + '<!-- cambiado -->\n');
+    for (const [dir, o, texto] of [
+      [otro, {}, '/: SHA-256'],
+      [a.dir, { redireccion: { estado: 301, destino: '/' } }, '/index.html: HTTP 301 hacia /'],
+      [a.dir, { redireccion: { estado: 308, destino: 'https://ejemplo.test/' } }, '/index.html: HTTP 308 hacia https://ejemplo.test/'],
+      [a.dir, { redireccion: { estado: 308, destino: '/otra' } }, '/index.html: HTTP 308 hacia /otra'],
+    ] as const) {
+      const s = await servirComoPages(dir, o);
+      try { sale(await correr(s.url, '--dist', a.dir), 1, texto); } finally { s.parar(); }
+    }
+  });
+
+  it('--todo sin lista: los trozos y auxiliares se piden y se comparan con el manifiesto publicado; limpio sale con 0', async () => {
+    const a = armar();
+    sale(await verificar(a, copiar(a), { extra: ['--todo'] }), 0, /OK \(\d+ archivos/);
+  });
+
+  it('--todo: un trozo alterado, otro de distinto tamaño y un auxiliar que falta se ven contra el manifiesto', async () => {
+    const a = armar();
+    const s = copiar(a);
+    alterar(s, 'models/gliner-x-large/onnx/model_quantized.onnx.part000', 'bytes ficticios del modelX');
+    alterar(s, 'models/gliner-x-large/onnx/model_quantized.onnx.part001', 'otro trozo ficticio, más largo');
+    rmSync(join(s, 'models/gliner-x-large/tokenizer.json'));
+    const r = await verificar(a, s, { extra: ['--todo'] });
+    sale(r, 1, 'model_quantized.onnx.part000: SHA-256', 'model_quantized.onnx.part001: ', 'bytes (el manifiesto declara', '/models/gliner-x-large/tokenizer.json: HTTP 404');
+    sale(await verificar(a, s), 0); // sin --todo no se piden
+  });
+
+  it('--todo: un trozo servido sin Content-Type (lo que pasaba en producción) es una diferencia', async () => {
+    const a = armar();
+    const s = await servirComoPages(a.dir, { sinTipoEnTrozos: true });
+    try {
+      sale(await correr(s.url, '--dist', a.dir, '--todo'), 1, 'model_quantized.onnx.part000: cabecera content-type = ausente (esperado "application/octet-stream")');
+    } finally { s.parar(); }
+  });
+
+  it('--todo con lista: un archivo del modelo con otra huella en la lista que en el manifiesto, y un manifiesto no válido', async () => {
+    const a = armar();
+    sale(await verificar(a, copiar(a), { lista: sumas(a, { 'models/gliner-x-large/onnx/model_quantized.onnx.part001': 'd'.repeat(64) }), extra: ['--todo'] }), 1,
+      'part001: la lista de la versión y el manifiesto declaran huellas distintas');
+    const roto = armar({ 'models/gliner-x-large/manifest.json': manifiesto({ 'onnx/model_quantized.onnx.part000': { tamano: 0 } }) });
+    sale(await verificar(roto, copiar(roto), { extra: ['--todo'] }), 1, 'manifest.json: el manifiesto trae un archivo no válido');
+  });
+});
+
 describe.concurrent('T-PV-15 los argumentos y la referencia incorrectos salen con 2, sin tocar la red', () => {
   const a = armar();
   it('sin argumentos o con demasiados', async () => {
@@ -311,7 +409,6 @@ describe.concurrent('T-PV-15 los argumentos y la referencia incorrectos salen co
     const insegura = join(RAIZ, 'insegura.txt');
     writeFileSync(insegura, `${'a'.repeat(64)}  ./../fuera.js\n`);
     sale(await correr('https://ejemplo.test', insegura), 2, 'ruta no válida');
-    sale(await correr('https://ejemplo.test', '--todo', '--dist', a.dir), 2, '--todo necesita la lista');
     sale(await correr('https://ejemplo.test', '--dist', join(RAIZ, 'sin-build')), 2, 'falta');
   });
 });
