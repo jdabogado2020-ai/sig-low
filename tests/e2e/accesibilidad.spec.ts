@@ -94,7 +94,7 @@ async function estructura(page: Page): Promise<{ h1: number; main: number; heade
 test.describe('T-AX-01 flujo completo solo con teclado', () => {
   test('T-AX-01 @humo Inicio → Lista → Entrada → Revisión (A, R, U, N) → Listo (casillas, copiar) → Reinserción, sin ratón y con el foco siempre visible', async ({ page }) => {
     await page.goto('/');
-    await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
+    await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
     // Inicio: código, modo de la tabla («No guardar») y «Crear asunto».
     await tabHasta(page, (f) => f.tag === 'input' && /Código del asunto/.test(f.nombre), 'el campo «Código del asunto»');
     await page.keyboard.type('PRUEBA-AX-01');
@@ -108,7 +108,7 @@ test.describe('T-AX-01 flujo completo solo con teclado', () => {
     await expect(page.getByRole('radio', { name: /^No guardar la tabla/ })).toBeChecked();
     await llegarABoton(page, /^Crear asunto$/);
     await page.keyboard.press('Enter');
-    await expect(h1(page, 'Lista del caso')).toBeFocused();
+    await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeFocused();
 
     // Lista del caso: pegar la lista, vista previa, agregar y continuar.
     await tabHasta(page, (f) => f.tag === 'textarea' && /Texto de la lista/.test(f.nombre), 'el campo «Texto de la lista»');
@@ -145,7 +145,7 @@ test.describe('T-AX-01 flujo completo solo con teclado', () => {
     expect(await pendientes()).toBe(0);
     await page.locator('[data-prueba="continuar"]').focus();
     await page.keyboard.press('Enter');
-    await expect(h1(page, 'Listo')).toBeFocused({ timeout: 30_000 });
+    await expect(h1(page, 'Descargar')).toBeFocused({ timeout: 30_000 });
 
     // Listo: la búsqueda de residuos termina, las tres casillas del recordatorio con la barra espaciadora y «Copiar texto anonimizado».
     await expect(page.locator('[data-prueba="residuos-estado"]')).toContainText('Búsqueda de residuos: ninguno de los', { timeout: 30_000 });
@@ -158,7 +158,7 @@ test.describe('T-AX-01 flujo completo solo con teclado', () => {
     await expect(page.locator('[data-aviso="M-84"]')).toBeVisible();
     await llegarABoton(page, /^Reinsertar una respuesta$/);
     await page.keyboard.press('Enter');
-    await expect(h1(page, 'Reinserción')).toBeFocused();
+    await expect(h1(page, 'Devolver los datos reales')).toBeFocused();
 
     // Reinserción: pegar la respuesta con marcadores y buscar.
     await tabHasta(page, (f) => f.tag === 'textarea' && /Respuesta de la herramienta de IA/.test(f.nombre), 'el campo de la respuesta');
@@ -180,23 +180,23 @@ test.describe('T-AX-02 y T-AX-04 nombres, roles y regiones vivas del flujo integ
       const e = await estructura(page);
       expect(e, nombre).toMatchObject({ h1: 1, main: 1, header: 1, footer: 1, lang: 'es-CO', saltar: true });
       // Reinserción no es uno de los cinco pasos del asunto (8.1): solo las pantallas del flujo llevan la navegación de pasos.
-      if (nombre !== 'Reinserción') expect(e.nav, `${nombre}: nav de pasos`).toBeGreaterThanOrEqual(1);
+      if (nombre !== 'Devolver los datos reales') expect(e.nav, `${nombre}: nav de pasos`).toBeGreaterThanOrEqual(1);
       expect(await controlesSinNombre(page), `${nombre}: controles sin nombre`).toEqual([]);
       const vivas = await regionesVivas(page);
       for (const real of REALES_REI) expect(vivas, `${nombre}: región viva con «${real}»`).not.toContain(real);
     };
-    await revisar('Listo');
+    await revisar('Descargar');
     // La vista de salida de Listo: el árbol de accesibilidad no trae originales.
-    const salida = page.getByRole('region', { name: 'Documento anonimizado con los marcadores como fichas' });
+    const salida = page.getByRole('region', { name: 'Documento anonimizado con las etiquetas como fichas' });
     await expect(salida).toBeVisible();
     const arbol = await salida.ariaSnapshot();
     for (const real of REALES_REI) expect(arbol).not.toContain(real);
     await copiarEnListo(page);
     for (const real of REALES_REI) expect(await regionesVivas(page), 'regiones vivas tras copiar').not.toContain(real);
-    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
-    await revisar('Reinserción');
+    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+    await revisar('Devolver los datos reales');
     await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(SALIDA_REI);
-    await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+    await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
     for (const real of REALES_REI) expect(await regionesVivas(page), 'regiones vivas con el resultado').not.toContain(real);
   });
 });
@@ -212,8 +212,8 @@ test.describe('T-AX-06 zoom y reajuste a 320 × 640', () => {
       expect(m.cuerpo, `${donde}: scrollWidth − clientWidth del cuerpo`).toBeLessThanOrEqual(0);
     };
     await page.goto('/');
-    await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
-    await sinDesborde('Inicio');
+    await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
+    await sinDesborde('Cargar documento');
     await page.getByRole('button', { name: 'Acerca de' }).click();
     await expect(page.getByRole('dialog', { name: 'Acerca de Sig-Low' })).toBeVisible();
     await sinDesborde('Acerca de');
@@ -223,15 +223,15 @@ test.describe('T-AX-06 zoom y reajuste a 320 × 640', () => {
     await page.keyboard.press('Escape');
     await page.keyboard.press('Escape');
     // Del flujo de la demo, mirando cada pantalla en el camino.
-    await page.getByLabel('Código del asunto').fill('PRUEBA-AX-06');
+    await page.getByLabel('Código del caso').fill('PRUEBA-AX-06');
     await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await page.getByRole('button', { name: 'Crear asunto' }).click();
-    await expect(h1(page, 'Lista del caso')).toBeVisible();
+    await page.getByRole('button', { name: 'Crear caso' }).click();
+    await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
     await page.getByRole('textbox', { name: 'Texto de la lista' }).fill(LISTA_REI);
     await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
     await sinDesborde('Lista del caso con vista previa');
     await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
-    await sinDesborde('Lista del caso');
+    await sinDesborde('Nombres que siempre deben ocultarse');
     await page.getByRole('button', { name: 'Continuar' }).click();
     await expect(h1(page, 'Entrada')).toBeVisible();
     await sinDesborde('Entrada');
@@ -239,26 +239,26 @@ test.describe('T-AX-06 zoom y reajuste a 320 × 640', () => {
     await sinDesborde('Entrada (cargar archivo)');
     await page.getByRole('tab', { name: 'Pegar texto' }).click();
     await page.getByRole('textbox', { name: 'Texto del documento' }).fill(DOCUMENTO_REI);
-    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
     await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 60_000 });
     await sinDesborde('Revisión');
-    const leyenda = page.getByRole('button', { name: 'Leyenda' });
+    const leyenda = page.getByRole('button', { name: 'Cómo leer la vista previa' });
     if (await leyenda.isVisible()) { await leyenda.click(); await sinDesborde('Revisión con leyenda'); await leyenda.click(); }
-    const marcas = page.getByRole('region', { name: 'Documento con detecciones' }).locator('[data-det]');
+    const marcas = page.getByRole('region', { name: 'Documento con datos encontrados' }).locator('[data-det]');
     for (let i = 0, n = await marcas.count(); i < n; i++) {
       if (/, pendiente, /.test((await marcas.nth(i).getAttribute('aria-label')) ?? '')) { await marcas.nth(i).focus(); await page.keyboard.press('a'); }
     }
     await sinDesborde('Revisión con detecciones decididas');
     await page.locator('[data-prueba="continuar"]').click();
-    await expect(h1(page, 'Listo')).toBeVisible();
-    await sinDesborde('Listo');
+    await expect(h1(page, 'Descargar')).toBeVisible();
+    await sinDesborde('Descargar');
     await copiarEnListo(page);
     await sinDesborde('Listo tras copiar');
-    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
-    await expect(h1(page, 'Reinserción')).toBeVisible();
-    await sinDesborde('Reinserción');
+    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+    await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
+    await sinDesborde('Devolver los datos reales');
     await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(SALIDA_REI);
-    await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+    await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
     await sinDesborde('Reinserción con respuesta');
   });
 });
@@ -280,18 +280,18 @@ test.describe('T-AX-07 colores forzados y movimiento reducido', () => {
       expect(['auto', 'normal'], `${donde}: scroll-behavior`).toContain(m.scroll);
     };
     await page.goto('/');
-    await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
-    await movimiento('Inicio');
-    await page.getByLabel('Código del asunto').fill('PRUEBA-AX-07');
+    await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
+    await movimiento('Cargar documento');
+    await page.getByLabel('Código del caso').fill('PRUEBA-AX-07');
     await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await page.getByRole('button', { name: 'Crear asunto' }).click();
-    await expect(h1(page, 'Lista del caso')).toBeVisible();
+    await page.getByRole('button', { name: 'Crear caso' }).click();
+    await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
     await page.getByRole('textbox', { name: 'Texto de la lista' }).fill(LISTA_REI);
     await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
     await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
     await page.getByRole('button', { name: 'Continuar' }).click();
     await page.getByRole('textbox', { name: 'Texto del documento' }).fill(DOCUMENTO_REI);
-    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
     await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 60_000 });
     // Revisión: abreviatura, ícono y estilo de borde siguen en cada resaltado con colores forzados.
     const filas = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-det]')].map((el) => {
@@ -306,7 +306,7 @@ test.describe('T-AX-07 colores forzados y movimiento reducido', () => {
       expect(f.ancho).toBeGreaterThanOrEqual(2);
     }
     await movimiento('Revisión');
-    await page.getByRole('button', { name: 'Leyenda' }).click();
+    await page.getByRole('button', { name: 'Cómo leer la vista previa' }).click();
     await movimiento('Revisión con la leyenda');
     const forzado = await page.evaluate(() => matchMedia('(forced-colors: active)').matches && matchMedia('(prefers-reduced-motion: reduce)').matches);
     expect(forzado).toBe(true);
@@ -315,7 +315,7 @@ test.describe('T-AX-07 colores forzados y movimiento reducido', () => {
   test('T-AX-07 el foco sigue visible con colores forzados en Inicio', async ({ page }) => {
     await page.emulateMedia({ forcedColors: 'active', reducedMotion: 'reduce' });
     await page.goto('/');
-    await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
+    await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
     const f = await tabHasta(page, (x) => x.tag === 'input', 'el primer campo');
     expect(f.anillo).toBe(true);
   });
@@ -324,37 +324,37 @@ test.describe('T-AX-07 colores forzados y movimiento reducido', () => {
 test.describe('T-IU-02 textos prohibidos en la interfaz integrada', () => {
   test('T-IU-02 INV-G13 @humo texto visible, aria-label y aria-valuetext de Inicio, Acerca de, Lista, Entrada, Revisión, Listo y Reinserción: 0 coincidencias', async ({ page }) => {
     await page.goto('/');
-    await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
-    await barrer(page, 'Inicio');
+    await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
+    await barrer(page, 'Cargar documento');
     await page.getByRole('button', { name: 'Acerca de' }).click();
     await expect(page.getByRole('dialog', { name: 'Acerca de Sig-Low' })).toBeVisible();
     await barrer(page, 'Acerca de');
     await page.keyboard.press('Escape');
     await crearYAnalizar(page, { codigo: 'PRUEBA-AX-IU02' });
-    await expect(h1(page, 'Listo')).toBeVisible();
-    await barrer(page, 'Listo');
+    await expect(h1(page, 'Descargar')).toBeVisible();
+    await barrer(page, 'Descargar');
     await copiarEnListo(page);
     await barrer(page, 'Listo tras copiar');
-    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
-    await expect(h1(page, 'Reinserción')).toBeVisible();
-    await barrer(page, 'Reinserción');
+    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+    await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
+    await barrer(page, 'Devolver los datos reales');
     await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(SALIDA_REI);
-    await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+    await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
     await barrer(page, 'Reinserción con respuesta');
   });
 
   test('T-IU-02 Revisión (original, salida, leyenda y atajos), Lista y Entrada: 0 coincidencias', async ({ page }) => {
     await page.goto('/');
-    await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
-    await page.getByLabel('Código del asunto').fill('PRUEBA-AX-IU02B');
+    await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
+    await page.getByLabel('Código del caso').fill('PRUEBA-AX-IU02B');
     await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await page.getByRole('button', { name: 'Crear asunto' }).click();
-    await expect(h1(page, 'Lista del caso')).toBeVisible();
+    await page.getByRole('button', { name: 'Crear caso' }).click();
+    await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
     await page.getByRole('textbox', { name: 'Texto de la lista' }).fill(LISTA_REI);
     await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
     await barrer(page, 'Lista del caso con vista previa');
     await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
-    await barrer(page, 'Lista del caso');
+    await barrer(page, 'Nombres que siempre deben ocultarse');
     await page.getByRole('button', { name: 'Continuar' }).click();
     await expect(h1(page, 'Entrada')).toBeVisible();
     await barrer(page, 'Entrada (pegar texto)');
@@ -362,15 +362,15 @@ test.describe('T-IU-02 textos prohibidos en la interfaz integrada', () => {
     await barrer(page, 'Entrada (cargar archivo)');
     await page.getByRole('tab', { name: 'Pegar texto' }).click();
     await page.getByRole('textbox', { name: 'Texto del documento' }).fill(DOCUMENTO_REI);
-    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
     await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 60_000 });
     await barrer(page, 'Revisión (original)');
-    await page.getByRole('region', { name: 'Documento con detecciones' }).locator('[data-det]').first().click();
+    await page.getByRole('region', { name: 'Documento con datos encontrados' }).locator('[data-det]').first().click();
     await barrer(page, 'Revisión con la ficha de una detección');
-    await page.getByRole('button', { name: 'Leyenda' }).click();
+    await page.getByRole('button', { name: 'Cómo leer la vista previa' }).click();
     await barrer(page, 'Revisión con la leyenda');
-    await page.getByRole('button', { name: 'Leyenda' }).click();
-    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await page.getByRole('button', { name: 'Cómo leer la vista previa' }).click();
+    await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
     await barrer(page, 'Revisión (ver salida)');
     await page.getByRole('button', { name: 'Atajos de teclado' }).click();
     await barrer(page, 'Revisión con los atajos de teclado');

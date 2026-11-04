@@ -11,11 +11,11 @@ const h1 = (page: Page, nombre: string) => page.getByRole('heading', { level: 1,
 
 async function irAEntrada(page: Page): Promise<void> {
   await page.goto('/');
-  await expect(h1(page, 'Inicio')).toBeVisible();
-  await page.getByLabel('Código del asunto').fill('PRUEBA-AX');
+  await expect(h1(page, 'Cargar documento')).toBeVisible();
+  await page.getByLabel('Código del caso').fill('PRUEBA-AX');
   await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-  await page.getByRole('button', { name: 'Crear asunto' }).click();
-  await expect(h1(page, 'Lista del caso')).toBeVisible();
+  await page.getByRole('button', { name: 'Crear caso' }).click();
+  await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
   await page.getByRole('button', { name: 'Continuar' }).click();
   await expect(h1(page, 'Entrada')).toBeFocused();
 }
@@ -42,10 +42,10 @@ test.describe('T-AX-01 teclado en Entrada y Procesando', () => {
     await page.keyboard.type(TEXTO_PRUEBA);
     // Tab: casilla del modelo (deshabilitada, se omite) → «Analizar».
     await page.keyboard.press('Tab');
-    expect(await activo(page)).toEqual({ rol: 'button', nombre: 'Analizar' });
+    expect(await activo(page)).toEqual({ rol: 'button', nombre: 'Anonimizar' });
     await configurarSimulador(page, { retener: 'resultado' });
     await page.keyboard.press('Enter');
-    await expect(h1(page, 'Procesando')).toBeFocused();
+    await expect(h1(page, 'Analizando')).toBeFocused();
     // En Procesando, Tab llega a «Cancelar análisis» y nada más (sin trampas de foco).
     await page.keyboard.press('Tab');
     expect(await activo(page)).toEqual({ rol: 'button', nombre: 'Cancelar análisis' });
@@ -59,9 +59,9 @@ test.describe('T-AX-01 teclado en Entrada y Procesando', () => {
     await irAEntrada(page);
     await page.getByRole('textbox', { name: 'Texto del documento' }).fill(TEXTO_PRUEBA);
     await configurarSimulador(page, { retener: 'resultado' });
-    await page.getByRole('button', { name: 'Analizar', exact: true }).focus();
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).focus();
     await page.keyboard.press('Enter');
-    await expect(h1(page, 'Procesando')).toBeFocused();
+    await expect(h1(page, 'Analizando')).toBeFocused();
     await page.keyboard.press('Tab');
     await page.keyboard.press('Space');
     await expect(h1(page, 'Entrada')).toBeFocused({ timeout: 4000 });
@@ -71,18 +71,18 @@ test.describe('T-AX-01 teclado en Entrada y Procesando', () => {
 test.describe('T-AX-02 nombres, roles y regiones de Entrada y Procesando', () => {
   test('T-AX-02 Entrada expone tablist, tabpanel, campo con nombre y descripción, y botones con nombre', async ({ page }) => {
     await irAEntrada(page);
-    await expect(page.getByRole('tablist', { name: 'Forma de entrada del documento' })).toBeVisible();
+    await expect(page.getByRole('tablist', { name: 'Forma de cargar el documento' })).toBeVisible();
     await expect(page.getByRole('tab', { name: 'Pegar texto' })).toHaveAttribute('aria-selected', 'true');
     await expect(page.getByRole('tab', { name: 'Cargar archivo' })).toHaveAttribute('aria-selected', 'false');
     await expect(page.getByRole('tabpanel', { name: 'Pegar texto' })).toBeVisible();
     const campo = page.getByRole('textbox', { name: 'Texto del documento' });
     await expect(campo).toHaveAccessibleDescription('Pegue aquí el texto del documento. Se analiza en su equipo.');
-    await expect(page.getByRole('button', { name: 'Analizar', exact: true })).toHaveAccessibleDescription('Pegue texto o cargue un archivo con texto para poder analizar.');
-    await expect(page.getByRole('button', { name: 'Editar lista del caso' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Anonimizar', exact: true })).toHaveAccessibleDescription('Pegue texto o cargue un archivo con texto para poder anonimizar.');
+    await expect(page.getByRole('button', { name: 'Editar los nombres que siempre deben ocultarse' })).toBeVisible();
     await page.getByRole('tab', { name: 'Cargar archivo' }).click();
     await expect(page.getByRole('tabpanel', { name: 'Cargar archivo' })).toBeVisible();
     await expect(page.getByRole('group', { name: 'Zona para soltar un archivo' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Elegir archivo (.txt, .docx, .pdf)' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Elegir archivo (.docx, .pdf o .txt)' })).toBeVisible();
   });
 
   test('T-AX-02 Procesando: lista de etapas con nombre, una barra con nombre y valor en palabras por etapa activa', async ({ page }) => {
@@ -90,8 +90,8 @@ test.describe('T-AX-02 nombres, roles y regiones de Entrada y Procesando', () =>
     await irAEntrada(page);
     await page.getByRole('textbox', { name: 'Texto del documento' }).fill(TEXTO_PRUEBA);
     await configurarSimulador(page, { retener: 'resultado' });
-    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
-    await expect(h1(page, 'Procesando')).toBeVisible();
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+    await expect(h1(page, 'Analizando')).toBeVisible();
     await expect(page.getByRole('list', { name: 'Etapas del análisis' })).toBeVisible();
     const lectura = page.getByRole('progressbar', { name: 'Lectura del documento' });
     await expect(lectura).toHaveAttribute('aria-valuetext', 'Lectura del documento: parte 1 de 1');
@@ -103,8 +103,8 @@ test.describe('T-AX-02 nombres, roles y regiones de Entrada y Procesando', () =>
 
   test('T-AX-02 la zona de soltar y las etiquetas de las casillas no dependen solo del color: texto visible y estado en el nombre', async ({ page }) => {
     await irAEntrada(page);
-    await expect(page.getByRole('checkbox', { name: 'Usar el modelo de apoyo' })).toBeDisabled();
-    await expect(page.getByText('El análisis usará reglas y lista del caso: el modelo de apoyo no está descargado.')).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' })).toBeDisabled();
+    await expect(page.getByText('El análisis usará reglas y la lista de nombres que siempre deben ocultarse: el detector de nombres adicional no está descargado.')).toBeVisible();
   });
 });
 
@@ -120,8 +120,8 @@ test.describe('T-AX-04 regiones vivas sin texto del documento', () => {
       expect(texto).not.toContain('1.000.000.017');
     }
     await configurarSimulador(page, { retener: 'todo' });
-    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
-    await expect(h1(page, 'Procesando')).toBeVisible();
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+    await expect(h1(page, 'Analizando')).toBeVisible();
     await expect(page.locator('[data-prueba="anuncio-progreso"]')).not.toHaveText('');
     for (const texto of await vivas()) {
       expect(texto).not.toContain('Ficticia');
@@ -151,11 +151,11 @@ async function abrirRevision(page: Page): Promise<void> {
     addEventListener('securitypolicyviolation', (e) => { (globalThis as unknown as { __csp: string[] }).__csp.push(e.violatedDirective); });
   });
   await page.goto('/');
-  await expect(h1(page, 'Inicio')).toBeVisible();
-  await page.getByLabel('Código del asunto').fill('PRUEBA-AX');
+  await expect(h1(page, 'Cargar documento')).toBeVisible();
+  await page.getByLabel('Código del caso').fill('PRUEBA-AX');
   await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-  await page.getByRole('button', { name: 'Crear asunto' }).click();
-  await expect(h1(page, 'Lista del caso')).toBeVisible();
+  await page.getByRole('button', { name: 'Crear caso' }).click();
+  await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
   await page.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante\nPedro Ejemplo Prueba; demandado');
   await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
   await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
@@ -163,7 +163,7 @@ async function abrirRevision(page: Page): Promise<void> {
   await page.evaluate((t) => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.cargar(t, 'plan_b'), TEXTO_REVISION);
   await expect(h1(page, 'Revisión')).toBeVisible();
 }
-const panelTexto = (page: Page) => page.getByRole('region', { name: 'Documento con detecciones' });
+const panelTexto = (page: Page) => page.getByRole('region', { name: 'Documento con datos encontrados' });
 const enfocadoRev = (page: Page) => page.evaluate(() => {
   const el = document.activeElement as HTMLElement | null;
   if (el === null) return null;
@@ -219,7 +219,7 @@ testMedicion.describe('Revisión I · accesibilidad (PC-3)', () => {
     await page.keyboard.press('a');
     await expect(marcas.nth(2)).toHaveAccessibleName(/pendiente/);
     // La cuadrícula: Tab entra a la fila activa; flechas, Inicio, Fin, derecha e izquierda.
-    const cuadricula = page.getByRole('treegrid', { name: 'Detecciones' });
+    const cuadricula = page.getByRole('treegrid', { name: 'Datos encontrados' });
     const primera = cuadricula.getByRole('row').nth(1);
     await primera.focus();
     await page.keyboard.press('ArrowRight');
@@ -243,13 +243,13 @@ testMedicion.describe('Revisión I · accesibilidad (PC-3)', () => {
   testMedicion('T-AX-02 nombres, roles y lengua: lang es-CO, regiones y botones con nombre accesible; la vista de salida no trae originales', async ({ page }) => {
     await abrirRevision(page);
     await expect(page.locator('html')).toHaveAttribute('lang', 'es-CO');
-    await expect(page.getByRole('region', { name: 'Documento con detecciones' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Documento con datos encontrados' })).toBeVisible();
     await expect(page.getByRole('toolbar', { name: 'Herramientas de la revisión' })).toBeVisible();
-    await expect(page.getByRole('complementary', { name: 'Detecciones' })).toBeVisible();
-    await expect(page.getByRole('treegrid', { name: 'Detecciones' })).toHaveAttribute('aria-rowcount', '8');
+    await expect(page.getByRole('complementary', { name: 'Datos encontrados' })).toBeVisible();
+    await expect(page.getByRole('treegrid', { name: 'Datos encontrados' })).toHaveAttribute('aria-rowcount', '8');
     await expect(page.getByRole('row', { name: 'Persona, [DEMANDANTE_1], 2 menciones, 2 pendientes' })).toHaveAttribute('aria-level', '1');
     await expect(page.getByRole('row', { name: 'Cédula de ciudadanía, [CC_1], 1 mención, 1 pendiente' })).toBeVisible();
-    for (const n of ['Ver original', 'Ver salida', 'Leyenda', 'Atajos de teclado', 'Descartar documento']) {
+    for (const n of ['Ver original', 'Ver documento anonimizado', 'Cómo leer la vista previa', 'Atajos de teclado', 'Descartar este documento']) {
       await expect(page.getByRole('button', { name: n })).toBeVisible();
     }
     // Todo control tiene nombre accesible; los campos, etiqueta; los nombres e ids de campos son neutros.
@@ -266,14 +266,14 @@ testMedicion.describe('Revisión I · accesibilidad (PC-3)', () => {
     expect(sinNombre).toEqual([]);
     // Selección de una mención: la ficha es una región con nombre y sus botones, accesibles.
     await panelTexto(page).locator('[data-det]').nth(0).click();
-    const ficha = page.getByRole('region', { name: 'Ficha de la detección' });
+    const ficha = page.getByRole('region', { name: 'Ficha del dato encontrado' });
     await expect(ficha.getByRole('button', { name: 'Aceptar esta mención' })).toBeVisible();
     await expect(ficha.getByRole('button', { name: 'Aceptar todas las menciones (2) de esta entidad' })).toBeVisible();
-    await expect(ficha.getByLabel('Motivo del rechazo (opcional)')).toBeVisible();
+    await expect(ficha.getByLabel('Motivo para no ocultarlo (opcional)')).toBeVisible();
     await expect(ficha.getByLabel('Cambiar rol')).toBeVisible();
     // La vista de salida expone solo «Marcador {marcador}»: el árbol de accesibilidad no contiene originales.
-    await page.getByRole('button', { name: 'Ver salida' }).click();
-    const salida = page.getByRole('region', { name: 'Documento con los marcadores como fichas' });
+    await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
+    const salida = page.getByRole('region', { name: 'Documento con las etiquetas como fichas' });
     await expect(salida.getByRole('img', { name: 'Marcador [CC_1]' })).toBeVisible();
     const arbol = await salida.ariaSnapshot();
     for (const original of ['Ana', 'Ficticia', 'Pedro', 'Ejemplo', '1.000.000', 'ana.ficticia', '3000000000']) expect(arbol).not.toContain(original);
@@ -322,11 +322,11 @@ testMedicion.describe('Revisión I · accesibilidad (PC-3)', () => {
     await page.keyboard.press('u');
     await expect(marcas.nth(0).locator('svg.ico-pendiente')).toHaveCount(1);
     // La leyenda (divulgación) explica las tres codificaciones y se cierra con Esc devolviendo el foco al botón.
-    const boton = page.getByRole('button', { name: 'Leyenda' });
+    const boton = page.getByRole('button', { name: 'Cómo leer la vista previa' });
     await boton.click();
     const leyenda = page.getByRole('region', { name: 'Categorías de datos' });
     await expect(boton).toHaveAttribute('aria-expanded', 'true');
-    for (const t of ['Personas', 'Organizaciones', 'Identificaciones', 'Expedientes', 'Contacto y lugar', 'Bienes y dinero', 'Fechas', 'Banderas de revisión manual', 'Borde sólido', 'Borde discontinuo', 'Borde punteado']) {
+    for (const t of ['Personas', 'Organizaciones', 'Identificaciones', 'Expedientes', 'Contacto y lugar', 'Bienes y dinero', 'Fechas', 'Datos indirectos para revisar', 'Borde sólido', 'Borde discontinuo', 'Borde punteado']) {
       await expect(leyenda).toContainText(t);
     }
     const bordes = await leyenda.evaluate((el) => ['conf-alta', 'conf-media', 'conf-baja'].map((c) => getComputedStyle(el.querySelector('.leyenda-bordes .' + c) as Element).borderTopStyle));
@@ -353,8 +353,8 @@ testMedicion.describe('Revisión I · accesibilidad (PC-3)', () => {
     const vivas = await page.evaluate(() => [...document.querySelectorAll('[role="status"], [role="alert"], [aria-live]')].map((el) => el.textContent ?? ''));
     expect(vivas.join('\n')).not.toMatch(/Ana|Ficticia|Pedro|Ejemplo|1\.000\.000|ejemplo\.test/);
     // El cambio de pantalla se anuncia y el foco va al h1 (2.4.3): «Descartar documento» vuelve a Entrada.
-    await page.getByRole('button', { name: 'Descartar documento' }).click();
-    await page.getByRole('dialog', { name: 'Descartar documento' }).getByRole('button', { name: 'Descartar documento' }).click();
+    await page.getByRole('button', { name: 'Descartar este documento' }).click();
+    await page.getByRole('dialog', { name: 'Descartar este documento' }).getByRole('button', { name: 'Descartar este documento' }).click();
     await expect(h1(page, 'Entrada')).toBeFocused();
     await expect(page.locator('[data-prueba="anuncio-pantalla"]')).toHaveText('Pantalla: Entrada');
   });

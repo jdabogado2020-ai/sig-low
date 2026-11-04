@@ -26,26 +26,26 @@ export interface OpcionesAsunto { codigo?: string; guardar?: boolean }
 /** Crea el asunto (en memoria o guardado cifrado), pega la lista, analiza el documento y decide cada mención una por una. */
 export async function crearYAnalizar(page: Page, o: OpcionesAsunto = {}): Promise<void> {
   await page.goto('/');
-  await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
-  await page.getByLabel('Código del asunto').fill(o.codigo ?? 'PRUEBA-REI-01');
+  await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
+  await page.getByLabel('Código del caso').fill(o.codigo ?? 'PRUEBA-REI-01');
   if (o.guardar === true) {
     await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
-    await page.getByLabel('Frase de paso. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.', { exact: true }).fill(FRASE);
-    await page.getByLabel('Repita la frase de paso', { exact: true }).fill(FRASE);
+    await page.getByLabel('Contraseña de la llave. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.', { exact: true }).fill(FRASE);
+    await page.getByLabel('Repita la contraseña de la llave', { exact: true }).fill(FRASE);
     await page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
   } else {
     await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
   }
-  await page.getByRole('button', { name: 'Crear asunto' }).click();
-  await expect(h1(page, 'Lista del caso')).toBeVisible({ timeout: 30_000 });
+  await page.getByRole('button', { name: 'Crear caso' }).click();
+  await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible({ timeout: 30_000 });
   await page.getByRole('textbox', { name: 'Texto de la lista' }).fill(LISTA_REI);
   await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
   await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
   await page.getByRole('button', { name: 'Continuar' }).click();
   await page.getByRole('textbox', { name: 'Texto del documento' }).fill(DOCUMENTO_REI);
-  await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+  await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
   await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 30_000 });
-  const marcas = page.getByRole('region', { name: 'Documento con detecciones' }).locator('[data-det]');
+  const marcas = page.getByRole('region', { name: 'Documento con datos encontrados' }).locator('[data-det]');
   const total = await marcas.count();
   expect(total).toBeGreaterThan(0);
   for (let i = 0; i < total; i++) {
@@ -55,7 +55,7 @@ export async function crearYAnalizar(page: Page, o: OpcionesAsunto = {}): Promis
     }
   }
   await page.locator('[data-prueba="continuar"]').click();
-  await expect(h1(page, 'Listo')).toBeVisible();
+  await expect(h1(page, 'Descargar')).toBeVisible();
 }
 
 /** En Listo: espera la búsqueda de residuos, marca el recordatorio y copia (la copia consolida la tabla del asunto). */
@@ -72,8 +72,8 @@ export async function copiarEnListo(page: Page): Promise<void> {
 export async function llegarAReinsercion(page: Page, o: OpcionesAsunto = {}): Promise<void> {
   await crearYAnalizar(page, o);
   await copiarEnListo(page);
-  await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
-  await expect(h1(page, 'Reinserción')).toBeVisible();
+  await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+  await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
 }
 
 export const campoRespuesta = (page: Page) => page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' });
@@ -83,7 +83,7 @@ export const origen = (page: Page) => page.getByRole('combobox', { name: 'Docume
 export async function pegarYBuscar(page: Page, respuesta: string, conOrigen = false): Promise<void> {
   if (conOrigen) await origen(page).selectOption({ index: 1 });
   await campoRespuesta(page).fill(respuesta);
-  await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+  await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
 }
 
 /** El texto del resultado de Reinserción tal como lo copiaría el modelo: solo los trozos de datos, sin insignias. */

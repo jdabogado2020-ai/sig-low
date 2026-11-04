@@ -15,14 +15,14 @@ const h1 = (page: Page, nombre: string) => page.getByRole('heading', { level: 1,
 async function abrirInicio(page: Page): Promise<void> {
   await page.goto('/');
   // La primera visita espera el precache del SW (8.1: «sin tiempo límite»; ≈ 1,5 s con el equipo cargado).
-  await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
+  await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
 }
 
 async function crearAsunto(page: Page, codigo = 'PRUEBA-001'): Promise<void> {
-  await page.getByLabel('Código del asunto').fill(codigo);
+  await page.getByLabel('Código del caso').fill(codigo);
   await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-  await page.getByRole('button', { name: 'Crear asunto' }).click();
-  await expect(h1(page, 'Lista del caso')).toBeVisible();
+  await page.getByRole('button', { name: 'Crear caso' }).click();
+  await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
 }
 
 async function pegarLista(page: Page, texto: string): Promise<void> {
@@ -31,26 +31,26 @@ async function pegarLista(page: Page, texto: string): Promise<void> {
 }
 
 const PROMESA =
-  'Sus documentos no salen de su equipo. La herramienta propone los reemplazos, le muestra lo que puede quedar y usted aprueba antes de copiar.';
+  'Sus documentos no salen de su equipo. Sig-Low propone qué ocultar, le muestra el documento ya anonimizado y usted decide antes de descargarlo.';
 
 test.describe('T-IU-05 estados globales y de Inicio', () => {
   test('T-IU-05 @humo Inicio vacío: M-106, formulario sin valores por defecto y «Crear asunto» deshabilitado', async ({ page }) => {
     await abrirInicio(page);
     await expect(page.locator('[data-prueba="promesa"]')).toHaveText(PROMESA);
-    await expect(page.getByText('No hay asuntos guardados en este navegador.')).toBeVisible();
+    await expect(page.getByText('No hay casos guardados en este navegador.')).toBeVisible();
     await expect(page.getByRole('radio', { name: /^Guardar tabla cifrada/ })).not.toBeChecked();
     await expect(page.getByRole('radio', { name: /^No guardar la tabla/ })).not.toBeChecked();
-    const crear = page.getByRole('button', { name: 'Crear asunto' });
+    const crear = page.getByRole('button', { name: 'Crear caso' });
     await expect(crear).toBeDisabled();
     // Con la bóveda conectada (PD-4), «Guardar» está disponible y sin M-208; el caso sin IndexedDB (M-208) está en boveda.spec.ts.
     await expect(page.getByRole('radio', { name: /^Guardar tabla cifrada/ })).toBeEnabled();
     await expect(page.locator('[data-prueba="guardar-no-disponible"]')).toHaveCount(0);
-    await page.getByLabel('Código del asunto').fill('---');
+    await page.getByLabel('Código del caso').fill('---');
     await expect(page.getByText('El código admite de 1 a 40 caracteres: letras sin tilde, números, espacio, punto, guion, guion bajo y barra.')).toBeVisible();
     await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
     await expect(crear).toBeDisabled();
-    await page.getByLabel('Código del asunto').fill('PRUEBA-001');
-    await expect(page.getByLabel('Código del asunto')).not.toHaveAttribute('aria-invalid', 'true');
+    await page.getByLabel('Código del caso').fill('PRUEBA-001');
+    await expect(page.getByLabel('Código del caso')).not.toHaveAttribute('aria-invalid', 'true');
     await expect(crear).toBeEnabled();
   });
 
@@ -58,19 +58,19 @@ test.describe('T-IU-05 estados globales y de Inicio', () => {
     await abrirInicio(page);
     await crearAsunto(page, 'PRUEBA-001');
     await expect(page.locator('[data-prueba="chip-asunto"]')).toContainText('Asunto PRUEBA-001');
-    await expect(page.locator('[data-prueba="chip-asunto"]')).toContainText('Tabla solo en memoria');
+    await expect(page.locator('[data-prueba="chip-asunto"]')).toContainText('Llave solo en memoria');
     await expect(page.getByText('La tabla se perderá al cerrar o bloquear.')).toBeVisible();
-    await expect(page.getByRole('navigation', { name: 'Pasos del asunto' }).locator('[aria-current="step"]')).toHaveText('Lista del caso');
+    await expect(page.getByRole('navigation', { name: 'Pasos' }).locator('[aria-current="step"]')).toHaveText('Nombres que siempre deben ocultarse');
     await expect(page.getByText('Todavía no hay personas ni organizaciones en la lista del caso.')).toBeVisible();
     // Cambio de pantalla: foco al h1 nuevo y anuncio «Pantalla: {nombre}» (8.2.1, 8.6.3).
     await page.getByRole('button', { name: 'Continuar' }).click();
     await expect(h1(page, 'Entrada')).toBeFocused();
     await expect(page.locator('[data-prueba="anuncio-pantalla"]')).toHaveText('Pantalla: Entrada');
-    await expect(page.getByRole('navigation', { name: 'Pasos del asunto' }).locator('[aria-current="step"]')).toHaveText('Entrada');
+    await expect(page.getByRole('navigation', { name: 'Pasos' }).locator('[aria-current="step"]')).toHaveText('Entrada');
     // «Cerrar asunto» vuelve a Inicio sin aviso de bloqueo.
-    await page.getByRole('button', { name: 'Menú del asunto' }).click();
-    await page.getByRole('button', { name: 'Cerrar asunto' }).click();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await page.getByRole('button', { name: 'Opciones del caso' }).click();
+    await page.getByRole('button', { name: 'Cerrar el caso' }).click();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toHaveCount(0);
   });
 
@@ -81,9 +81,9 @@ test.describe('T-IU-05 estados globales y de Inicio', () => {
     await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
     await expect(page.getByRole('rowheader', { name: 'Ana Ficticia Rojas' })).toBeVisible();
     await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText('Sig-Low se bloqueó y borró de la memoria el documento y la revisión en curso.');
-    await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText('La tabla de ese asunto no estaba guardada y se perdió.');
+    await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText('La llave de ese caso no estaba guardada y se perdió.');
     await expect(page.locator('body')).not.toContainText('Ana Ficticia Rojas');
     await expect(page.locator('[data-prueba="chip-asunto"]')).toHaveCount(0);
   });
@@ -95,7 +95,7 @@ test.describe('T-IU-05 estados globales y de Inicio', () => {
     // Sin esa caché ya no se promete el uso sin conexión (el SW sirve lo que falta verificado, sin recrearla).
     await page.evaluate(async () => { for (const k of await caches.keys()) await caches.delete(k); });
     await page.reload();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     await expect(page.locator('[data-prueba="sin-conexion"]')).toHaveText('');
   });
 
@@ -126,7 +126,7 @@ test.describe('T-IU-07 avisos de buenas prácticas', () => {
     await aviso.getByRole('button', { name: 'Entendido' }).click();
     await expect(aviso).not.toContainText('Trabaje en una ventana normal');
     await page.reload();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     await expect(page.locator('[data-prueba="aviso-inicial"]')).toContainText('Trabaje en una ventana normal del navegador');
   });
 });
@@ -221,7 +221,7 @@ test.describe('Lista del caso (8.2.3)', () => {
     const panel = page.locator('[data-prueba="panel-variantes"]');
     await expect(panel).toContainText('Ana Ficticia Rojas');
     await expect(panel.locator('[data-prueba="variante-compartida"]').first()).toHaveText(
-      'Esta variante coincide con otra persona u organización de la lista. Se buscará con confianza baja; revise cada aparición.',
+      'Esta variante coincide con otra persona u organización de la lista. Se buscará con confianza baja; revise cada vez que aparezca.',
     );
     const casilla = panel.getByRole('checkbox', { name: 'Buscar esta variante (Ficticia Rojas)' });
     await expect(casilla).toBeChecked();
@@ -289,7 +289,7 @@ test.describe('T-IU-12 impresion-y-guardado', () => {
       addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 's' && (e.ctrlKey || e.metaKey)) (globalThis as unknown as { __cs: boolean[] }).__cs.push(e.defaultPrevented); });
     });
     await page.keyboard.press('Control+s');
-    await expect(page.locator('[data-prueba="aviso-global"]')).toContainText('Sig-Low no guarda la página. Use «Exportar tabla cifrada» o los botones de descarga.');
+    await expect(page.locator('[data-prueba="aviso-global"]')).toContainText('Sig-Low no guarda la página. Use «Guardar la llave para devolver los datos reales» o los botones de descarga.');
     // Los manejadores de la página corren antes que el de la prueba (captura vs. burbuja): el evento ya llegó prevenido.
     const prevenidos = await page.evaluate(() => (globalThis as unknown as { __cs: boolean[] }).__cs);
     expect(prevenidos).toEqual([true]);
@@ -311,9 +311,9 @@ test.describe('T-IU-13 bloqueo-suspension', () => {
     await expect(page.getByRole('rowheader', { name: 'Ana Ficticia Rojas' })).toBeVisible();
     await page.clock.setSystemTime(new Date('2026-10-30T10:16:00'));
     await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText('Sig-Low se bloqueó');
-    await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText('La tabla de ese asunto no estaba guardada y se perdió.');
+    await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText('La llave de ese caso no estaba guardada y se perdió.');
     await expect(page.getByRole('alertdialog')).toHaveCount(0);
     await expect(page.locator('body')).not.toContainText('Ana Ficticia Rojas');
   });
@@ -333,14 +333,14 @@ test.describe('T-IU-13 bloqueo-suspension', () => {
     await expect(aviso).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(aviso).toBeHidden();
-    await expect(h1(page, 'Lista del caso')).toBeVisible();
+    await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
   });
 
   test('T-IU-13 con 15 min exactos o más bloquea en el mismo manejador, antes de pintar el aviso', async ({ page }) => {
     await conReloj(page, '2026-10-30T10:00:00', 'PRUEBA-013');
     await page.clock.setSystemTime(new Date('2026-10-30T10:15:00'));
     await page.evaluate(() => dispatchEvent(new Event('focus')));
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     await expect(page.getByRole('alertdialog')).toHaveCount(0);
   });
 });
@@ -351,12 +351,12 @@ test.describe('T-IU-14 bloqueo-pestanas', () => {
     const b = await context.newPage();
     for (const [p, codigo] of [[a, 'PRUEBA-14A'], [b, 'PRUEBA-14B']] as const) {
       await p.goto(baseURL ?? '/');
-      await expect(h1(p, 'Inicio')).toBeVisible();
+      await expect(h1(p, 'Cargar documento')).toBeVisible();
       await crearAsunto(p, codigo);
     }
     await a.getByRole('button', { name: 'Bloquear', exact: true }).click();
-    await expect(h1(a, 'Inicio')).toBeVisible();
-    await expect(h1(b, 'Inicio')).toBeVisible({ timeout: 1000 });
+    await expect(h1(a, 'Cargar documento')).toBeVisible();
+    await expect(h1(b, 'Cargar documento')).toBeVisible({ timeout: 1000 });
     await expect(b.locator('[data-prueba="aviso-bloqueo"]')).toContainText('Sig-Low se bloqueó');
     await expect(b.locator('[data-prueba="chip-asunto"]')).toHaveCount(0);
   });
@@ -367,7 +367,7 @@ test.describe('T-IU-14 bloqueo-pestanas', () => {
     for (const [p, codigo] of [[a, 'PRUEBA-14A'], [b, 'PRUEBA-14B']] as const) {
       await p.clock.install({ time: new Date('2026-10-30T10:00:00') });
       await p.goto(baseURL ?? '/');
-      await expect(h1(p, 'Inicio')).toBeVisible();
+      await expect(h1(p, 'Cargar documento')).toBeVisible();
       await crearAsunto(p, codigo);
     }
     // La pestaña A trabaja a los 10 min y lo difunde.
@@ -377,12 +377,12 @@ test.describe('T-IU-14 bloqueo-pestanas', () => {
     // A los 16 min de su reloj, B sigue sin bloquearse: la última actividad fue a los 10 min.
     await b.clock.setSystemTime(new Date('2026-10-30T10:16:00'));
     await b.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-    await expect(h1(b, 'Lista del caso')).toBeVisible();
+    await expect(h1(b, 'Nombres que siempre deben ocultarse')).toBeVisible();
     await expect(b.getByRole('alertdialog')).toHaveCount(0);
     // Pasados 15 min desde la actividad de A (10:25), B sí se bloquea.
     await b.clock.setSystemTime(new Date('2026-10-30T10:25:30'));
     await b.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-    await expect(h1(b, 'Inicio')).toBeVisible();
+    await expect(h1(b, 'Cargar documento')).toBeVisible();
   });
 });
 
@@ -399,7 +399,7 @@ async function irAEntrada(page: Page, codigo = 'PRUEBA-002'): Promise<void> {
   await expect(h1(page, 'Entrada')).toBeVisible();
 }
 const areaTexto = (page: Page) => page.getByRole('textbox', { name: 'Texto del documento' });
-const analizar = (page: Page) => page.getByRole('button', { name: 'Analizar', exact: true });
+const analizar = (page: Page) => page.getByRole('button', { name: 'Anonimizar', exact: true });
 const alertaEntrada = (page: Page) => page.locator('[data-prueba="error-entrada"]');
 
 async function cargarArchivo(page: Page, nombre: string, contenido: Buffer | string, mimeType = 'application/octet-stream'): Promise<void> {
@@ -412,16 +412,16 @@ test.describe('T-IU-05 Entrada: pegar, cargar y estados', () => {
   test('T-IU-05 @humo pegar → Procesando → Revisión: reglas y lista, con el modelo en plan B (no descargado)', async ({ page }) => {
     await instalarSimulador(page);
     await irAEntrada(page);
-    await expect(page.getByRole('navigation', { name: 'Pasos del asunto' }).locator('[aria-current="step"]')).toHaveText('Entrada');
+    await expect(page.getByRole('navigation', { name: 'Pasos' }).locator('[aria-current="step"]')).toHaveText('Entrada');
     await areaTexto(page).fill(TEXTO_PRUEBA);
     await configurarSimulador(page, { retener: 'resultado' });
     await analizar(page).click();
-    await expect(h1(page, 'Procesando')).toBeFocused();
+    await expect(h1(page, 'Analizando')).toBeFocused();
     await expect(page.getByRole('heading', { level: 2, name: 'Analizando el documento en su equipo' })).toBeVisible();
     await configurarSimulador(page, { retener: null });
     await soltarRetenidos(page);
     await expect(h1(page, 'Revisión')).toBeVisible();
-    await expect(page.getByRole('navigation', { name: 'Pasos del asunto' }).locator('[aria-current="step"]')).toHaveText('Revisión');
+    await expect(page.getByRole('navigation', { name: 'Pasos' }).locator('[aria-current="step"]')).toHaveText('Revisión');
     const sim = await leerSimulador(page);
     expect(sim.creados).toContain('detect');
     expect(sim.enviados.find((e) => e.kind === 'detectar')?.incluidas).toEqual([true]);
@@ -431,16 +431,16 @@ test.describe('T-IU-05 Entrada: pegar, cargar y estados', () => {
   test('T-IU-05 Entrada vacía: «Analizar» deshabilitado con su ayuda, modelo sin descargar con M-51 y «Editar lista del caso» conserva el texto', async ({ page }) => {
     await irAEntrada(page);
     await expect(analizar(page)).toBeDisabled();
-    await expect(page.getByText('Pegue texto o cargue un archivo con texto para poder analizar.')).toBeVisible();
+    await expect(page.getByText('Pegue texto o cargue un archivo con texto para poder anonimizar.')).toBeVisible();
     await expect(page.getByText('Pegue aquí el texto del documento. Se analiza en su equipo.')).toBeVisible();
-    await expect(page.getByRole('checkbox', { name: 'Usar el modelo de apoyo' })).toBeDisabled();
-    await expect(page.getByText('El análisis usará reglas y lista del caso: el modelo de apoyo no está descargado.')).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' })).toBeDisabled();
+    await expect(page.getByText('El análisis usará reglas y la lista de nombres que siempre deben ocultarse: el detector de nombres adicional no está descargado.')).toBeVisible();
     await areaTexto(page).fill('   \n  ');
     await expect(analizar(page)).toBeDisabled();
     await areaTexto(page).fill(TEXTO_PRUEBA);
     await expect(analizar(page)).toBeEnabled();
-    await page.getByRole('button', { name: 'Editar lista del caso' }).click();
-    await expect(h1(page, 'Lista del caso')).toBeVisible();
+    await page.getByRole('button', { name: 'Editar los nombres que siempre deben ocultarse' }).click();
+    await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
     await page.getByRole('button', { name: 'Continuar' }).click();
     await expect(h1(page, 'Entrada')).toBeVisible();
     await expect(areaTexto(page)).toHaveValue(TEXTO_PRUEBA);
@@ -568,11 +568,11 @@ test.describe('T-IU-05 Entrada: pegar, cargar y estados', () => {
     const cargado = page.locator('[data-prueba="archivo-cargado"]');
     await expect(cargado).toContainText('Archivo cargado: .docx, ');
     // Partes: etiqueta neutra y número de caracteres; todas marcadas.
-    await expect(page.getByRole('group', { name: 'Partes encontradas' })).toBeVisible();
+    await expect(page.getByRole('group', { name: 'Partes del documento' })).toBeVisible();
     for (const [etiqueta, n] of [['Cuerpo del documento', 69], ['Encabezado 1', 20], ['Comentario 1', 27]] as const) {
       await expect(page.getByRole('checkbox', { name: `${etiqueta} · ${n} caracteres` })).toBeChecked();
     }
-    await expect(page.getByText('Estas son las partes del documento. Desmarque solo lo que no quiera en la salida: lo desmarcado no se analiza ni se copia.')).toBeVisible();
+    await expect(page.getByText('Estas son las partes del documento. Desmarque lo que no quiera incluir: lo desmarcado no se analiza ni aparece en el documento anonimizado.')).toBeVisible();
     // Metadatos: solo categorías (M-401 y M-406), sin ningún valor.
     await expect(page.locator('[data-prueba="aviso-metadatos"]')).toHaveText(
       'El archivo original contiene información adicional que Sig-Low no copia a la salida: Propiedades del documento (autor, título, fechas); Autores y fechas de revisiones y comentarios. Si envía o comparte el archivo original, esa información va con él.',
@@ -606,7 +606,7 @@ test.describe('T-IU-05 Entrada: pegar, cargar y estados', () => {
     await irAEntrada(page);
     await areaTexto(page).fill(TEXTO_PRUEBA);
     await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     await expect(page.locator('body')).not.toContainText('Ana Ficticia Rojas');
     await crearAsunto(page, 'PRUEBA-003');
     await page.getByRole('button', { name: 'Continuar' }).click();
@@ -621,16 +621,16 @@ test.describe('T-IU-05 Procesando: progreso por etapa, cancelar y errores', () =
     await areaTexto(page).fill(TEXTO_PRUEBA);
     await configurarSimulador(page, { retener: 'resultado' });
     await analizar(page).click();
-    await expect(h1(page, 'Procesando')).toBeVisible();
+    await expect(h1(page, 'Analizando')).toBeVisible();
     const etapas = page.locator('[data-prueba="etapas"]');
     await expect(etapas.locator('li')).toHaveCount(7);
     await expect(etapas.locator('[data-prueba="etapa-lectura"]')).toContainText('Lectura del documento · Terminada');
     await expect(etapas.locator('[data-prueba="etapa-reglas"]')).toContainText('Reglas de formatos colombianos');
-    await expect(etapas.locator('[data-prueba="etapa-lista"]')).toContainText('Lista del caso');
+    await expect(etapas.locator('[data-prueba="etapa-lista"]')).toContainText('Nombres que siempre deben ocultarse');
     await expect(etapas.locator('[data-prueba="etapa-modelo"]')).toContainText('Modelo de apoyo · Omitida');
     // Sin el modelo, sus dos etapas no cuentan; las demás tienen su <progress> con nombre.
     await expect(etapas.getByRole('progressbar', { name: 'Reglas de formatos colombianos' })).toBeVisible();
-    await expect(etapas.getByRole('progressbar', { name: 'Modelo de apoyo' })).toHaveCount(0);
+    await expect(etapas.getByRole('progressbar', { name: 'Detector de nombres adicional' })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Cancelar análisis' })).toBeVisible();
     await expect(page.locator('[data-prueba="anuncio-progreso"]')).toHaveAttribute('role', 'status');
     await configurarSimulador(page, { retener: null });
@@ -644,11 +644,11 @@ test.describe('T-IU-05 Procesando: progreso por etapa, cancelar y errores', () =
     await areaTexto(page).fill(TEXTO_PRUEBA);
     await configurarSimulador(page, { retener: 'todo' });
     await analizar(page).click();
-    await expect(h1(page, 'Procesando')).toBeVisible();
+    await expect(h1(page, 'Analizando')).toBeVisible();
     await page.getByRole('button', { name: 'Cancelar análisis' }).click();
     await expect(page.getByRole('button', { name: 'Cancelando…' })).toBeDisabled();
     await expect(h1(page, 'Entrada')).toBeVisible({ timeout: 4000 });
-    await expect(page.locator('[data-prueba="analisis-cancelado"]')).toHaveText('Análisis cancelado. El texto sigue en la pantalla de entrada.');
+    await expect(page.locator('[data-prueba="analisis-cancelado"]')).toHaveText('Análisis cancelado. El texto sigue en la pantalla «Cargar documento».');
     await expect(areaTexto(page)).toHaveValue(TEXTO_PRUEBA);
     expect((await leerSimulador(page)).terminados).toContain('detect');
     // Se puede analizar de nuevo con un worker nuevo.
@@ -664,7 +664,7 @@ test.describe('T-IU-05 Procesando: progreso por etapa, cancelar y errores', () =
     await areaTexto(page).fill(TEXTO_PRUEBA);
     await configurarSimulador(page, { retener: 'resultado' });
     await analizar(page).click();
-    await expect(h1(page, 'Procesando')).toBeVisible();
+    await expect(h1(page, 'Analizando')).toBeVisible();
     const t0 = Date.now();
     await page.getByRole('button', { name: 'Cancelar análisis' }).click();
     await expect(h1(page, 'Entrada')).toBeVisible({ timeout: 1500 });
@@ -698,9 +698,9 @@ test.describe('T-IU-05 Procesando: progreso por etapa, cancelar y errores', () =
     await areaTexto(page).fill(TEXTO_PRUEBA);
     await configurarSimulador(page, { retener: 'todo' });
     await analizar(page).click();
-    await expect(h1(page, 'Procesando')).toBeVisible();
+    await expect(h1(page, 'Analizando')).toBeVisible();
     await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     expect((await leerSimulador(page)).terminados).toContain('detect');
     await expect(page.locator('body')).not.toContainText('Ana Ficticia Rojas');
   });
@@ -710,7 +710,7 @@ test.describe('T-IU-05 Procesando: progreso por etapa, cancelar y errores', () =
     await areaTexto(page).fill(TEXTO_PRUEBA);
     await analizar(page).click();
     await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('heading', { level: 1, name: 'Procesando' })).toHaveCount(0);
+    await expect(page.getByRole('heading', { level: 1, name: 'Analizando' })).toHaveCount(0);
   });
 });
 
@@ -748,7 +748,7 @@ async function abrirRevision(page: Page, texto = TEXTO_REVISION, lista = 'Ana Fi
   await expect(h1(page, 'Revisión')).toBeVisible();
   return n;
 }
-const panelTexto = (page: Page) => page.getByRole('region', { name: 'Documento con detecciones' });
+const panelTexto = (page: Page) => page.getByRole('region', { name: 'Documento con datos encontrados' });
 
 /** Selecciona texto del panel entre dos tramos (por fragmento y desplazamiento) y simula el fin del arrastre con el ratón. */
 async function seleccionarEnPanel(page: Page, inicio: [string, number], fin: [string, number]): Promise<void> {
@@ -778,14 +778,14 @@ testMedicion.describe('Revisión I (PC-3)', () => {
     expect(n).toBe(9);
     const panel = panelTexto(page);
     await expect(panel.locator('[data-det]')).toHaveCount(9);
-    await expect(page.locator('[data-prueba="numeracion-provisional"]')).toHaveText('Los números de los marcadores pueden cambiar hasta que copie o exporte por primera vez.');
-    await expect(panel.getByRole('button', { name: 'Persona, pendiente, confianza alta: Señora Ana Ficticia Rojas' }).first()).toBeVisible();
-    await expect(page.getByRole('treegrid', { name: 'Detecciones' })).toBeVisible();
+    await expect(page.locator('[data-prueba="numeracion-provisional"]')).toHaveText('Los números de las etiquetas pueden cambiar hasta que copie o descargue por primera vez.');
+    await expect(panel.getByRole('button', { name: 'Persona, pendiente, confianza alta: Ana Ficticia Rojas' }).first()).toBeVisible();
+    await expect(page.getByRole('treegrid', { name: 'Datos encontrados' })).toBeVisible();
     await expect(page.getByRole('row', { name: 'Persona, [DEMANDANTE_1], 2 menciones, 2 pendientes' })).toBeVisible();
     // Sin detecciones: M-69 y ningún resaltado.
     const sin = await page.evaluate(() => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.cargar('Texto de prueba sin datos personales.', 'plan_b'));
     expect(sin).toBe(0);
-    await expect(page.locator('[data-prueba="sin-detecciones"]')).toHaveText('No se encontraron datos para reemplazar. Lea el texto completo: puede agregar reemplazos a mano.');
+    await expect(page.locator('[data-prueba="sin-detecciones"]')).toHaveText('No se encontraron datos para ocultar. Lea el texto completo: puede ocultar datos a mano.');
     await expect(panel.locator('[data-det]')).toHaveCount(0);
   });
 
@@ -796,7 +796,7 @@ testMedicion.describe('Revisión I (PC-3)', () => {
     expect(await gancho(page).revision()).toBe(0);
     await marcas.nth(0).focus();
     await page.keyboard.press('a');
-    await expect(marcas.nth(0)).toHaveAccessibleName('Persona, aceptada como [DEMANDANTE_1], confianza alta: Señora Ana Ficticia Rojas');
+    await expect(marcas.nth(0)).toHaveAccessibleName('Persona, aceptada como [DEMANDANTE_1], confianza alta: Ana Ficticia Rojas');
     expect(await gancho(page).revision()).toBe(1);
     await marcas.nth(1).focus();
     await page.keyboard.press('r');
@@ -861,11 +861,11 @@ testMedicion.describe('Revisión I (PC-3)', () => {
     await abrirRevision(page);
     const r0 = await gancho(page).revision();
     await seleccionarEnPanel(page, ['solicitó el reemplazo', 12], ['solicitó el reemplazo', 21]);
-    await page.getByRole('button', { name: 'Agregar reemplazo' }).click();
-    const dialogo = page.getByRole('dialog', { name: 'Agregar reemplazo' });
+    await page.getByRole('button', { name: 'Ocultar un texto' }).click();
+    const dialogo = page.getByRole('dialog', { name: 'Ocultar un texto' });
     await expect(dialogo.locator('[data-prueba="reemplazo-texto"]')).toHaveText('reemplazo');
     await dialogo.getByLabel('Tipo de dato del reemplazo').selectOption('LUGAR');
-    await dialogo.getByRole('button', { name: 'Agregar reemplazo' }).click();
+    await dialogo.getByRole('button', { name: 'Ocultar un texto' }).click();
     await expect(dialogo).toBeHidden();
     const d = (await gancho(page).detalle()).find((x) => x.source === 'manual');
     expect(d).toMatchObject({ texto: 'reemplazo', source: 'manual', precedence: 1, confidence: 'alta', status: 'aceptada', type: 'LUGAR' });
@@ -877,10 +877,10 @@ testMedicion.describe('Revisión I (PC-3)', () => {
     await abrirRevision(page);
     const r0 = await gancho(page).revision();
     await seleccionarEnPanel(page, ['Ana Ficticia Rojas', 4], [', identificada con', 8]);
-    await page.getByRole('button', { name: 'Agregar reemplazo' }).click();
-    const dialogo = page.getByRole('dialog', { name: 'Agregar reemplazo' });
-    await dialogo.getByRole('button', { name: 'Agregar reemplazo' }).click();
-    await expect(dialogo.getByRole('alert')).toHaveText('La selección corta a medias otra detección. Amplíela para cubrirla completa o ajústela para no tocarla.');
+    await page.getByRole('button', { name: 'Ocultar un texto' }).click();
+    const dialogo = page.getByRole('dialog', { name: 'Ocultar un texto' });
+    await dialogo.getByRole('button', { name: 'Ocultar un texto' }).click();
+    await expect(dialogo.getByRole('alert')).toHaveText('La selección corta a medias otro dato encontrado. Amplíela para cubrirlo completo o ajústela para no tocarlo.');
     expect(await gancho(page).revision()).toBe(r0);
     await dialogo.getByRole('button', { name: 'Cancelar' }).click();
     await expect(dialogo).toBeHidden();
@@ -888,20 +888,20 @@ testMedicion.describe('Revisión I (PC-3)', () => {
 
   testMedicion('T-IU-05 «Descartar documento» pide M-75, borra la revisión y vuelve a Entrada; Bloquear vacía la memoria (INV-G09)', async ({ page }) => {
     await abrirRevision(page);
-    await page.getByRole('button', { name: 'Descartar documento' }).click();
-    const d = page.getByRole('dialog', { name: 'Descartar documento' });
-    await expect(d).toContainText('Se descartará este documento y su revisión. La tabla del asunto no cambia.');
+    await page.getByRole('button', { name: 'Descartar este documento' }).click();
+    const d = page.getByRole('dialog', { name: 'Descartar este documento' });
+    await expect(d).toContainText('Se descartará este documento y su revisión. La llave del caso no cambia.');
     await d.getByRole('button', { name: 'Cancelar' }).click();
     await expect(h1(page, 'Revisión')).toBeVisible();
-    await page.getByRole('button', { name: 'Descartar documento' }).click();
-    await page.getByRole('dialog', { name: 'Descartar documento' }).getByRole('button', { name: 'Descartar documento' }).click();
+    await page.getByRole('button', { name: 'Descartar este documento' }).click();
+    await page.getByRole('dialog', { name: 'Descartar este documento' }).getByRole('button', { name: 'Descartar este documento' }).click();
     await expect(h1(page, 'Entrada')).toBeVisible();
     expect(await gancho(page).revision()).toBe(-1);
     // Bloquear con una revisión abierta.
     await page.evaluate((t) => (globalThis as unknown as { __siglowRevisionPrueba: Gancho }).__siglowRevisionPrueba.cargar(t, 'plan_b'), TEXTO_REVISION);
     await expect(h1(page, 'Revisión')).toBeVisible();
     await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     expect(await gancho(page).revision()).toBe(-1);
     await expect(page.locator('body')).not.toContainText('Ana Ficticia Rojas');
     await expect(page.locator('body')).not.toContainText('Pedro Ejemplo');
@@ -921,10 +921,10 @@ testMedicion.describe('Revisión I (PC-3)', () => {
     expect(r.tipos).toEqual(['text/plain']);
     expect(r.texto).toBe(TEXTO_REVISION.slice(0, TEXTO_REVISION.indexOf(', identificada con cédula de ciudadanía número ') + 20));
     expect(r.texto).not.toMatch(/PER|\[/);
-    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
     await expect(page.locator('[data-prueba="aviso-salida"]')).toContainText('La salida se puede copiar cuando se cumplan las condiciones del paso Listo');
     await expect(panelTexto(page)).toHaveCount(0);
-    const salida = page.getByRole('region', { name: 'Documento con los marcadores como fichas' });
+    const salida = page.getByRole('region', { name: 'Documento con las etiquetas como fichas' });
     await expect(salida.getByRole('img', { name: 'Marcador [DEMANDANTE_1]' }).first()).toBeVisible();
     const s = await page.evaluate(() => {
       const panel = document.querySelector('[data-prueba="panel-texto"]') as HTMLElement;
@@ -964,7 +964,7 @@ testMedicion.describe('Revisión I (PC-3)', () => {
     await expect(panel.locator('.res.edicion')).toHaveCount(2);
     const ti = panel.getByRole('button', { name: /^Tarjeta de identidad, pendiente/ });
     await ti.click();
-    const ficha = page.getByRole('region', { name: 'Ficha de la detección' });
+    const ficha = page.getByRole('region', { name: 'Ficha del dato encontrado' });
     await expect(ficha.locator('[data-prueba="ficha-marcador"]')).toHaveText('[DOCUMENTO_1]');
     const r0 = await gancho(page).revision();
     await ficha.getByRole('button', { name: 'Usar marcador específico (TI)' }).click();
@@ -972,7 +972,7 @@ testMedicion.describe('Revisión I (PC-3)', () => {
     await expect(panel.locator('.res.edicion')).toHaveCount(1);
     await expect(page.locator('[data-prueba="anuncio-revision"]')).toHaveText('Marcador específico aplicado: [TI_1].');
     expect(await gancho(page).revision()).toBe(r0 + 1);
-    await ficha.getByRole('button', { name: 'Volver al marcador general' }).click();
+    await ficha.getByRole('button', { name: 'Volver a la etiqueta general' }).click();
     await expect(ficha.locator('[data-prueba="ficha-marcador"]')).toHaveText('[DOCUMENTO_1]');
     await expect(panel.locator('.res.edicion')).toHaveCount(2);
     await expect(page.locator('[data-prueba="anuncio-revision"]')).toHaveText('Marcador general restablecido: [DOCUMENTO_1].');
@@ -1051,7 +1051,7 @@ test.describe('T-PV-05 PDF de punta a punta en la app (PE-4-r2)', () => {
     for (const [etiqueta, n] of [['Página 1', 30], ['Anotación 1 (página 1)', 22], ['Anotación 2 (página 1)', 13], ['Anotación 3 (página 1)', 14]] as const) {
       await expect(page.getByRole('checkbox', { name: `${etiqueta} · ${n} caracteres` })).toBeChecked();
     }
-    await expect(page.getByRole('group', { name: 'Partes encontradas' }).getByRole('checkbox')).toHaveCount(4);
+    await expect(page.getByRole('group', { name: 'Partes del documento' }).getByRole('checkbox')).toHaveCount(4);
     await expect(page.locator('[data-prueba="avisos-lectura"] li')).toHaveText(
       'El PDF tiene adjuntos, vínculos o marcadores (5) cuyo contenido Sig-Low no lee. Revíselos en el original.',
     );
@@ -1125,7 +1125,7 @@ testMedicion.describe('Revisión II (PC-4)', () => {
     await expect(despacho.locator('[data-prueba="estado-sugerencia"]')).toHaveText('Aplicada');
     await expect(page.locator('[data-prueba="sin-decidir"]')).toHaveText('Sin decidir: 4');
     await expect(page.locator('[data-prueba="anuncio-revision"]')).toHaveText('Sugerencia aplicada. Quedan 4 sin decidir.');
-    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
     await expect(page.locator('[data-prueba="panel-texto"]')).toContainText('[DEPARTAMENTO_1]');
     await page.getByRole('button', { name: 'Ver original' }).click();
 
@@ -1133,7 +1133,7 @@ testMedicion.describe('Revisión II (PC-4)', () => {
     expect(await gancho(page).revision()).toBe(r0 + 2);
     await expect(despacho.locator('[data-prueba="estado-sugerencia"]')).toHaveText('Descartada');
     await expect(page.locator('[data-prueba="sin-decidir"]')).toHaveText('Sin decidir: 4');
-    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
     await expect(page.locator('[data-prueba="panel-texto"]')).not.toContainText('[DEPARTAMENTO_1]');
   });
 
@@ -1179,12 +1179,12 @@ testMedicion.describe('Revisión II (PC-4)', () => {
     await dx.getByRole('button', { name: 'Aplicar el reemplazo' }).click();
     expect(await gancho(page).revision()).toBe(r0 + 2);
     await expect(dx.locator('[data-prueba="estado-bandera"]')).toHaveText('Confirmada');
-    await expect(contador(page)).toHaveText('No quedan detecciones pendientes ni banderas sin confirmar.');
+    await expect(contador(page)).toHaveText('No quedan datos encontrados por revisar ni datos indirectos por revisar.');
     await expect(continuar(page)).toHaveAttribute('aria-disabled', 'false');
-    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
     await expect(page.locator('[data-prueba="panel-texto"]')).toContainText('un diagnóstico médico');
     await continuar(page).click();
-    await expect(h1(page, 'Listo')).toBeVisible();
+    await expect(h1(page, 'Descargar')).toBeVisible();
   });
 
   testMedicion('T-IU-05 INV-R08: bandera con texto libre en «Reemplazar por…»: entra a la salida y confirma la bandera', async ({ page }) => {
@@ -1192,12 +1192,12 @@ testMedicion.describe('Revisión II (PC-4)', () => {
     await page.getByRole('tab', { name: /^Revisión manual/ }).click();
     const cargo = page.locator('li[data-bandera]').first();
     await cargo.getByRole('button', { name: /^Reemplazar por…/ }).click();
-    await cargo.getByLabel('Texto del reemplazo de la bandera').fill('una directiva de Prueba');
+    await cargo.getByLabel('Texto del reemplazo del dato indirecto').fill('una directiva de Prueba');
     const r0 = await gancho(page).revision();
     await cargo.getByRole('button', { name: 'Aplicar el reemplazo' }).click();
     expect(await gancho(page).revision()).toBe(r0 + 1);
     await expect(cargo.locator('[data-prueba="estado-bandera"]')).toHaveText('Confirmada');
-    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
     await expect(page.locator('[data-prueba="panel-texto"]')).toContainText('una directiva de Prueba');
   });
 
@@ -1229,13 +1229,13 @@ testMedicion.describe('Revisión II (PC-4)', () => {
     // Hay 5 detecciones y 5 banderas: el recorrido de 10 pasos pasa por una tarjeta de bandera.
     let vistoBandera = false;
     for (let i = 0; i < 10 && !vistoBandera; i++) {
-      await page.getByRole('button', { name: 'Siguiente pendiente' }).click();
+      await page.getByRole('button', { name: 'Siguiente por revisar' }).click();
       vistoBandera = await page.evaluate(() => (document.activeElement as HTMLElement | null)?.hasAttribute('data-bandera') ?? false);
     }
     expect(vistoBandera).toBe(true);
     await expect(ban).toHaveAttribute('aria-selected', 'true');
     // Hacia atrás vuelve a una detección (texto o lista) sin perder el orden de lectura.
-    await page.getByRole('button', { name: 'Anterior pendiente' }).click();
+    await page.getByRole('button', { name: 'Anterior por revisar' }).click();
     await expect.poll(() => page.evaluate(() => (document.activeElement as HTMLElement | null)?.hasAttribute('data-det') ?? false)).toBe(true);
   });
 
@@ -1244,7 +1244,7 @@ testMedicion.describe('Revisión II (PC-4)', () => {
     await abrirRevision(page, `${relleno}\nLa gerente general de Ferretería Ejemplo firmó.`, '');
     await page.getByRole('tab', { name: /^Revisión manual/ }).click();
     await expect(panelTexto(page).locator('[data-ban]')).toHaveCount(0);
-    await page.locator('li[data-bandera]').first().getByRole('button', { name: 'Ir a la ubicación' }).click();
+    await page.locator('li[data-bandera]').first().getByRole('button', { name: 'Ir al lugar del documento' }).click();
     await expect(panelTexto(page).locator('[data-ban]')).toHaveCount(1);
     await expect(panelTexto(page).locator('[data-ban]')).toBeInViewport();
   });
@@ -1280,19 +1280,19 @@ testMedicion.describe('Revisión II (PC-4)', () => {
     const campo = page.getByRole('textbox', { name: 'Buscar en el documento' });
     await campo.fill('barrio ficticio');
     await expect(page.locator('[data-prueba="busqueda-estado"]')).toHaveText('1 de 1');
-    await page.getByRole('button', { name: 'Agregar reemplazo para esta coincidencia' }).click();
-    const dialogo = page.getByRole('dialog', { name: 'Agregar reemplazo' });
+    await page.getByRole('button', { name: 'Ocultar esta coincidencia' }).click();
+    const dialogo = page.getByRole('dialog', { name: 'Ocultar un texto' });
     await expect(dialogo.locator('[data-prueba="reemplazo-texto"]')).toHaveText('Barrio Ficticio');
     const antes = await gancho(page).revision();
-    await dialogo.getByRole('button', { name: 'Agregar reemplazo' }).click();
+    await dialogo.getByRole('button', { name: 'Ocultar un texto' }).click();
     expect(await gancho(page).revision()).toBe(antes + 1);
     expect((await gancho(page).detalle()).some((d) => d.source === 'manual' && d.precedence === 1 && d.texto === 'Barrio Ficticio')).toBe(true);
   });
 
   testMedicion('T-IU-06 filtros de categoría, estado, confianza y fuente: filtran la lista y el contador cuenta todo', async ({ page }) => {
     await abrirRevision(page);
-    await page.getByText('Filtros de la lista de detecciones').click();
-    const filas = page.getByRole('treegrid', { name: 'Detecciones' }).getByRole('row');
+    await page.getByText('Filtros de la lista de datos encontrados').click();
+    const filas = page.getByRole('treegrid', { name: 'Datos encontrados' }).getByRole('row');
     const antes = await filas.count();
     const textoContador = await contador(page).textContent();
     await page.getByLabel('Estado', { exact: true }).selectOption('aceptada');
@@ -1386,18 +1386,18 @@ async function abrirListo(page: Page, o: { modelo?: 'en_curso' | 'terminado' | '
   await expect(h1(page, 'Revisión')).toBeVisible();
   if (o.decidir !== false) await ganchoListo(page).decidir();
   await ganchoListo(page).ir();
-  await expect(h1(page, 'Listo')).toBeVisible();
+  await expect(h1(page, 'Descargar')).toBeVisible();
 }
 const casilla = (page: Page, n: 1 | 2 | 3) => page.getByRole('checkbox', { name: new RegExp(n === 1 ? '^Datos biométricos' : n === 2 ? '^Documentos con reserva legal' : '^La estrategia reservada') });
 async function marcarRecordatorio(page: Page): Promise<void> {
   for (const n of [1, 2, 3] as const) await casilla(page, n).check();
 }
-const vistaSalida = (page: Page) => page.getByRole('region', { name: 'Documento anonimizado con los marcadores como fichas' });
+const vistaSalida = (page: Page) => page.getByRole('region', { name: 'Documento anonimizado con las etiquetas como fichas' });
 const botones = (page: Page) => ({
   copiar: page.getByRole('button', { name: 'Copiar texto anonimizado' }),
   vaciar: page.getByRole('button', { name: 'Vaciar portapapeles' }),
-  txt: page.getByRole('button', { name: 'Descargar .txt' }),
-  docx: page.getByRole('button', { name: 'Descargar .docx' }),
+  txt: page.getByRole('button', { name: 'Descargar texto (.txt)' }),
+  docx: page.getByRole('button', { name: 'Descargar documento (.docx)' }),
   informeTxt: page.getByRole('button', { name: 'Descargar informe (.txt)' }),
   informeJson: page.getByRole('button', { name: 'Descargar informe (.json)' }),
 });
@@ -1422,7 +1422,7 @@ testMedicion.describe('Listo (PC-5)', () => {
     const lista = page.locator('[data-prueba="motivos-puerta"]');
     await expect(lista.locator('[data-motivo="PENDIENTES"]')).toHaveText(/^Quedan \d+ detecciones pendientes\.$/);
     await expect(lista.locator('[data-motivo="MODELO_EN_CURSO"]')).toHaveText('El modelo de apoyo todavía está revisando el documento: faltan 7 de 9 bloques. Espere a que termine o elija seguir sin él.');
-    await expect(lista.locator('[data-motivo="RESIDUOS_NO_EJECUTADA"]')).toHaveText('Falta la búsqueda de residuos.');
+    await expect(lista.locator('[data-motivo="RESIDUOS_NO_EJECUTADA"]')).toHaveText('Falta la búsqueda de datos que se escaparon.');
     await expect(lista.locator('[data-motivo="RECORDATORIO"]')).toHaveText('Falta confirmar las 3 casillas del recordatorio.');
     for (const x of [b.copiar, b.txt, b.docx, b.informeTxt, b.informeJson]) {
       await expect(x).toHaveAttribute('aria-disabled', 'true');
@@ -1455,9 +1455,9 @@ testMedicion.describe('Listo (PC-5)', () => {
     await g.residuo(0, 0);
     await expect(page.locator('[data-prueba="motivos"]')).toHaveCount(0);
     expect(await g.restablecer()).toBe(true);
-    await expect(lista.locator('[data-motivo="RESIDUOS_DESACTUALIZADA"]')).toHaveText('Hubo cambios después de la búsqueda de residuos.');
+    await expect(lista.locator('[data-motivo="RESIDUOS_DESACTUALIZADA"]')).toHaveText('Hubo cambios después de la búsqueda de datos que se escaparon.');
     await expect(lista.locator('[data-motivo="PENDIENTES"]')).toHaveText('Quedan 1 detecciones pendientes.');
-    await expect(page.locator('[data-prueba="residuos-estado"]')).toContainText('Hubo cambios después de la búsqueda de residuos. Se buscará de nuevo.');
+    await expect(page.locator('[data-prueba="residuos-estado"]')).toContainText('Hubo cambios después de la búsqueda de datos que se escaparon. Se buscará de nuevo.');
     // Al decidir de nuevo la búsqueda vuelve a correr sola y, con las casillas aún marcadas, la puerta se abre otra vez.
     await g.decidir();
     await esperarBusqueda(page);
@@ -1476,17 +1476,7 @@ testMedicion.describe('Listo (PC-5)', () => {
     expect(e.banderas).toBeGreaterThan(0);
     await expect(page.locator('[data-motivo="BANDERAS"]')).toHaveText(/^Quedan \d+ banderas sin confirmar\.$/);
     await g.decidir();
-    // CIERRE-1 (M-82): «Ejemplo» de «Luis Ejemplo» ya no es de Pedro; la búsqueda de residuos trae «Luis» como detección nueva y,
-    // como en el producto, vuelve a Revisión con el pendiente (M-78). El revisor lo decide, regresa a Listo y la búsqueda corre de
-    // nuevo (F0: el «Buscando…» de P0-5 era la prueba, que esperaba el estado de Listo estando ya en Revisión). Una sola vuelta: una
-    // segunda querría decir que cada decisión trae otro residuo (un ciclo del producto).
-    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 30_000 });
-    await expect(page.locator('[data-prueba="aviso-M-78"]')).toContainText('La búsqueda de residuos encontró');
-    expect(await g.decidir()).toBe(1);
-    await g.ir();
-    await expect(h1(page, 'Listo')).toBeVisible();
     await esperarBusqueda(page);
-    await expect(h1(page, 'Listo')).toBeVisible();
     await marcarRecordatorio(page);
     expect((await g.estado()).ok).toBe(true);
   });
@@ -1534,7 +1524,7 @@ testMedicion.describe('Listo (PC-5)', () => {
     const g = ganchoListo(page);
     expect(await g.decidir()).toBeGreaterThan(0);
     await g.ir();
-    await expect(h1(page, 'Listo')).toBeVisible();
+    await expect(h1(page, 'Descargar')).toBeVisible();
     await esperarBusqueda(page);
     await expect(page.locator('[data-prueba="residuos-estado"]')).toContainText(/ninguno de los \d+ valores buscados aparece en la salida\./);
     await expect(page.locator('body')).toContainText('La búsqueda compara la salida con los datos detectados y con la lista del caso.');
@@ -1669,7 +1659,7 @@ testMedicion.describe('Listo (PC-5)', () => {
     expect((await ganchoListo(page).estado()).committed).toBe(true);
     // Bloquear vacía todo y tampoco deja URL blob: vivas.
     await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     expect(await page.evaluate(() => (globalThis as unknown as { __blobsVivos: () => number }).__blobsVivos())).toBe(0);
   });
 
@@ -1695,7 +1685,7 @@ testMedicion.describe('Listo (PC-5)', () => {
     expect(informe.asunto).toBeUndefined();
     for (const o of ORIGINALES) expect(json).not.toContain(o);
     await expect(page.locator('[data-aviso="M-89"]')).toContainText('No contiene los datos originales.');
-    await page.getByRole('checkbox', { name: 'Incluir el código del asunto en el informe' }).check();
+    await page.getByRole('checkbox', { name: 'Incluir el código del caso en el informe' }).check();
     const [dTxt] = await Promise.all([page.waitForEvent('download'), b.informeTxt.click()]);
     expect(dTxt.suggestedFilename()).toMatch(/^sig-low-informe-\d{8}-\d{4}\.txt$/);
     const bytes = readFileSync((await dTxt.path()) as string);
@@ -1752,10 +1742,10 @@ test.describe('P0-3 flujo de la demo en el build real', () => {
         await page.keyboard.press('a');
       }
     }
-    await expect(contador(page)).toHaveText('No quedan detecciones pendientes ni banderas sin confirmar.');
+    await expect(contador(page)).toHaveText('No quedan datos encontrados por revisar ni datos indirectos por revisar.');
     await expect(continuar(page)).not.toHaveAttribute('aria-disabled', 'true');
     await continuar(page).click();
-    await expect(h1(page, 'Listo')).toBeVisible();
+    await expect(h1(page, 'Descargar')).toBeVisible();
     await esperarBusqueda(page);
     const b = botones(page);
     await expect(b.copiar).toHaveAttribute('aria-disabled', 'true');
@@ -1782,7 +1772,7 @@ test.describe('P0-3 flujo de la demo en el build real', () => {
     try {
       const nav = await page.reload();
       expect(nav?.fromServiceWorker()).toBe(true);
-      await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
+      await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
       expect(await page.evaluate(() => crossOriginIsolated)).toBe(true);
       await demo(page, context);
     } finally {

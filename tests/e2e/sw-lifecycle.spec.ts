@@ -329,23 +329,23 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
     const ctx = await browser.newContext({ baseURL: srv.origen });
     const page = await abrirControlada(ctx);
     const h1 = (nombre: string) => page.getByRole('heading', { level: 1, name: nombre });
-    await expect(h1('Inicio')).toBeVisible({ timeout: 25_000 });
+    await expect(h1('Cargar documento')).toBeVisible({ timeout: 25_000 });
     // Asunto «No guardar» (ficticio): su tabla existe solo en memoria y la recarga la borraría.
-    await page.getByLabel('Código del asunto').fill('PRUEBA-SW-02');
+    await page.getByLabel('Código del caso').fill('PRUEBA-SW-02');
     await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await page.getByRole('button', { name: 'Crear asunto' }).click();
-    await expect(h1('Lista del caso')).toBeVisible();
+    await page.getByRole('button', { name: 'Crear caso' }).click();
+    await expect(h1('Nombres que siempre deben ocultarse')).toBeVisible();
     await publicarV2(page);
     const banda = page.locator('[data-prueba="banda-actualizacion"]');
     const ahora = banda.getByRole('button', { name: 'Actualizar ahora' });
     await expect(banda).toContainText('Hay una versión nueva de Sig-Low. Se aplicará sola la próxima vez que abra Sig-Low con todas sus pestañas cerradas.');
     // Con la tabla sin guardar ni exportar, el aviso exige hacerlo antes (8.2.10): «Actualizar ahora» no se puede usar.
-    await expect(banda.getByRole('button', { name: 'Exportar tabla cifrada' })).toBeVisible();
+    await expect(banda.getByRole('button', { name: 'Guardar la llave para devolver los datos reales' })).toBeVisible();
     await expect(ahora).toBeDisabled();
     expect(await servidaPor(page)).toBe('v1');
     // Sin asunto en memoria (tras «Bloquear») se puede aplicar: SKIP_WAITING y recarga a la v2.
     await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
-    await expect(h1('Inicio')).toBeVisible();
+    await expect(h1('Cargar documento')).toBeVisible();
     await expect(ahora).toBeEnabled();
     await Promise.all([page.waitForEvent('load'), ahora.click()]);
     await esperarControl(page);
@@ -361,13 +361,13 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
     const ctx = await browser.newContext({ baseURL: srv.origen });
     const page = await abrirControlada(ctx);
     const otra = await abrirControlada(ctx);
-    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible({ timeout: 25_000 });
+    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible({ timeout: 25_000 });
     // La otra pestaña tiene un asunto «No guardar» (ficticio): su tabla existe solo en su memoria.
-    await expect(otra.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible({ timeout: 25_000 });
-    await otra.getByLabel('Código del asunto').fill('PRUEBA-SW-02');
+    await expect(otra.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible({ timeout: 25_000 });
+    await otra.getByLabel('Código del caso').fill('PRUEBA-SW-02');
     await otra.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await otra.getByRole('button', { name: 'Crear asunto' }).click();
-    await expect(otra.getByRole('heading', { level: 1, name: 'Lista del caso' })).toBeVisible();
+    await otra.getByRole('button', { name: 'Crear caso' }).click();
+    await expect(otra.getByRole('heading', { level: 1, name: 'Nombres que siempre deben ocultarse' })).toBeVisible();
     await publicarV2(page);
     expect(await ventanasQueVeLaEspera(ctx)).toBe(2);
     await marcar(page);
@@ -421,11 +421,11 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
     const ctx = await browser.newContext({ baseURL: srv.origen });
     const page = await abrirControlada(ctx);
     const otra = await abrirControlada(ctx);
-    await expect(otra.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible({ timeout: 25_000 });
-    await otra.getByLabel('Código del asunto').fill('PRUEBA-SW-02');
+    await expect(otra.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible({ timeout: 25_000 });
+    await otra.getByLabel('Código del caso').fill('PRUEBA-SW-02');
     await otra.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await otra.getByRole('button', { name: 'Crear asunto' }).click();
-    await expect(otra.getByRole('heading', { level: 1, name: 'Lista del caso' })).toBeVisible();
+    await otra.getByRole('button', { name: 'Crear caso' }).click();
+    await expect(otra.getByRole('heading', { level: 1, name: 'Nombres que siempre deben ocultarse' })).toBeVisible();
     await publicarV2(page);
     await marcar(page);
     await marcar(otra);
@@ -444,9 +444,9 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
       expect(await servidaPor(p)).toBe('v2');
     }
     // La tabla «No guardar» de la otra pestaña sigue en memoria, y el aviso ofrece exportarla antes de recargar.
-    await expect(otra.getByRole('heading', { level: 1, name: 'Lista del caso' })).toBeVisible();
+    await expect(otra.getByRole('heading', { level: 1, name: 'Nombres que siempre deben ocultarse' })).toBeVisible();
     await expect(otra.locator('[data-prueba="chip-asunto"]')).toContainText('PRUEBA-SW-02');
-    await expect(otra.locator('[data-prueba="aviso-version-cambiada"]').getByRole('button', { name: 'Exportar tabla cifrada' })).toBeVisible();
+    await expect(otra.locator('[data-prueba="aviso-version-cambiada"]').getByRole('button', { name: 'Guardar la llave para devolver los datos reales' })).toBeVisible();
     await page.waitForTimeout(1_000);
     for (const p of [page, otra]) expect((await estadoPestana(p)).sinRecarga).toBe(true);
     await ctx.close();

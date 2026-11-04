@@ -21,18 +21,18 @@ const gancho = (page: Page) => ({
 });
 
 const h1 = (page: Page, nombre: string) => page.getByRole('heading', { level: 1, name: nombre });
-const panelTexto = (page: Page) => page.getByRole('region', { name: 'Documento con detecciones' });
+const panelTexto = (page: Page) => page.getByRole('region', { name: 'Documento con datos encontrados' });
 const banda = (page: Page) => page.locator('[data-prueba="banda-modelo"]');
 const continuar = (page: Page) => page.locator('[data-prueba="continuar"]');
 
 /** Crea un asunto «No guardar» y abre la Revisión con `texto` y el modelo en el estado pedido. */
 async function abrirRevision(page: Page, texto: string, modelo: 'en_curso' | 'plan_b' = 'en_curso'): Promise<number> {
   await page.goto('/');
-  await expect(h1(page, 'Inicio')).toBeVisible();
-  await page.getByLabel('Código del asunto').fill('PRUEBA-015');
+  await expect(h1(page, 'Cargar documento')).toBeVisible();
+  await page.getByLabel('Código del caso').fill('PRUEBA-015');
   await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-  await page.getByRole('button', { name: 'Crear asunto' }).click();
-  await expect(h1(page, 'Lista del caso')).toBeVisible();
+  await page.getByRole('button', { name: 'Crear caso' }).click();
+  await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
   await page.waitForFunction(() => '__siglowRevisionPrueba' in globalThis);
   const n = await gancho(page).cargar(texto, modelo);
   await expect(h1(page, 'Revisión')).toBeVisible();
@@ -49,15 +49,15 @@ testMedicion.describe('Modelo en la Revisión (PC-4)', () => {
     expect(n).toBe(1); // solo la cédula: la persona la traerá el modelo
     await expect(panelTexto(page).locator('[data-det]')).toHaveCount(1);
     await expect(banda(page)).toHaveAttribute('data-estado', 'en_curso');
-    await expect(banda(page).getByRole('heading', { name: 'Modelo de apoyo en curso' })).toBeVisible();
-    await expect(banda(page).locator('[data-prueba="banda-avance"]')).toHaveText('Modelo de apoyo: preparando el primer bloque');
-    await expect(page.locator('[data-prueba="contador-modelo"]')).toContainText('El modelo de apoyo aún puede agregar detecciones.');
+    await expect(banda(page).getByRole('heading', { name: 'Detector de nombres adicional en curso' })).toBeVisible();
+    await expect(banda(page).locator('[data-prueba="banda-avance"]')).toHaveText('Detector de nombres adicional: preparando el primer bloque');
+    await expect(page.locator('[data-prueba="contador-modelo"]')).toContainText('El detector de nombres adicional aún puede agregar datos encontrados.');
     // Aun sin pendientes por decidir, «Continuar» sigue cerrado mientras el modelo corre.
     const cc = panelTexto(page).locator('[data-det]', { hasText: '1.000.000.005' });
     await cc.click();
     await cc.focus();
     await page.keyboard.press('a');
-    await expect(page.locator('[data-prueba="contador-texto"]')).toHaveText('No quedan detecciones pendientes ni banderas sin confirmar.');
+    await expect(page.locator('[data-prueba="contador-texto"]')).toHaveText('No quedan datos encontrados por revisar ni datos indirectos por revisar.');
     await expect(continuar(page)).toHaveAttribute('aria-disabled', 'true');
 
     expect(await gancho(page).ventana([], 1, 3)).toBe(0);
@@ -82,15 +82,15 @@ testMedicion.describe('Modelo en la Revisión (PC-4)', () => {
 
     // «Seguir sin el modelo» pide confirmación (M-173); «Esperar» no cambia nada.
     const r0 = await gancho(page).revision();
-    await banda(page).getByRole('button', { name: 'Seguir sin el modelo' }).click();
-    const dialogo = page.getByRole('dialog', { name: 'Seguir sin el modelo' });
-    await expect(dialogo).toContainText('Si sigue sin el modelo, los nombres que no estén en la lista del caso solo se encontrarán con las reglas. ¿Seguir sin el modelo?');
+    await banda(page).getByRole('button', { name: 'Seguir sin el detector' }).click();
+    const dialogo = page.getByRole('dialog', { name: 'Seguir sin el detector' });
+    await expect(dialogo).toContainText('Si sigue sin el detector, los nombres que no estén en la lista de nombres que siempre deben ocultarse solo se encontrarán con las reglas. ¿Seguir sin el detector?');
     await dialogo.getByRole('button', { name: 'Esperar' }).click();
     await expect(dialogo).not.toBeVisible();
     expect(await gancho(page).revision()).toBe(r0);
     await expect(banda(page)).toHaveAttribute('data-estado', 'en_curso');
-    await banda(page).getByRole('button', { name: 'Seguir sin el modelo' }).click();
-    await dialogo.getByRole('button', { name: 'Seguir sin el modelo' }).click();
+    await banda(page).getByRole('button', { name: 'Seguir sin el detector' }).click();
+    await dialogo.getByRole('button', { name: 'Seguir sin el detector' }).click();
     // Plan B declarado: M-172 persistente, las detecciones ya incorporadas se conservan y la revisión sube en 1 (INV-R08).
     await expect(banda(page)).toHaveAttribute('data-estado', 'plan_b');
     await expect(banda(page).locator('[data-prueba="banda-plan-b"]')).toHaveText(
@@ -105,7 +105,7 @@ testMedicion.describe('Modelo en la Revisión (PC-4)', () => {
     await page.keyboard.press('a');
     await expect(continuar(page)).toHaveAttribute('aria-disabled', 'false');
     await continuar(page).click();
-    await expect(h1(page, 'Listo')).toBeVisible();
+    await expect(h1(page, 'Descargar')).toBeVisible();
   });
 
   testMedicion('T-IU-15 el modelo terminado se pliega a una línea (M-167)', async ({ page }) => {
@@ -113,7 +113,7 @@ testMedicion.describe('Modelo en la Revisión (PC-4)', () => {
     expect(await gancho(page).ventana([], 1, 2)).toBe(0);
     expect(await gancho(page).ventana(['Marta Ficticia Gómez'], 2, 2)).toBe(1);
     await expect(banda(page)).toHaveAttribute('data-estado', 'terminado');
-    await expect(banda(page)).toHaveText('El modelo de apoyo terminó de revisar el documento.');
+    await expect(banda(page)).toHaveText('El detector de nombres adicional terminó de revisar el documento.');
     await expect(banda(page).getByRole('button')).toHaveCount(0);
   });
 
@@ -128,13 +128,13 @@ testMedicion.describe('Modelo en la Revisión (PC-4)', () => {
     });
     await expect(page.locator('[data-prueba="banda-oculta"]')).toHaveText('Mientras la pestaña está en segundo plano, el análisis avanza más despacio.');
     await page.clock.runFor(31_000);
-    await expect(page.locator('[data-prueba="banda-lenta"]')).toHaveText('El modelo de apoyo está tardando más de lo previsto. Puede seguir revisando mientras espera, o seguir sin él.');
+    await expect(page.locator('[data-prueba="banda-lenta"]')).toHaveText('El detector de nombres adicional está tardando más de lo previsto. Puede seguir revisando mientras espera, o seguir sin él.');
     await expect(banda(page)).toHaveAttribute('data-estado', 'en_curso');
     const r0 = await gancho(page).revision();
     await page.clock.runFor(30_000);
     await expect(banda(page)).toHaveAttribute('data-estado', 'plan_b');
     await expect(page.locator('[data-prueba="banda-agotado"]')).toHaveText(
-      'El modelo de apoyo superó el tiempo previsto y se detuvo. Lo que encontró hasta ahí se conserva. La revisión continúa con reglas y lista del caso.',
+      'El detector de nombres adicional superó el tiempo previsto y se detuvo. Lo que encontró hasta ahí se conserva. La revisión continúa con reglas y con la lista de nombres que siempre deben ocultarse.',
     );
     await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('(superó el tiempo previsto)');
     expect(await gancho(page).revision()).toBe(r0 + 1);
@@ -158,7 +158,7 @@ testMedicion.describe('Modelo en la Revisión (PC-4)', () => {
   testMedicion('T-IU-16 INV-R09 INV-R10: «Usar marcador específico» de TI, CE, PPT y PEP cambia a [TI_n], restituye el rótulo y se deshace con «Volver al marcador general»', async ({ page }) => {
     await abrirRevision(page, 'La niña con T.I. 1.000.000.002 y el C.E. 123456; ppt: 0001234567 y PEP No. 123456789012345.', 'plan_b');
     const panel = panelTexto(page);
-    const ficha = page.getByRole('region', { name: 'Ficha de la detección' });
+    const ficha = page.getByRole('region', { name: 'Ficha del dato encontrado' });
     // INV-R09: nacen como [DOCUMENTO_n] y con el rótulo ya generalizado (una edición de tramo por cada rótulo con sugerencia aplicada).
     await expect(panel.locator('.res.edicion')).not.toHaveCount(0);
     const neutros = await panel.locator('.res.edicion').count();
@@ -180,9 +180,9 @@ testMedicion.describe('Modelo en la Revisión (PC-4)', () => {
       await expect(ficha.locator('[data-prueba="ficha-marcador"]')).toHaveText(esperado);
       await expect(page.locator('[data-prueba="anuncio-revision"]')).toHaveText(`Marcador específico aplicado: ${esperado}.`);
       // Vuelve a una sola copia del control: ahora es «Volver al marcador general».
-      await expect(page.getByRole('button', { name: 'Volver al marcador general' })).toHaveCount(1);
+      await expect(page.getByRole('button', { name: 'Volver a la etiqueta general' })).toHaveCount(1);
       await expect(page.getByRole('button', { name: `Usar marcador específico (${tipo})` })).toHaveCount(0);
-      await page.getByRole('button', { name: 'Volver al marcador general' }).click();
+      await page.getByRole('button', { name: 'Volver a la etiqueta general' }).click();
       expect(await gancho(page).revision()).toBe(r0 + 2);
       await expect(ficha.locator('[data-prueba="ficha-marcador"]')).toHaveText(/^\[DOCUMENTO_\d+\]$/);
       await expect(panel.locator('.res.edicion')).toHaveCount(neutros); // INV-R10: se restablece el estado neutro

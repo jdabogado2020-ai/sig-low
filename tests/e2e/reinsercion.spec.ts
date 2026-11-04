@@ -49,26 +49,26 @@ test.describe('Reinserción (PC-6)', () => {
     await expect(page.locator('[data-prueba="faltan-decisiones"]')).toContainText('Decisiones pendientes: 2.');
     await expect(resultado(page)).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Copiar texto con datos reales' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Descargar .txt' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Descargar texto (.txt)' })).toHaveCount(0);
 
     // Alterado: token, propuesta y tres decisiones. Desconocido: nunca «Reemplazar por el dato real».
     await expect(alterados(page).locator('[data-prueba="token"]')).toHaveText('Encontrado: Demandante 1');
     await expect(alterados(page).locator('[data-prueba="propuesta"]')).toContainText('Propuesta: Ana Ficticia Rojas');
-    for (const n of ['Reemplazar por el dato real', 'Dejar como está', 'Editar']) await expect(alterados(page).getByRole('button', { name: n })).toBeVisible();
-    await expect(desconocidos(page).getByRole('button', { name: 'Reemplazar por el dato real' })).toHaveCount(0);
+    for (const n of ['Devolver el dato real', 'Dejar como está', 'Editar']) await expect(alterados(page).getByRole('button', { name: n })).toBeVisible();
+    await expect(desconocidos(page).getByRole('button', { name: 'Devolver el dato real' })).toHaveCount(0);
     await expect(desconocidos(page).getByRole('button', { name: 'Dejar como está' })).toBeVisible();
     await expect(desconocidos(page).getByRole('button', { name: 'Editar' })).toBeVisible();
     // No existe un control que decida todas las alertas a la vez.
     await expect(page.getByRole('button', { name: /todos los alterados|todas las alertas|aceptar todo/i })).toHaveCount(0);
 
-    await alterados(page).getByRole('button', { name: 'Reemplazar por el dato real' }).click();
+    await alterados(page).getByRole('button', { name: 'Devolver el dato real' }).click();
     await expect(alterados(page).locator('[data-prueba="estado-alerta"]')).toHaveText('Se reemplazará por el dato real.');
     await expect(page.locator('[data-prueba="faltan-decisiones"]')).toContainText('Decisiones pendientes: 1.');
     await desconocidos(page).getByRole('button', { name: 'Dejar como está' }).click();
     // Con las decisiones tomadas faltan los marcadores faltantes: INV-N02 pide reconocerlos.
     await expect(page.locator('[data-prueba="faltan-decisiones"]')).toContainText('Falta reconocer los marcadores faltantes');
     await expect(resultado(page)).toHaveCount(0);
-    await page.getByRole('checkbox', { name: 'Revisé los marcadores faltantes.' }).check();
+    await page.getByRole('checkbox', { name: 'Revisé las etiquetas que faltan.' }).check();
     await expect(resultado(page)).toBeVisible();
     await expect(page.locator('[data-prueba="faltan-decisiones"]')).toHaveCount(0);
 
@@ -115,7 +115,7 @@ test.describe('Reinserción (PC-6)', () => {
     await page.bringToFront();
 
     // INV-N05 · descargar: M-99 y nombre neutro; el archivo es UTF-8 con BOM y CRLF; la URL blob: se revoca (T-PV-13, V-48).
-    await page.getByRole('button', { name: 'Descargar .txt' }).click();
+    await page.getByRole('button', { name: 'Descargar texto (.txt)' }).click();
     await expect(dialogo).toBeVisible();
     const [descarga] = await Promise.all([
       page.waitForEvent('download'),
@@ -142,25 +142,25 @@ test.describe('Reinserción (PC-6)', () => {
     await expect(resultado(page)).toBeVisible();
     expect(await textoDelResultado(page)).toBe('Ana Ficticia Rojas presentó la tutela.');
     await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText('Sig-Low se bloqueó');
     await expect(page.locator('[data-prueba="resultado-real"]')).toHaveCount(0);
     const cuerpo = (await page.locator('body').innerText()) + (await page.content());
     for (const real of REALES_REI) expect(cuerpo).not.toContain(real);
     expect(cuerpo).not.toContain('tutela');
     // Sin la frase no hay Reinserción: el botón sigue deshabilitado.
-    const reinsertar = page.getByRole('button', { name: 'Reinsertar una respuesta' });
+    const reinsertar = page.getByRole('button', { name: 'Devolver los datos reales a un texto' });
     await expect(reinsertar).toBeDisabled();
-    const sel = page.getByLabel('Asunto guardado', { exact: true });
+    const sel = page.getByLabel('Caso guardado', { exact: true });
     await sel.selectOption({ index: 1 });
     await expect(reinsertar).toBeDisabled();
-    await page.getByLabel('Frase de paso del asunto', { exact: true }).fill(FRASE);
+    await page.getByLabel('Contraseña de la llave del caso', { exact: true }).fill(FRASE);
     await reinsertar.click();
-    await expect(h1(page, 'Reinserción')).toBeVisible({ timeout: 30_000 });
+    await expect(h1(page, 'Devolver los datos reales')).toBeVisible({ timeout: 30_000 });
     // La tabla cifrada volvió: el marcador se reemplaza como antes.
     await origen(page).selectOption({ index: 1 });
     await pegarYBuscar(page, '[CC_1] y [CC_2].', true);
-    await page.getByRole('checkbox', { name: 'Revisé los marcadores faltantes.' }).check();
+    await page.getByRole('checkbox', { name: 'Revisé las etiquetas que faltan.' }).check();
     expect(await textoDelResultado(page)).toBe('1.000.000.001 y 1.000.000.002.');
   });
 
@@ -169,11 +169,11 @@ test.describe('Reinserción (PC-6)', () => {
     await pegarYBuscar(page, 'Declaró [DEMANDANTE_9] y [CC_12].');
     await expect(page.locator('[data-prueba="resumen-desconocidos"]')).toContainText('2 marcadores no están en la tabla de este asunto');
     await expect(desconocidos(page)).toHaveCount(2);
-    await expect(desconocidos(page).getByRole('button', { name: 'Reemplazar por el dato real' })).toHaveCount(0);
+    await expect(desconocidos(page).getByRole('button', { name: 'Devolver el dato real' })).toHaveCount(0);
     await expect(resultado(page)).toHaveCount(0);
     await desconocidos(page).nth(1).getByRole('button', { name: 'Dejar como está' }).click();
     await desconocidos(page).nth(0).getByRole('button', { name: 'Editar' }).click();
-    await page.getByRole('textbox', { name: 'Texto que quedará en lugar del marcador' }).fill('la parte actora');
+    await page.getByRole('textbox', { name: 'Texto que quedará en lugar de la etiqueta' }).fill('la parte actora');
     await page.getByRole('button', { name: 'Aplicar' }).click();
     await expect(desconocidos(page).nth(0).locator('[data-prueba="estado-alerta"]')).toHaveText('Se reemplazará por el texto que escribió.');
     await expect(resultado(page)).toBeVisible();
@@ -206,7 +206,7 @@ test.describe('Reinserción (PC-6)', () => {
     await page.locator('[data-prueba="alerta-exacto"]').getByRole('button', { name: 'Dejar como está' }).click();
     expect(await textoDelResultado(page)).toBe('Ana Ficticia Rojas y Ana Ficticia Rojas firmaron; [CC 1] y [CORREO_1].');
     await expect(page.locator('[data-prueba="resultado-real"] mark')).toHaveCount(2);
-    await page.locator('[data-prueba="alerta-exacto"]').getByRole('button', { name: 'Reemplazar por el dato real' }).click();
+    await page.locator('[data-prueba="alerta-exacto"]').getByRole('button', { name: 'Devolver el dato real' }).click();
     expect(await textoDelResultado(page)).toBe('Ana Ficticia Rojas y Ana Ficticia Rojas firmaron; [CC 1] y ana.ficticia@ejemplo.test.');
   });
 
@@ -218,13 +218,13 @@ test.describe('Reinserción (PC-6)', () => {
     }
     expect(await campo.getAttribute('id')).toMatch(/^c\d+$/);
     expect(await campo.getAttribute('name')).toMatch(/^c\d+$/);
-    await expect(page.getByRole('button', { name: 'Buscar marcadores' })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Buscar etiquetas' })).toBeDisabled();
     await pegarYBuscar(page, 'Respuesta sin ningún marcador.');
     await expect(page.locator('[data-prueba="sin-marcadores"]')).toContainText('No se encontraron marcadores en el texto pegado.');
     await expect(page.locator('[data-prueba="alertas"]')).toHaveCount(0);
     await campo.fill('[DEMANDANTE_1]');
     await expect(page.locator('[data-prueba="sin-marcadores"]')).toHaveCount(0);
-    await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+    await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
     await expect(resultado(page)).toBeVisible();
     // Cambiar el texto de la respuesta esconde el resultado: hay que volver a buscar.
     await campo.fill('[DEMANDANTE_1] otra vez');
@@ -297,19 +297,19 @@ test.describe('Reinserción (PC-6)', () => {
     await pegarYBuscar(page, '[DEMANDANTE_1] firmó.');
     await expect(resultado(page)).toBeVisible();
     await page.getByRole('button', { name: 'Salir', exact: true }).click();
-    const aviso = page.getByRole('alertdialog', { name: 'Salir de Reinserción' });
+    const aviso = page.getByRole('alertdialog', { name: 'Salir de Devolver los datos reales' });
     await expect(aviso).toContainText('Al salir de esta pantalla se borra el texto con datos reales.');
     await aviso.getByRole('button', { name: 'Quedarme' }).click();
-    await expect(h1(page, 'Reinserción')).toBeVisible();
+    await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
     await expect(resultado(page)).toBeVisible();
-    await page.getByRole('button', { name: 'Nuevo documento del asunto' }).click();
-    await page.getByRole('alertdialog', { name: 'Salir de Reinserción' }).getByRole('button', { name: 'Salir y borrar' }).click();
+    await page.getByRole('button', { name: 'Anonimizar otro documento' }).click();
+    await page.getByRole('alertdialog', { name: 'Salir de Devolver los datos reales' }).getByRole('button', { name: 'Salir y borrar' }).click();
     await expect(h1(page, 'Entrada')).toBeVisible();
     const cuerpo = (await page.locator('body').innerText()) + (await page.content());
     for (const real of REALES_REI) expect(cuerpo).not.toContain(real);
     // Sin resultado, salir no pide confirmación y la pantalla vuelve vacía.
     await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
   });
 
   test('T-PV-24 INV-V01 la pantalla no muestra ni copia la tabla completa en claro; «Cambiar de asunto» sin resultado vuelve a Inicio sin pedir confirmación', async ({ page }) => {
@@ -322,8 +322,8 @@ test.describe('Reinserción (PC-6)', () => {
     const tras = (await page.locator('body').innerText()) + (await page.content());
     expect(tras).toContain('Ana Ficticia Rojas');
     for (const real of REALES_REI.filter((r) => r !== 'Ana Ficticia Rojas')) expect(tras).not.toContain(real);
-    await page.getByRole('button', { name: 'Cambiar de asunto' }).click();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await page.getByRole('button', { name: 'Cambiar de caso' }).click();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     await expect(page.getByRole('alertdialog')).toHaveCount(0);
     await expect(page.locator('[data-prueba="resultado-real"]')).toHaveCount(0);
   });

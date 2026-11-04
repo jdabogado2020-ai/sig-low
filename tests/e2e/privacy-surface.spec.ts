@@ -11,13 +11,13 @@ const h1 = (page: Page, nombre: string) => page.getByRole('heading', { level: 1,
 async function abrirInicio(page: Page): Promise<void> {
   await page.goto('/');
   // La primera visita espera el precache del SW (8.1: «sin tiempo límite»; ≈ 1,5 s con el equipo cargado).
-  await expect(h1(page, 'Inicio')).toBeVisible({ timeout: 30_000 });
+  await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
 }
 async function crearAsunto(page: Page, codigo = 'PRUEBA-001'): Promise<void> {
-  await page.getByLabel('Código del asunto').fill(codigo);
+  await page.getByLabel('Código del caso').fill(codigo);
   await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-  await page.getByRole('button', { name: 'Crear asunto' }).click();
-  await expect(h1(page, 'Lista del caso')).toBeVisible();
+  await page.getByRole('button', { name: 'Crear caso' }).click();
+  await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
 }
 
 /** Recorre el DOM y devuelve las infracciones de 8.7 (lista vacía = cumple). */
@@ -83,12 +83,12 @@ test.describe('T-IU-03 atributos de privacidad y título neutro', () => {
     await page.getByRole('button', { name: 'Vista previa: Ana Ficticia Rojas' }).click();
     expect(await auditar(page)).toEqual([]);
     // Campos de frase (exportar con «No guardar» pide una frase nueva ×2).
-    await page.getByRole('button', { name: 'Menú del asunto' }).click();
-    await page.getByRole('button', { name: 'Exportar tabla cifrada' }).click();
-    await expect(page.getByRole('dialog', { name: 'Exportar tabla cifrada' })).toBeVisible();
+    await page.getByRole('button', { name: 'Opciones del caso' }).click();
+    await page.getByRole('button', { name: 'Guardar la llave para devolver los datos reales' }).click();
+    await expect(page.getByRole('dialog', { name: 'Guardar la llave para devolver los datos reales' })).toBeVisible();
     expect(await page.locator('dialog[open] input[type="password"]').count()).toBe(2);
     expect(await auditar(page)).toEqual([]);
-    await page.getByLabel('Frase de paso. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.').fill('frase de prueba ficticia ñandú');
+    await page.getByLabel('Contraseña de la llave. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.').fill('frase de prueba ficticia ñandú');
     await page.getByRole('button', { name: 'Mostrar' }).first().click();
     await expect(page.locator('dialog[open] input[type="text"]').first()).toBeVisible();
     expect(await auditar(page)).toEqual([]);
@@ -169,7 +169,7 @@ test.describe('T-PV-09 «Acerca de»: versión, SHA-256 y dirección oficial', (
     await expect(dialogo).toContainText('Esta misma copia de Sig-Low calcula estos códigos');
     await page.keyboard.press('Escape');
     await page.reload();
-    await expect(h1(page, 'Inicio')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     // El pie muestra la compilación de 12 hexadecimales (igual a app.compilacion de 6.8).
     await expect(page.locator('[data-prueba="version"]')).toHaveText('Versión 1.0.0 · compilación ' + esperadoIndex.slice(0, 12), { timeout: 5000 });
   });
@@ -218,7 +218,7 @@ test.describe('T-PV-03 búsqueda propia en Revisión (V-29)', () => {
     await page.getByRole('button', { name: 'Continuar' }).click();
     await expect(h1(page, 'Entrada')).toBeVisible();
     await page.getByRole('textbox', { name: 'Texto del documento' }).fill('La señora Ana Ficticia Rojas firmó el oficio. Su correo es ana.ficticia@ejemplo.test.');
-    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
     await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 30_000 });
 
     const campo = page.getByRole('textbox', { name: 'Buscar en el documento' });
@@ -233,13 +233,13 @@ test.describe('T-PV-03 búsqueda propia en Revisión (V-29)', () => {
     page.on('request', (r) => peticiones.push(r.url()));
 
     // Ctrl+F con el foco en otro control: abre y enfoca la búsqueda de la app.
-    await page.getByRole('button', { name: 'Leyenda' }).focus();
+    await page.getByRole('button', { name: 'Cómo leer la vista previa' }).focus();
     await page.keyboard.press('Control+f');
     await expect(campo).toBeFocused();
     await campo.fill('ficticia');
     await expect(page.locator('[data-prueba="busqueda-estado"]')).toHaveText(/^1 de \d+$/);
     // F3 desde otro control vuelve a la búsqueda de la app y selecciona lo escrito.
-    await page.getByRole('button', { name: 'Leyenda' }).focus();
+    await page.getByRole('button', { name: 'Cómo leer la vista previa' }).focus();
     await page.keyboard.press('F3');
     await expect(campo).toBeFocused();
     expect(await campo.evaluate((el) => (el as HTMLInputElement).selectionEnd! - (el as HTMLInputElement).selectionStart!)).toBe('ficticia'.length);
@@ -265,17 +265,17 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     await page.getByRole('button', { name: 'Continuar' }).click();
     await expect(h1(page, 'Entrada')).toBeVisible();
     await page.getByRole('textbox', { name: 'Texto del documento' }).fill(documento);
-    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
     await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 60_000 });
   }
   /** Decide cada mención pendiente con el teclado (A) y pasa a Listo. */
   async function decidirYContinuar(page: Page): Promise<void> {
-    const marcas = page.getByRole('region', { name: 'Documento con detecciones' }).locator('[data-det]');
+    const marcas = page.getByRole('region', { name: 'Documento con datos encontrados' }).locator('[data-det]');
     for (let i = 0, n = await marcas.count(); i < n; i++) {
       if (/, pendiente, /.test((await marcas.nth(i).getAttribute('aria-label')) ?? '')) { await marcas.nth(i).focus(); await page.keyboard.press('a'); }
     }
     await page.locator('[data-prueba="continuar"]').click();
-    await expect(h1(page, 'Listo')).toBeVisible();
+    await expect(h1(page, 'Descargar')).toBeVisible();
   }
   const eventoPrevenido = (page: Page, selector: string, tipo: 'contextmenu' | 'copy'): Promise<{ prevenido: boolean; datos: string }> =>
     page.locator(selector).first().evaluate((el, t) => {
@@ -295,25 +295,25 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     const auditarSinStyle = async (): Promise<string[]> => (await auditar(page)).filter((x) => x !== 'atributo style');
     await hastaRevision(page, DOCUMENTO_REI, 'PRUEBA-PV-03');
     expect(await auditarSinStyle(), 'Revisión').toEqual([]);
-    await page.getByRole('region', { name: 'Documento con detecciones' }).locator('[data-det]').first().click();
-    await expect(page.getByRole('region', { name: 'Ficha de la detección' })).toBeVisible();
+    await page.getByRole('region', { name: 'Documento con datos encontrados' }).locator('[data-det]').first().click();
+    await expect(page.getByRole('region', { name: 'Ficha del dato encontrado' })).toBeVisible();
     expect(await auditarSinStyle(), 'Revisión con ficha').toEqual([]);
     for (const el of await page.locator('.panel-texto, .ficha, .ficha-entidad, .cuadricula-borde').all()) {
       await expect(el).toHaveAttribute('translate', 'no');
       await expect(el).toHaveAttribute('spellcheck', 'false');
     }
     await decidirYContinuar(page);
-    expect(await auditarSinStyle(), 'Listo').toEqual([]);
+    expect(await auditarSinStyle(), 'Descargar').toEqual([]);
     await copiarEnListo(page);
     for (const el of await page.locator('[data-prueba="vista-salida"]').all()) {
       await expect(el).toHaveAttribute('translate', 'no');
       await expect(el).toHaveAttribute('spellcheck', 'false');
     }
-    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
-    await expect(h1(page, 'Reinserción')).toBeVisible();
-    expect(await auditar(page), 'Reinserción').toEqual([]);
+    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+    await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
+    expect(await auditar(page), 'Devolver los datos reales').toEqual([]);
     await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(SALIDA_REI);
-    await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+    await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
     await expect(page.locator('[data-prueba="resultado-real"]')).toBeVisible();
     await expect(page.locator('[data-prueba="resultado-real"]')).toHaveAttribute('translate', 'no');
     expect(await auditarSinStyle(), 'Reinserción con resultado').toEqual([]);
@@ -334,7 +334,7 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
       expect(r, donde).toEqual({ enlaces: 0, destinos: 0, links: 0, formularios: 0, externos: 0 });
     };
     await abrirInicio(page);
-    await sinEnlaces('Inicio');
+    await sinEnlaces('Cargar documento');
     await page.getByRole('button', { name: 'Acerca de' }).click();
     await sinEnlaces('Acerca de');
     await page.getByRole('dialog', { name: 'Acerca de Sig-Low' }).getByRole('button', { name: 'Créditos y licencias' }).click();
@@ -342,11 +342,11 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     await page.keyboard.press('Escape');
     await page.keyboard.press('Escape');
     await crearYAnalizar(page, { codigo: 'PRUEBA-PV-01' });
-    await sinEnlaces('Listo');
+    await sinEnlaces('Descargar');
     await copiarEnListo(page);
-    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
-    await expect(h1(page, 'Reinserción')).toBeVisible();
-    await sinEnlaces('Reinserción');
+    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+    await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
+    await sinEnlaces('Devolver los datos reales');
     // guard.ts neutraliza window.open: no devuelve ventana y no se abre ninguna.
     const abierta = await page.evaluate(() => { try { return window.open('about:blank', '_blank') === null; } catch { return true; } });
     expect(abierta).toBe(true);
@@ -360,26 +360,26 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
       nodos: document.querySelectorAll('main img, main iframe, main object, main embed, main a[href], main script, main svg script').length,
       xss: (globalThis as unknown as { __xss?: number }).__xss ?? null,
     }));
-    const panel = page.getByRole('region', { name: 'Documento con detecciones' });
+    const panel = page.getByRole('region', { name: 'Documento con datos encontrados' });
     await expect(panel).toContainText('<img src=x onerror="window.__xss=1">');
     await expect(panel).toContainText('<script>window.__xss=2</script>');
     await expect(panel).toContainText('javascript:window.__xss=4');
     expect(await peligrosos(), 'Revisión').toEqual({ nodos: 0, xss: null });
-    await page.getByRole('button', { name: 'Ver salida' }).click();
-    await expect(page.getByRole('region', { name: 'Documento con los marcadores como fichas' })).toContainText('<script>window.__xss=2</script>');
-    expect(await peligrosos(), 'Ver salida').toEqual({ nodos: 0, xss: null });
+    await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
+    await expect(page.getByRole('region', { name: 'Documento con las etiquetas como fichas' })).toContainText('<script>window.__xss=2</script>');
+    expect(await peligrosos(), 'Ver documento anonimizado').toEqual({ nodos: 0, xss: null });
     await page.getByRole('button', { name: 'Ver original' }).click();
     await decidirYContinuar(page);
     await expect(page.locator('[data-prueba="vista-salida"]')).toContainText('<img src=x onerror="window.__xss=1">');
-    expect(await peligrosos(), 'Listo').toEqual({ nodos: 0, xss: null });
+    expect(await peligrosos(), 'Descargar').toEqual({ nodos: 0, xss: null });
     await copiarEnListo(page);
-    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
-    await expect(h1(page, 'Reinserción')).toBeVisible();
+    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+    await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
     const respuesta = '[DEMANDANTE_1] respondió: <img src=x onerror="window.__xss=5"> <iframe src="javascript:window.__xss=6"></iframe> javascript:window.__xss=7 [CC_1]';
     await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(respuesta);
-    await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+    await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
     await expect(page.locator('[data-prueba="resultado-real"]')).toContainText('<iframe src="javascript:window.__xss=6"></iframe>');
-    expect(await peligrosos(), 'Reinserción').toEqual({ nodos: 0, xss: null });
+    expect(await peligrosos(), 'Devolver los datos reales').toEqual({ nodos: 0, xss: null });
   });
 
   test('T-PV-11 menú contextual bloqueado en los contenedores de solo lectura y no en los campos; con la puerta cerrada la salida no se selecciona ni se copia', async ({ page }) => {
@@ -387,9 +387,9 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     // Los campos de texto conservan su menú (la persona lo necesita para pegar); los contenedores del documento no.
     expect((await eventoPrevenido(page, '[data-prueba="panel-texto"]', 'contextmenu')).prevenido, 'panel de texto').toBe(true);
     expect((await eventoPrevenido(page, '[data-prueba="cuadricula"]', 'contextmenu')).prevenido, 'cuadrícula (contexto de menciones)').toBe(true);
-    await page.getByRole('region', { name: 'Documento con detecciones' }).locator('[data-det]').first().click();
+    await page.getByRole('region', { name: 'Documento con datos encontrados' }).locator('[data-det]').first().click();
     expect((await eventoPrevenido(page, '[data-prueba="ficha"]', 'contextmenu')).prevenido, 'ficha').toBe(true);
-    await page.getByRole('button', { name: 'Ver salida' }).click();
+    await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
     expect((await eventoPrevenido(page, '[data-prueba="panel-texto"]', 'contextmenu')).prevenido, 'vista de salida de Revisión').toBe(true);
     const copiaRevisionSalida = await eventoPrevenido(page, '[data-prueba="panel-texto"]', 'copy');
     expect(copiaRevisionSalida.datos, 'la copia de la salida en Revisión no escribe originales').not.toMatch(/Ficticia|1\.000\.000|ejemplo\.test/);
@@ -404,9 +404,9 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     expect(copia.prevenido, 'copy con la puerta cerrada').toBe(true);
     expect(copia.datos).toBe('');
     await copiarEnListo(page);
-    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
+    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
     await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(SALIDA_REI);
-    await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+    await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
     await expect(page.locator('[data-prueba="resultado-real"]')).toBeVisible();
     expect((await eventoPrevenido(page, '[data-prueba="resultado-real"]', 'contextmenu')).prevenido, 'resultado de Reinserción').toBe(true);
     // El campo de la respuesta no bloquea el menú contextual.
@@ -420,8 +420,8 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     await copiarEnListo(page);
     const portapapeles = await leerPortapapeles(context);
     for (const real of REALES_REI) expect(portapapeles.texto, `portapapeles con «${real}»`).not.toContain(real);
-    await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
-    await expect(h1(page, 'Reinserción')).toBeVisible();
+    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+    await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
     for (const real of REALES_REI) expect(await cuerpo(), `Reinserción con «${real}»`).not.toContain(real);
   });
 });

@@ -47,8 +47,11 @@ async function detectar(doc: DocumentModel, caseList: readonly CaseEntity[], ids
   return resultado;
 }
 
-/** Abre la Revisión con `texto` (partes opcionales) y el estado del modelo pedido. Devuelve el número de detecciones. */
-async function cargar(partes: string | readonly string[], modelo: Modelo = 'plan_b'): Promise<number> {
+/**
+ * Abre la revisión con `texto` (partes opcionales) y el estado del modelo pedido. Devuelve el número de detecciones. F3: por defecto
+ * la revisión dato por dato (`detalle`), sin la propuesta aplicada, como la v1.0; con `pantalla = 'revision'`, la vista previa.
+ */
+async function cargar(partes: string | readonly string[], modelo: Modelo = 'plan_b', pantalla: 'detalle' | 'revision' = 'detalle'): Promise<number> {
   const ids = idsFijos();
   const textos = typeof partes === 'string' ? [partes] : partes;
   const docId = ids.next('doc') as DocId;
@@ -65,7 +68,7 @@ async function cargar(partes: string | readonly string[], modelo: Modelo = 'plan
   sesionActual = { manejar, doc };
   fijarDocumento(doc);
   fijarRevision(estadoDeConjunto(doc, set, modeloDe(modelo)));
-  ir('revision');
+  ir(pantalla);
   return set.detections.length;
 }
 

@@ -30,10 +30,10 @@ const precache = (dir = 'dist'): string[] => (JSON.parse(readFileSync(join(dir, 
 
 /** Inicio → crear el asunto sin guardar la tabla (pasos comunes de las fases que parten del asunto). */
 async function crearAsunto(page: Page, codigo: string): Promise<void> {
-  await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
-  await page.getByLabel('Código del asunto').fill(codigo);
+  await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
+  await page.getByLabel('Código del caso').fill(codigo);
   await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-  await page.getByRole('button', { name: 'Crear asunto' }).click();
+  await page.getByRole('button', { name: 'Crear caso' }).click();
 }
 
 // Fase mínima de P0-1 (10.5.1): carga, 0 peticiones a otros orígenes y 0 violaciones de CSP.
@@ -53,7 +53,7 @@ test('@cero-red carga: 0 peticiones a otros orígenes y 0 violaciones de CSP', a
 test('@humo Inicio muestra la promesa literal y el título neutro', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('[data-prueba="promesa"]')).toHaveText(
-    'Sus documentos no salen de su equipo. La herramienta propone los reemplazos, le muestra lo que puede quedar y usted aprueba antes de copiar.',
+    'Sus documentos no salen de su equipo. Sig-Low propone qué ocultar, le muestra el documento ya anonimizado y usted decide antes de descargarlo.',
   );
   expect(await page.title()).toBe('Sig-Low');
 });
@@ -125,7 +125,7 @@ test('T-RD-03 @cero-red INV-G01 INV-W03 fase pegar (sin modelo descargado): pega
   await page.getByRole('button', { name: 'Continuar' }).click();
   const texto = 'Ana Ficticia Rojas, C.C. 1.000.000.017, vive en la Calle 00 n.º 00-00. Correo: ana.ficticia@ejemplo.test.';
   await page.getByRole('textbox', { name: 'Texto del documento' }).fill(texto);
-  await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+  await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 15_000 });
   await a.verificar(s, { secretos: ['Ficticia', '1.000.000.017'] });
 });
@@ -169,7 +169,7 @@ test('T-RD-03 @cero-red fase docx: cargar .docx → Procesando → Revisión sin
   await expect(page.locator('[data-prueba="archivo-cargado"]')).toContainText('Archivo cargado: .docx, ', { timeout: 15_000 });
   await expect(page.getByRole('checkbox', { name: /^Encabezado 1 · \d+ caracteres$/ })).toBeChecked();
   await expect(page.getByRole('checkbox', { name: /^Comentario 1 · \d+ caracteres$/ })).toBeChecked();
-  await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+  await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 15_000 });
 
   expect(s.vigilante.workers.some((u) => /io/.test(new URL(u).pathname))).toBe(true); // la lectura corrió en el worker `io` del mismo origen
@@ -214,7 +214,7 @@ test('T-RD-06 @cero-red INV-G02 INV-V01 INV-G10 volcado del almacenamiento: sin 
   await crearAsunto(page, 'PRUEBA-VOLCADO');
   await page.getByRole('button', { name: 'Continuar' }).click();
   await page.getByRole('textbox', { name: 'Texto del documento' }).fill('Ana Ficticia Rojas, C.C. 1.000.000.017, vive en la Calle 00 n.º 00-00. Correo: ana.ficticia@ejemplo.test.');
-  await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+  await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 15_000 });
 
   const v = await volcarAlmacenamiento(page);
@@ -335,7 +335,7 @@ test('@cero-red arnés canarios: el perfil persistente relanzado sin conexión c
   const s2 = await a.sesion({ persistente: perfil, offline: true });
   const p2 = await s2.nuevaPagina();
   await p2.goto('/');
-  await expect(p2.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+  await expect(p2.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
   expect(await p2.evaluate(() => ({ aislado: crossOriginIsolated, controlador: navigator.serviceWorker.controller !== null }))).toEqual({ aislado: true, controlador: true });
   const v = await volcarAlmacenamiento(p2);
   expect(v.indexedDB['canario-perfil']?.['s']).toEqual([{ clave: 'k', valor: 'guardado con conexión' }]);
@@ -687,7 +687,7 @@ test.describe('@cero-red fase exportar', () => {
     await page.getByRole('button', { name: 'Continuar' }).click();
     const texto = 'Ana Ficticia Rojas, C.C. 1.000.000.017, vive en la Calle 00 n.º 00-00. Correo: ana.ficticia@ejemplo.test.';
     await page.getByRole('textbox', { name: 'Texto del documento' }).fill(texto);
-    await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 20_000 });
     await page.waitForFunction(() => '__siglowListoPrueba' in globalThis);
     await page.evaluate(() => {
@@ -696,7 +696,7 @@ test.describe('@cero-red fase exportar', () => {
       g.irAListo();
       g.fijarCompilacion('ab'.repeat(32));
     });
-    await expect(page.getByRole('heading', { level: 1, name: 'Listo' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Descargar' })).toBeVisible();
     await expect(page.locator('[data-prueba="residuos-estado"]')).toContainText('Búsqueda de residuos: ninguno de los', { timeout: 30_000 });
     for (const n of ['^Datos biométricos', '^Documentos con reserva legal', '^La estrategia reservada']) {
       await page.getByRole('checkbox', { name: new RegExp(n) }).check();
@@ -704,7 +704,7 @@ test.describe('@cero-red fase exportar', () => {
     await page.getByRole('button', { name: 'Copiar texto anonimizado' }).click();
     await expect(page.locator('[data-aviso="M-84"]')).toBeVisible();
     for (const [boton, patron] of [
-      ['Descargar .txt', /\.txt$/], ['Descargar .docx', /\.docx$/], ['Descargar informe (.txt)', /\.txt$/], ['Descargar informe (.json)', /\.json$/],
+      ['Descargar texto (.txt)', /\.txt$/], ['Descargar documento (.docx)', /\.docx$/], ['Descargar informe (.txt)', /\.txt$/], ['Descargar informe (.json)', /\.json$/],
     ] as const) {
       const [d] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: boton }).click()]);
       expect(d.suggestedFilename()).toMatch(patron);
@@ -741,7 +741,7 @@ test.describe('@cero-red fase A3 · descarga del modelo', () => {
 
       // A3: descargar y esperar «listo».
       await boton.click();
-      await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Modelo de apoyo listo en este equipo.', { timeout: 60_000 });
+      await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Detector de nombres adicional listo en este equipo.', { timeout: 60_000 });
       // PC-6 (3.3, «resultado visible»): el resultado de navigator.storage.persist() aparece en la tarjeta con el mensaje M-107 del catálogo.
       await expect(page.locator('[data-prueba="persistencia-modelo"]')).toHaveText(/^(Persistente: El navegador marcó|No persistente: El navegador puede borrar)/);
       const delModeloA3 =delModelo(a.app.peticiones().slice(corte));
@@ -766,7 +766,7 @@ test.describe('@cero-red fase A3 · descarga del modelo', () => {
 
       // B1: sin conexión y recargando, el modelo sigue «listo» (se lee de siglow-modelo-<sha>) y la página sigue aislada.
       await a.cortar(s, page);
-      await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Modelo de apoyo listo en este equipo.', { timeout: 20_000 });
+      await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Detector de nombres adicional listo en este equipo.', { timeout: 20_000 });
       await a.verificar(s); // salvo GET /sw.js exacto (3.2), nada más llega al servidor tras el corte
     } finally {
       rmSync(tmp, { recursive: true, force: true });
@@ -790,13 +790,13 @@ test('T-RD-04 @cero-red fases C1 y C2: el perfil relanzado sin conexión desbloq
   const p1 = await s1.nuevaPagina();
   await p1.goto('/');
   await a.esperarControlador(p1);
-  await expect(p1.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
-  await p1.getByLabel('Código del asunto').fill('PRUEBA-RED-01');
+  await expect(p1.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
+  await p1.getByLabel('Código del caso').fill('PRUEBA-RED-01');
   await p1.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
-  await p1.getByLabel('Frase de paso. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.', { exact: true }).fill(frase);
-  await p1.getByLabel('Repita la frase de paso', { exact: true }).fill(frase);
+  await p1.getByLabel('Contraseña de la llave. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.', { exact: true }).fill(frase);
+  await p1.getByLabel('Repita la contraseña de la llave', { exact: true }).fill(frase);
   await p1.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
-  await p1.getByRole('button', { name: 'Crear asunto' }).click();
+  await p1.getByRole('button', { name: 'Crear caso' }).click();
   await expect(p1.locator('[data-prueba="aviso-M-21"], [data-prueba="aviso-M-22"]')).toBeVisible({ timeout: 30_000 });
   await p1.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante');
   await p1.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
@@ -812,20 +812,20 @@ test('T-RD-04 @cero-red fases C1 y C2: el perfil relanzado sin conexión desbloq
   const s2 = await a.sesion({ persistente: perfil, offline: true });
   const p2 = await s2.nuevaPagina();
   await p2.goto('/');
-  await expect(p2.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+  await expect(p2.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
   expect(await p2.evaluate(() => ({ aislado: crossOriginIsolated, controlador: navigator.serviceWorker.controller !== null })))
     .toEqual({ aislado: true, controlador: true });
-  const sel = p2.getByLabel('Asunto guardado', { exact: true });
+  const sel = p2.getByLabel('Caso guardado', { exact: true });
   const valor = await sel.locator('option', { hasText: 'PRUEBA-RED-01' }).getAttribute('value');
   await sel.selectOption(valor!);
-  await p2.getByLabel('Frase de paso del asunto', { exact: true }).fill(frase);
-  await p2.getByRole('button', { name: 'Abrir para anonimizar' }).click();
+  await p2.getByLabel('Contraseña de la llave del caso', { exact: true }).fill(frase);
+  await p2.getByRole('button', { name: 'Abrir el caso' }).click();
   await expect(p2.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });   // tabla y lista cifradas disponibles
   // C2: otro documento en la sesión nueva, sin conexión.
   await p2.getByRole('button', { name: 'Continuar' }).click();
   const texto = 'Ana Ficticia Rojas, C.C. 1.000.000.017, vive en la Calle 00 n.º 00-00. Correo: ana.ficticia@ejemplo.test.';
   await p2.getByRole('textbox', { name: 'Texto del documento' }).fill(texto);
-  await p2.getByRole('button', { name: 'Analizar', exact: true }).click();
+  await p2.getByRole('button', { name: 'Anonimizar', exact: true }).click();
   await expect(p2.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 30_000 });
   // El perfil solo guarda la tabla cifrada: ningún original en claro en IndexedDB, Cache Storage ni almacenamiento web.
   const v = await volcarAlmacenamiento(p2);
@@ -849,13 +849,13 @@ test('T-RD-03 INV-N04 @cero-red fase reinserción: copiar y descargar con datos 
 
   await crearYAnalizar(page, { codigo: 'PRUEBA-RED-REI', guardar: true });
   await copiarEnListo(page);
-  await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
-  await expect(h1(page, 'Reinserción')).toBeVisible();
+  await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+  await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
   await pegarYBuscar(page, '[DEMANDANTE_1] presentó la tutela. Demandante 1 firmó. [TESTIGO_3] declaró.');
   const alterado = page.locator('[data-prueba="alerta-alterado"]');
   const desconocido = page.locator('[data-prueba="alerta-desconocido"]');
   await expect(page.locator('[data-prueba="resultado"]')).toHaveCount(0);
-  await alterado.getByRole('button', { name: 'Reemplazar por el dato real' }).click();
+  await alterado.getByRole('button', { name: 'Devolver el dato real' }).click();
   await desconocido.getByRole('button', { name: 'Dejar como está' }).click();
   await expect(page.locator('[data-prueba="resultado"]')).toBeVisible();
   const esperado = 'Ana Ficticia Rojas presentó la tutela. Ana Ficticia Rojas firmó. [TESTIGO_3] declaró.';
@@ -869,7 +869,7 @@ test('T-RD-03 INV-N04 @cero-red fase reinserción: copiar y descargar con datos 
   await expect(page.locator('[data-aviso="M-124"]')).toBeVisible();
   expect((await leerPortapapeles(s.ctx)).texto).toBe(esperado);
   await page.bringToFront();
-  await page.getByRole('button', { name: 'Descargar .txt' }).click();
+  await page.getByRole('button', { name: 'Descargar texto (.txt)' }).click();
   const [descarga] = await Promise.all([
     page.waitForEvent('download'),
     confirmar.getByRole('button', { name: 'Continuar con datos reales' }).click(),
@@ -882,15 +882,15 @@ test('T-RD-03 INV-N04 @cero-red fase reinserción: copiar y descargar con datos 
 
   // B9 · bloquear y desbloquear (INV-G09): el estado en claro se vacía y la frase vuelve a abrir la tabla.
   await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
-  await expect(h1(page, 'Inicio')).toBeVisible();
+  await expect(h1(page, 'Cargar documento')).toBeVisible();
   await expect(page.locator('[data-prueba="resultado-real"]')).toHaveCount(0);
   expect(await page.locator('body').innerText()).not.toContain('Ana Ficticia');
-  await page.getByLabel('Asunto guardado', { exact: true }).selectOption({ index: 1 });
-  await page.getByLabel('Frase de paso del asunto', { exact: true }).fill(FRASE);
-  await page.getByRole('button', { name: 'Reinsertar una respuesta' }).click();
-  await expect(h1(page, 'Reinserción')).toBeVisible({ timeout: 30_000 });
+  await page.getByLabel('Caso guardado', { exact: true }).selectOption({ index: 1 });
+  await page.getByLabel('Contraseña de la llave del caso', { exact: true }).fill(FRASE);
+  await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+  await expect(h1(page, 'Devolver los datos reales')).toBeVisible({ timeout: 30_000 });
   await campoRespuesta(page).fill('Cédula [CC_1].');
-  await page.getByRole('button', { name: 'Buscar marcadores' }).click();
+  await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
   expect(await textoDelResultado(page)).toBe('Cédula 1.000.000.001.');
 
   await a.verificar(s, { secretos: ['Ficticia', '1.000.000.001', 'PRUEBA-RED-REI', FRASE, 'tutela'] });
@@ -914,7 +914,7 @@ test('T-RD-03 INV-D05 @cero-red fase pdf en la app (B7): cargar un PDF → Proce
     name: 'Sentencia de Prueba.pdf', mimeType: 'application/pdf', buffer: readFileSync(join('tests', 'fixtures', 'pdf-js-recuadro.pdf')),
   });
   await expect(page.locator('[data-prueba="archivo-cargado"]')).toContainText('Archivo cargado: PDF, ', { timeout: 20_000 });
-  await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+  await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 30_000 });
   await expect(page.locator('main')).toContainText('Pedro Ficticio Ejemplo'); // V-39: el texto bajo el recuadro negro llega a la revisión
   await expect(page.locator('body')).not.toContainText('Sentencia de Prueba');

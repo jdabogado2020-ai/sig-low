@@ -246,7 +246,7 @@ test.describe('PF-1b · worker ner real con ORT-web (arnés)', () => {
 // ---------------------------------------------------------------------------
 
 const DIST = resolve('dist');
-const M_LISTO = 'Modelo de apoyo listo en este equipo.';
+const M_LISTO = 'Detector de nombres adicional listo en este equipo.';
 const M_31 = 'El modelo descargado no superó la comprobación de integridad y se descartó.';
 const M_30 = 'No se pudo preparar el modelo de apoyo.';
 const M_214 = 'El modelo de apoyo no está descargado.';
@@ -328,7 +328,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
   async function abrirInicio(page: Page, origen: string): Promise<void> {
     await page.goto(`${origen}/`);
     await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
-    await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
     await expect(botonDescargar(page)).toBeEnabled({ timeout: 20_000 });
   }
 
@@ -343,9 +343,9 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
 
   /** Crea un asunto sin guardar y llega a Entrada. */
   async function irAEntrada(page: Page): Promise<void> {
-    await page.getByLabel('Código del asunto').fill('PRUEBA-MODELO');
+    await page.getByLabel('Código del caso').fill('PRUEBA-MODELO');
     await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await page.getByRole('button', { name: 'Crear asunto' }).click();
+    await page.getByRole('button', { name: 'Crear caso' }).click();
     await page.getByRole('button', { name: 'Continuar' }).click();
   }
 
@@ -427,7 +427,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       expect(pedidas.some((u) => u.includes('gliner-x-base') || u.endsWith('part002') || u.endsWith('part003'))).toBe(false);
       // Plan B con aviso: la casilla del modelo está deshabilitada y el análisis sigue con reglas y lista del caso.
       await irAEntrada(page);
-      await expect(page.getByRole('checkbox', { name: 'Usar el modelo de apoyo' })).toBeDisabled();
+      await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' })).toBeDisabled();
       expect(obs.ajenas).toEqual([]);
       expect(await obs.violaciones()).toEqual([]);
     } finally {
@@ -486,8 +486,8 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       }, [`siglow-modelo-${GRANDE_TOK.manifest.sha256}`, '/models/gliner-x-large/onnx/model_quantized.onnx.part002']);
       await irAEntrada(page);
       await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor Pedro Ejemplo Prueba firmó el contrato con la empresa Ejemplo Ficticia S.A.S.');
-      await page.getByRole('checkbox', { name: 'Usar el modelo de apoyo' }).check();
-      await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+      await page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' }).check();
+      await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
       await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('no se pudo preparar', { timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('el informe lo dirá');
@@ -592,8 +592,8 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       const corte = srv.peticiones().length;
       await irAEntrada(page);
       await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor Pedro Ejemplo Prueba firmó el contrato con la empresa Ejemplo Ficticia S.A.S.');
-      await page.getByRole('checkbox', { name: 'Usar el modelo de apoyo' }).check();
-      await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+      await page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' }).check();
+      await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
       await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('no se pudo preparar', { timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-plan-b"]')).toContainText('el informe lo dirá');
@@ -734,7 +734,7 @@ test.describe('PF-2 · modelo real en la app', () => {
       await expect(boton).toContainText(v.mb);
       const corte = srv.peticiones().length;
       await boton.click();
-      await expect(tarjeta).toContainText('Modelo de apoyo listo en este equipo.', { timeout: 300_000 });
+      await expect(tarjeta).toContainText('Detector de nombres adicional listo en este equipo.', { timeout: 300_000 });
       if (!v.grande) await expect(tarjeta).toContainText('versión reducida');
       const pedidas = delModelo(srv.peticiones().slice(corte)).map((p) => p.u).sort();
       const man = JSON.parse(readFileSync(join(dist, 'models', v.id, 'manifest.json'), 'utf8')) as ModelManifest;
@@ -746,21 +746,21 @@ test.describe('PF-2 · modelo real en la app', () => {
       const antes = srv.peticiones().length;
       await page.reload();
       await page.waitForFunction(() => navigator.serviceWorker?.controller != null);
-      await expect(tarjeta).toContainText('Modelo de apoyo listo en este equipo.', { timeout: 20_000 });
-      await page.getByLabel('Código del asunto').fill('PRUEBA-REAL');
+      await expect(tarjeta).toContainText('Detector de nombres adicional listo en este equipo.', { timeout: 20_000 });
+      await page.getByLabel('Código del caso').fill('PRUEBA-REAL');
       await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-      await page.getByRole('button', { name: 'Crear asunto' }).click();
+      await page.getByRole('button', { name: 'Crear caso' }).click();
       await page.getByRole('button', { name: 'Continuar' }).click();
       await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor PEDRO EJEMPLO GÓMEZ, mayor de edad y vecino de Bucaramanga, interpuso acción de tutela contra la EPS Salud Ficticia S.A.S. por la negativa de un procedimiento ordenado por su médico tratante.');
-      await page.getByRole('checkbox', { name: 'Usar el modelo de apoyo' }).check();
-      await page.getByRole('button', { name: 'Analizar', exact: true }).click();
+      await page.getByRole('checkbox', { name: 'Usar el detector de nombres adicional en este documento' }).check();
+      await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
       await expect(page.getByRole('heading', { level: 1, name: 'Revisión' })).toBeVisible({ timeout: 30_000 });
       await expect(page.locator('[data-prueba="banda-modelo"]')).toHaveAttribute('data-estado', 'terminado', { timeout: 420_000 });
       await expect(page.locator('[data-prueba="banda-modelo"]')).toContainText('terminó de revisar el documento');
-      await expect(page.getByRole('region', { name: 'Documento con detecciones' })).toContainText('PEDRO EJEMPLO GÓMEZ');
+      await expect(page.getByRole('region', { name: 'Documento con datos encontrados' })).toContainText('PEDRO EJEMPLO GÓMEZ');
       // La persona en MAYÚSCULAS no la encuentra ninguna regla: la trae el modelo, como detección pendiente (M-166).
-      await expect(page.getByRole('region', { name: 'Documento con detecciones' }).getByRole('button', { name: /^Persona, pendiente.*PEDRO EJEMPLO GÓMEZ/ })).toBeVisible();
-      await expect(page.getByRole('status', { name: 'Anuncios de la revisión' })).toContainText('El modelo de apoyo agregó');
+      await expect(page.getByRole('region', { name: 'Documento con datos encontrados' }).getByRole('button', { name: /^Persona, pendiente.*PEDRO EJEMPLO GÓMEZ/ })).toBeVisible();
+      await expect(page.getByRole('status', { name: 'Avisos de la revisión' })).toContainText('El modelo de apoyo agregó');
       // Salvo GET /sw.js exacto (la búsqueda de versión del navegador, metadato sin contenido: 3.2), nada llegó al servidor.
       expect(srv.peticiones().slice(antes).filter((p) => !(p.m === 'GET' && p.u === '/sw.js'))).toEqual([]);
       expect(ajenas).toEqual([]);
