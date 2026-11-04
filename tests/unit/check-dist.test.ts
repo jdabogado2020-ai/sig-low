@@ -364,8 +364,12 @@ describe.concurrent('T-CD-03 _headers (3.6, T-CS-07)', () => {
     await falla({ cabeceras: (h) => `${h}\n/ort/*\n  Cache-Control: no-cache\n` }, '_headers: regla /ort/* no aprobada');
   });
   it('canario (F0): los trozos del modelo sin Content-Type: application/octet-stream, con otro tipo o con otra cabecera', async () => {
-    const motivo = '_headers: /models/*/onnx/* debe llevar solo Content-Type: application/octet-stream';
-    await falla({ cabeceras: (h) => h.replace(/\/models\/\*\/onnx\/\*\s*\n\s*Content-Type: application\/octet-stream\n?/, '') }, motivo);
+    const motivo = '_headers: /models/gliner-x-large/onnx/* debe llevar solo Content-Type: application/octet-stream';
+    await falla({ cabeceras: (h) => h.replace(/\/models\/gliner-x-large\/onnx\/\*\s*\n\s*Content-Type: application\/octet-stream\n?/, '') }, motivo);
+    await falla({ cabeceras: (h) => h.replace(/\/models\/gliner-x-base\/onnx\/\*\s*\n\s*Content-Type: application\/octet-stream\n?/, '') },
+      '_headers: /models/gliner-x-base/onnx/* debe llevar solo Content-Type: application/octet-stream');
+    // v1.1.1: la regla con dos asteriscos, que Cloudflare Pages no aplicaba, ya no se acepta.
+    await falla({ cabeceras: (h) => `${h}\n/models/*/onnx/*\n  Content-Type: application/octet-stream\n` }, '_headers: regla /models/*/onnx/* no aprobada');
     await falla({ cabeceras: (h) => h.replace('Content-Type: application/octet-stream', 'Content-Type: text/plain') }, motivo);
     await falla({ cabeceras: (h) => h.replace('Content-Type: application/octet-stream', 'Content-Type: application/octet-stream\n  Cache-Control: no-cache') }, motivo);
   });

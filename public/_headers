@@ -39,5 +39,9 @@
   Cache-Control: public, max-age=31536000, immutable
 
 # Trozos del modelo (`.part000` y siguientes, F0): sin extensión conocida, Cloudflare Pages los servía sin Content-Type.
-/models/*/onnx/*
+# Una regla por modelo, con un solo asterisco: Cloudflare Pages no aplicaba `/models/*/onnx/*` (v1.1.0, 4-nov).
+/models/gliner-x-large/onnx/*
+  Content-Type: application/octet-stream
+
+/models/gliner-x-base/onnx/*
   Content-Type: application/octet-stream

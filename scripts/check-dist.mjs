@@ -208,10 +208,11 @@ const CACHE = {
   '/assets/*': 'public, max-age=31536000, immutable',
 };
 // F0: los trozos del modelo no tienen extensión conocida y Cloudflare Pages los servía sin Content-Type.
-const TIPOS = { '/models/*/onnx/*': 'application/octet-stream' };
+// Una regla por modelo con un solo asterisco: Cloudflare Pages no aplicaba `/models/*/onnx/*` (v1.1.0).
+const TIPOS = { '/models/gliner-x-large/onnx/*': 'application/octet-stream', '/models/gliner-x-base/onnx/*': 'application/octet-stream' };
 // Rutas de muestra para comprobar que ninguna cabecera llega desde dos reglas (Cloudflare uniría los valores; el SW y
 // server.mjs se quedan con el último).
-const RUTAS_MUESTRA = ['/', '/index.html', '/sw.js', '/assets/x.js', '/ort/ort-wasm-simd-threaded.wasm', '/tt-policy.js', '/precache.json', '/models/x/manifest.json', '/models/x/onnx/model_quantized.onnx.part000', '/otra'];
+const RUTAS_MUESTRA = ['/', '/index.html', '/sw.js', '/assets/x.js', '/ort/ort-wasm-simd-threaded.wasm', '/tt-policy.js', '/precache.json', '/models/x/manifest.json', '/models/gliner-x-large/onnx/model_quantized.onnx.part000', '/models/gliner-x-base/onnx/model_quantized.onnx.part000', '/otra'];
 
 // ===== Dependencias (T-PV-14, V-06; 4.1 y 5.2.2). Lista blanca de ejecución con sus versiones, y el cierre exacto de
 // paquetes de ejecución del lockfile (incluidos los opcionales). Un cambio exige aprobación (F-04). =====
