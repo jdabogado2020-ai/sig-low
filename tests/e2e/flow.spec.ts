@@ -498,8 +498,9 @@ test.describe('T-IU-05 Entrada: pegar, cargar y estados', () => {
     await page.getByRole('tab', { name: 'Pegar texto' }).click();
     await expect(page.getByText('Pegue aquí el texto del documento. Se analiza en su equipo.')).toBeVisible();
     await abrirAvanzadas(page);
-    await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeDisabled();
-    await expect(page.getByText('El análisis usará reglas y la lista de nombres que siempre deben ocultarse: el detector de nombres adicional no está descargado.')).toBeVisible();
+    // F10 (v1.1.3): con el detector disponible, la casilla se puede usar sin descargarlo: «Anonimizar» lo descarga (o no, si se desmarca).
+    await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeEnabled();
+    await expect(page.getByText('Al pulsar «Anonimizar», el detector se descarga y revisa este documento.')).toBeVisible();
     await areaTexto(page).fill('   \n  ');
     await expect(analizar(page)).toBeDisabled();
     await areaTexto(page).fill(TEXTO_PRUEBA);
@@ -691,6 +692,9 @@ test.describe('T-IU-05 Procesando: progreso por etapa, cancelar y errores', () =
     await instalarSimulador(page);
     await irAEntrada(page);
     await pegarTexto(page, TEXTO_PRUEBA);
+    // F10 (v1.1.3): con el detector disponible y la casilla marcada, «Anonimizar» lo descargaría y su etapa quedaría en curso. Esta
+    // prueba mira la etapa omitida: se desmarca la casilla.
+    await page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' }).uncheck();
     await configurarSimulador(page, { retener: 'resultado' });
     await analizar(page).click();
     await expect(h1(page, 'Analizando')).toBeVisible();
@@ -1644,8 +1648,10 @@ testMedicion.describe('Descargar (PC-5)', () => {
     await anonimizar(page);
     await page.waitForFunction(() => '__siglowListoPrueba' in globalThis);
     const g = ganchoListo(page);
-    // D-24: la propuesta ya aplicó todo; no hay nada que decidir una por una.
-    expect((await gancho(page).estado()).estados['pendiente'] ?? 0).toBe(0);
+    // D-24: la propuesta ya aplicó todo; no hay nada que decidir una por una. F10: con el detector disponible y sin descargar,
+    // «Anonimizar» intenta descargarlo (en estas pruebas no hay pesos y falla); la propuesta se aplica cuando el detector termina o
+    // pasa a plan B.
+    await expect.poll(async () => (await gancho(page).estado()).estados['pendiente'] ?? 0, { timeout: 30_000 }).toBe(0);
     await esperarBusqueda(page);
     const esperado = await textoDeLaVista(page);
     await aDescargar(page);

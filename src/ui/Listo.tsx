@@ -17,6 +17,8 @@ import { actualizar, ir, useShell } from './estado.ts';
 import { useBusquedaAutomatica, buscarOtraVez } from './flujo/busqueda-automatica.ts';
 import { cerrarDocumento } from './flujo/flujo.ts';
 import { tf } from './flujo/textos.ts';
+import { BandaDescarga } from './flujo/DescargaDetector.tsx';
+import { obtenerVistaAnalisis, useAnalisis } from './analisis.ts';
 import { calcularHuellas } from './huellas.ts';
 import { alterno, mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
 import { quitarAvisoAsunto } from './sesion.ts';
@@ -38,6 +40,8 @@ function textoDeMotivo(r: GateReason, state: ReviewState, residuo: EstadoListo['
   switch (r) {
     case 'PENDIENTES': return t('M-501', { n: contarPendientes(state) });
     case 'MODELO_EN_CURSO': {
+      // F10 (v1.1.3): si el detector todavía se está descargando, se dice así (no hay bloques que contar).
+      if (obtenerVistaAnalisis().descargaModelo) return tf('M-2342');
       const m = state.modelo;
       const total = m.kind === 'en_curso' ? m.ventanasTotales : 0;
       return t('M-508', { n: m.kind === 'en_curso' && total > 0 ? Math.max(0, total - m.ventanas) : '?', total: total > 0 ? total : '?' });
@@ -75,6 +79,7 @@ export function Listo() {
   const state = useRevision();
   const doc = obtenerDocumento();
   const listo = useListo();
+  const analisis = useAnalisis();
   const [confirmarNuevo, setConfirmarNuevo] = useState(false);
   const [preparandoPdf, setPreparandoPdf] = useState(false);
   const iniciado = useRef(false);
@@ -154,6 +159,8 @@ export function Listo() {
           <ul id={ID_MOTIVOS} data-prueba={ID_MOTIVOS}>
             {puerta.reasons.map((r) => <li key={r} data-motivo={r}>{textoDeMotivo(r, state, residuo)}</li>)}
           </ul>
+          {/* F10: la descarga del detector y «Descargar sin esperar al detector», también aquí. */}
+          {analisis.descargaModelo ? <BandaDescarga /> : null}
         </section>
       ) : null}
 

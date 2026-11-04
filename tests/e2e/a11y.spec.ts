@@ -204,8 +204,9 @@ test.describe('T-AX-02 nombres, roles y regiones de Cargar documento y Analizand
   test('T-AX-02 la zona de soltar y las etiquetas de las casillas no dependen solo del color: texto visible y estado en el nombre', async ({ page }) => {
     await irAEntrada(page);
     await abrirAvanzadas(page);
-    await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeDisabled();
-    await expect(page.getByText('El análisis usará reglas y la lista de nombres que siempre deben ocultarse: el detector de nombres adicional no está descargado.')).toBeVisible();
+    // F10 (v1.1.3): con el detector disponible, la casilla se puede usar sin descargarlo: «Anonimizar» lo descarga (o no, si se desmarca).
+    await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeEnabled();
+    await expect(page.getByText('Al pulsar «Anonimizar», el detector se descarga y revisa este documento.')).toBeVisible();
   });
 });
 

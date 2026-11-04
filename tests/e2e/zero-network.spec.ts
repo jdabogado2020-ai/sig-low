@@ -765,13 +765,17 @@ test.describe('@cero-red fase A3 · descarga del modelo', () => {
       // A1–A2: el SW se activa y la app pasa de «sin service worker» a lista.
       await page.goto('/');
       await a.esperarControlador(page);
-      await abrirAvanzadas(page);   // el detector de nombres adicional está en «Opciones avanzadas»
-      const boton = page.getByRole('button', { name: /^Descargar detector de nombres/ });
-      await expect(boton).toBeEnabled({ timeout: 20_000 });
+      // F10 (v1.1.3): la descarga la empieza «Anonimizar»; con el detector disponible, su casilla se puede usar sin descargarlo.
+      await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeEnabled({ timeout: 20_000 });
       const corte = a.app.peticiones().length;
 
-      // A3: descargar y esperar «listo».
-      await boton.click();
+      // A3: anonimizar un texto ficticio (empieza la descarga), volver a Cargar y esperar «listo».
+      await page.getByRole('tab', { name: 'Pegar texto' }).click();
+      await page.getByRole('textbox', { name: 'Texto del documento' }).fill('Texto ficticio de prueba para empezar la descarga del detector.');
+      await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+      await expect(page.getByRole('heading', { level: 1, name: 'Vista previa' })).toBeVisible({ timeout: 30_000 });
+      await page.getByRole('button', { name: 'Descartar este documento' }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'Descartar este documento' }).click();
       await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Detector de nombres adicional listo en este equipo.', { timeout: 60_000 });
       // PC-6 (3.3, «resultado visible»): el resultado de navigator.storage.persist() aparece en la tarjeta con el mensaje M-107 del catálogo.
       await expect(page.locator('[data-prueba="persistencia-modelo"]')).toHaveText(/^(Persistente: El navegador marcó|No persistente: El navegador puede borrar)/);

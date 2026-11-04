@@ -324,7 +324,36 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
   }
 
   const tarjeta = (page: Page) => page.locator('[data-prueba="tarjeta-modelo"]');
-  const botonDescargar = (page: Page) => page.getByRole('button', { name: /^Descargar detector de nombres/ });
+  const casilla = (page: Page) => page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' });
+  /**
+   * F10 (v1.1.3): no hay botón de descarga aparte; la descarga la empieza «Anonimizar». Se analiza un texto ficticio y se vuelve a
+   * Cargar con «Descartar este documento»: la descarga sigue en segundo plano y la tarjeta muestra su estado.
+   */
+  async function empezarDescarga(page: Page): Promise<void> {
+    // Los archivos del modelo (no los manifiestos) se retienen hasta volver a Cargar: si la descarga terminara con el documento
+    // abierto, el detector correría sobre él y, con los pesos sintéticos de estas pruebas, el motor no arrancaría y descartaría el
+    // modelo recién descargado (V-44). Así la descarga termina sin documento, como cuando el abogado sigue con otro.
+    let soltar: () => void = () => undefined;
+    const retenidos = new Promise<void>((r) => { soltar = r; });
+    await page.context().route('**/models/**', async (r) => {
+      if (!r.request().url().endsWith('/manifest.json')) await retenidos;
+      await r.fallback();
+    });
+    try {
+      await anonimizarYVolver(page);
+    } finally {
+      soltar();
+    }
+  }
+  async function anonimizarYVolver(page: Page): Promise<void> {
+    await page.getByRole('tab', { name: 'Pegar texto' }).click();
+    await page.getByRole('textbox', { name: 'Texto del documento' }).fill('Texto ficticio de prueba para empezar la descarga del detector.');
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+    await expect(h1(page, TITULO.vista)).toBeVisible({ timeout: 30_000 });
+    await page.getByRole('button', { name: 'Descartar este documento' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Descartar este documento' }).click();
+    await expect(h1(page, TITULO.cargar)).toBeVisible();
+  }
 
   async function abrirInicio(page: Page, origen: string): Promise<void> {
     await page.goto(`${origen}/`);
@@ -333,7 +362,8 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
     // F8 (v1.1.1): la tarjeta del detector está a la vista en Cargar, junto a la zona de carga, fuera de «Opciones avanzadas».
     await expect(tarjeta(page)).toBeVisible();
     expect(await tarjeta(page).evaluate((el) => el.closest('details') === null)).toBe(true);
-    await expect(botonDescargar(page)).toBeEnabled({ timeout: 20_000 });
+    // Con el detector disponible (manifiestos y service worker), la casilla se puede usar aunque no esté descargado (F10).
+    await expect(casilla(page)).toBeEnabled({ timeout: 20_000 });
   }
 
   const cachesDelModelo = (page: Page): Promise<Array<{ nombre: string; rutas: string[] }>> =>
@@ -360,7 +390,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       const obs = await observar(page, srv.origen);
       await abrirInicio(page, srv.origen);
       const corte = srv.peticiones().length;
-      await botonDescargar(page).click();
+      await empezarDescarga(page);
       await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
 
       // Peticiones del modelo desde el corte: exactamente los 2 auxiliares y los 4 trozos del manifiesto, GET, sin query, una vez cada una.
@@ -417,7 +447,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       const obs = await observar(page, srv.origen);
       await abrirInicio(page, srv.origen);
       const corte = srv.peticiones().length;
-      await botonDescargar(page).click();
+      await empezarDescarga(page);
       await expect(tarjeta(page).getByRole('alert').filter({ hasText: M_31 })).toBeVisible({ timeout: 60_000 });
       // F0: un solo mensaje, con el motivo, y «Reintentar» (antes salían M-30 y el del código a la vez).
       await expect(tarjeta(page).getByRole('alert')).toHaveCount(1);
@@ -430,9 +460,10 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       const pedidas = delModelo(srv.peticiones().slice(corte)).map((p) => p.u);
       expect(pedidas.at(-1)).toBe('/models/gliner-x-large/onnx/model_quantized.onnx.part001');
       expect(pedidas.some((u) => u.includes('gliner-x-base') || u.endsWith('part002') || u.endsWith('part003'))).toBe(false);
-      // Plan B con aviso: la casilla del modelo está deshabilitada y el análisis sigue con reglas y lista del caso.
+      // Plan B con aviso. F10: la casilla se puede usar (un nuevo «Anonimizar» vuelve a intentar la descarga) y el análisis sigue con
+      // reglas y lista del caso.
       await irAEntrada(page);
-      await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeDisabled();
+      await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeEnabled();
       expect(obs.ajenas).toEqual([]);
       expect(await obs.violaciones()).toEqual([]);
     } finally {
@@ -451,7 +482,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       });
       await abrirInicio(page, srv.origen);
       const corte = srv.peticiones().length;
-      await botonDescargar(page).click();
+      await empezarDescarga(page);
       await expect(tarjeta(page).locator('[data-prueba="fallo-modelo"]')).toContainText(M_2102, { timeout: 60_000 });
       expect(cortes).toBe(3);
       await expect(tarjeta(page).getByRole('alert')).toHaveCount(1);
@@ -474,33 +505,109 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
     }
   });
 
-  test('F8 @cero-red analizado sin el detector: la vista previa avisa sin bloquear; la descarga desde el aviso la pide el clic y al terminar ofrece «Volver a analizar con el detector»', async ({ page }) => {
-    const srv = await servir(D_OK);
+  // ===== F10 (v1.1.3) · el detector se descarga al pulsar «Anonimizar» (modelo sintético; red lenta del servidor de pruebas) =====
+  const ninguno = (srv: Servidor): unknown[] => delModelo(srv.peticiones()).filter((p) => !p.u.endsWith('/manifest.json'));
+  const banda = (page: Page) => page.locator('[data-prueba="banda-modelo"]');
+  const TEXTO_F10 = 'El señor Pedro Ejemplo Prueba, C.C. 1.000.000.017, firmó el contrato con la empresa Ejemplo Ficticia S.A.S.';
+
+  test('F10 @cero-red primera vez sin el detector: nada de /models/ antes del clic; «Anonimizar» da la vista previa de inmediato, descarga con avance en MB y % y, al terminar, el detector corre sobre el documento', async ({ page }) => {
+    n += 1;
+    const srv = await levantarServidor({ dir: D_OK, registro: join(tmp, `peticiones-${n}.jsonl`), lento: 60 });
     try {
       const obs = await observar(page, srv.origen);
       await abrirInicio(page, srv.origen);
-      await expect(tarjeta(page)).toContainText('Encuentra nombres de personas y empresas que no están en su lista');
+      await page.waitForTimeout(1500);
+      // Nunca se descarga solo por abrir la página: solo los manifiestos (para saber el tamaño).
+      expect(ninguno(srv)).toEqual([]);
       await expect(tarjeta(page)).toContainText('No está descargado.');
-      await expect(tarjeta(page)).toContainText('se descarga una sola vez y queda guardado en este navegador');
+      await expect(tarjeta(page).getByRole('button', { name: /^Descargar/ })).toHaveCount(0);
+      await expect(page.locator('[data-prueba="nota-descarga"]')).toHaveText(/^La primera vez se descarga el detector de nombres \(\d+ MB, una sola vez\)\.$/);
+      await expect(casilla(page)).toBeChecked();
       await irAEntrada(page);
-      await page.getByRole('textbox', { name: 'Texto del documento' }).fill('El señor Pedro Ejemplo Prueba firmó el contrato con la empresa Ejemplo Ficticia S.A.S.');
+      await page.getByRole('textbox', { name: 'Texto del documento' }).fill(TEXTO_F10);
       await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
       await expect(h1(page, TITULO.vista)).toBeVisible({ timeout: 30_000 });
+      // La vista previa ya trae lo de las reglas y la lista, y la descarga va en segundo plano con su avance.
+      await expect(vistaPrevia(page)).not.toContainText('1.000.000.017');
+      await expect(banda(page)).toHaveAttribute('data-estado', 'descargando');
+      await expect(page.locator('[data-prueba="avance-descarga"]')).toHaveText(/^\d+ de \d+ MB \(\d+ %\)$/);
+      await expect(page.locator('[data-prueba="tiempo-descarga"]')).toHaveText(/^(Midiendo la velocidad de la descarga…|Faltan unos \d+ minutos\.|Falta (menos de|cerca de) un minuto\.)$/);
+      expect(ninguno(srv).length).toBeGreaterThan(0);
+      // Mientras se descarga, Descargar sigue cerrado por el detector y lo dice en palabras.
+      await page.getByRole('button', { name: 'Continuar a descargar' }).click();
+      await expect(h1(page, TITULO.descargar)).toBeVisible();
+      await expect(page.locator('[data-prueba="motivos-puerta"] li[data-motivo="MODELO_EN_CURSO"]')).toHaveText('El detector de nombres todavía se está descargando para revisar este documento. Espere a que termine o descargue sin esperar.');
+      await expect(page.locator('[data-prueba="motivos"]').getByRole('button', { name: 'Descargar sin esperar al detector' })).toBeVisible();
+      await page.getByRole('button', { name: 'Volver a la vista previa' }).click();
+      await expect(h1(page, TITULO.vista)).toBeVisible();
+      // Termina la descarga y el detector corre sobre este documento (no sobre otro, ni solo «para la próxima»). Con el modelo
+      // sintético de las e2e el motor no llega a arrancar: plan B «no se pudo preparar», que dice que sí lo intentó aquí. El aviso
+      // «El detector de nombres agregó N datos» lo prueban la unidad (analisis-ui.test.ts) y la prueba con el modelo real.
+      await expect(banda(page)).not.toHaveAttribute('data-estado', 'descargando', { timeout: 90_000 });
+      await expect(banda(page)).toHaveAttribute('data-estado', /^(terminado|plan_b)$/);
+      await expect(banda(page)).not.toContainText('el detector no está descargado');
+      expect(obs.ajenas).toEqual([]);
+      expect(await obs.violaciones()).toEqual([]);
+    } finally {
+      await srv.parar();
+    }
+  });
+
+  test('F10 @cero-red «Descargar sin esperar al detector»: confirma con «revise los nombres con más cuidado», va a Descargar sin el detector y la descarga sigue para el próximo documento', async ({ page }) => {
+    n += 1;
+    const srv = await levantarServidor({ dir: D_OK, registro: join(tmp, `peticiones-${n}.jsonl`), lento: 200 });
+    try {
+      const obs = await observar(page, srv.origen);
+      await abrirInicio(page, srv.origen);
+      await irAEntrada(page);
+      await page.getByRole('textbox', { name: 'Texto del documento' }).fill(TEXTO_F10);
+      await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+      await expect(h1(page, TITULO.vista)).toBeVisible({ timeout: 30_000 });
+      await expect(banda(page)).toHaveAttribute('data-estado', 'descargando');
+      await page.getByRole('button', { name: 'Descargar sin esperar al detector' }).click();
+      const dialogo = page.getByRole('dialog');
+      await expect(dialogo).toContainText('revise los nombres con más cuidado');
+      await expect(dialogo).toContainText('El detector se sigue descargando para el próximo documento.');
+      await dialogo.getByRole('button', { name: 'Descargar sin esperar al detector' }).click();
+      await expect(h1(page, TITULO.descargar)).toBeVisible();
+      // La puerta ya no espera al detector.
+      await expect(page.locator('[data-prueba="motivos-puerta"] li[data-motivo="MODELO_EN_CURSO"]')).toHaveCount(0, { timeout: 20_000 });
+      // La descarga siguió en segundo plano: de vuelta en Cargar, el detector queda listo para el próximo documento.
+      await page.getByRole('button', { name: 'Anonimizar otro documento' }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'Descartar este documento' }).click();
+      await expect(h1(page, TITULO.cargar)).toBeVisible();
+      await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 90_000 });
+      expect(obs.ajenas).toEqual([]);
+      expect(await obs.violaciones()).toEqual([]);
+    } finally {
+      await srv.parar();
+    }
+  });
+
+  test('F10 @cero-red con ahorro de datos (saveData) «Anonimizar» no descarga: la vista previa avisa y pregunta; la descarga empieza solo con el clic y al terminar ofrece «Volver a analizar con el detector»', async ({ page }) => {
+    const srv = await servir(D_OK);
+    try {
+      const obs = await observar(page, srv.origen);
+      await page.addInitScript(() => {
+        Object.defineProperty(Navigator.prototype, 'connection', { get: () => ({ saveData: true, effectiveType: '4g' }), configurable: true });
+      });
+      await abrirInicio(page, srv.origen);
+      await expect(page.locator('[data-prueba="nota-descarga"]')).toHaveCount(0);
+      await irAEntrada(page);
+      await page.getByRole('textbox', { name: 'Texto del documento' }).fill(TEXTO_F10);
+      await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+      await expect(h1(page, TITULO.vista)).toBeVisible({ timeout: 30_000 });
+      await expect(banda(page)).toHaveAttribute('data-estado', 'plan_b');
       const aviso = page.locator('[data-prueba="aviso-sin-detector"]');
       await expect(aviso).toContainText('Analizado sin el detector de nombres: revise los nombres con más cuidado.');
-      // No bloquea: se puede seguir a Descargar. Y nada se descargó solo.
+      await expect(aviso.locator('[data-prueba="ahorro-de-datos"]')).toContainText('modo de ahorro de datos');
+      await page.waitForTimeout(1500);
+      expect(ninguno(srv)).toEqual([]);
       await expect(page.getByRole('button', { name: 'Continuar a descargar' })).toBeEnabled();
-      // (Al arrancar solo se leen los manifiestos, para saber el tamaño; ningún archivo del modelo.)
-      expect(delModelo(srv.peticiones()).filter((p) => !p.u.endsWith('/manifest.json'))).toEqual([]);
-      await expect(aviso.getByRole('button', { name: 'Volver a analizar con el detector' })).toHaveCount(0);
       await aviso.getByRole('button', { name: /^Descargar detector de nombres/ }).click();
       await expect(aviso).toContainText('El detector de nombres está listo.', { timeout: 60_000 });
-      await expect(aviso).toContainText('no se conservan al volver a analizar');
-      await aviso.getByRole('button', { name: 'Volver a analizar con el detector' }).click();
-      await expect(h1(page, TITULO.vista)).toBeVisible({ timeout: 30_000 });
-      // El análisis se repitió pidiendo el detector: el plan B, si lo hay, ya no es «no está descargado».
-      await expect(page.locator('[data-prueba="banda-modelo"]')).toBeVisible({ timeout: 30_000 });
-      await expect(page.locator('[data-prueba="banda-modelo"]')).not.toContainText('el detector no está descargado');
+      await expect(aviso.getByRole('button', { name: 'Volver a analizar con el detector' })).toBeVisible();
+      expect(ninguno(srv).length).toBeGreaterThan(0);
       expect(obs.ajenas).toEqual([]);
       expect(await obs.violaciones()).toEqual([]);
     } finally {
@@ -513,7 +620,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
     try {
       const obs = await observar(page, srv.origen);
       await abrirInicio(page, srv.origen);
-      await botonDescargar(page).click();
+      await empezarDescarga(page);
       await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
       // Alteración en el disco del navegador: mismo tamaño, un byte distinto.
       await page.evaluate(async ([nombre, ruta]) => {
@@ -554,7 +661,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
         }, [memoria, cuota] as const);
         await abrirInicio(page, srv.origen);
         const corte = srv.peticiones().length;
-        await botonDescargar(page).click();
+        await empezarDescarga(page);
         await expect(tarjeta(page).locator('[role="status"], [role="alert"]').filter({ hasText: /listo en este equipo|no tiene memoria o espacio/ })).toBeVisible({ timeout: 60_000 });
         const texto = (await tarjeta(page).innerText()).replace(/\s+/g, ' ');
         const pedidas = delModelo(srv.peticiones().slice(corte)).map((p) => p.u);
@@ -603,7 +710,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       // Caben el respaldo (≈ 16 kB) y dos trozos del principal (≈ 120 kB de 200 kB), pero no el principal entero.
       await cdp.send('Storage.overrideQuotaForOrigin', { origin: srv.origen, quotaSize: uso + 150_000 });
       const corte = srv.peticiones().length;
-      await botonDescargar(page).click();
+      await empezarDescarga(page);
       await expect(tarjeta(page)).toContainText(/listo en este equipo|no tiene memoria o espacio/, { timeout: 60_000 });
       const pedidas = delModelo(srv.peticiones().slice(corte)).map((p) => p.u);
       expect(pedidas.some((u) => u.startsWith('/models/gliner-x-large/'))).toBe(true); // lo intentó…
@@ -626,7 +733,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       const obs = await observar(page, srv.origen);
       await abrirInicio(page, srv.origen);
       expect(await page.evaluate(() => typeof WebAssembly)).toBe('undefined'); // la condición de T-ED-02
-      await botonDescargar(page).click();
+      await empezarDescarga(page);
       await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
       const corte = srv.peticiones().length;
       await irAEntrada(page);
@@ -672,7 +779,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
         await abrirInicio(page, srv.origen);
         const corte = srv.peticiones().length;
         const t0 = Date.now();
-        await botonDescargar(page).click();
+        await empezarDescarga(page);
         await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 150_000 });
         const duracion = Date.now() - t0;
         expect(duracion).toBeGreaterThan(18_000); // > 3 × el silencio de la página (6 s) y > 6 × el del SW (3 s)
@@ -693,7 +800,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
         await observar(page, srv.origen);
         await abrirInicio(page, srv.origen);
         const corte = srv.peticiones().length;
-        await botonDescargar(page).click();
+        await empezarDescarga(page);
         await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
         const veces = vecesPedido(delModelo(srv.peticiones().slice(corte)));
         expect(veces['/models/gliner-x-large/onnx/model_quantized.onnx.part001']).toBe(2);
@@ -715,7 +822,7 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
           if (intentos === 1) await r.abort('connectionreset'); else await r.fallback();
         });
         await abrirInicio(page, srv.origen);
-        await botonDescargar(page).click();
+        await empezarDescarga(page);
         await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
         expect(intentos).toBe(2);
         await expect(tarjeta(page).getByRole('alert')).toHaveCount(0);
@@ -768,12 +875,21 @@ test.describe('PF-2 · modelo real en la app', () => {
       await page.goto(`${srv.origen}/`);
       await page.waitForFunction(() => navigator.serviceWorker?.controller != null, undefined, { timeout: 30_000 });
       const tarjeta = page.locator('[data-prueba="tarjeta-modelo"]');
-      const boton = page.getByRole('button', { name: /^Descargar detector de nombres/ });
-      await expect(boton).toBeEnabled({ timeout: 20_000 });
-      await expect(boton).toContainText(v.mb);
+      // F10 (v1.1.3): no hay botón de descarga aparte. La línea bajo «Anonimizar» dice el tamaño, y «Anonimizar» empieza la descarga.
+      await expect(page.locator('[data-prueba="nota-descarga"]')).toContainText(v.mb.replace(' MB', ''), { timeout: 20_000 });
       const corte = srv.peticiones().length;
-      await boton.click();
-      await expect(tarjeta).toContainText('Detector de nombres adicional listo en este equipo.', { timeout: 300_000 });
+      await page.getByRole('tab', { name: 'Pegar texto' }).click();
+      await page.getByRole('textbox', { name: 'Texto del documento' }).fill('La señora MARTA FICTICIA RUEDA, vecina de Ciudad Ejemplo, presentó la solicitud. Después, MARTA FICTICIA RUEDA firmó el acta.');
+      await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+      await expect(page.getByRole('heading', { level: 1, name: TITULO.vista })).toBeVisible({ timeout: 30_000 });
+      await expect(page.locator('[data-prueba="banda-modelo"]')).toHaveAttribute('data-estado', 'descargando');
+      // Al terminar la descarga, el detector revisa ESTE documento y dice cuántos datos agregó.
+      await expect(page.locator('[data-prueba="banda-modelo"]')).toHaveAttribute('data-estado', 'terminado', { timeout: 720_000 });
+      await expect(page.locator('[data-prueba="datos-agregados"]')).toHaveText(/^El detector de nombres agregó (1 dato|\d+ datos)\.$/);
+      await expect(vistaPrevia(page)).not.toContainText('MARTA FICTICIA RUEDA');
+      await page.getByRole('button', { name: 'Descartar este documento' }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'Descartar este documento' }).click();
+      await expect(tarjeta).toContainText('Detector de nombres adicional listo en este equipo.', { timeout: 30_000 });
       if (!v.grande) await expect(tarjeta).toContainText('versión reducida');
       const pedidas = delModelo(srv.peticiones().slice(corte)).map((p) => p.u).sort();
       const man = JSON.parse(readFileSync(join(dist, 'models', v.id, 'manifest.json'), 'utf8')) as ModelManifest;
