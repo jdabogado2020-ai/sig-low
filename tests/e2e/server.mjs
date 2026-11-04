@@ -8,6 +8,7 @@
 //                 recibe los informes en POST /csp-report. Solo en pruebas: producción no lleva report-uri (V-21).
 //   --padre pid   se apaga si ese proceso desaparece (una corrida cancelada no deja servidores abiertos).
 //   --lento ms, --atascar-una-vez sufijo   red lenta simulada para los trozos del modelo (F0, ver abajo).
+//   --sin-range, --rango-alterado sufijo   F11: Range en los trozos del modelo (206 por defecto; ver abajo).
 // Con SIGLOW_REGISTRO_PETICIONES=<archivo> anota cada petición, una línea JSON: { t, m, u, p, q, b, c?, h }.
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
@@ -33,6 +34,10 @@ const MAX_CUERPO = 64 * 1024; // del cuerpo se anota hasta aquí (los bytes se c
 // que termina así envíe un bloque y se quede callado con la conexión abierta (los siguientes, normales).
 const LENTO_MS = Number(arg('--lento', '0'));
 const ATASCAR = arg('--atascar-una-vez', '');
+// F11: los trozos del modelo responden 206 a `Range: bytes=<desde>-[<hasta>]`. `--sin-range` los responde con 200 y el archivo entero,
+// como hoy Cloudflare Pages; `--rango-alterado <sufijo>` cambia un byte de la parte que se manda en un 206 de esa ruta.
+const SIN_RANGE = marca('--sin-range');
+const RANGO_ALTERADO = arg('--rango-alterado', '');
 const BLOQUE_LENTO = 4096;
 const atascadas = new Set();
 const TROZO_DEL_MODELO = /^\/models\/[^/]+\/onnx\//;
@@ -66,7 +71,7 @@ const reglas = () => {
   return cache.reglas;
 };
 
-const CABECERAS_DE_ORIGEN = ['host', 'origin', 'referer', 'sec-fetch-site', 'sec-fetch-mode', 'sec-fetch-dest', 'content-type'];
+const CABECERAS_DE_ORIGEN = ['host', 'origin', 'referer', 'sec-fetch-site', 'sec-fetch-mode', 'sec-fetch-dest', 'content-type', 'range'];
 
 /** Anota la petición: ruta, query, bytes y texto del cuerpo y las cabeceras que dicen de dónde viene. */
 function anotar(req, url, cuerpo) {
@@ -124,6 +129,24 @@ const server = createServer(async (req, res) => {
     const tipo = MIME[extname(archivo)];
     if (tipo !== undefined) res.setHeader('Content-Type', tipo);
     res.setHeader('Content-Length', s.size);
+    const rango = req.method === 'GET' && !SIN_RANGE && TROZO_DEL_MODELO.test(url.pathname) ? /^bytes=(\d+)-(\d*)$/.exec(String(req.headers.range ?? '')) : null;
+    if (rango) {
+      const todo = await readFile(archivo);
+      const desde = Number(rango[1]);
+      const hasta = rango[2] === '' ? todo.length - 1 : Math.min(Number(rango[2]), todo.length - 1);
+      if (desde >= todo.length || desde > hasta) {
+        res.statusCode = 416;
+        res.setHeader('Content-Range', `bytes */${todo.length}`);
+        res.setHeader('Content-Length', 0);
+        return res.end();
+      }
+      const parte = Buffer.from(todo.subarray(desde, hasta + 1));
+      if (RANGO_ALTERADO !== '' && url.pathname.endsWith(RANGO_ALTERADO)) parte[0] = parte[0] ^ 0xff;
+      res.statusCode = 206;
+      res.setHeader('Content-Range', `bytes ${desde}-${hasta}/${todo.length}`);
+      res.setHeader('Content-Length', parte.length);
+      return LENTO_MS > 0 ? enviarPorBloques(res, parte, false) : res.end(parte);
+    }
     if (req.method === 'GET' && TROZO_DEL_MODELO.test(url.pathname) && (LENTO_MS > 0 || ATASCAR !== '')) {
       const atascar = ATASCAR !== '' && url.pathname.endsWith(ATASCAR) && !atascadas.has(url.pathname);
       if (atascar) atascadas.add(url.pathname);

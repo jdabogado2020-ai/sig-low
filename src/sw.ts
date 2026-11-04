@@ -137,10 +137,12 @@ function conCabeceras(r: Response, ruta: string, v: Version): Response {
  * archivo faltante del precache (`cache: 'reload'`) y la descarga del modelo (`cache: 'no-store'`, con `signal`). Nunca se relaja:
  * GET, ruta del propio sitio sin query (la misma forma que la lista), sin credenciales, sin referente y una redirección es un error.
  */
-function pedirAlOrigen(ruta: string, cache: 'reload' | 'no-store', signal?: AbortSignal): Promise<Response> {
+/** F11: `desde` pide el resto de un trozo del modelo (`Range: bytes=<desde>-`); la única cabecera que se agrega. */
+function pedirAlOrigen(ruta: string, cache: 'reload' | 'no-store', signal?: AbortSignal, desde?: number): Promise<Response> {
   if (!RUTA.test(ruta)) throw new TypeError('RUTA');
   return fetch(new URL(ruta, self.location.origin).href, {
     method: 'GET', cache, credentials: 'omit', mode: 'same-origin', redirect: 'error', referrerPolicy: 'no-referrer', ...(signal ? { signal } : {}),
+    ...(desde !== undefined && Number.isSafeInteger(desde) && desde > 0 ? { headers: { Range: `bytes=${desde}-` } } : {}),
   });
 }
 
@@ -352,6 +354,7 @@ async function atenderModelo(d: Record<string, unknown>, puerto: MessagePort): P
         break;
       case 'MODELO_BORRAR': // una caché por modelo (parciales o completa); nunca toca `siglow-app-*`
         await caches.delete(cacheDelModelo(await manifiestoDe(id, v)));
+        parcial = null;   // F11: lo recibido de un trozo a medias tampoco queda
         r = { ok: true };
         break;
       default:
@@ -363,7 +366,25 @@ async function atenderModelo(d: Record<string, unknown>, puerto: MessagePort): P
   puerto.postMessage(r);
 }
 
-/** Trae un archivo del manifiesto (GET, sin query, mismo origen), lo comprueba y lo guarda. Uno ya guardado y correcto no se pide. */
+/**
+ * F11 (v1.1.4) · Lo recibido de un trozo cuya conexión se cortó a mitad. El reintento (otro `MODELO_ARCHIVO` de la página, F0) lo
+ * reanuda con `Range: bytes=<recibidos>-` y concatena. Vive solo en la memoria del SW y es de un solo archivo; nada se guarda en la
+ * caché hasta que el trozo completo pasa su SHA-256.
+ */
+let parcial: { url: string; sha256: string; tamano: number; bytes: Uint8Array<ArrayBuffer>; escrito: number } | null = null;
+
+/** El `Content-Range` de un 206 que sigue exactamente donde quedó el trozo: `bytes <desde>-<tamano - 1>/<tamano>`. */
+function rangoQueSigue(cabecera: string | null, desde: number, tamano: number): boolean {
+  return cabecera === `bytes ${desde}-${tamano - 1}/${tamano}`;
+}
+
+/**
+ * Trae un archivo del manifiesto (GET, sin query, mismo origen), lo comprueba y lo guarda. Uno ya guardado y correcto no se pide.
+ * F11: si hay lo recibido de un intento cortado del mismo archivo, se pide el resto con `Range`. Un 206 que sigue donde quedó se
+ * concatena; un 200 empieza de cero sin mezclar; cualquier otro `Content-Range` descarta lo recibido. El SHA-256 del trozo completo se
+ * comprueba al final como siempre: si no coincide y el trozo venía de reanudar, se descarta entero y se pide de cero una vez; si vuelve
+ * a no coincidir, es una alteración (`MODELO_INTEGRIDAD`, V-44).
+ */
 async function descargarArchivo(m: ManifiestoSw, a: ArchivoModelo, puerto: MessagePort): Promise<RespuestaModelo> {
   if (descargaModelo !== null) return { ok: false, code: 'ERROR_INTERNO' };
   const control = new AbortController();
@@ -373,47 +394,70 @@ async function descargarArchivo(m: ManifiestoSw, a: ArchivoModelo, puerto: Messa
     const nombre = cacheDelModelo(m);
     const previo = (await caches.has(nombre)) ? await (await caches.open(nombre)).match(url) : undefined;
     if (previo && (await sha256Hex(await previo.arrayBuffer())) === a.sha256) {
+      parcial = null;
       puerto.postMessage({ tipo: 'avance', bytes: a.tamano });
       return { ok: true };
     }
-    const bytes = new Uint8Array(a.tamano); // búfer del tamaño declarado: lo que sobre o falte es una alteración
-    let escrito = 0;
-    // Vigía de silencio (F0): se arma antes de pedir y se rearma con cada bloque recibido.
-    let porSilencio = false;
-    let reloj: ReturnType<typeof setTimeout> | undefined;
-    const vigilar = (): void => {
-      clearTimeout(reloj);
-      reloj = setTimeout(() => { porSilencio = true; control.abort(); }, SILENCIO_LECTURA_MS);
-    };
-    try {
-      vigilar();
-      const res = await pedirAlOrigen(url, 'no-store', control.signal);
-      if (res.status !== 200 || res.type !== 'basic' || !res.body) {
-        await res.body?.cancel().catch(() => undefined);
-        return { ok: false, code: 'MODELO_NO_DESCARGADO' };
-      }
-      const lector = res.body.getReader();
-      let ultimo = 0;
-      for (;;) {
+    // Lo recibido antes, solo si es de este mismo archivo (ruta, SHA-256 y tamaño del manifiesto vigente).
+    const antes = parcial !== null && parcial.url === url && parcial.sha256 === a.sha256 && parcial.tamano === a.tamano
+      && parcial.escrito > 0 && parcial.escrito < a.tamano ? parcial : null;
+    parcial = null;
+    const bytes: Uint8Array<ArrayBuffer> = antes?.bytes ?? new Uint8Array(a.tamano); // búfer del tamaño declarado: lo que sobre o falte es una alteración
+    let escrito = antes?.escrito ?? 0;
+    for (let vuelta = 0; ; vuelta++) {
+      const desde = escrito;
+      // Vigía de silencio (F0): se arma antes de pedir y se rearma con cada bloque recibido.
+      let porSilencio = false;
+      let reloj: ReturnType<typeof setTimeout> | undefined;
+      const vigilar = (): void => {
+        clearTimeout(reloj);
+        reloj = setTimeout(() => { porSilencio = true; control.abort(); }, SILENCIO_LECTURA_MS);
+      };
+      try {
         vigilar();
-        const { done, value } = await lector.read();
-        if (done) break;
-        if (escrito + value.byteLength > a.tamano) {
-          await lector.cancel().catch(() => undefined);
-          return { ok: false, code: 'MODELO_INTEGRIDAD' };
+        const res = await pedirAlOrigen(url, 'no-store', control.signal, desde > 0 ? desde : undefined);
+        if (res.type !== 'basic' || !res.body) {
+          await res.body?.cancel().catch(() => undefined);
+          return { ok: false, code: 'MODELO_NO_DESCARGADO' };
         }
-        bytes.set(value, escrito);
-        escrito += value.byteLength;
-        const t = Date.now();
-        if (t - ultimo >= 100) { ultimo = t; puerto.postMessage({ tipo: 'avance', bytes: escrito }); }
+        if (desde > 0 && res.status === 206 && !rangoQueSigue(res.headers.get('Content-Range'), desde, a.tamano)) {
+          // Un 206 que no sigue donde quedó: lo recibido no se mezcla con otra cosa. El reintento empieza de cero.
+          await res.body.cancel().catch(() => undefined);
+          return { ok: false, code: 'MODELO_NO_DESCARGADO' };
+        }
+        if (res.status === 200) escrito = 0;               // el servidor no reanudó: de cero, sin mezclar
+        else if (!(desde > 0 && res.status === 206)) {
+          await res.body.cancel().catch(() => undefined);
+          return { ok: false, code: 'MODELO_NO_DESCARGADO' };
+        }
+        const lector = res.body.getReader();
+        let ultimo = 0;
+        for (;;) {
+          vigilar();
+          const { done, value } = await lector.read();
+          if (done) break;
+          if (escrito + value.byteLength > a.tamano) {
+            await lector.cancel().catch(() => undefined);
+            return { ok: false, code: 'MODELO_INTEGRIDAD' };
+          }
+          bytes.set(value, escrito);
+          escrito += value.byteLength;
+          const t = Date.now();
+          if (t - ultimo >= 100) { ultimo = t; puerto.postMessage({ tipo: 'avance', bytes: escrito }); }
+        }
+      } catch (e) {
+        // F11: lo recibido queda para el reintento (corte de red, silencio o cancelación), nunca en la caché.
+        if (escrito > 0 && escrito < a.tamano) parcial = { url, sha256: a.sha256, tamano: a.tamano, bytes, escrito };
+        if (control.signal.aborted && !porSilencio) return { ok: false, code: 'ENTRADA_INVALIDA', cancelado: true };
+        return { ok: false, code: e instanceof RangeError ? 'MEMORIA' : 'MODELO_NO_DESCARGADO' };
+      } finally {
+        clearTimeout(reloj);
       }
-    } catch (e) {
-      if (control.signal.aborted && !porSilencio) return { ok: false, code: 'ENTRADA_INVALIDA', cancelado: true };
-      return { ok: false, code: e instanceof RangeError ? 'MEMORIA' : 'MODELO_NO_DESCARGADO' };
-    } finally {
-      clearTimeout(reloj);
+      if (escrito === a.tamano && (await sha256Hex(bytes)) === a.sha256) break;
+      // No coincide. Si venía de reanudar, se descarta todo y se pide de cero una vez; si no, es una alteración.
+      if (desde > 0 && vuelta === 0) { escrito = 0; continue; }
+      return { ok: false, code: 'MODELO_INTEGRIDAD' };
     }
-    if (escrito !== a.tamano || (await sha256Hex(bytes)) !== a.sha256) return { ok: false, code: 'MODELO_INTEGRIDAD' };
     try {
       await (await caches.open(nombre)).put(url, new Response(bytes, { status: 200, headers: { 'Content-Type': 'application/octet-stream' } }));
     } catch (e) {

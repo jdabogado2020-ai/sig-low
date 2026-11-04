@@ -849,6 +849,76 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
       }
     });
 
+    // ===== F11 (v1.1.4) · reanudar dentro del trozo con Range =====
+    const PART001 = '/models/gliner-x-large/onnx/model_quantized.onnx.part001';
+    const pedidosDe = (ps: Array<{ u: string; h: Record<string, string> }>, ruta: string): Array<string | null> =>
+      ps.filter((p) => p.u === ruta).map((p) => p.h['range'] ?? null);
+
+    test('F11 un corte a mitad de un trozo se reanuda con Range: el reintento pide solo lo que faltaba y el trozo completo pasa su SHA-256', async ({ page }) => {
+      n += 1;
+      const srv = await levantarServidor({ dir: D_LENTO, registro: join(tmp, `peticiones-${n}.jsonl`), atascarUnaVez: 'part001' });
+      try {
+        await observar(page, srv.origen);
+        await abrirInicio(page, srv.origen);
+        const corte = srv.peticiones().length;
+        await empezarDescarga(page);
+        await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
+        const rangos = pedidosDe(srv.peticiones().slice(corte), PART001);
+        // El primero, entero; el reintento, desde lo ya recibido (el bloque de 4 KiB que el servidor alcanzó a mandar).
+        expect(rangos).toHaveLength(2);
+        expect(rangos[0]).toBeNull();
+        expect(rangos[1]).toMatch(/^bytes=[1-9]\d*-$/);
+        const desde = Number(/^bytes=(\d+)-$/.exec(rangos[1] ?? '')?.[1]);
+        expect(desde).toBeGreaterThan(0);
+        expect(desde).toBeLessThan(60_000);
+        await expect(tarjeta(page).getByRole('alert')).toHaveCount(0);
+        expect((await cachesDelModelo(page))[0]?.rutas).toEqual(rutasDelManifiesto(LENTO.manifest));
+      } finally {
+        await srv.parar();
+      }
+    });
+
+    test('F11 si el servidor responde 200 a un Range (como Cloudflare Pages hoy), el reintento empieza de cero sin mezclar y la descarga termina bien', async ({ page }) => {
+      n += 1;
+      const srv = await levantarServidor({ dir: D_LENTO, registro: join(tmp, `peticiones-${n}.jsonl`), atascarUnaVez: 'part001', sinRange: true });
+      try {
+        await observar(page, srv.origen);
+        await abrirInicio(page, srv.origen);
+        const corte = srv.peticiones().length;
+        await empezarDescarga(page);
+        await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
+        const rangos = pedidosDe(srv.peticiones().slice(corte), PART001);
+        expect(rangos).toHaveLength(2);
+        expect(rangos[1]).toMatch(/^bytes=[1-9]\d*-$/);   // se pidió reanudar; el servidor mandó el archivo entero (200)
+        await expect(tarjeta(page).getByRole('alert')).toHaveCount(0);
+        expect((await cachesDelModelo(page))[0]?.rutas).toEqual(rutasDelManifiesto(LENTO.manifest));
+      } finally {
+        await srv.parar();
+      }
+    });
+
+    test('F11 un trozo que llega alterado al reanudar no pasa su SHA-256: se descarta entero, se pide de cero y la descarga termina bien', async ({ page }) => {
+      n += 1;
+      const srv = await levantarServidor({ dir: D_LENTO, registro: join(tmp, `peticiones-${n}.jsonl`), atascarUnaVez: 'part001', rangoAlterado: 'part001' });
+      try {
+        await observar(page, srv.origen);
+        await abrirInicio(page, srv.origen);
+        const corte = srv.peticiones().length;
+        await empezarDescarga(page);
+        await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 90_000 });
+        const rangos = pedidosDe(srv.peticiones().slice(corte), PART001);
+        // Entero (cortado), reanudado (alterado: no pasa el SHA-256) y otra vez entero, de cero.
+        expect(rangos).toHaveLength(3);
+        expect(rangos[0]).toBeNull();
+        expect(rangos[1]).toMatch(/^bytes=[1-9]\d*-$/);
+        expect(rangos[2]).toBeNull();
+        await expect(tarjeta(page).getByRole('alert')).toHaveCount(0);
+        expect((await cachesDelModelo(page))[0]?.rutas).toEqual(rutasDelManifiesto(LENTO.manifest));
+      } finally {
+        await srv.parar();
+      }
+    });
+
     test('F0 un trozo cuya conexión se corta una vez se recupera solo, sin aviso', async ({ page, context }) => {
       n += 1;
       const srv = await levantarServidor({ dir: D_LENTO, registro: join(tmp, `peticiones-${n}.jsonl`), lento: 50 });
