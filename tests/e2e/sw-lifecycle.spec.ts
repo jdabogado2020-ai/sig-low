@@ -102,7 +102,10 @@ async function esperarSinSw(page: Page, mensaje: string): Promise<void> {
 const servidaPor = (page: Page): Promise<string | null> =>
   page.evaluate(async () => /siglow-(v\d)/.exec(await (await fetch('/')).text())?.[1] ?? null);
 
-const cachesDe = (page: Page): Promise<string[]> => page.evaluate(async () => (await caches.keys()).sort());
+// Cachés de la app (precache por versión). La del modelo (`siglow-modelo-…`, F10: «Anonimizar» empieza su descarga) sobrevive a las
+// actualizaciones a propósito y no cuenta aquí.
+const cachesDe = (page: Page): Promise<string[]> =>
+  page.evaluate(async () => (await caches.keys()).filter((n) => !n.startsWith('siglow-modelo-')).sort());
 
 /** `registration.update()` (GET /sw.js) y espera a que la versión nueva quede instalada y en espera. */
 async function buscarYEsperarVersionNueva(page: Page): Promise<void> {
@@ -313,6 +316,12 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
     const corte = srv.peticiones().length;
     await buscarYEsperarVersionNueva(page);
     const v2 = new Set(['/sw.js', ...(JSON.parse(readFileSync(join(V2, 'precache.json'), 'utf8')) as { archivos: ArchivoPrecache[] }).archivos.map((a) => a.ruta)]);
+    // F10 (v1.1.3): «Anonimizar» empieza la descarga del detector, que puede coincidir con la búsqueda de versión. Se admiten solo
+    // las rutas de los manifiestos del modelo (lo demás sigue prohibido); que solo se pidan esas lo prueba model.spec.ts.
+    for (const id of ['gliner-x-large', 'gliner-x-base']) {
+      const m = JSON.parse(readFileSync(join(V2, 'models', id, 'manifest.json'), 'utf8')) as { trozos: { ruta: string }[]; auxiliares: { ruta: string }[] };
+      for (const a of [...m.trozos, ...m.auxiliares]) v2.add(`/models/${id}/${a.ruta}`);
+    }
     const despues = srv.peticiones().slice(corte);
     expect(despues.filter((p) => p.m === 'GET' && p.u === '/sw.js').length).toBeGreaterThanOrEqual(1);
     expect(despues.filter((p) => p.m !== 'GET' || p.u.includes('?') || !v2.has(p.u))).toEqual([]);
