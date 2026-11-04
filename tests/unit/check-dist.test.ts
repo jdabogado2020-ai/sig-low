@@ -180,6 +180,15 @@ describe.concurrent('T-CD-02 un canario por regla de contenido: check-dist sale 
     it(`canario ${regla}: ${contenido}`, async () => { await falla(chunkUi(contenido), `assets/ui-Cx0Prueba.js: ${regla} ×`); });
   }
 
+  it('F4-r1 http-externo: los tres espacios de nombres de dibujo de Office 2010 del .docx fiel pasan; una URL parecida sigue fallando', async () => {
+    const ns = ['Shape', 'Group', 'Canvas'].map((x) => `"http://schemas.microsoft.com/office/word/2010/wordprocessing${x}"`).join(',');
+    expect((await correr(chunkUi(`var n=[${ns}];`))).salida).toBe(0);
+    for (const parecida of ['http://schemas.microsoft.com/office/word/2010/wordprocessingInk', 'http://schemas.microsoft.com/office/word/2012/wordml',
+      'https://schemas.microsoft.com/office/word/2010/wordprocessingShapes/x', 'http://schemas.microsoft.com.ejemplo.test/office/word/2010/wordprocessingShape']) {
+      await falla(chunkUi(`var u="${parecida}";`), 'assets/ui-Cx0Prueba.js: http-externo ×');
+    }
+  });
+
   it('P0-5 auxiliares del modelo: tokenizer.json con el SHA-256 de su manifiesto no se barre; alterado, sí', async () => {
     const tok = '{"vocab":["localStorage.x=1;","console.log"]}';
     const manifiesto = (huella: string): string => JSON.stringify({ id: 'm', auxiliares: [{ ruta: 'tokenizer.json', tamano: tok.length, sha256: huella }] });
