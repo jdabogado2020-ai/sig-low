@@ -1,8 +1,9 @@
 // Condición para copiar o exportar (plan 6.4.8, INV-G06, INV-R07, INV-R11). PC-5. Código puro de core/: sin DOM ni red.
-// La puerta se abre solo si se cumplen a la vez los ocho puntos; cada punto que falla aporta su `GateReason`, en este orden:
-//   PENDIENTES · BANDERAS · MODELO_EN_CURSO · RESIDUOS_NO_EJECUTADA / RESIDUOS_DESACTUALIZADA · RESIDUOS_ENCONTRADOS ·
+// La puerta se abre solo si se cumplen a la vez todos los puntos; cada punto que falla aporta su `GateReason`, en este orden:
+//   PENDIENTES · MODELO_EN_CURSO · RESIDUOS_NO_EJECUTADA / RESIDUOS_DESACTUALIZADA · RESIDUOS_ENCONTRADOS ·
 //   DETECCIONES_NUEVAS · RECORDATORIO.
-// No lee texto del documento: solo estados, conteos y la revisión del resultado de residuos.
+// D-24 (F3): las banderas sin confirmar ya no la cierran (quedan como puntos para revisar) y las tres casillas del recordatorio
+// pasan a una sola confirmación. No lee texto del documento: solo estados, conteos y la revisión del resultado de residuos.
 import type { ExportGate, ExportGateFn, GateReason, ResidueResult, ReviewState } from '../types.ts';
 import { esAmbigua } from '../entities.ts';
 
@@ -17,7 +18,7 @@ export function contarPendientes(state: ReviewState): number {
   return n;
 }
 
-/** Banderas sin confirmar (`acknowledged` falso). */
+/** Banderas sin confirmar (`acknowledged` falso): puntos para revisar de la vista previa; ya no cierran la puerta (D-24). */
 export function contarBanderasSinConfirmar(state: ReviewState): number {
   let n = 0;
   for (const f of Object.values(state.flags)) if (!f.acknowledged) n++;
@@ -25,15 +26,14 @@ export function contarBanderasSinConfirmar(state: ReviewState): number {
 }
 
 /**
- * 6.4.8 · ok ⇔ 0 pendientes ∧ 0 banderas sin confirmar ∧ modelo `terminado` o `plan_b` ∧ residuos ejecutados sobre esta misma
- * `revision` con 0 hallazgos y 0 detecciones nuevas ∧ las tres casillas del recordatorio. Mientras el modelo está `en_curso` la
+ * 6.4.8 (D-24) · ok ⇔ 0 pendientes ∧ modelo `terminado` o `plan_b` ∧ residuos ejecutados sobre esta misma
+ * `revision` con 0 hallazgos y 0 detecciones nuevas ∧ la confirmación única. Mientras el modelo está `en_curso` la
  * puerta sigue cerrada aunque no haya pendientes (INV-R11). Una acción que sube `revision` deja el resultado de residuos
  * desactualizado (INV-R07). Es pura y se vuelve a evaluar en cada manejador: nunca se guarda su resultado.
  */
 export const exportGate: ExportGateFn = (state, residue: ResidueResult | null, reminder): ExportGate => {
   const reasons: GateReason[] = [];
   if (contarPendientes(state) > 0) reasons.push('PENDIENTES');
-  if (contarBanderasSinConfirmar(state) > 0) reasons.push('BANDERAS');
   if (state.modelo.kind === 'en_curso') reasons.push('MODELO_EN_CURSO');
   if (residue === null) {
     reasons.push('RESIDUOS_NO_EJECUTADA');
@@ -42,6 +42,6 @@ export const exportGate: ExportGateFn = (state, residue: ResidueResult | null, r
     if (residue.hits.length > 0) reasons.push('RESIDUOS_ENCONTRADOS');
     if (residue.newDetections > 0) reasons.push('DETECCIONES_NUEVAS');
   }
-  if (!(reminder.biometricos && reminder.reservaLegal && reminder.estrategia)) reasons.push('RECORDATORIO');
+  if (!reminder.revisado) reasons.push('RECORDATORIO');
   return { ok: reasons.length === 0, reasons };
 };

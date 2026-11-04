@@ -1,4 +1,4 @@
-// Estado de la pantalla Listo (PC-5) [M]: resultado de la búsqueda de residuos, casillas del recordatorio, avisos de la última
+// Estado de la pantalla Listo (PC-5) [M]: resultado de la búsqueda de residuos, la confirmación única (D-24), avisos de la última
 // acción y el respaldo manual de copia. Se vacía con `registrarLimpieza()` en el bloqueo, «Cerrar asunto» y `pagehide` (INV-G09).
 // La puerta (`exportGate`) NO se guarda aquí: se calcula de nuevo en cada render y en cada manejador (6.4.8, 8.2.7).
 import { useEffect, useState } from 'preact/hooks';
@@ -23,7 +23,7 @@ export interface EstadoListo {
   /** Hay una búsqueda en curso (M-76). */
   buscando: boolean;
   recordatorio: ReminderConfirmation;
-  /** Cuándo se completaron por primera vez las tres casillas (6.8, `recordatorio.confirmado`). */
+  /** Cuándo se marcó la confirmación (6.8, `recordatorio.confirmado`). */
   recordatorioConfirmado: Date | null;
   /** Hallazgos de la última búsqueda con resultados, para mostrarlos con «Ir a la revisión». */
   hallazgos: readonly Hallazgo[];
@@ -42,7 +42,7 @@ export interface EstadoListo {
   compilacion: string | null;
 }
 
-const SIN_CASILLAS: ReminderConfirmation = { biometricos: false, reservaLegal: false, estrategia: false };
+const SIN_CASILLAS: ReminderConfirmation = { revisado: false };
 const inicial = (): EstadoListo => ({
   residuo: null, buscando: false, recordatorio: SIN_CASILLAS, recordatorioConfirmado: null, hallazgos: [], docIdHallazgos: null,
   copiado: false, avisos: [], respaldo: null, errorBusqueda: null, incluirCodigoAsunto: false, compilacion: null,
@@ -69,19 +69,17 @@ export function useListo(): EstadoListo {
   return estado;
 }
 
-/** Entrar desde Revisión: las casillas se desmarcan y el resultado anterior no se reutiliza (8.2.7). */
+/** Entrar a la descarga: la confirmación se desmarca y el resultado anterior no se reutiliza (8.2.7). */
 export function reiniciarEntrada(compilacion: string | null): void {
   estado = { ...inicial(), compilacion };
   avisar();
 }
 
-/** Marca o desmarca una casilla; la fecha de confirmación se fija cuando las tres quedan marcadas. */
-export function marcarCasilla(cual: keyof ReminderConfirmation, valor: boolean, ahora: Date = new Date()): void {
-  const recordatorio = { ...estado.recordatorio, [cual]: valor };
-  const completo = recordatorio.biometricos && recordatorio.reservaLegal && recordatorio.estrategia;
+/** D-24 · Marca o desmarca la confirmación única «Revisé la vista previa…»; la fecha se fija al marcarla. */
+export function marcarConfirmacion(valor: boolean, ahora: Date = new Date()): void {
   actualizarListo({
-    recordatorio,
-    recordatorioConfirmado: completo ? (estado.recordatorioConfirmado ?? ahora) : null,
+    recordatorio: { revisado: valor },
+    recordatorioConfirmado: valor ? (estado.recordatorioConfirmado ?? ahora) : null,
   });
 }
 
@@ -89,7 +87,7 @@ export function ponerAviso(avisos: readonly AvisoListo[]): void {
   actualizarListo({ avisos });
 }
 
-/** La puerta con lo vigente: estado de revisión, último resultado de residuos y casillas. */
+/** La puerta con lo vigente: estado de revisión, último resultado de residuos y confirmación. */
 export function puertaDe(state: ReviewState): ExportGate {
   return exportGate(state, estado.residuo, estado.recordatorio);
 }

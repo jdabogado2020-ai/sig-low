@@ -223,7 +223,7 @@ export interface Detection {
   replacement: Replacement;
   label?: LabelHit; validator?: ValidatorResult;
   rejectReason?: RejectReason;   // solo si 'rechazada'
-  decidedBy?: 'individual' | 'grupo';
+  decidedBy?: 'individual' | 'grupo' | 'propuesta';   // 'propuesta': la aplicó `aplicar_propuesta` (D-24), no el revisor
   coveredBy?: SpanEditId;        // contenida en una edición de tramo: no se renderiza
   suggestionId?: SuggestionId;   // creada al aplicar esa sugerencia
 }
@@ -258,7 +258,10 @@ export type ReviewAction =
   | { kind: 'resolver_bandera'; flagId: FlagId; resolution: 'mantener' | 'reemplazar'; optionId?: string; text?: string }
   | { kind: 'incorporar_residuos'; residueRevision: number; candidates: DetectionCandidate[] }
   | { kind: 'incorporar_modelo'; ventana: number; ventanasTotales: number; delta: DetectionSet }   // resultados progresivos (6.11.2)
-  | { kind: 'declarar_plan_b'; causa: PlanBCause };   // el modelo no terminó: se sigue con reglas y lista, y el informe lo declara
+  | { kind: 'declarar_plan_b'; causa: PlanBCause }    // el modelo no terminó: se sigue con reglas y lista, y el informe lo declara
+  // D-24 (F3) · Única excepción de INV-R06: aplica de una vez lo que Sig-Low propone sobre lo que nadie decidió todavía (detecciones
+  // pendientes, menciones ambiguas, banderas con reemplazo y sugerencias de tramo). No toca nada que el revisor ya decidió.
+  | { kind: 'aplicar_propuesta' };
 
 export type ReviewError = 'NO_ENCONTRADO' | 'TRAMO_INVALIDO' | 'SOLAPAMIENTO_PARCIAL'
   | 'ROL_INCOMPATIBLE' | 'ROL_FIJADO_EN_ASUNTO' | 'TIPO_NO_PERMITIDO' | 'DEPARTAMENTO_SIN_ELEGIR';
@@ -323,8 +326,11 @@ export interface SpanEdit {
 }
 
 // ===== Sección 6.4.8 Condición para copiar o exportar (bloque 14, línea 1360) =====
-export interface ReminderConfirmation { biometricos: boolean; reservaLegal: boolean; estrategia: boolean; }
-export type GateReason = 'PENDIENTES' | 'BANDERAS' | 'MODELO_EN_CURSO' | 'RESIDUOS_NO_EJECUTADA' | 'RESIDUOS_DESACTUALIZADA'
+/** D-24 · Una sola confirmación antes de descargar («Revisé la vista previa. Entiendo que respondo por el documento que comparto»),
+ *  en lugar de las tres casillas del recordatorio de la v1.0. */
+export interface ReminderConfirmation { revisado: boolean; }
+/** D-24 · Las banderas ya no cierran la puerta: las que tienen reemplazo llegan reemplazadas y las demás quedan como puntos para revisar. */
+export type GateReason = 'PENDIENTES' | 'MODELO_EN_CURSO' | 'RESIDUOS_NO_EJECUTADA' | 'RESIDUOS_DESACTUALIZADA'
   | 'RESIDUOS_ENCONTRADOS' | 'DETECCIONES_NUEVAS' | 'RECORDATORIO';
 /** Causa por la que se sigue con reglas y lista (plan B). 'respaldo_base' no es plan B: es el modelo x-base (3.3). */
 export type PlanBCause = 'no_descargado' | 'desactivado' | 'fallo_carga' | 'memoria_insuficiente' | 'cancelado' | 'sin_tiempo';
@@ -335,11 +341,11 @@ export type ModelProgress =
   | { kind: 'plan_b'; causa: PlanBCause; ventanas?: number; ventanasTotales?: number };   // declarado en el informe (6.8); ventanas: contrato del integrador, 30-oct (PB-6: «3 de 23»)
 export interface ExportGate { ok: boolean; reasons: GateReason[]; }
 export type ExportGateFn = (state: ReviewState, residue: ResidueResult | null, reminder: ReminderConfirmation) => ExportGate;
-// ok ⇔ 0 detecciones 'pendiente' ∧ 0 banderas sin acknowledged
+// ok ⇔ 0 detecciones 'pendiente' (D-24: las banderas sin confirmar ya no cuentan)
 //      ∧ state.modelo.kind ∈ { 'terminado', 'plan_b' }          // «modelo terminado o plan B declarado en el informe»
 //      ∧ residue ≠ null ∧ residue.revision === state.revision
 //      ∧ residue.hits.length === 0 ∧ residue.newDetections === 0
-//      ∧ las 3 casillas del recordatorio en true
+//      ∧ la confirmación única (`revisado`) en true
 
 // ===== Sección 6.5 Lista del caso (bloque 15, línea 1403) =====
 export type CaseEntity = {
@@ -458,10 +464,11 @@ export interface AnonymizationReport {
   sugerencias: Array<{ clase: SuggestionKind; aplicadas: number; descartadas: number; sinDecidir: number }>;
   edicionesDeTramo: number;
   aprobacionesPorGrupo: number;
+  propuestaAplicada: number;                              // D-24 · aceptadas por `aplicar_propuesta` (excepción de INV-R06)
   residuos: { resultado: 'sin_residuos'; valoresBuscados: number; modos: ResidueMode[]; ejecutada: string };
   metadatos: { categorias: MetadataCategory[] };
   advertencias: Array<{ codigo: ParseWarningCode; cantidad: number }>;
-  recordatorio: { biometricos: true; reservaLegal: true; estrategia: true; confirmado: string };
+  recordatorio: { revisado: true; confirmado: string };   // D-24: la confirmación única antes de descargar
   aCriterio: { rechazadas: number; banderasMantenidas: number; sugerenciasDescartadas: number; sugerenciasSinDecidir: number };
 }
 

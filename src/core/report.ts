@@ -138,7 +138,7 @@ export interface ReportInput {
   asunto?: { codigo: string };
   incluirCodigoAsunto?: boolean;
   now: Date;
-  /** Cuándo se marcaron las tres casillas; por defecto, `now`. */
+  /** Cuándo se marcó la confirmación única (D-24); por defecto, `now`. */
   recordatorioConfirmado?: Date;
 }
 export interface ReportDeps { exportGate?: ExportGateFn }
@@ -173,6 +173,7 @@ export function buildReport(input: ReportInput, deps: ReportDeps = {}): Anonymiz
   const filas = new Map<DetectableType, Fila>();
   const rechazos = new Map<string, { tipo: DetectableType; motivo: RejectReason; cantidad: number }>();
   let aprobacionesPorGrupo = 0;
+  let propuestaAplicada = 0;
   let rechazadasTotal = 0;
   for (const d of Object.values(state.detections)) {
     if (d.status === 'pendiente') throw new SiglowError('ENTRADA_INVALIDA');
@@ -190,6 +191,7 @@ export function buildReport(input: ReportInput, deps: ReportDeps = {}): Anonymiz
     f.porFuente[d.source]++;
     f.porConfianza[d.confidence]++;
     if (d.status === 'aceptada' && d.decidedBy === 'grupo') aprobacionesPorGrupo++;
+    if (d.status === 'aceptada' && d.decidedBy === 'propuesta') propuestaAplicada++;
     if (d.status === 'rechazada') {
       const motivo = d.rejectReason ?? 'SIN_MOTIVO';
       const k = `${d.type}|${motivo}`;
@@ -271,10 +273,11 @@ export function buildReport(input: ReportInput, deps: ReportDeps = {}): Anonymiz
     sugerencias,
     edicionesDeTramo: Object.keys(state.spanEdits).length,
     aprobacionesPorGrupo,
+    propuestaAplicada,
     residuos: { resultado: 'sin_residuos', valoresBuscados: residue.valuesSearched, modos: [...residue.modes] as ResidueMode[], ejecutada: aBogota(residue.ranAt) },
     metadatos: { categorias },
     advertencias: [...adv.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([codigo, cantidad]) => ({ codigo, cantidad })),
-    recordatorio: { biometricos: true, reservaLegal: true, estrategia: true, confirmado },
+    recordatorio: { revisado: true, confirmado },
     aCriterio: { rechazadas: rechazadasTotal, banderasMantenidas, sugerenciasDescartadas: descartadasTotal, sugerenciasSinDecidir: sinDecidirTotal },
   };
   if (input.incluirCodigoAsunto === true && input.asunto !== undefined) {
@@ -298,17 +301,16 @@ export function reportToJson(r: AnonymizationReport): string {
 export const PLANTILLA = {
   titulo: 'INFORME DE ANONIMIZACIÓN · Sig-Low',
   datos: 'DATOS REEMPLAZADOS',
-  rechazo: 'LO QUE USTED RECHAZÓ',
+  rechazo: 'LO QUE USTED DEJÓ A LA VISTA',
   criterio: 'LO QUE QUEDÓ A SU CRITERIO',
-  residuos: 'BÚSQUEDA DE RESIDUOS',
+  residuos: 'BÚSQUEDA DE DATOS QUE SE ESCAPARON',
   metadatos: 'METADATOS DEL ARCHIVO ORIGINAL (no se copian a la salida)',
-  recordatorio: 'RECORDATORIO CONFIRMADO',
-  casilla1: 'Datos biométricos: fotos del rostro, huellas o grabaciones de voz.',
-  casilla2: 'Documentos con reserva legal en su forma original, como una historia clínica completa o piezas de un expediente reservado.',
-  casilla3: 'La estrategia reservada del caso: debilidades, márgenes de negociación o la teoría del caso no revelada.',
-  planBUna: 'La revisión se apoyó solo en las reglas y en la lista del caso.',
-  residuosNota: 'La búsqueda compara la salida con los datos detectados y con la lista del caso. No puede encontrar datos que nadie detectó.',
-  cierre: 'Este informe no contiene los datos originales. La herramienta propuso los reemplazos y usted decidió. Reemplazar datos por marcadores es seudonimizar: mientras exista la tabla, los datos siguen siendo personales. Antes de usar el texto, aplique la prueba final del protocolo: ¿alguien que no conoce el caso podría saber de quién se trata?',
+  recordatorio: 'CONFIRMACIÓN ANTES DE DESCARGAR',
+  confirmacion: 'Revisé la vista previa. Entiendo que respondo por el documento que comparto.',
+  propuesta: 'Datos que Sig-Low ocultó de entrada y usted dejó así al revisar la vista previa',
+  planBUna: 'La revisión se apoyó solo en las reglas y en los nombres que siempre deben ocultarse.',
+  residuosNota: 'La búsqueda compara el documento anonimizado con los datos encontrados y con los nombres que siempre deben ocultarse. No puede encontrar datos que nadie encontró.',
+  cierre: 'Este informe no contiene los datos originales. Sig-Low propuso qué ocultar y usted revisó el resultado. Reemplazar datos por etiquetas es seudonimizar: mientras exista la llave para devolver los datos reales, los datos siguen siendo personales. Antes de usar el texto, aplique la prueba final del protocolo: ¿alguien que no conoce el caso podría saber de quién se trata?',
 } as const;
 
 const MODOS_EN_PALABRAS: Readonly<Record<ResidueMode, string>> = {
@@ -337,22 +339,22 @@ export function reportToText(r: AnonymizationReport): string {
   L.push(`Partes que usted excluyó: ${excl.length === 0 ? 'ninguna' : excl.join('; ')}`, '');
 
   L.push(`Reglas: versión ${r.motor.reglas.version}`);
-  L.push(`Lista del caso: ${plural(r.motor.lista.entidades, 'entidad', 'entidades')} y ${plural(r.motor.lista.variantesActivas, 'variante activa', 'variantes activas')}`);
+  L.push(`Nombres que siempre deben ocultarse: ${plural(r.motor.lista.entidades, 'nombre', 'nombres')} y ${plural(r.motor.lista.variantesActivas, 'forma activa', 'formas activas')}`);
   const m = r.motor.modelo;
   if (m.planB) {
     const causa = PLAN_B_EN_PALABRAS[m.estado as PlanBCause];
-    L.push(`Modelo de apoyo: no se completó (${causa}). ${PLANTILLA.planBUna}`);
-    if (m.ventanas !== undefined && m.ventanasTotales !== undefined) L.push(`Bloques revisados por el modelo: ${m.ventanas} de ${m.ventanasTotales}`);
+    L.push(`Detector de nombres adicional: no se completó (${causa}). ${PLANTILLA.planBUna}`);
+    if (m.ventanas !== undefined && m.ventanasTotales !== undefined) L.push(`Bloques revisados por el detector: ${m.ventanas} de ${m.ventanasTotales}`);
   } else {
     const n = m.ventanasTotales ?? 0;
     L.push(m.estado === 'respaldo_base'
-      ? `Modelo de apoyo: versión reducida, revisó todo el documento (${plural(n, 'bloque', 'bloques')}).`
-      : `Modelo de apoyo: revisó todo el documento (${plural(n, 'bloque', 'bloques')}).`);
+      ? `Detector de nombres adicional: versión reducida, revisó todo el documento (${plural(n, 'bloque', 'bloques')}).`
+      : `Detector de nombres adicional: revisó todo el documento (${plural(n, 'bloque', 'bloques')}).`);
   }
   L.push('');
 
   L.push(PLANTILLA.datos);
-  L.push('Tipo · Detectados · Aceptados · Editados · Rechazados');
+  L.push('Tipo · Encontrados · Ocultos · Editados · A la vista');
   if (r.conteos.length === 0) L.push('Ninguno.');
   for (const c of r.conteos) L.push(`${NOMBRE_DE_TIPO[c.tipo] ?? c.tipo} · ${c.detectadas} · ${c.aceptadas} · ${c.editadas} · ${c.rechazadas}`);
   L.push('');
@@ -363,7 +365,8 @@ export function reportToText(r: AnonymizationReport): string {
   L.push('');
 
   L.push(PLANTILLA.criterio);
-  L.push(`Banderas mantenidas: ${r.aCriterio.banderasMantenidas}`);
+  L.push(`${PLANTILLA.propuesta}: ${r.propuestaAplicada}`);
+  L.push(`Datos indirectos que usted dejó como estaban: ${r.aCriterio.banderasMantenidas}`);
   L.push(`Sugerencias descartadas: ${r.aCriterio.sugerenciasDescartadas}`);
   L.push(`Sugerencias sin decidir: ${r.aCriterio.sugerenciasSinDecidir}`, '');
 
@@ -377,7 +380,7 @@ export function reportToText(r: AnonymizationReport): string {
   L.push('');
 
   L.push(PLANTILLA.recordatorio);
-  L.push(`[x] ${PLANTILLA.casilla1}`, `[x] ${PLANTILLA.casilla2}`, `[x] ${PLANTILLA.casilla3}`);
+  L.push(`[x] ${PLANTILLA.confirmacion}`);
   L.push(`Confirmado: ${fechaLegible(r.recordatorio.confirmado)}`, '');
   L.push(PLANTILLA.cierre);
   return '﻿' + L.join('\r\n') + '\r\n';

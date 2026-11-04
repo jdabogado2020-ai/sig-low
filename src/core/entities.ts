@@ -1401,7 +1401,7 @@ const roleAllowed = (type: DetectableType, role: Role): boolean =>
 function finalText(d: Detection, e: Entity | undefined): string {
   return (d.replacement.generalized?.template ?? d.replacement.proposedTemplate).split(TEMPLATE_M).join(e?.marker ?? '');
 }
-function setStatus(d: Detection, status: Detection['status'], by: 'individual' | 'grupo', reason?: Detection['rejectReason']): void {
+function setStatus(d: Detection, status: Detection['status'], by: NonNullable<Detection['decidedBy']>, reason?: Detection['rejectReason']): void {
   d.status = status; d.decidedBy = by;
   if (status === 'rechazada') d.rejectReason = reason ?? 'SIN_MOTIVO'; else delete d.rejectReason;
   if (status !== 'editada') delete d.replacement.edited;
@@ -1812,7 +1812,64 @@ function reduce(s: ReviewState, a: ReviewAction, ctx: ReviewContext, ids: IdSour
       s.modelo = { kind: 'plan_b', causa: a.causa };
       return null;
     }
+    case 'aplicar_propuesta':
+      return aplicarPropuesta(s, ctx, ids, parts);
   }
+}
+
+/**
+ * D-24 (F3) · «Todo aplicado de entrada», la única excepción de INV-R06. Sobre lo que nadie decidió todavía:
+ * - cada mención ambigua (D-16, M-72) se separa como persona aparte, con una entidad y un marcador propios (el lado seguro de D-15:
+ *   nunca comparte marcador con otra persona; el revisor la une después con «Es la misma que…»);
+ * - cada detección pendiente queda aceptada, con `decidedBy = 'propuesta'` (el informe la cuenta aparte);
+ * - cada bandera sin confirmar que tiene reemplazo (opción o sugerencia vinculada) se reemplaza; las demás (la cita, sin opciones)
+ *   quedan sin confirmar como puntos para revisar, con su detección vinculada oculta;
+ * - cada sugerencia pendiente sobre un tramo libre (edad a rango, despacho genérico, municipio con un solo departamento) se aplica.
+ *   Las que generalizan una detección se dejan: el marcador ya oculta más que la forma general.
+ * No corre mientras el modelo está en curso (IGNORADA): una detección de la lista que ya no está intacta no cede ante el modelo
+ * (D-03 B y E), y la propuesta cambiaría la detección. La interfaz la despacha cuando el modelo termina o pasa a plan B, y después de
+ * cada incorporación de residuos. Lo que no se puede aplicar (un solapamiento, un departamento sin elegir) queda como estaba.
+ */
+function aplicarPropuesta(s: ReviewState, ctx: ReviewContext, ids: IdSource, parts: ReadonlyMap<PartId, Part>): ReviewError | 'IGNORADA' | null {
+  if (s.modelo.kind === 'en_curso') return 'IGNORADA';
+  let cambios = 0;
+  for (const id of s.order) {
+    const d = s.detections[id];
+    if (d === undefined || d.status === 'rechazada') continue;
+    if (esAmbigua(s, d)) {
+      const e = s.entities[d.entityId];
+      const tipo = e?.type ?? d.type;
+      if (tipo === 'PERSONA' || isOrg(tipo)) {
+        const kind = parts.get(d.partId)?.kind ?? 'cuerpo';
+        const key = `${tipo === 'PERSONA' ? personKey(d.text, kind) : orgKey(d.text, kind)}~sep:${d.id}`;
+        const propia = newEntity(s, ids, key, { ...d, type: tipo }, tipo === 'PERSONA' ? 'OTRA_PERSONA' : e?.role);
+        delete d.caseEntityId; d.canonicalKey = key;
+        attach(s, d, propia);
+      }
+      if (d.status === 'pendiente') setStatus(d, 'aceptada', 'propuesta');
+      cambios++;
+    } else if (d.status === 'pendiente') {
+      setStatus(d, 'aceptada', 'propuesta');
+      cambios++;
+    }
+  }
+  // Banderas y sugerencias: cada una sobre una copia; si el reductor la rechaza, el estado no cambia.
+  const intentar = (accion: ReviewAction): void => {
+    const c = structuredClone(s);
+    if (reduce(c, accion, ctx, ids, parts) === null) { Object.assign(s, c); cambios++; }
+  };
+  for (const f of Object.values(s.flags)) {
+    if (f.acknowledged || f.type === 'CITA_JURISPRUDENCIAL') continue;
+    const opcion = f.options.find((o) => !o.template.includes(TEMPLATE_M));
+    if (f.suggestionId !== undefined) intentar({ kind: 'resolver_bandera', flagId: f.id, resolution: 'reemplazar' });
+    else if (opcion !== undefined) intentar({ kind: 'resolver_bandera', flagId: f.id, resolution: 'reemplazar', optionId: opcion.id });
+  }
+  for (const sug of Object.values(s.suggestions)) {
+    if (sug.status !== 'pendiente' || sug.target.kind !== 'tramo' || (sug.placeOptions?.length ?? 0) > 1) continue;
+    const o = sug.options[0];
+    if (o !== undefined) intentar({ kind: 'aplicar_sugerencia', suggestionId: sug.id, optionId: o.id });
+  }
+  return cambios === 0 ? 'IGNORADA' : null;
 }
 
 function applySuggestion(s: ReviewState, sug: Suggestion, o: SuggestionOption, ids: IdSource): ReviewError | null {
