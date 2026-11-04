@@ -46,7 +46,7 @@ function AvisoInicial() {
   const [mas, setMas] = useState(false);
   return (
     <section class="aviso-inicial" aria-labelledby="ai-titulo" data-prueba="aviso-inicial">
-      <h2 id="ai-titulo">{t('M-02')}</h2>
+      <h2 id="ai-titulo" tabIndex={-1}>{t('M-02')}</h2>
       {plegado ? null : (
         <>
           <ul>
@@ -55,7 +55,8 @@ function AvisoInicial() {
           {mas ? <ul class="aviso-completo" data-prueba="aviso-completo">{AVISO_INICIAL.map((id) => <li key={id}>{t(id)}</li>)}</ul> : null}
           <div class="acciones">
             <button type="button" class="enlace" aria-expanded={mas} onClick={() => { setMas(!mas); }}>{mas ? tf('M-2214') : tf('M-2213')}</button>
-            <button type="button" class="secundario" onClick={() => { setPlegado(true); }}>{t('M-08')}</button>
+            {/* 2.4.3: «Entendido» desaparece al plegar; el foco pasa al título de la tarjeta, que queda. */}
+            <button type="button" class="secundario" onClick={() => { setPlegado(true); queueMicrotask(() => { document.getElementById('ai-titulo')?.focus(); }); }}>{t('M-08')}</button>
           </div>
         </>
       )}
@@ -76,7 +77,8 @@ function GuiaInicial() {
         <li>{tf('M-2207')}</li>
         <li>{tf('M-2208')}</li>
       </ol>
-      <button type="button" class="secundario" onClick={() => { guiaCerrada = true; setCerrada(true); }}>{tf('M-2209')}</button>
+      {/* 2.4.3: la guía sale del árbol; el foco pasa al título de la pantalla. */}
+      <button type="button" class="secundario" onClick={() => { guiaCerrada = true; setCerrada(true); queueMicrotask(() => { document.querySelector<HTMLElement>('main h1')?.focus(); }); }}>{tf('M-2209')}</button>
     </section>
   );
 }
