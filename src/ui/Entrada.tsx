@@ -89,7 +89,7 @@ function PartesEncontradas({ doc }: { doc: DocumentModel }) {
   };
   return (
     <details class="partes" data-prueba="partes">
-      <summary>{tf('M-2125')}</summary>
+      <summary>{tf('M-2225')}</summary>
       <Grupo leyenda={t(E.partesEncontradas)}>
       <p class="ayuda">{t('M-48')}</p>
       {doc.parts.map((p) => (

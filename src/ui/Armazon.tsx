@@ -21,11 +21,11 @@ const ACTUALIZACION = { otrasPestanas: 'M-1212', versionCambiada: 'M-1213' } as 
 
 export const NOMBRE_PANTALLA: Record<Screen, `M-${number}`> = {
   inicio: X.inicio, lista: X.lista, entrada: X.entrada, procesando: X.procesando, revision: X.revision, listo: X.listo,
-  reinsercion: X.reinsercion, boveda: ROTULOS.boveda, sin_sw: X.arranque, detalle: 'M-2181',
+  reinsercion: X.reinsercion, boveda: ROTULOS.boveda, sin_sw: X.arranque, detalle: 'M-2281',
 };
 
 /** D-23 · Tres pasos: Cargar, Vista previa y Descargar. «Analizando» y «Revisar dato por dato» cuentan como la vista previa. */
-const PASOS: ReadonlyArray<readonly [Screen, 'M-2101' | 'M-2102' | 'M-2103']> = [['inicio', 'M-2101'], ['revision', 'M-2102'], ['listo', 'M-2103']];
+const PASOS: ReadonlyArray<readonly [Screen, 'M-2201' | 'M-2202' | 'M-2203']> = [['inicio', 'M-2201'], ['revision', 'M-2202'], ['listo', 'M-2203']];
 const PASO_DE: Partial<Record<Screen, Screen>> = { inicio: 'inicio', entrada: 'inicio', procesando: 'revision', revision: 'revision', detalle: 'revision', listo: 'listo' };
 
 function Pasos({ actual }: { actual: Screen }) {
@@ -39,7 +39,7 @@ function Pasos({ actual }: { actual: Screen }) {
           const posible = pantalla === 'inicio' || (revision !== null && actual !== 'procesando');
           return (
             <li key={pantalla} aria-current={es ? 'step' : undefined} class={es ? 'actual' : undefined}>
-              <button type="button" class="paso" disabled={!posible || es} aria-label={tf('M-2104', { n: i + 1, nombre: tf(id) })} onClick={() => { ir(pantalla); }}>
+              <button type="button" class="paso" disabled={!posible || es} aria-label={tf('M-2204', { n: i + 1, nombre: tf(id) })} onClick={() => { ir(pantalla); }}>
                 <span class="paso-n" aria-hidden="true">{i + 1}</span> {tf(id)}
               </button>
             </li>

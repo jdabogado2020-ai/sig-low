@@ -13,7 +13,7 @@ export function Ayuda({ tema, texto }: { tema: string; texto: string }) {
         class="ayuda-boton"
         aria-expanded={abierta}
         aria-controls={id}
-        aria-label={tf('M-2123', { tema })}
+        aria-label={tf('M-2223', { tema })}
         onClick={() => { setAbierta(!abierta); }}
       >
         ?

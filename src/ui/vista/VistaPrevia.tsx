@@ -45,7 +45,7 @@ function TrozoVista({ z, abrir }: { z: Trozo; abrir: Abrir }) {
   if (z.tipo === 'etiqueta') {
     const d = z.det === undefined ? undefined : state?.detections[z.det];
     const objetivo: Objetivo | null = z.det !== undefined ? { tipo: 'det', id: z.det } : z.edicion !== undefined ? { tipo: 'edicion', id: z.edicion as SpanEditId } : null;
-    const nombre = d !== undefined ? tf('M-2169', { etiqueta: state?.entities[d.entityId]?.marker ?? t(ROTULOS.sin_marcador), tipo: nombreDeTipo(d.type) }) : tf('M-2172');
+    const nombre = d !== undefined ? tf('M-2269', { etiqueta: state?.entities[d.entityId]?.marker ?? t(ROTULOS.sin_marcador), tipo: nombreDeTipo(d.type) }) : tf('M-2272');
     return (
       <button
         type="button"
@@ -64,7 +64,7 @@ function TrozoVista({ z, abrir }: { z: Trozo; abrir: Abrir }) {
     const det = z.det;
     return (
       <button type="button" class={`revelado${claseDeEstilo(z)}`} data-det={det} data-p={z.partId} data-i={z.ini}
-        aria-label={tf('M-2170', { tipo: d === undefined ? '' : nombreDeTipo(d.type) })}
+        aria-label={tf('M-2270', { tipo: d === undefined ? '' : nombreDeTipo(d.type) })}
         onClick={(e) => { abrir({ tipo: 'det', id: det }, e.currentTarget); }}>
         {z.texto}
       </button>
@@ -74,7 +74,7 @@ function TrozoVista({ z, abrir }: { z: Trozo; abrir: Abrir }) {
   const f = state?.flags[flag];
   return (
     <button type="button" class={`revisar${claseDeEstilo(z)}`} data-flag={flag} data-p={z.partId} data-i={z.ini}
-      aria-label={tf('M-2171', { tipo: f === undefined ? '' : etiqueta('bandera', f.reason) })}
+      aria-label={tf('M-2271', { tipo: f === undefined ? '' : etiqueta('bandera', f.reason) })}
       onClick={(e) => { abrir({ tipo: 'flag', id: flag }, e.currentTarget); }}>
       {z.texto}
     </button>
@@ -124,7 +124,7 @@ function DocumentoVista({ vista, abrir, alSeleccionar }: { vista: Vista; abrir: 
       ref={(el) => { raiz.current = el; atributosDeContenedor(el); }}
       class="documento-vista"
       role="region"
-      aria-label={tf('M-2168')}
+      aria-label={tf('M-2268')}
       data-prueba="vista-previa"
       onMouseUp={revisar}
       onKeyUp={(e) => { if (e.shiftKey || e.key === 'Shift') revisar(); }}
@@ -154,8 +154,8 @@ function DocumentoVista({ vista, abrir, alSeleccionar }: { vista: Vista; abrir: 
   );
 }
 
-const MOTIVO: Readonly<Record<MotivoPunto, 'M-2135' | 'M-2136' | 'M-2137' | 'M-2138'>> = {
-  certeza: 'M-2135', ambigua: 'M-2136', bandera: 'M-2137', escapado: 'M-2138',
+const MOTIVO: Readonly<Record<MotivoPunto, 'M-2235' | 'M-2236' | 'M-2237' | 'M-2238'>> = {
+  certeza: 'M-2235', ambigua: 'M-2236', bandera: 'M-2237', escapado: 'M-2238',
 };
 
 export function VistaPrevia() {
@@ -208,7 +208,7 @@ export function VistaPrevia() {
     el?.scrollIntoView({ block: 'center' });
     el?.focus();
     const f = p.flag === undefined ? undefined : state.flags[p.flag];
-    setAnuncio(tf('M-2134', { i: i + 1, n: puntos.length, motivo: tf(MOTIVO[p.motivo], { tipo: f === undefined ? '' : etiqueta('bandera', f.reason) }) }));
+    setAnuncio(tf('M-2234', { i: i + 1, n: puntos.length, motivo: tf(MOTIVO[p.motivo], { tipo: f === undefined ? '' : etiqueta('bandera', f.reason) }) }));
   };
   const enPaginas = doc.source === 'pdf' && original !== null && paginas;
   const residuo = listo.residuo;
@@ -217,11 +217,11 @@ export function VistaPrevia() {
   return (
     <div class="vista-previa">
       <h1 tabIndex={-1}>{t(X.revision)}</h1>
-      <p class="ayuda">{tf('M-2130')}</p>
+      <p class="ayuda">{tf('M-2230')}</p>
       <Banda />
       <div class="puntos" data-prueba="puntos">
-        <p>{puntos.length === 0 ? tf('M-2133') : tf('M-2131', { n: puntos.length })}</p>
-        {puntos.length > 0 ? <button type="button" class="secundario" data-prueba="siguiente-punto" onClick={siguiente}>{tf('M-2132')}</button> : null}
+        <p>{puntos.length === 0 ? tf('M-2233') : tf('M-2231', { n: puntos.length })}</p>
+        {puntos.length > 0 ? <button type="button" class="secundario" data-prueba="siguiente-punto" onClick={siguiente}>{tf('M-2232')}</button> : null}
         <p class="solo-lectores" role="status" data-prueba="anuncio-punto">{anuncio}</p>
       </div>
       <div class="estado-busqueda" role="status" data-prueba="residuos-estado" aria-busy={listo.buscando}>
@@ -234,22 +234,22 @@ export function VistaPrevia() {
           <button type="button" class="secundario" onClick={buscarOtraVez}>{t(ROTULOS.buscar_de_nuevo)}</button>
         </div>
       ) : null}
-      <div class="barra-vista" role="toolbar" aria-label={tf('M-2168')}>
+      <div class="barra-vista" role="toolbar" aria-label={tf('M-2268')}>
         <button type="button" class="secundario" aria-expanded={comoLeer} aria-controls="como-leer" onClick={() => { setComoLeer(!comoLeer); }}>{t(ROTULOS.leyenda)}</button>
         {doc.source === 'pdf' && original !== null ? (
           <button type="button" class="secundario" aria-pressed={!paginas} onClick={() => { setPaginas(!paginas); setObjetivo(null); }}>
-            {paginas ? tf('M-2177') : tf('M-2176')}
+            {paginas ? tf('M-2277') : tf('M-2276')}
           </button>
         ) : null}
       </div>
       <section id="como-leer" class="como-leer" hidden={!comoLeer} aria-label={t(ROTULOS.leyenda)} data-prueba="como-leer">
         <ul>
-          <li>{tf('M-2139')}</li>
-          <li>{tf('M-2140')}</li>
-          <li>{tf('M-2141')}</li>
-          <li>{tf('M-2142')}</li>
-          <li>{tf('M-2143')}</li>
-          {doc.source === 'pdf' ? <li>{tf('M-2144')}</li> : null}
+          <li>{tf('M-2239')}</li>
+          <li>{tf('M-2240')}</li>
+          <li>{tf('M-2241')}</li>
+          <li>{tf('M-2242')}</li>
+          <li>{tf('M-2243')}</li>
+          {doc.source === 'pdf' ? <li>{tf('M-2244')}</li> : null}
         </ul>
       </section>
       <div class="vista-previa-cuerpo" ref={ancla}>
@@ -257,16 +257,16 @@ export function VistaPrevia() {
           ? <PaginasPdf doc={doc} out={out} onAbrir={(id: DetectionId, el) => { abrir({ tipo: 'det', id }, el); }} />
           : <DocumentoVista vista={vista} abrir={abrir} alSeleccionar={(s) => { setSeleccion(s); if (s !== null) setObjetivo(null); }} />}
         {seleccion !== null ? (
-          <div class="menu-seleccion" role="group" aria-label={tf('M-2173')} data-prueba="menu-seleccion">
-            <button type="button" onClick={() => { solicitarReemplazo(seleccion); setSeleccion(null); }}>{tf('M-2166')}</button>
-            <button type="button" class="secundario" onClick={() => { solicitarReemplazo(seleccion, true); setSeleccion(null); }}>{tf('M-2167')}</button>
+          <div class="menu-seleccion" role="group" aria-label={tf('M-2273')} data-prueba="menu-seleccion">
+            <button type="button" onClick={() => { solicitarReemplazo(seleccion); setSeleccion(null); }}>{tf('M-2266')}</button>
+            <button type="button" class="secundario" onClick={() => { solicitarReemplazo(seleccion, true); setSeleccion(null); }}>{tf('M-2267')}</button>
           </div>
         ) : null}
         {objetivo !== null ? <MenuEtiqueta objetivo={objetivo} onCerrar={cerrarMenu} /> : null}
       </div>
       <div class="acciones">
-        <button type="button" data-prueba="continuar" onClick={() => { actualizar({ phase: 'listo' }); ir('listo'); }}>{tf('M-2180')}</button>
-        <button type="button" class="secundario" onClick={() => { ir('detalle'); }}>{tf('M-2181')}</button>
+        <button type="button" data-prueba="continuar" onClick={() => { actualizar({ phase: 'listo' }); ir('listo'); }}>{tf('M-2280')}</button>
+        <button type="button" class="secundario" onClick={() => { ir('detalle'); }}>{tf('M-2281')}</button>
         <button type="button" class="secundario" onClick={() => { setDescartar(true); }}>{t(ROTULOS.descartar_documento)}</button>
       </div>
       <AgregarReemplazo />

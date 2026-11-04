@@ -1,6 +1,7 @@
 // Pantalla 1 · Inicio = «Cargar documento» (8.2.2; F2, D-23): promesa, guía de 3 pasos la primera vez, tarjeta «Antes de empezar»,
 // zona de carga y «Pegar texto», y «Opciones avanzadas» plegadas: nombres que siempre deben ocultarse, el detector de nombres
 // adicional (la tarjeta del modelo) y la llave para devolver los datos reales (crear o abrir un caso con contraseña).
+import './vista/vista.css';
 import { useEffect, useLayoutEffect, useState } from 'preact/hooks';
 import { randomIds } from '../io/txt-read.ts';
 import type { AsuntoId } from '../core/types.ts';
@@ -37,7 +38,7 @@ function useAvisoInicio() {
 }
 
 const AVISO_INICIAL: ReadonlyArray<`M-${number}`> = ['M-03', 'M-04', 'M-05', 'M-06', 'M-07'];
-const RECOMENDACIONES = ['M-2110', 'M-2111', 'M-2112'] as const;
+const RECOMENDACIONES = ['M-2210', 'M-2211', 'M-2212'] as const;
 
 /** F2 · «Antes de empezar»: tres recomendaciones breves y «Más información» con los avisos completos (M-03 a M-07). */
 function AvisoInicial() {
@@ -53,7 +54,7 @@ function AvisoInicial() {
           </ul>
           {mas ? <ul class="aviso-completo" data-prueba="aviso-completo">{AVISO_INICIAL.map((id) => <li key={id}>{t(id)}</li>)}</ul> : null}
           <div class="acciones">
-            <button type="button" class="enlace" aria-expanded={mas} onClick={() => { setMas(!mas); }}>{mas ? tf('M-2114') : tf('M-2113')}</button>
+            <button type="button" class="enlace" aria-expanded={mas} onClick={() => { setMas(!mas); }}>{mas ? tf('M-2214') : tf('M-2213')}</button>
             <button type="button" class="secundario" onClick={() => { setPlegado(true); }}>{t('M-08')}</button>
           </div>
         </>
@@ -69,13 +70,13 @@ function GuiaInicial() {
   if (cerrada) return null;
   return (
     <section class="guia" aria-labelledby="guia-titulo" data-prueba="guia">
-      <h2 id="guia-titulo">{tf('M-2105')}</h2>
+      <h2 id="guia-titulo">{tf('M-2205')}</h2>
       <ol>
-        <li>{tf('M-2106')}</li>
-        <li>{tf('M-2107')}</li>
-        <li>{tf('M-2108')}</li>
+        <li>{tf('M-2206')}</li>
+        <li>{tf('M-2207')}</li>
+        <li>{tf('M-2208')}</li>
       </ol>
-      <button type="button" class="secundario" onClick={() => { guiaCerrada = true; setCerrada(true); }}>{tf('M-2109')}</button>
+      <button type="button" class="secundario" onClick={() => { guiaCerrada = true; setCerrada(true); }}>{tf('M-2209')}</button>
     </section>
   );
 }
@@ -360,8 +361,8 @@ function OpcionLista() {
   const lista = useListaDelCaso();
   return (
     <section class="opcion" aria-labelledby="op-lista" data-prueba="opcion-lista">
-      <h3 id="op-lista">{t(X.lista)} <Ayuda tema={t(X.lista)} texto={tf('M-2117')} /></h3>
-      <button type="button" class="secundario" onClick={() => { asegurarCaso(); ir('lista'); }}>{tf('M-2118', { n: lista.length })}</button>
+      <h3 id="op-lista">{t(X.lista)} <Ayuda tema={t(X.lista)} texto={tf('M-2217')} /></h3>
+      <button type="button" class="secundario" onClick={() => { asegurarCaso(); ir('lista'); }}>{tf('M-2218', { n: lista.length })}</button>
     </section>
   );
 }
@@ -382,7 +383,7 @@ export function Inicio() {
     <>
       <h1 tabIndex={-1}>{t(X.inicio)}</h1>
       <p data-prueba="promesa" class="promesa">{t('M-01')}</p>
-      <p class="ayuda">{tf('M-2115')}</p>
+      <p class="ayuda">{tf('M-2215')}</p>
       {aviso ? (
         <div class="aviso-bloqueo" role="status" data-prueba="aviso-bloqueo">
           <p>{t('M-102')}</p>
@@ -391,24 +392,24 @@ export function Inicio() {
       ) : null}
       <GuiaInicial />
       <AvisoInicial />
-      {caso !== null ? <p role="status" data-prueba="caso-abierto">{tf('M-2124', { codigo: caso.codigo })}</p> : null}
+      {caso !== null ? <p role="status" data-prueba="caso-abierto">{tf('M-2224', { codigo: caso.codigo })}</p> : null}
       <CargaDocumento />
       <details class="avanzadas" data-prueba="opciones-avanzadas">
-        <summary>{tf('M-2116')}</summary>
+        <summary>{tf('M-2216')}</summary>
         <OpcionLista />
         <section class="opcion" aria-labelledby="op-modelo" data-prueba="opcion-modelo">
-          <h3 id="op-modelo">{t(X.modeloDeApoyo)} <Ayuda tema={t(X.modeloDeApoyo)} texto={tf('M-2119', { mb: puertos.modelo.estado().mb ?? 626 })} /></h3>
+          <h3 id="op-modelo">{t(X.modeloDeApoyo)} <Ayuda tema={t(X.modeloDeApoyo)} texto={tf('M-2219', { mb: puertos.modelo.estado().mb ?? 626 })} /></h3>
           <CasillaModelo />
           <TarjetaModelo />
         </section>
         <section class="opcion" aria-labelledby="op-llave" data-prueba="opcion-llave">
-          <h3 id="op-llave">{tf('M-2120')} <Ayuda tema={tf('M-2120')} texto={tf('M-2121')} /></h3>
+          <h3 id="op-llave">{tf('M-2220')} <Ayuda tema={tf('M-2220')} texto={tf('M-2221')} /></h3>
           <div class="dos-columnas">
             <CrearAsunto key={`crear-${generacion}`} existentes={asuntos} ocupado={ocupado} setOcupado={setOcupado} />
             <AbrirAsunto key={`abrir-${generacion}`} asuntos={asuntos} ocupado={ocupado} setOcupado={setOcupado} />
           </div>
           <div class="acciones">
-            <button type="button" class="secundario" onClick={() => { ir('boveda'); }}>{tf('M-2122')}</button>
+            <button type="button" class="secundario" onClick={() => { ir('boveda'); }}>{tf('M-2222')}</button>
           </div>
         </section>
       </details>

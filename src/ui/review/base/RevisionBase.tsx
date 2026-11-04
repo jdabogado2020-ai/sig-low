@@ -45,7 +45,7 @@ export function RevisionBase() {
   if (doc === null || state === null) {
     return (
       <>
-        <h1 tabIndex={-1}>{tf('M-2181')}</h1>
+        <h1 tabIndex={-1}>{tf('M-2281')}</h1>
         <p class="ayuda" data-prueba="sin-revision">{t('M-69')}</p>
       </>
     );
@@ -55,7 +55,7 @@ export function RevisionBase() {
 
   return (
     <div class="revision" onKeyDown={alTeclear}>
-      <h1 tabIndex={-1}>{tf('M-2181')}</h1>
+      <h1 tabIndex={-1}>{tf('M-2281')}</h1>
       <button
         type="button"
         class="salto salto-local"

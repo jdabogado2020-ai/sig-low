@@ -40,36 +40,36 @@ export function MenuEtiqueta({ objetivo, onCerrar }: { objetivo: Objetivo; onCer
     if (d === undefined) return null;
     const e = state.entities[d.entityId];
     const marcador = e?.marker ?? t(ROTULOS.sin_marcador);
-    titulo = tf('M-2150', { etiqueta: d.status === 'rechazada' ? nombreDeTipo(d.type) : marcador });
+    titulo = tf('M-2250', { etiqueta: d.status === 'rechazada' ? nombreDeTipo(d.type) : marcador });
     const cita = Object.values(state.flags).find((f) => f.detectionId === d.id && !f.acknowledged && f.type === 'CITA_JURISPRUDENCIAL');
     if (d.status === 'rechazada') {
-      cuerpo = <button type="button" onClick={() => { hecho(aceptar(d.id)); }}>{tf('M-2157')}</button>;
+      cuerpo = <button type="button" onClick={() => { hecho(aceptar(d.id)); }}>{tf('M-2257')}</button>;
     } else if (paso === 'unir') {
       const compatibles = Object.values(state.entities).filter((o) => o.id !== d.entityId && o.marker !== undefined
         && (o.type === d.type || (esPersonaUOrg(o.type) && esPersonaUOrg(d.type) && (o.type === 'PERSONA') === (d.type === 'PERSONA'))));
-      cuerpo = compatibles.length === 0 ? <p class="ayuda">{tf('M-2174')}</p> : (
+      cuerpo = compatibles.length === 0 ? <p class="ayuda">{tf('M-2274')}</p> : (
         <>
           <Seleccion
-            etiqueta={tf('M-2158')}
+            etiqueta={tf('M-2258')}
             valor={unirCon}
             opciones={[['', '—'], ...compatibles.map((o): readonly [string, string] => [o.id, `${o.marker ?? ''} · ${nombreDeTipo(o.type)}`])]}
             onCambio={setUnirCon}
           />
-          <button type="button" disabled={unirCon === '' || e === undefined} onClick={() => { if (e !== undefined) hecho(unir(e.id, unirCon as EntityId)); }}>{tf('M-2161')}</button>
+          <button type="button" disabled={unirCon === '' || e === undefined} onClick={() => { if (e !== undefined) hecho(unir(e.id, unirCon as EntityId)); }}>{tf('M-2261')}</button>
         </>
       );
     } else if (paso === 'tipo') {
       cuerpo = (
         <>
-          <Seleccion etiqueta={tf('M-2159')} valor={tipo} opciones={TIPOS_ELEGIBLES.map((x): readonly [string, string] => [x, nombreDeTipo(x)])} onCambio={setTipo} />
-          <button type="button" onClick={() => { hecho(cambiarTipo(d.id, tipo as DetectableType)); }}>{tf('M-2161')}</button>
+          <Seleccion etiqueta={tf('M-2259')} valor={tipo} opciones={TIPOS_ELEGIBLES.map((x): readonly [string, string] => [x, nombreDeTipo(x)])} onCambio={setTipo} />
+          <button type="button" onClick={() => { hecho(cambiarTipo(d.id, tipo as DetectableType)); }}>{tf('M-2261')}</button>
         </>
       );
     } else if (paso === 'editar') {
       cuerpo = (
         <>
-          <CampoTexto etiqueta={tf('M-2160')} valor={texto} onInput={setTexto} />
-          <button type="button" disabled={texto.trim() === ''} onClick={() => { hecho(editar(d.id, texto)); }}>{tf('M-2161')}</button>
+          <CampoTexto etiqueta={tf('M-2260')} valor={texto} onInput={setTexto} />
+          <button type="button" disabled={texto.trim() === ''} onClick={() => { hecho(editar(d.id, texto)); }}>{tf('M-2261')}</button>
         </>
       );
     } else {
@@ -78,41 +78,41 @@ export function MenuEtiqueta({ objetivo, onCerrar }: { objetivo: Objetivo; onCer
         <>
           {cita !== undefined ? (
             <>
-              <button type="button" onClick={() => { hecho(despachar({ kind: 'resolver_bandera', flagId: cita.id, resolution: 'mantener' }).ok); }}>{tf('M-2162')}</button>
-              <button type="button" onClick={() => { hecho(despachar({ kind: 'resolver_bandera', flagId: cita.id, resolution: 'reemplazar' }).ok); }}>{tf('M-2163')}</button>
+              <button type="button" onClick={() => { hecho(despachar({ kind: 'resolver_bandera', flagId: cita.id, resolution: 'mantener' }).ok); }}>{tf('M-2262')}</button>
+              <button type="button" onClick={() => { hecho(despachar({ kind: 'resolver_bandera', flagId: cita.id, resolution: 'reemplazar' }).ok); }}>{tf('M-2263')}</button>
             </>
           ) : null}
-          <button type="button" onClick={() => { hecho(rechazar(d.id)); }}>{tf('M-2151')}</button>
-          {varias && e !== undefined ? <button type="button" onClick={() => { hecho(rechazarEntidad(e.id)); }}>{tf('M-2152')}</button> : null}
-          {esPersonaUOrg(d.type) && varias ? <button type="button" onClick={() => { hecho(separar(d.id)); }}>{tf('M-2153')}</button> : null}
-          {esPersonaUOrg(d.type) ? <button type="button" onClick={() => { setPaso('unir'); }}>{tf('M-2154')}</button> : null}
-          <button type="button" onClick={() => { setTipo(d.type); setPaso('tipo'); }}>{tf('M-2155')}</button>
-          <button type="button" onClick={() => { setTexto(d.replacement.edited ?? marcador); setPaso('editar'); }}>{tf('M-2156')}</button>
+          <button type="button" onClick={() => { hecho(rechazar(d.id)); }}>{tf('M-2251')}</button>
+          {varias && e !== undefined ? <button type="button" onClick={() => { hecho(rechazarEntidad(e.id)); }}>{tf('M-2252')}</button> : null}
+          {esPersonaUOrg(d.type) && varias ? <button type="button" onClick={() => { hecho(separar(d.id)); }}>{tf('M-2253')}</button> : null}
+          {esPersonaUOrg(d.type) ? <button type="button" onClick={() => { setPaso('unir'); }}>{tf('M-2254')}</button> : null}
+          <button type="button" onClick={() => { setTipo(d.type); setPaso('tipo'); }}>{tf('M-2255')}</button>
+          <button type="button" onClick={() => { setTexto(d.replacement.edited ?? marcador); setPaso('editar'); }}>{tf('M-2256')}</button>
         </>
       );
     }
   } else if (objetivo.tipo === 'flag') {
     const f = state.flags[objetivo.id];
     if (f === undefined) return null;
-    titulo = tf('M-2150', { etiqueta: etiqueta('bandera', f.reason) });
+    titulo = tf('M-2250', { etiqueta: etiqueta('bandera', f.reason) });
     cuerpo = (
       <>
         {f.options.filter((o) => !o.template.includes(TEMPLATE_M)).map((o) => (
           <button key={o.id} type="button" onClick={() => { hecho(despachar({ kind: 'resolver_bandera', flagId: f.id, resolution: 'reemplazar', optionId: o.id }).ok); }}>
-            {tf('M-2164', { texto: o.template })}
+            {tf('M-2264', { texto: o.template })}
           </button>
         ))}
-        <button type="button" onClick={() => { hecho(despachar({ kind: 'resolver_bandera', flagId: f.id, resolution: 'mantener' }).ok); }}>{tf('M-2165')}</button>
+        <button type="button" onClick={() => { hecho(despachar({ kind: 'resolver_bandera', flagId: f.id, resolution: 'mantener' }).ok); }}>{tf('M-2265')}</button>
       </>
     );
   } else {
     const x = state.spanEdits[objetivo.id];
     if (x === undefined) return null;
-    titulo = tf('M-2172');
+    titulo = tf('M-2272');
     const deshacer = (): boolean => (x.origin.kind === 'sugerencia'
       ? despachar({ kind: 'descartar_sugerencia', suggestionId: x.origin.suggestionId }).ok
       : despachar({ kind: 'resolver_bandera', flagId: x.origin.flagId, resolution: 'mantener' }).ok);
-    cuerpo = <button type="button" onClick={() => { hecho(deshacer()); }}>{tf('M-2151')}</button>;
+    cuerpo = <button type="button" onClick={() => { hecho(deshacer()); }}>{tf('M-2251')}</button>;
   }
 
   return (

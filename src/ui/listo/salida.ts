@@ -178,7 +178,7 @@ export function descargarDocxFiel(): void {
       r = exportarDocx(out);
       fiel = false;
     }
-    const avisos: AvisoListo[] = [{ id: fiel ? 'M-2192' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
+    const avisos: AvisoListo[] = [{ id: fiel ? 'M-2292' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
     for (const a of r.avisos) if (a.code === 'CARACTERES_CONTROL') avisos.push({ id: 'M-313', params: { n: a.count ?? 0 }, rol: 'status' });
     ponerAviso(avisos);
     respaldarTabla(tabla);
@@ -210,7 +210,7 @@ export async function descargarPdfSalida(): Promise<void> {
         copia.fill(0);
       }
     }
-    ponerAviso([{ id: tachado ? 'M-2193' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }]);
+    ponerAviso([{ id: tachado ? 'M-2293' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }]);
     respaldarTabla(tabla);
   } catch (e) {
     errorDeAccion(e);

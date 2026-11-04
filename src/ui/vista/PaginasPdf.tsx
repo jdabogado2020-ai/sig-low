@@ -39,7 +39,7 @@ function Zona({ z, ancho, alto, onAbrir }: { z: ZonaTachada; ancho: number; alto
       type="button"
       class="zona-pdf"
       data-det={det}
-      aria-label={tf('M-2172')}
+      aria-label={tf('M-2272')}
       ref={(el) => {
         if (el === null) return;
         el.style.left = `${(z.x / ancho) * 100}%`;
@@ -96,17 +96,17 @@ export function PaginasPdf({ doc, out, onAbrir }: { doc: DocumentModel; out: Ren
 
   return (
     <div class="paginas-pdf" data-prueba="paginas-pdf">
-      <p class="ayuda">{tf('M-2144')} {tf('M-2179')}</p>
-      {avance !== null ? <p role="status" data-prueba="preparando-paginas">{tf('M-2178', { hecho: avance.hecho, total: avance.total || '…' })}</p> : null}
+      <p class="ayuda">{tf('M-2244')} {tf('M-2279')}</p>
+      {avance !== null ? <p role="status" data-prueba="preparando-paginas">{tf('M-2278', { hecho: avance.hecho, total: avance.total || '…' })}</p> : null}
       {error !== null ? <p role="alert" class="error-campo">{error}</p> : null}
       {avisos.length > 0 ? <ul class="avisos-lectura">{avisos.map((a) => <li key={a}>{a}</li>)}</ul> : null}
       {paginas.map((p) => (
-        <figure key={p.n} class="pagina-pdf" aria-label={tf('M-2175', { n: p.n, total: p.total })}>
+        <figure key={p.n} class="pagina-pdf" aria-label={tf('M-2275', { n: p.n, total: p.total })}>
           <div class="pagina-pdf-marco">
             <Lienzo c={p.lienzo} />
             {p.zonas.map((z, i) => <Zona key={i} z={z} ancho={p.lienzo.width} alto={p.lienzo.height} onAbrir={onAbrir} />)}
           </div>
-          <figcaption>{tf('M-2175', { n: p.n, total: p.total })}</figcaption>
+          <figcaption>{tf('M-2275', { n: p.n, total: p.total })}</figcaption>
         </figure>
       ))}
     </div>

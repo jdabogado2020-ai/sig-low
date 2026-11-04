@@ -81,6 +81,12 @@
 .pasos .paso[disabled] { cursor: default; opacity: 1; }
 .paso-n { display: inline-grid; place-items: center; inline-size: 1.4rem; block-size: 1.4rem; border-radius: 50%; border: 1px solid currentColor; margin-right: 0.3rem; }
 
+/* Un solo acento por vista (D-25): dentro de «Opciones avanzadas» las acciones son secundarias; la principal de la pantalla
+   («Anonimizar», «Descargar documento (.docx)») es la única en ember. */
+.avanzadas button:not([class]) { color: var(--sl-texto); background: transparent; border-color: var(--sl-borde); }
+.avanzadas button:not([class]):hover:not([disabled]):not([aria-disabled='true']) { background: transparent; border-color: var(--sl-texto); }
+.ayuda-boton[aria-expanded='true'] { border-color: var(--sl-texto); border-width: 2px; }
+
 /* Descargar */
 .descargar section { margin: 1rem 0; }
 .confirmacion-unica { border: 1px solid var(--sl-borde); background: var(--sl-lente); padding: 0.5rem 0.9rem; }

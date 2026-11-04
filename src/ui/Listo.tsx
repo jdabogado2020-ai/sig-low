@@ -131,7 +131,7 @@ export function Listo() {
       <h1 tabIndex={-1}>{t(X.listo)}</h1>
 
       <section aria-labelledby="h-antes">
-        <h2 id="h-antes">{tf('M-2188')}</h2>
+        <h2 id="h-antes">{tf('M-2288')}</h2>
         <div data-prueba="residuos-estado" role="status" aria-busy={listo.buscando}>
           {listo.buscando ? <p>{t('M-76')}</p> : null}
           {!listo.buscando && pasa ? <p>{t('M-77', { n: residuo.valuesSearched })}</p> : null}
@@ -142,16 +142,16 @@ export function Listo() {
             <button type="button" class="secundario" onClick={buscarOtraVez}>{t(ROTULOS.buscar_de_nuevo)}</button>
           </div>
         ) : null}
-        <p class="ayuda">{tf('M-2190')}</p>
+        <p class="ayuda">{tf('M-2290')}</p>
         <p data-prueba="prueba-final">{t('M-115')}</p>
         <div class="confirmacion-unica">
-          <Casilla etiqueta={tf('M-2185')} marcada={listo.recordatorio.revisado} onCambio={(v) => { marcarConfirmacion(v); }} />
+          <Casilla etiqueta={tf('M-2285')} marcada={listo.recordatorio.revisado} onCambio={(v) => { marcarConfirmacion(v); }} />
         </div>
       </section>
 
       {!abierta ? (
         <section class="motivos" aria-labelledby="h-motivos" data-prueba="motivos">
-          <h2 id="h-motivos">{tf('M-2191')}</h2>
+          <h2 id="h-motivos">{tf('M-2291')}</h2>
           <ul id={ID_MOTIVOS} data-prueba={ID_MOTIVOS}>
             {puerta.reasons.map((r) => <li key={r} data-motivo={r}>{textoDeMotivo(r, state, residuo)}</li>)}
           </ul>
@@ -162,11 +162,11 @@ export function Listo() {
         <h2 id="h-descargar">{t(X.listo)}</h2>
         <div class="acciones">
           <button type="button" data-prueba="descargar-docx" {...aria(abierta)} onClick={descargarDocxFiel}>{t(ROTULOS.descargar_docx)}</button>
-          <button type="button" class="secundario" data-prueba="descargar-pdf" {...aria(abierta && !preparandoPdf)} onClick={pdf}>{tf('M-2186')}</button>
+          <button type="button" class="secundario" data-prueba="descargar-pdf" {...aria(abierta && !preparandoPdf)} onClick={pdf}>{tf('M-2286')}</button>
         </div>
-        {preparandoPdf ? <p role="status" data-prueba="preparando-pdf">{tf('M-2189')}</p> : null}
+        {preparandoPdf ? <p role="status" data-prueba="preparando-pdf">{tf('M-2289')}</p> : null}
         <details class="mas-formatos" data-prueba="mas-formatos">
-          <summary>{tf('M-2187')}</summary>
+          <summary>{tf('M-2287')}</summary>
           <div class="acciones">
             <button type="button" class="secundario" data-prueba="copiar" {...aria(abierta)} onClick={copiarConBoton}>{t(ROTULOS.copiar_texto_anonimizado)}</button>
             <button type="button" class="secundario" data-prueba="vaciar" disabled={!listo.copiado} onClick={vaciarPortapapeles}>{t(ROTULOS.vaciar_portapapeles)}</button>
@@ -198,12 +198,12 @@ export function Listo() {
       </section>
 
       <details class="avanzadas" data-prueba="opciones-avanzadas">
-        <summary>{tf('M-2116')}</summary>
-        <p class="ayuda">{tf('M-2121')}</p>
+        <summary>{tf('M-2216')}</summary>
+        <p class="ayuda">{tf('M-2221')}</p>
         <div class="acciones">
-          <button type="button" class="secundario" onClick={() => { pedirLlave('exportar'); }}>{tf('M-2120')}</button>
+          <button type="button" class="secundario" onClick={() => { pedirLlave('exportar'); }}>{tf('M-2220')}</button>
           <button type="button" class="secundario" onClick={() => { ir('reinsercion'); }}>{t(ROTULOS.reinsertar_una_respuesta)}</button>
-          <button type="button" class="secundario" onClick={() => { ir('boveda'); }}>{tf('M-2122')}</button>
+          <button type="button" class="secundario" onClick={() => { ir('boveda'); }}>{tf('M-2222')}</button>
         </div>
       </details>
 
