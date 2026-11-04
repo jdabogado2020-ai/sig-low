@@ -255,6 +255,38 @@ async function manifiestoDe(id: string, v: Version): Promise<ManifiestoSw> {
 
 const cacheDelModelo = (m: ManifiestoSw): string => PREFIJO_MODELO + m.sha256;
 
+/**
+ * F11 (v1.1.4) · Marca de los trozos guardados desde los trozos de 8 MiB: el SHA-256 del trozo. Un trozo guardado sin ella es de un
+ * detector anterior (trozos de 24 MiB, con las mismas rutas y otro contenido): la tarjeta avisa que el detector se descarga una vez más.
+ */
+const MARCA_TROZO = 'X-Siglow-Trozo';
+const RUTA_DE_TROZO = /\/onnx\/model_quantized\.onnx\.part\d{3}$/;
+
+/** ¿Hay en la caché del modelo algún trozo guardado sin la marca de los trozos de 8 MiB? Solo mira cabeceras, no el contenido. */
+async function hayTrozosViejos(c: Cache, claves: readonly Request[]): Promise<boolean> {
+  for (const q of claves) {
+    if (!RUTA_DE_TROZO.test(new URL(q.url).pathname)) continue;
+    const r = await c.match(q);
+    if (r !== undefined && r.headers.get(MARCA_TROZO) === null) return true;
+  }
+  return false;
+}
+
+/**
+ * F11 (opción A del integrador) · Con un modelo completo según el manifiesto vigente: se borran de su caché las entradas que no son de
+ * ese manifiesto (trozos de un troceo anterior) y las cachés del modelo que no son de ningún manifiesto vigente. Nunca toca
+ * `siglow-app-*` ni la caché del otro modelo vigente (principal o respaldo).
+ */
+async function ordenarModelo(c: Cache, claves: readonly Request[], m: ManifiestoSw, v: Version): Promise<void> {
+  const delManifiesto = new Set([...m.auxiliares, ...m.trozos].map((a) => urlDeModelo(m.id, a.ruta)));
+  for (const q of claves) if (!delManifiesto.has(new URL(q.url).pathname)) await c.delete(q);
+  const vigentes = new Set<string>();
+  for (const id of ['gliner-x-large', 'gliner-x-base']) {
+    try { vigentes.add(cacheDelModelo(await manifiestoDe(id, v))); } catch { return; }   // sin los dos manifiestos, no se borra nada
+  }
+  for (const k of await caches.keys()) if (k.startsWith(PREFIJO_MODELO) && !vigentes.has(k)) await caches.delete(k);
+}
+
 /** Petición de un archivo servible del modelo: GET sin query, del mismo origen y no de navegación. */
 function rutaDelModelo(req: Request): { id: string; rel: string } | null {
   if (req.method !== 'GET' || req.mode === 'navigate' || req.url.includes('?')) return null;
@@ -322,11 +354,17 @@ async function atenderModelo(d: Record<string, unknown>, puerto: MessagePort): P
         const m = await manifiestoDe(id, v);
         const nombre = cacheDelModelo(m);
         let completo = false;
+        let viejo = false;
         if (await caches.has(nombre)) {
-          const guardadas = new Set((await (await caches.open(nombre)).keys()).map((q) => new URL(q.url).pathname));
+          const c = await caches.open(nombre);
+          const claves = await c.keys();
+          const guardadas = new Set(claves.map((q) => new URL(q.url).pathname));
           completo = [...m.auxiliares, ...m.trozos].every((a) => guardadas.has(urlDeModelo(id, a.ruta)));
+          // F11: con el modelo completo, fuera lo que no es del manifiesto vigente (aquí y en otras cachés del modelo).
+          if (completo) await ordenarModelo(c, claves, m, v);
+          else viejo = await hayTrozosViejos(c, claves);
         }
-        r = { ok: true, completo };
+        r = { ok: true, completo, viejo };
         break;
       }
       case 'MODELO_ARCHIVO': {
@@ -415,7 +453,7 @@ async function descargarArchivo(m: ManifiestoSw, a: ArchivoModelo, puerto: Messa
     }
     if (escrito !== a.tamano || (await sha256Hex(bytes)) !== a.sha256) return { ok: false, code: 'MODELO_INTEGRIDAD' };
     try {
-      await (await caches.open(nombre)).put(url, new Response(bytes, { status: 200, headers: { 'Content-Type': 'application/octet-stream' } }));
+      await (await caches.open(nombre)).put(url, new Response(bytes, { status: 200, headers: { 'Content-Type': 'application/octet-stream', [MARCA_TROZO]: a.sha256 } }));
     } catch (e) {
       return { ok: false, code: codigoModelo(e) };
     }

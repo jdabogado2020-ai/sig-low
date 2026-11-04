@@ -85,7 +85,10 @@ export function TarjetaDetector() {
       {/* F10: al recargar, hasta saber si ya está guardado, no se dice «No está descargado». */}
       {puertos.modelo.comprobando?.() === true
         ? <p role="status" data-prueba="estado-detector">{tf('M-2344')}</p>
-        : model.state === 'no_descargado' ? <p data-prueba="estado-detector">{tf('M-2319')}</p> : null}
+        : model.state === 'no_descargado'
+          // F11: si había un detector anterior (trozos de otro tamaño), se dice en claro que se descarga una vez más.
+          ? <p data-prueba="estado-detector">{puertos.modelo.viejo?.() === true ? tf('M-2345') : tf('M-2319')}</p>
+          : null}
       {d.descargable && d.reducido ? <p>{t('M-168')}</p> : null}
       {model.state === 'listo' ? <p role="status" data-prueba="estado-detector">{t('M-29')}</p> : null}
       {model.state === 'listo' && model.variant === 'respaldo' ? <p>{t('M-170')}</p> : null}

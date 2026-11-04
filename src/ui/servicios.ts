@@ -51,6 +51,8 @@ export interface ModeloPuerto {
   comprobando?(): boolean;
   /** F10: espera esa comprobación (manifiestos y caché del modelo). */
   esperarComprobacion?(): Promise<void>;
+  /** F11: había un detector anterior guardado (otro troceo): se descarga una vez más. */
+  viejo?(): boolean;
   disponible(): boolean;
   estado(): EstadoModeloPuerto;
   descargar(): Promise<void>;

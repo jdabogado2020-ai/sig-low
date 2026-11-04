@@ -660,6 +660,42 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
     }
   });
 
+  test('F11 @cero-red con un detector anterior guardado (otro troceo), la tarjeta avisa «se descarga una vez más»; al quedar el nuevo completo se borra lo viejo', async ({ page }) => {
+    const srv = await servir(D_OK);
+    try {
+      const obs = await observar(page, srv.origen);
+      await abrirInicio(page, srv.origen);
+      // Un detector de la versión anterior: trozos con las mismas rutas, otro contenido y sin la marca de los trozos nuevos, un trozo
+      // que el manifiesto vigente ya no tiene, y otra caché del modelo que no es de ningún manifiesto vigente.
+      const sha = GRANDE.manifest.sha256;
+      await page.evaluate(async (s) => {
+        const c = await caches.open(`siglow-modelo-${s}`);
+        const viejo = (n: number): Response => new Response(new Uint8Array(n).fill(7), { headers: { 'Content-Type': 'application/octet-stream' } });
+        await c.put('/models/gliner-x-large/onnx/model_quantized.onnx.part000', viejo(1000));
+        await c.put('/models/gliner-x-large/onnx/model_quantized.onnx.part001', viejo(1000));
+        await c.put('/models/gliner-x-large/onnx/model_quantized.onnx.part099', viejo(1000));
+        await (await caches.open(`siglow-modelo-${'0'.repeat(64)}`)).put('/models/gliner-x-large/onnx/model_quantized.onnx.part000', viejo(10));
+      }, sha);
+      await page.reload();
+      await expect(h1(page, TITULO.cargar)).toBeVisible();
+      await expect(tarjeta(page)).toContainText('Hay una versión nueva del detector de nombres: se descarga una vez más.', { timeout: 20_000 });
+      await expect(tarjeta(page)).not.toContainText('No está descargado.');
+      await empezarDescarga(page);
+      await expect(tarjeta(page)).toContainText(M_LISTO, { timeout: 60_000 });
+      await expect(tarjeta(page)).not.toContainText('Hay una versión nueva del detector');
+      // Al confirmar el modelo nuevo completo: solo su caché, con exactamente las rutas del manifiesto vigente.
+      await expect.poll(async () => JSON.stringify(await cachesDelModelo(page)), { timeout: 20_000 })
+        .toBe(JSON.stringify([{ nombre: `siglow-modelo-${sha}`, rutas: rutasDelManifiesto(GRANDE.manifest) }]));
+      // Y lo guardado es el trozo nuevo (el viejo de las mismas rutas se volvió a descargar), con la marca.
+      const marca = await page.evaluate(async (s) => (await (await caches.open(`siglow-modelo-${s}`)).match('/models/gliner-x-large/onnx/model_quantized.onnx.part000'))?.headers.get('X-Siglow-Trozo') ?? null, sha);
+      expect(marca).toBe(GRANDE.manifest.trozos[0]?.sha256);
+      expect(obs.ajenas).toEqual([]);
+      expect(await obs.violaciones()).toEqual([]);
+    } finally {
+      await srv.parar();
+    }
+  });
+
   test('F10 @cero-red con ahorro de datos (saveData) «Anonimizar» no descarga: la vista previa avisa y pregunta; la descarga empieza solo con el clic y al terminar ofrece «Volver a analizar con el detector»', async ({ page }) => {
     const srv = await servir(D_OK);
     try {

@@ -67,6 +67,8 @@ interface Local { state: ModelUiState; variant?: ModelVariant; mb: number | null
 let local: Local = { state: 'no_descargado', mb: null };
 const manifiestos = new Map<IdModelo, ModelManifest>();
 let instalado: IdModelo | null = null;
+/** F11: al arrancar había trozos de un detector anterior (de 24 MiB): la tarjeta avisa que se descarga una vez más. */
+let detectorViejo = false;
 let persistido: boolean | null = null;
 let preparado = false;
 let iniciado = false;
@@ -131,6 +133,7 @@ async function preparar(): Promise<void> {
     for (const id of IDS_MODELO) {
       if (!manifiestos.has(id)) continue;
       const e = await pedirSw({ tipo: 'MODELO_ESTADO', id }).catch(() => null);
+      if (e && e.ok && e['viejo'] === true) detectorViejo = true;
       if (e && e.ok && e['completo'] === true) {
         instalado = id;
         break;
@@ -190,6 +193,9 @@ function desenlace(r: ResultadoEntrega): void {
     case 'listo':
       instalado = r.id;
       persistido = r.persistido;
+      detectorViejo = false;
+      // F11: con el modelo nuevo completo, el SW borra lo que no es del manifiesto vigente (los trozos del detector anterior).
+      void pedirSw({ tipo: 'MODELO_ESTADO', id: r.id }).catch(() => undefined);
       fijar('listo', { variant: variantePorId(r.id) });
       return;
     case 'plan_b':
@@ -205,6 +211,10 @@ export const modeloPuerto: ModeloPuerto = {
   comprobando() {
     iniciar();
     return comprobando;
+  },
+  viejo() {
+    iniciar();
+    return detectorViejo && instalado === null;
   },
   async esperarComprobacion() {
     iniciar();
