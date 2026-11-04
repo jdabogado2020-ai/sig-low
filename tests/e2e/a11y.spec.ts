@@ -628,7 +628,7 @@ testMedicion.describe('Vista previa · accesibilidad (F3, D-24)', () => {
     const guia = page.locator('[data-prueba="como-leer"]');
     await expect(guia).toContainText('El color de cada etiqueta indica el tipo de dato, y su nombre lo dice en palabras.');
     await expect(guia).toContainText('Un texto subrayado con puntos es un dato que usted decidió dejar a la vista.');
-    await expect(guia).toContainText('Un texto con fondo de aviso es un dato indirecto para revisar');
+    await expect(guia).toContainText('Un texto con fondo de aviso es un dato indirecto que sale tal cual');
   });
 
   testMedicion('T-AX-04 Vista previa: «Punto i de n» y el cambio de pantalla se anuncian sin texto del documento; ninguna región viva trae originales', async ({ page }) => {

@@ -1555,9 +1555,13 @@ testMedicion.describe('Descargar (PC-5)', () => {
     expect(await g.restablecer()).toBe(true);
     await expect(lista.locator('[data-motivo="RESIDUOS_DESACTUALIZADA"]')).toHaveText('Hubo cambios después de la búsqueda de datos que se escaparon.');
     await expect(lista.locator('[data-motivo="PENDIENTES"]')).toHaveText('Quedan 1 datos encontrados por revisar.');
-    // Al decidir de nuevo la búsqueda vuelve a correr sola y, con la confirmación aún marcada, la puerta se abre otra vez.
+    // Al decidir de nuevo la búsqueda vuelve a correr sola; la confirmación era de una revisión anterior (B-150, F23-r1): la puerta
+    // pide confirmar otra vez, y con la confirmación nueva se abre.
     await g.decidir();
     await esperarBusqueda(page);
+    expect(await motivos(page)).toEqual(['RECORDATORIO']);
+    await expect(confirmacion(page)).not.toBeChecked();
+    await confirmar(page);
     await expect(page.locator('[data-prueba="motivos"]')).toHaveCount(0);
     expect((await g.estado()).ok).toBe(true);
     // Estado 8: desmarcar la confirmación cierra la puerta con RECORDATORIO.
