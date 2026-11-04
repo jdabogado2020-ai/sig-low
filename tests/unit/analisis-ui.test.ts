@@ -304,13 +304,18 @@ describe('F10 descarga del detector al anonimizar', () => {
     expect(obtenerRevision()?.modelo.kind).toBe('plan_b');
   });
 
-  it('con ahorro de datos (saveData) o con la casilla desmarcada, «Anonimizar» no descarga nada', async () => {
+  it('con ahorro de datos (saveData), sin conexión o con la casilla desmarcada, «Anonimizar» no descarga nada', async () => {
     const modelo = modeloSinDescargar();
     instalarPuertos({ modelo, ner: nerFalso() });
     vi.stubGlobal('navigator', { connection: { saveData: true } });
     iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 1'), usarModelo: true, crearWorker: crearFalso });
     await esperar(() => obtener().screen === 'revision');
     expect(obtenerRevision()?.modelo).toEqual({ kind: 'plan_b', causa: 'no_descargado' });
+    expect(modelo.llamadas).toBe(0);
+    // Sin conexión, tampoco: la descarga fallaría; la vista previa la ofrece para cuando vuelva.
+    vi.stubGlobal('navigator', { onLine: false });
+    iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 1b'), usarModelo: true, crearWorker: crearFalso });
+    await esperar(() => obtener().screen === 'revision' && obtenerRevision()?.modelo.kind === 'plan_b');
     expect(modelo.llamadas).toBe(0);
     vi.unstubAllGlobals();
     iniciarAnalisis({ doc: documentoDeTextoPegado(TEXTO, 'Documento 2'), usarModelo: false, crearWorker: crearFalso });

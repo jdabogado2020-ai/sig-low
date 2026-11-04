@@ -769,13 +769,19 @@ test.describe('@cero-red fase A3 · descarga del modelo', () => {
       await expect(page.getByRole('checkbox', { name: 'Usar el detector de nombres en este documento' })).toBeEnabled({ timeout: 20_000 });
       const corte = a.app.peticiones().length;
 
-      // A3: anonimizar un texto ficticio (empieza la descarga), volver a Cargar y esperar «listo».
+      // A3: anonimizar un texto ficticio (empieza la descarga), volver a Cargar y esperar «listo». Los archivos del modelo se
+      // retienen hasta volver a Cargar: con los pesos sintéticos, si el detector corriera sobre el documento abierto, el motor no
+      // arrancaría y descartaría el modelo (V-44).
+      let soltar: () => void = () => undefined;
+      const retenidos = new Promise<void>((r) => { soltar = r; });
+      await s.ctx.route('**/models/**', async (r) => { if (!r.request().url().endsWith('/manifest.json')) await retenidos; await r.fallback(); });
       await page.getByRole('tab', { name: 'Pegar texto' }).click();
       await page.getByRole('textbox', { name: 'Texto del documento' }).fill('Texto ficticio de prueba para empezar la descarga del detector.');
       await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
       await expect(page.getByRole('heading', { level: 1, name: 'Vista previa' })).toBeVisible({ timeout: 30_000 });
       await page.getByRole('button', { name: 'Descartar este documento' }).click();
       await page.getByRole('dialog').getByRole('button', { name: 'Descartar este documento' }).click();
+      soltar();
       await expect(page.locator('[data-prueba="tarjeta-modelo"]')).toContainText('Detector de nombres adicional listo en este equipo.', { timeout: 60_000 });
       // PC-6 (3.3, «resultado visible»): el resultado de navigator.storage.persist() aparece en la tarjeta con el mensaje M-107 del catálogo.
       await expect(page.locator('[data-prueba="persistencia-modelo"]')).toHaveText(/^(Persistente: El navegador marcó|No persistente: El navegador puede borrar)/);

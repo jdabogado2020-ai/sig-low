@@ -14,7 +14,7 @@ import { ATRIBUTO_ZONA_SOLTAR } from './globales.ts';
 import { documentoDeTextoPegado, leerContenido, LecturaCancelada, partesAnalizables } from './lectura.ts';
 import { mensajeDeCodigo, ROTULOS, t, X, type MessageId } from './mensajes.ts';
 import { E } from './mensajes-entrada.ts';
-import { ahorroDeDatos, iniciarAnalisis } from './analisis.ts';
+import { ahorroDeDatos, iniciarAnalisis, sinConexion } from './analisis.ts';
 import { obtenerTabla } from './sesion.ts';
 import { codigoDeError, puertos } from './servicios.ts';
 
@@ -305,7 +305,7 @@ export function CargaDocumento({ detector }: { detector?: ComponentChildren } = 
 /** Casilla «Usar el detector de nombres en este documento» (en la tarjeta del detector de Cargar, F8). */
 /** F10 (v1.1.3): ¿«Anonimizar» empezará la descarga del detector? (Disponible, no descargado o con fallo, sin ahorro de datos.) */
 export function seDescargaraAlAnonimizar(estado: string, usarModelo: boolean): boolean {
-  return usarModelo && (estado === 'no_descargado' || estado === 'fallo') && puertos.modelo.disponible() && !ahorroDeDatos();
+  return usarModelo && (estado === 'no_descargado' || estado === 'fallo') && puertos.modelo.disponible() && !ahorroDeDatos() && !sinConexion();
 }
 
 export function CasillaModelo() {

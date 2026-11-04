@@ -6,7 +6,7 @@
 // La descarga es la de F0 (un solo aviso por fallo, «Reintentar», reanudación y respaldo por memoria o cuota) y siempre la empieza
 // el clic del abogado: nada aquí la lanza solo.
 import { useState } from 'preact/hooks';
-import { ahorroDeDatos, iniciarAnalisis } from '../analisis.ts';
+import { ahorroDeDatos, iniciarAnalisis, sinConexion } from '../analisis.ts';
 import { actualizarBorrador, obtenerDocumento } from '../documento.ts';
 import { CasillaModelo } from '../Entrada.tsx';
 import { actualizar, useShell, type ShellState } from '../estado.ts';
@@ -140,6 +140,7 @@ export function AvisoSinDetector() {
       <p id="sd-titulo"><strong>{tf('M-2320')}</strong></p>
       {/* F10: con ahorro de datos la descarga no empieza sola: aquí se pregunta. */}
       {d.descargable && ahorroDeDatos() ? <p data-prueba="ahorro-de-datos">{tf('M-2339')}</p> : null}
+      {d.descargable && !ahorroDeDatos() && sinConexion() ? <p data-prueba="sin-conexion-detector">{tf('M-2343')}</p> : null}
       {listo ? <p role="status">{tf('M-2323')}</p> : null}
       <EstadoDescarga model={d.model} mb={d.mb} fallo={d.fallo} error={d.error} />
       <div class="acciones">

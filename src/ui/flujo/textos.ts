@@ -143,6 +143,7 @@ const TEXTOS = {
   'M-2339': 'Su conexión está en modo de ahorro de datos: el detector de nombres no se descarga solo. Puede descargarlo aquí.',
   'M-2340': 'Al pulsar «Anonimizar», el detector se descarga y revisa este documento.',
   'M-2341': 'Midiendo la velocidad de la descarga…',
+  'M-2343': 'No hay conexión: el detector de nombres no se pudo descargar. Puede descargarlo aquí cuando vuelva la conexión.',
   'M-2342': 'El detector de nombres todavía se está descargando para revisar este documento. Espere a que termine o descargue sin esperar.',
 } as const satisfies Record<string, string>;
 

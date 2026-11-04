@@ -218,7 +218,7 @@ export function iniciarAnalisis(o: IniciarOpciones): void {
   const modeloListo = disponible && estadoModelo === 'listo';
   // F10 (v1.1.3): sin el detector, «Anonimizar» lo descarga en segundo plano y la vista previa sale de inmediato con reglas y lista.
   // Al terminar, el detector corre sobre este documento. No con ahorro de datos (se pregunta en la vista previa) ni si no se puede.
-  const descargar = o.usarModelo && !modeloListo && disponible && ner !== null && !ahorroDeDatos() && DESCARGABLE.has(estadoModelo);
+  const descargar = o.usarModelo && !modeloListo && disponible && ner !== null && !ahorroDeDatos() && !sinConexion() && DESCARGABLE.has(estadoModelo);
   const conModelo = o.usarModelo && ner !== null && (modeloListo || descargar);
   fijarDocumento(o.doc);
   fijarRevision(null);
@@ -360,6 +360,11 @@ export function ahorroDeDatos(): boolean {
   return c?.saveData === true;
 }
 
+/** F10: el navegador dice que no hay conexión: la descarga fallaría; se ofrece en la vista previa para cuando vuelva. */
+export function sinConexion(): boolean {
+  return typeof navigator !== 'undefined' && navigator.onLine === false;
+}
+
 /** F10: espera a que el detector quede listo (true) o a que la descarga termine sin él (false). La descarga es la de F0. */
 function esperarDetector(): Promise<boolean> {
   void puertos.modelo.descargar().catch(() => undefined);
@@ -418,7 +423,12 @@ function iniciarModelo(s: Sesion, doc: DocumentModel, ner: NerPuerto): void {
         const actual = obtenerRevision();
         if (actual === null) return;
         const r = incorporarModelo(actual, v.ventana, total, p.set as unknown as DetectionSet, contextoDelReductor(doc, s.ids));
-        if (r.ok) ponerRevision(r.state);
+        if (r.ok) { ponerRevision(r.state); return; }
+        // F10 (v1.1.3): esta ventana no se puede sumar sin perder correcciones. Se cancela el detector y se pasa al plan B; con el
+        // detector listo, la vista previa ofrece «Volver a analizar con el detector» (Detector.tsx).
+        s.ner?.cancelar();
+        s.ner = null;
+        await cerrarEnPlanB(s, doc, 'fallo_carga');
       });
     },
     alTerminar: () => {

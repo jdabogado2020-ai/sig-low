@@ -82,6 +82,7 @@ export class Arnes {
     }
     // El portapapeles solo se concede al origen de la app (`clipboard-read` está vedado en la política de permisos de la página).
     await ctx.grantPermissions(permisos, { origin: this.app.origen }).catch(() => undefined);
+    if (opciones.offline === true) await ctx.addInitScript(SIN_CONEXION);
     const vopc: OpcionesVigilante = {
       origenes: [this.app.origen, ...(opciones.origenesPermitidos ?? [])],
       ...(opciones.consolaPermitida ? { consolaPermitida: opciones.consolaPermitida } : {}),
@@ -112,6 +113,8 @@ export class Arnes {
     await this.esperarControlador(page);
     this.marcarCorte(s);
     await s.ctx.setOffline(true);
+    // Un navegador sin conexión pone navigator.onLine en false; la emulación de Playwright no (la app lo mira desde F10).
+    await s.ctx.addInitScript(SIN_CONEXION);
     await page.reload();
     await this.esperarControlador(page);
     expect(await page.evaluate(() => ({ aislado: crossOriginIsolated, controlador: navigator.serviceWorker.controller !== null })), 'B1: aislamiento y controlador sin conexión')
@@ -155,6 +158,9 @@ export class Arnes {
 export type FabricaArnes = (opciones?: OpcionesServidor) => Promise<Arnes>;
 
 /** `test` de Playwright con el fixture `arnes`: cada fase pide el suyo y se limpia solo (servidores, UDP, contextos, perfiles). */
+/** F10: lo que ve la página en un navegador sin conexión («navigator.onLine» en false). */
+const SIN_CONEXION = (): void => { Object.defineProperty(Navigator.prototype, 'onLine', { get: () => false, configurable: true }); };
+
 export const test = base.extend<{ arnes: FabricaArnes }>({
   arnes: async ({ browser }, use) => {
     const creados: Arnes[] = [];
