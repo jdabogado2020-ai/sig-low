@@ -135,6 +135,7 @@ export function Listo() {
         <div data-prueba="residuos-estado" role="status" aria-busy={listo.buscando}>
           {listo.buscando ? <p>{t('M-76')}</p> : null}
           {!listo.buscando && pasa ? <p>{t('M-77', { n: residuo.valuesSearched })}</p> : null}
+          {!listo.buscando && residuo !== null && residuo.revision !== state.revision ? <p>{t('M-79')}</p> : null}
         </div>
         {listo.errorBusqueda !== null ? (
           <div class="acciones">
@@ -142,6 +143,7 @@ export function Listo() {
             <button type="button" class="secundario" onClick={buscarOtraVez}>{t(ROTULOS.buscar_de_nuevo)}</button>
           </div>
         ) : null}
+        <p class="ayuda">{t('M-122')}</p>
         <p class="ayuda">{tf('M-2290')}</p>
         <p data-prueba="prueba-final">{t('M-115')}</p>
         <div class="confirmacion-unica">

@@ -227,6 +227,7 @@ export function VistaPrevia() {
       <div class="estado-busqueda" role="status" data-prueba="residuos-estado" aria-busy={listo.buscando}>
         {listo.buscando ? <p>{t('M-76')}</p> : null}
         {!listo.buscando && pasa ? <p>{t('M-77', { n: residuo.valuesSearched })}</p> : null}
+        {!listo.buscando && residuo !== null && residuo.revision !== state.revision ? <p>{t('M-79')}</p> : null}
       </div>
       {listo.errorBusqueda !== null ? (
         <div class="acciones">
