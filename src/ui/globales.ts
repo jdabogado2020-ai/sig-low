@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'preact/hooks';
 import { obtener } from './estado.ts';
 import { t, type MessageId, type MsgParam } from './mensajes.ts';
-import { ATRIBUTO_PROPIO, vigilarExtensiones } from './extensiones.ts';
+import { registrarPropio } from '../nodos-propios.ts';
+import { vigilarExtensiones } from './extensiones.ts';
 
 /** Marca la zona de soltar de Entrada (PC-2): el resto del documento ignora los archivos soltados. */
 export const ATRIBUTO_ZONA_SOLTAR = 'data-zona-soltar';
@@ -82,7 +83,7 @@ export function registrarManejadoresGlobales(): () => void {
   // Impresión: se oculta todo salvo un párrafo con M-126 (el CSS está en base.css). Se crea con la API de DOM.
   const p = document.createElement('p');
   p.className = 'solo-impresion';
-  p.setAttribute(ATRIBUTO_PROPIO, '');   // F8: nodo propio fuera de #app (no es de una extensión)
+  registrarPropio(p);   // F9 (M-160): nodo propio fuera de la raíz, por identidad (no es de una extensión)
   p.textContent = t('M-126');
   document.body.appendChild(p);
   // F8 (v1.1.1): aviso si una extensión cuelga un nodo de la página (solo presencia; ver extensiones.ts).

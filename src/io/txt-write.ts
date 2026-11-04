@@ -7,6 +7,7 @@
 import { joinOutput } from '../core/render';
 import { SiglowError } from '../core/types';
 import type { ParseWarning, RenderedOutput } from '../core/types';
+import { registrarPropio } from '../nodos-propios';
 
 /** Qué se exporta: la salida renderizada (6.9) o, para el texto reinsertado, una cadena ya armada. */
 export type ContenidoExportable = RenderedOutput | string;
@@ -87,7 +88,7 @@ export function descargarBytes(bytes: Uint8Array, mime: string, nombre: string):
     ancla.download = nombre;
     ancla.rel = 'noopener';
     ancla.hidden = true;
-    ancla.setAttribute('data-siglow', '');   // F8: nodo propio de la app (ui/extensiones.ts no lo toma por una extensión)
+    registrarPropio(ancla);   // F9 (M-160): nodo propio de la app, por identidad (el aviso de extensión no lo toma por ajeno)
     document.body.append(ancla);
     ancla.click();
   } finally {

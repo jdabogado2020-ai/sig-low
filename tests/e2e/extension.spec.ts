@@ -70,3 +70,79 @@ test.describe('F8 aviso de extensión del navegador', () => {
     await expect(aviso(page)).toContainText(TEXTO_AVISO);
   });
 });
+
+// ===== F9 (v1.1.2) · M-160: lo propio se reconoce por identidad; B-170: lo que pdf.js cuelga al dibujar es propio =====
+
+/**
+ * Ejecuta `expresion` en un mundo aislado de la página (CDP `Page.createIsolatedWorld`), como el content script de una extensión:
+ * comparte el DOM, pero no los globales ni la guarda de la app (src/guard.ts), así que puede crear un iframe.
+ */
+async function comoExtension(page: Page, expresion: string): Promise<void> {
+  const cdp = await page.context().newCDPSession(page);
+  const { frameTree } = await cdp.send('Page.getFrameTree');
+  const { executionContextId } = await cdp.send('Page.createIsolatedWorld', { frameId: frameTree.frame.id, worldName: 'extension-de-prueba' });
+  const r = await cdp.send('Runtime.evaluate', { expression: expresion, contextId: executionContextId });
+  expect(r.exceptionDetails, 'la extensión simulada no pudo colgar su nodo').toBeUndefined();
+  await cdp.detach();
+}
+
+/** PDF ficticio de una página con texto y una función de transferencia (/TR en el ExtGState) que se usa al dibujar. */
+function pdfConTR(): Buffer {
+  const lineas = [
+    'Ana Ficticia Rojas, identificada con C.C. 1.000.000.017, presenta este escrito de prueba.',
+    'Vive en la Calle 00 n.o 00-00 de Ciudad Ejemplo y su correo es ana.ficticia@ejemplo.test.',
+    'El demandado Pedro Ejemplo Prueba respondio dentro del termino. Documento ficticio.',
+  ];
+  const texto = lineas.map((l, i) => `BT /F1 11 Tf 40 ${740 - i * 18} Td (${l}) Tj ET`).join('\n');
+  const contenido = `q /GS1 gs 0.9 g 30 600 540 160 re f Q\nq /GS1 gs 0 g\n${texto}\nQ`;
+  const objs = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 6 0 R >> /ExtGState << /GS1 << /TR 5 0 R >> >> >> /Contents 4 0 R >>',
+    `<< /Length ${contenido.length} >>\nstream\n${contenido}\nendstream`,
+    '<< /FunctionType 2 /Domain [0 1] /C0 [1] /C1 [0] /N 1 >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
+  ];
+  let s = '%PDF-1.4\n';
+  const off: number[] = [];
+  objs.forEach((o, i) => { off.push(s.length); s += `${i + 1} 0 obj\n${o}\nendobj\n`; });
+  const x = s.length;
+  s += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n${off.map((o) => `${String(o).padStart(10, '0')} 00000 n \n`).join('')}`;
+  s += `trailer\n<< /Size ${objs.length + 1} /Root 1 0 R >>\nstartxref\n${x}\n%%EOF\n`;
+  return Buffer.from(s, 'latin1');
+}
+
+test.describe('F9 aviso de extensión: identidad, no atributos (M-160) y pdf.js (B-170)', () => {
+  const DISFRACES: ReadonlyArray<readonly [nombre: string, expresion: string]> = [
+    ['<div data-siglow> con shadow DOM en <body>', "{ const d = document.createElement('div'); d.setAttribute('data-siglow', ''); d.attachShadow({ mode: 'open' }); document.body.append(d); }"],
+    ['un segundo <div id="app"> en <body>', "{ const d = document.createElement('div'); d.id = 'app'; document.body.append(d); }"],
+    ['un <iframe id="app"> en <body>', "{ const f = document.createElement('iframe'); f.id = 'app'; document.body.append(f); }"],
+  ];
+  for (const [nombre, expresion] of DISFRACES) {
+    test(`F9 @humo M-160 una extensión que cuelga ${nombre} con un atributo de la app también enciende el aviso`, async ({ page }) => {
+      await irACargar(page);
+      await expect(aviso(page)).toHaveCount(0);
+      await comoExtension(page, expresion);
+      await expect(aviso(page)).toBeVisible();
+      await expect(aviso(page)).toContainText(TEXTO_AVISO);
+    });
+  }
+
+  test('F9 B-170 un PDF con función de transferencia (/TR) se dibuja en la vista previa sin encender el aviso; un nodo ajeno sí lo enciende después', async ({ page }) => {
+    await irACargar(page);
+    await page.getByRole('tab', { name: 'Cargar archivo' }).click();
+    await page.locator('input[type="file"]').setInputFiles({ name: 'Escrito de Prueba.pdf', mimeType: 'application/pdf', buffer: pdfConTR() });
+    await expect(page.locator('[data-prueba="archivo-cargado"]')).toContainText('Archivo cargado: PDF, ', { timeout: 20_000 });
+    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
+    await expect(h1(page, TITULO.vista)).toBeVisible({ timeout: 30_000 });
+    // La página se dibujó (con pdf.js en el hilo principal, que con /TR cuelga su div de filtros de <body>).
+    await expect(page.locator('[data-prueba="paginas-pdf"] figure.pagina-pdf')).toHaveCount(1, { timeout: 30_000 });
+    await expect(page.locator('[data-prueba="preparando-paginas"]')).toHaveCount(0, { timeout: 30_000 });
+    const hijos = await page.evaluate(() => document.body.children.length);
+    expect(hijos, 'pdf.js colgó su nodo de <body> (si no, la prueba no prueba nada)').toBeGreaterThan(2);
+    await expect(aviso(page)).toHaveCount(0);
+    // Lo de pdf.js no tapa a una extensión: un panel ajeno después sí enciende el aviso.
+    await comoExtension(page, "{ const d = document.createElement('div'); document.body.append(d); }");
+    await expect(aviso(page)).toBeVisible();
+  });
+});

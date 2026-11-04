@@ -9,6 +9,7 @@ import type {
 } from '../core/types';
 import { LecturaCancelada } from './io-client';
 import { canonico, randomIds } from './txt-read';
+import { documentoParaPdfjs } from '../nodos-propios';
 
 /** Proporción de caracteres ilegibles (U+FFFD o U+E000–U+F8FF) de una página a partir de la cual se avisa. [VERIFICAR y calibrar con un PDF sin ToUnicode real] */
 export const UMBRAL_ILEGIBLE = 0.2;
@@ -283,6 +284,8 @@ export function crearReadPdf(deps: PdfDeps = {}): ReadPdfFn {
         // `isEvalSupported` ya no existe en 6.4.299 (no figura en pdf.mjs ni en el worker): no hay nada que desactivar.
         useWasm: false, useWorkerFetch: false, isOffscreenCanvasSupported: false, isImageDecoderSupported: false,
       };
+      // F9 (B-170): lo que pdf.js cree en la página, por el documento que lo registra como propio (nodos-propios.ts).
+      if (typeof document !== 'undefined') params.ownerDocument = documentoParaPdfjs(document);
       try {
         worker = (deps.crearWorker ?? crearWorkerPdfjs)();
         if (worker !== null) {

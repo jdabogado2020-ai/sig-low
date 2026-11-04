@@ -20,6 +20,7 @@ import type { PiezaPdf } from './pdf-read';
 import { descargarPdf, pdfDeImagenes } from './pdf-write';
 import type { PaginaImagen } from './pdf-write';
 import { nombreDescarga } from './txt-write';
+import { documentoParaPdfjs } from '../nodos-propios';
 import type { OpcionesExportacion, ResultadoExportacion } from './txt-write';
 
 // ---------- Lo mínimo que se usa de pdf.js y del lienzo (inyectables en las pruebas) ----------
@@ -278,6 +279,9 @@ export async function tacharPaginas(original: Uint8Array, doc: DocumentModel, ou
       data: datos, disableFontFace: true, useSystemFonts: false, verbosity: 0, enableXfa: false,
       useWasm: false, useWorkerFetch: false, isOffscreenCanvasSupported: false, isImageDecoderSupported: false,
     };
+    // F9 (B-170): pdf.js crea sus nodos (el div oculto de su DOMFilterFactory con /TR, sus lienzos) con un documento que los registra
+    // como propios; el aviso de extensión no los toma por ajenos. Un nodo que no crea pdf.js no pasa por aquí.
+    if (typeof document !== 'undefined') params.ownerDocument = documentoParaPdfjs(document);
     worker = (deps.crearWorker ?? crearWorkerPdfjs)();
     if (worker !== null) { workerPdfjs = new lib.PDFWorker({ port: worker }); params.worker = workerPdfjs; }
     const t = lib.getDocument(params);

@@ -1,6 +1,7 @@
 import './guard.ts'; // Primer import: la guardia de 5.2.1 se instala antes que cualquier otro módulo (PD-2-r1).
 import { render } from 'preact';
 import { readPdf } from './io/pdf-read.ts';
+import { fijarRaiz } from './nodos-propios.ts';
 import { App } from './ui/App.tsx';
 import { modeloPuerto } from './ui/modelo-puerto.ts';
 import { nerPuerto } from './ui/ner-puerto.ts';
@@ -20,4 +21,5 @@ if (__SIGLOW_MEDICION__) {
   void import('./medicion/gancho.ts').then((m) => m.instalarGancho());
 }
 const raiz = document.getElementById('app');
-if (raiz) render(<App />, raiz);
+// F9 (M-160): la raíz se reconoce por identidad en el aviso de extensión (nodos-propios.ts), no por su id.
+if (raiz) { fijarRaiz(raiz); render(<App />, raiz); }
