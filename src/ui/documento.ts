@@ -22,7 +22,7 @@ export interface BorradorEntrada {
 }
 
 const inicial = (): BorradorEntrada => ({
-  pestana: 'pegar', texto: '', archivo: null, formato: null, bytes: null, usarModelo: true,
+  pestana: 'cargar', texto: '', archivo: null, formato: null, bytes: null, usarModelo: true,
   errorLectura: null, lecturaCancelada: false, analisisCancelado: false,
 });
 

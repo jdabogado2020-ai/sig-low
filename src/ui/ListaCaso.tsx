@@ -293,7 +293,7 @@ export function ListaCaso() {
       }
     }
     setOcupado(false);
-    ir('entrada');
+    ir('inicio');
   };
 
   return (

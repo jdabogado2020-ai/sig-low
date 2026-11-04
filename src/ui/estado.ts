@@ -8,7 +8,8 @@ export { t } from './mensajes.ts';
 
 export type Screen =
   | 'inicio' | 'lista' | 'entrada' | 'procesando' | 'revision'
-  | 'listo' | 'reinsercion' | 'boveda' | 'sin_sw';
+  | 'listo' | 'reinsercion' | 'boveda' | 'sin_sw'
+  | 'detalle';   // F3: la revisión dato por dato de la v1.0, en opciones avanzadas de la vista previa
 export type Phase = 'vacio' | 'procesando' | 'revision' | 'listo' | 'error';
 export type SaveMode = 'guardar' | 'no_guardar';
 /** Estado visible del modelo (distinto de ModelState del informe, 6.8). */
@@ -27,6 +28,8 @@ export interface OpenAsunto {            // [P]: nunca lleva la tabla ni la list
   persisted: boolean | null;             // navigator.storage.persist(); null si no se pidió
   tableRevision: number;                 // +1 en cada consolidación (6.6.4)
   backedUpRevision: number | null;       // última tableRevision guardada en IndexedDB o exportada
+  /** D-23 · Caso que Sig-Low abrió solo al cargar un documento («No guardar», código automático): el abogado no lo ve. */
+  efimero?: boolean;
 }
 export interface UiError {
   code: ErrorCode | ReviewError;         // 6.11.7 y 6.4.4

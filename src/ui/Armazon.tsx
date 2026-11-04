@@ -4,7 +4,9 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { bloquear, cerrarAsunto, seguirTrabajando, useCuentaRegresiva } from './bloqueo.ts';
 import { Casilla, CampoFrase } from './campos.tsx';
 import { Dialogo } from './dialogo.tsx';
-import { actualizar, useShell, type Screen } from './estado.ts';
+import { actualizar, ir, useShell, type Screen } from './estado.ts';
+import { useRevision } from './documento.ts';
+import { tf } from './flujo/textos.ts';
 import { evaluarFrase } from './frase.ts';
 import { mostrarAvisoGlobal, ocultarAvisoGlobal, useAvisoGlobal } from './globales.ts';
 import { calcularHuellas, compilacionCorta } from './huellas.ts';
@@ -19,28 +21,42 @@ const ACTUALIZACION = { otrasPestanas: 'M-1212', versionCambiada: 'M-1213' } as 
 
 export const NOMBRE_PANTALLA: Record<Screen, `M-${number}`> = {
   inicio: X.inicio, lista: X.lista, entrada: X.entrada, procesando: X.procesando, revision: X.revision, listo: X.listo,
-  reinsercion: X.reinsercion, boveda: ROTULOS.boveda, sin_sw: X.arranque,
+  reinsercion: X.reinsercion, boveda: ROTULOS.boveda, sin_sw: X.arranque, detalle: 'M-2181',
 };
 
-const PASOS: ReadonlyArray<readonly [Screen, `M-${number}`]> = [
-  ['lista', X.lista], ['entrada', X.entrada], ['procesando', X.procesando], ['revision', X.revision], ['listo', X.listo],
-];
+/** D-23 · Tres pasos: Cargar, Vista previa y Descargar. «Analizando» y «Revisar dato por dato» cuentan como la vista previa. */
+const PASOS: ReadonlyArray<readonly [Screen, 'M-2101' | 'M-2102' | 'M-2103']> = [['inicio', 'M-2101'], ['revision', 'M-2102'], ['listo', 'M-2103']];
+const PASO_DE: Partial<Record<Screen, Screen>> = { inicio: 'inicio', entrada: 'inicio', procesando: 'revision', revision: 'revision', detalle: 'revision', listo: 'listo' };
 
 function Pasos({ actual }: { actual: Screen }) {
+  const revision = useRevision();
+  const paso = PASO_DE[actual];
   return (
-    <nav aria-label={t(X.pasosDelAsunto)} class="pasos">
+    <nav aria-label={t(X.pasosDelAsunto)} class="pasos" data-prueba="pasos">
       <ol>
-        {PASOS.map(([pantalla, id]) => (
-          <li key={pantalla} aria-current={pantalla === actual ? 'step' : undefined} class={pantalla === actual ? 'actual' : undefined}>
-            {t(id)}
-          </li>
-        ))}
+        {PASOS.map(([pantalla, id], i) => {
+          const es = pantalla === paso;
+          const posible = pantalla === 'inicio' || (revision !== null && actual !== 'procesando');
+          return (
+            <li key={pantalla} aria-current={es ? 'step' : undefined} class={es ? 'actual' : undefined}>
+              <button type="button" class="paso" disabled={!posible || es} aria-label={tf('M-2104', { n: i + 1, nombre: tf(id) })} onClick={() => { ir(pantalla); }}>
+                <span class="paso-n" aria-hidden="true">{i + 1}</span> {tf(id)}
+              </button>
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );
 }
 
 type Intencion = 'exportar' | 'pasar_a_guardar' | null;
+
+/** F2 · La descarga ofrece «Guardar la llave…» en opciones avanzadas: abre el mismo diálogo que el menú del caso. */
+let abrirIntencion: ((i: Exclude<Intencion, null>) => void) | null = null;
+export function pedirLlave(i: Exclude<Intencion, null>): void {
+  abrirIntencion?.(i);
+}
 
 /** Pide la frase (y su repetición en «No guardar») para exportar o para pasar a «Guardar cifrada». */
 function DialogoFrase({ intencion, onCerrar }: { intencion: Exclude<Intencion, null>; onCerrar: () => void }) {
@@ -264,6 +280,7 @@ export function Armazon({ pantalla, children }: { pantalla: Screen; children: Co
   // Cada vaciado del estado [M] (bloqueo, «Cerrar asunto», `pagehide`, «Borrar todo») cierra el diálogo del menú del asunto: sin
   // esto, el `<dialog>` modal quedaba abierto y vacío sobre Inicio tras el bloqueo (observación de la revisión de PC-6-r2, Q5).
   useLayoutEffect(() => registrarLimpieza(() => { setIntencion(null); }), []);
+  useEffect(() => { abrirIntencion = setIntencion; return () => { abrirIntencion = null; }; }, []);
 
   // Cambio de pantalla: foco al h1 nuevo y anuncio «Pantalla: {nombre}» (8.2.1, 8.6.3). No en la carga inicial.
   useEffect(() => {
@@ -273,7 +290,8 @@ export function Armazon({ pantalla, children }: { pantalla: Screen; children: Co
     principal.current?.querySelector<HTMLElement>('h1')?.focus();
   }, [pantalla]);
 
-  const enPasos = asunto !== null && PASOS.some(([p]) => p === pantalla);
+  const enPasos = PASO_DE[pantalla] !== undefined;
+  const visible = asunto !== null && asunto.efimero !== true;
   return (
     <div class="app">
       <button type="button" class="salto" onClick={() => { principal.current?.focus(); }}>{t(X.irAlContenido)}</button>
@@ -283,7 +301,7 @@ export function Armazon({ pantalla, children }: { pantalla: Screen; children: Co
           <span class="marca-punto" aria-hidden="true" />
           <span class="marca-por">{t(MARCA.descriptor)}</span>
         </p>
-        {asunto ? (
+        {visible ? (
           <p class="chip" data-prueba="chip-asunto">
             {t(X.asuntoChip, { codigo: asunto.codigo })}
             {' · '}
@@ -296,7 +314,7 @@ export function Armazon({ pantalla, children }: { pantalla: Screen; children: Co
             : shell.offlineReady ? t('M-39') : ''}
         </p>
         <div class="herramientas">
-          {asunto ? <MenuAsunto alElegir={setIntencion} /> : null}
+          {visible ? <MenuAsunto alElegir={setIntencion} /> : null}
           {asunto ? <button type="button" class="secundario" onClick={() => { bloquear(true); }}>{t(ROTULOS.bloquear)}</button> : null}
         </div>
       </header>

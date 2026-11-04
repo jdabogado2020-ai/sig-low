@@ -15,7 +15,7 @@
 import { deflateSync, inflateSync, strToU8 } from 'fflate';
 import type { Element, Node } from '@xmldom/xmldom';
 import { SiglowError } from '../core/types';
-import type { DocumentModel, IoLimits, OutputSection, ParseWarning, Part, RenderedOutput } from '../core/types';
+import type { DetectionId, DocumentModel, IoLimits, OutputSection, ParseWarning, Part, RenderedOutput } from '../core/types';
 import {
   W_NS, clave, crc32, leerDocxMapeado, leerEntrada, leerRelaciones, readDocx, resolver, rutaRels, ultimoSegmento, xmlDe,
 } from './docx-read';
@@ -306,7 +306,8 @@ function sanear(x: XmlDocx, s: Saneo): string {
 // Texto nuevo de cada pieza (`w:t`) a partir de los segmentos de la salida
 // ---------------------------------------------------------------------------------------------------------------------
 
-export interface Cambio { ini: number; fin: number; nuevo: string }
+/** `det`: la detección del reemplazo (F3: la vista previa del PDF lleva el clic de un recuadro a su dato). */
+export interface Cambio { ini: number; fin: number; nuevo: string; det?: DetectionId }
 
 /**
  * Los reemplazos de una sección: donde el texto de salida difiere del de la parte. Comprueba que los segmentos cubren ambos textos.
@@ -320,7 +321,7 @@ export function cambiosDe(parte: Part, sec: OutputSection): Cambio[] {
   for (const g of segs) {
     if (g.partStart !== p || g.outStart !== o || g.partEnd < g.partStart || g.outEnd < g.outStart) throw new SiglowError('ERROR_INTERNO');
     const nuevo = sec.text.slice(g.outStart, g.outEnd);
-    if (nuevo !== parte.text.slice(g.partStart, g.partEnd)) out.push({ ini: g.partStart, fin: g.partEnd, nuevo });
+    if (nuevo !== parte.text.slice(g.partStart, g.partEnd)) out.push(g.detectionId === undefined ? { ini: g.partStart, fin: g.partEnd, nuevo } : { ini: g.partStart, fin: g.partEnd, nuevo, det: g.detectionId });
     p = g.partEnd;
     o = g.outEnd;
   }

@@ -1,0 +1,95 @@
+/* Vista previa editable (F3, D-24), flujo «Cargar y listo» (F2) y descarga. Solo clases y propiedades CSSOM: la CSP (style-src
+   'self') no admite atributos style. Los colores de las etiquetas son los resaltados de 8.4.2 (revision-base.css, --hl-*). */
+.vista-previa { display: block; }
+.puntos { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; margin: 0.75rem 0; padding: 0.5rem 0.9rem;
+  border: 1px solid var(--sl-borde-suave); background: var(--sl-fondo-2); }
+.puntos p { margin: 0; }
+.estado-busqueda p { margin: 0.25rem 0; color: var(--sl-texto-2); font-size: 0.9rem; }
+.barra-vista { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
+.como-leer { border: 1px solid var(--sl-borde-suave); background: var(--sl-lente); padding: 0.5rem 1rem; margin: 0.5rem 0; }
+.como-leer li { margin: 0.3rem 0; }
+
+.vista-previa-cuerpo { position: relative; }
+.documento-vista {
+  background: var(--sl-lente); color: var(--sl-texto); border: 1px solid var(--sl-borde-suave);
+  padding: 1.5rem clamp(0.75rem, 4vw, 3rem); max-width: 52rem; line-height: 1.6; overflow-wrap: anywhere;
+  font-family: var(--sl-fuente);
+}
+.seccion-doc + .seccion-doc { border-top: 1px dashed var(--sl-borde-suave); margin-top: 1rem; padding-top: 0.75rem; }
+.rotulo-parte { font-family: var(--sl-fuente-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sl-niebla); }
+.bloque { margin: 0 0 0.6rem; white-space: pre-wrap; }
+.bloque.titulo1 { font-family: var(--sl-fuente-serif); font-size: 1.6rem; line-height: 1.25; }
+.bloque.titulo2 { font-family: var(--sl-fuente-serif); font-size: 1.3rem; line-height: 1.3; }
+.bloque.titulo3 { font-weight: 600; }
+.alinear-centro { text-align: center; }
+.alinear-derecha { text-align: right; }
+.alinear-justificado { text-align: justify; }
+.negrita { font-weight: 700; }
+.cursiva { font-style: italic; }
+.subrayado { text-decoration: underline; }
+.tabla-doc { border-collapse: collapse; margin: 0.4rem 0 0.8rem; width: 100%; }
+.tabla-doc td { border: 1px solid var(--sl-linea-fuerte); padding: 0.3rem 0.5rem; vertical-align: top; }
+.tabla-doc .bloque { margin: 0; }
+
+/* Etiqueta: ficha con el color de su tipo; el borde punteado marca la confianza baja (no solo el color). */
+.etiqueta, .revelado, .revisar, .zona-pdf {
+  font: inherit; line-height: inherit; color: inherit; cursor: pointer; margin: 0; min-height: 0; min-width: 0;
+  border-radius: 3px; padding: 0 0.2rem;
+}
+.etiqueta { background: var(--hl-relleno, var(--hl-ban-relleno)); border: 1px solid var(--hl-borde, var(--hl-ban-borde)); color: var(--hl-texto);
+  font-family: var(--sl-fuente-mono); font-size: 0.92em; }
+.etiqueta.baja { border-style: dashed; border-width: 2px; }
+.etiqueta.negrita { font-weight: 700; }
+.revelado { background: transparent; border: 0; text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
+.revisar { background: var(--sl-aviso-fondo); border: 1px solid var(--sl-aviso-borde); }
+.etiqueta:focus-visible, .revelado:focus-visible, .revisar:focus-visible, .zona-pdf:focus-visible { outline: 3px solid var(--sl-foco); outline-offset: 2px; }
+
+.menu-etiqueta, .menu-seleccion {
+  position: sticky; bottom: 0.75rem; z-index: 20; margin: 0.75rem 0; max-width: 32rem; padding: 0.75rem 0.9rem;
+  background: var(--sl-fondo); border: 1px solid var(--sl-borde); box-shadow: 0 6px 24px rgba(16, 18, 20, 0.18);
+}
+.menu-titulo { margin: 0 0 0.4rem; font-weight: 600; }
+.menu-opciones { display: flex; flex-direction: column; align-items: stretch; gap: 0.35rem; margin-bottom: 0.5rem; }
+.menu-opciones button { text-align: left; }
+/* Un solo acento por vista (D-25): las opciones del menú son secundarias. */
+.menu-etiqueta button:not(.primario), .menu-seleccion button { background: transparent; color: var(--sl-texto); border: 1px solid var(--sl-borde); }
+.menu-etiqueta button:not(.primario):hover:not([disabled]), .menu-seleccion button:hover { background: var(--sl-fondo-2); }
+.menu-seleccion { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.paginas-pdf { max-width: 52rem; }
+.pagina-pdf { margin: 0 0 1.25rem; }
+.pagina-pdf figcaption { font-family: var(--sl-fuente-mono); font-size: 0.75rem; color: var(--sl-niebla); margin-top: 0.25rem; }
+.pagina-pdf-marco { position: relative; border: 1px solid var(--sl-borde-suave); background: #ffffff; }
+.lienzo-pdf canvas { display: block; width: 100%; height: auto; }
+.zona-pdf { position: absolute; background: transparent; border: 0; padding: 0; }
+.zona-pdf:hover { outline: 2px solid var(--sl-primario); }
+
+/* Inicio: guía, opciones avanzadas, ayuda en contexto y barra de pasos pulsable. */
+.guia { border: 1px solid var(--sl-borde-suave); background: var(--sl-lente); padding: 0.5rem 1rem; margin: 0.75rem 0; }
+.guia ol { margin: 0.3rem 0 0.6rem; padding-left: 1.4rem; }
+.carga { margin: 1rem 0; }
+.avanzadas { margin: 1.25rem 0; border-top: 1px solid var(--sl-borde-suave); padding-top: 0.5rem; }
+.avanzadas > summary { cursor: pointer; font-weight: 600; padding: 0.4rem 0; }
+.opcion { margin: 0.75rem 0 1.25rem; }
+.opcion h3 { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.partes > summary { cursor: pointer; margin: 0.5rem 0; }
+.ayuda-contexto { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; font-weight: 400; }
+.ayuda-boton { min-width: 1.6rem; min-height: 1.6rem; padding: 0 0.45rem; border-radius: 50%; border: 1px solid var(--sl-borde);
+  background: transparent; color: var(--sl-texto); font-weight: 600; line-height: 1; }
+.ayuda-texto { font-size: 0.9rem; color: var(--sl-texto-2); max-width: 40rem; }
+.pasos .paso { background: transparent; border: 0; padding: 0.2rem 0; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; min-height: 0; cursor: pointer; }
+.pasos .paso[disabled] { cursor: default; opacity: 1; }
+.paso-n { display: inline-grid; place-items: center; inline-size: 1.4rem; block-size: 1.4rem; border-radius: 50%; border: 1px solid currentColor; margin-right: 0.3rem; }
+
+/* Descargar */
+.descargar section { margin: 1rem 0; }
+.confirmacion-unica { border: 1px solid var(--sl-borde); background: var(--sl-lente); padding: 0.5rem 0.9rem; }
+
+@media (forced-colors: active) {
+  .etiqueta, .revisar { border-color: CanvasText; background: Canvas; color: CanvasText; forced-color-adjust: none; }
+  .revelado { color: LinkText; }
+  .menu-etiqueta, .menu-seleccion, .documento-vista { border-color: CanvasText; background: Canvas; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vista-previa * { scroll-behavior: auto; transition: none; }
+}

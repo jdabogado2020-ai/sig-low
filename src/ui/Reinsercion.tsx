@@ -391,10 +391,10 @@ export function Reinsercion() {
       descartarAnalisis();
       vaciarTodoElDocumento();
       actualizar({ phase: 'vacio' });
-      ir('entrada');
+      ir('inicio');
       return;
     }
-    ir('lista');
+    ir('inicio');
   };
   const salirPor = (a: Salida): void => {
     if (listo) setConfirmar(a); else ejecutarSalida(a);

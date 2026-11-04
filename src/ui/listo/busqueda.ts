@@ -1,6 +1,6 @@
 // Búsqueda de residuos de la pantalla Listo (7.13, 8.2.7): corre sola al entrar y cada vez que el resultado queda desactualizado.
-// Solo se ejecuta con 0 detecciones pendientes (7.13.7). Si no pasa, despacha `incorporar_residuos` y vuelve a Revisión con el foco
-// en el primer pendiente nuevo; si pasa, deja el `ResidueResult` en el almacén de Listo. Corre en el hilo principal (8.8); solo la
+// Solo se ejecuta con 0 detecciones pendientes (7.13.7). Si no pasa, despacha `incorporar_residuos` y (F3, D-24) vuelve a aplicar la
+// propuesta: lo encontrado también queda oculto y aparece en la vista previa como punto para revisar; si pasa, deja el `ResidueResult` en el almacén de Listo. Corre en el hilo principal (8.8); solo la
 // pasada 3 va al worker `detect` por `detectarEnSalida`. Nada de lo buscado sale de esta función: ni consola, ni URL, ni informe.
 import { emptyTable, tableIndexOf } from '../../core/entities.ts';
 import { createRuleRegistry } from '../../core/pipeline.ts';
@@ -10,11 +10,11 @@ import { contarPendientes } from '../../core/review/puerta.ts';
 import type { AsuntoId, MappingTable, RenderedOutput, ResidueHit, ReviewState } from '../../core/types.ts';
 import { detectarEnSalida, fechaDeReferencia } from '../analisis.ts';
 import { obtenerDocumento, obtenerRevision } from '../documento.ts';
-import { actualizar, ir } from '../estado.ts';
+import { reaplicarPropuesta } from '../flujo/flujo.ts';
 import { t, type MessageId } from '../mensajes.ts';
-import { despachar, irAPendiente } from '../review/base/almacen.ts';
+import { despachar } from '../review/base/almacen.ts';
 import { nombreDeTipo } from '../review/base/presentacion.ts';
-import { agregarAvisoAsunto, obtenerListaDelCaso, obtenerTabla, quitarAvisoAsunto } from '../sesion.ts';
+import { obtenerListaDelCaso, obtenerTabla, quitarAvisoAsunto } from '../sesion.ts';
 import { actualizarListo, obtenerListo, type Hallazgo } from './almacen.ts';
 import { L } from './textos.ts';
 
@@ -53,7 +53,8 @@ function originalesDelAsunto(tabla: MappingTable | null): Record<string, readonl
 
 /**
  * Ejecuta la búsqueda sobre el estado vigente. Si la revisión cambió mientras buscaba, descarta el resultado (el efecto de la
- * pantalla vuelve a lanzarla). Con hallazgos incorpora los residuos, vuelve a Revisión y avisa con M-78.
+ * pantalla vuelve a lanzarla). Con hallazgos incorpora los residuos y los oculta con la propuesta (D-24); la vista previa los muestra
+ * como puntos para revisar y el efecto de la pantalla vuelve a buscar.
  */
 export async function buscarResiduos(): Promise<void> {
   if (obtenerListo().buscando) return;
@@ -75,7 +76,8 @@ export async function buscarResiduos(): Promise<void> {
     const { result, nuevas } = run;
     if (result.hits.length === 0 && nuevas.length === 0 && result.newDetections === 0) {
       quitarAvisoAsunto('M-78');
-      actualizarListo({ residuo: result, hallazgos: [], buscando: false });
+      // Los hallazgos de vueltas anteriores siguen siendo puntos para revisar (ya están ocultos).
+      actualizarListo({ residuo: result, buscando: false });
       return;
     }
     const hallazgos = describirHallazgos(state, out, result.hits);
@@ -87,11 +89,9 @@ export async function buscarResiduos(): Promise<void> {
       const id = despues?.order.find((x) => { const d = despues.detections[x]; return d !== undefined && d.status === 'pendiente' && d.partId === h.partId && d.start === h.partStart; });
       return id === undefined ? h : { ...h, detectionId: id };
     });
-    actualizarListo({ residuo: result, hallazgos: conUbicacion, docIdHallazgos: state.docId, buscando: false });
-    agregarAvisoAsunto({ id: 'M-78', params: { n: result.hits.length + result.newDetections } });
-    actualizar({ phase: 'revision' });
-    ir('revision');
-    irAPendiente(1);
+    const previos = obtenerListo().docIdHallazgos === state.docId ? obtenerListo().hallazgos : [];
+    actualizarListo({ residuo: result, hallazgos: [...previos, ...conUbicacion], docIdHallazgos: state.docId, buscando: false });
+    reaplicarPropuesta();
   } catch (e) {
     const vigente = obtenerRevision();
     actualizarListo({ buscando: false, errorBusqueda: { codigo: codigoDe(e), revision: vigente?.revision ?? state.revision } });

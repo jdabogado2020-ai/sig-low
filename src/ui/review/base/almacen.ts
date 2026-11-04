@@ -27,6 +27,8 @@ interface EstadoPantalla {
   nuevas: ReadonlySet<DetectionId>;
   /** Tramo pedido para «Agregar reemplazo» (selección con el ratón o búsqueda propia de PC-4). */
   reemplazo: Span | null;
+  /** F3 · «Ocultar todas las apariciones»: el diálogo abre con «Aplicar a todas las apariciones idénticas» marcada. */
+  propagarReemplazo: boolean;
   /** Mención cuyo reemplazo se pidió editar (tecla E o botón «Editar»); la ficha abre el campo. */
   edicion: DetectionId | null;
   /** Una edición de reemplazo está abierta: los anuncios del modelo esperan (8.6.3). */
@@ -44,7 +46,7 @@ export interface InstantaneaRevision extends EstadoPantalla {
 
 const VACIA: EstadoPantalla = {
   vista: 'original', seleccion: null, entidadSeleccion: null, expandidas: new Set(), nuevas: new Set(),
-  reemplazo: null, edicion: null, editando: false, anuncio: '', error: null, enfoque: null,
+  reemplazo: null, propagarReemplazo: false, edicion: null, editando: false, anuncio: '', error: null, enfoque: null,
 };
 
 let ui: EstadoPantalla = VACIA;
@@ -179,8 +181,8 @@ export function solicitarEdicion(id: DetectionId): void {
 export function terminarEdicion(): void {
   if (ui.edicion !== null || ui.editando) poner({ edicion: null, editando: false });
 }
-export function solicitarReemplazo(span: Span | null): void {
-  poner({ reemplazo: span });
+export function solicitarReemplazo(span: Span | null, propagar = false): void {
+  poner({ reemplazo: span, propagarReemplazo: propagar });
 }
 
 /** Selecciona una mención (abre su ficha), despliega su entidad en la cuadrícula y la quita de las recién llegadas. */

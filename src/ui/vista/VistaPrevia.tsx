@@ -1,0 +1,278 @@
+// Pantalla 2 · Vista previa editable (F3, D-24): el documento ya anonimizado, con todo lo propuesto aplicado. Un .docx se muestra
+// con sus párrafos, títulos, negritas y tablas; un PDF, como sus páginas con recuadros (o como texto); el texto pegado, como texto.
+// Clic en una etiqueta → menú en lenguaje claro; seleccionar texto → «Ocultar este texto» u «Ocultar todas las apariciones»;
+// «Puntos para revisar» con «Siguiente»; la búsqueda de datos que se escaparon corre sola. Nada de esto muestra un dato oculto: la
+// vista es la salida de `render` (más el texto que el abogado decidió dejar a la vista), y los nombres accesibles solo dicen
+// etiquetas y tipos.
+import './vista.css';
+import '../review/base/revision-base.css';
+import { useMemo, useRef, useState } from 'preact/hooks';
+import { render } from '../../core/render.ts';
+import type { DetectionId, FlagId, PartId, Span, SpanEditId } from '../../core/types.ts';
+import { originalDe } from '../../io/original.ts';
+import { descartarAnalisis } from '../analisis.ts';
+import { atributosDeContenedor } from '../campos.tsx';
+import { Dialogo } from '../dialogo.tsx';
+import { useRevision } from '../documento.ts';
+import { actualizar, ir } from '../estado.ts';
+import { useBusquedaAutomatica, buscarOtraVez } from '../flujo/busqueda-automatica.ts';
+import { tf } from '../flujo/textos.ts';
+import { useListo } from '../listo/almacen.ts';
+import { etiqueta, mensajeDeCodigo, ROTULOS, t, X } from '../mensajes.ts';
+import { solicitarReemplazo, useRevisionUi } from '../review/base/almacen.ts';
+import { AgregarReemplazo } from '../review/base/AgregarReemplazo.tsx';
+import { categoriaDe, nombreDeTipo } from '../review/base/presentacion.ts';
+import { Banda } from '../review/pestanas/Banda.tsx';
+import { estructuraDocx } from './estructura-docx.ts';
+import { MenuEtiqueta, type Objetivo } from './MenuEtiqueta.tsx';
+import { agrupar, construirVista, type Bloque, type Trozo, type Vista } from './modelo-vista.ts';
+import { PaginasPdf } from './PaginasPdf.tsx';
+import { puntosParaRevisar, type MotivoPunto } from './puntos.ts';
+
+type Abrir = (o: Objetivo, el: HTMLElement) => void;
+
+function claseDeEstilo(z: Trozo): string {
+  const e = z.estilo;
+  if (e === undefined) return '';
+  return `${e.negrita ? ' negrita' : ''}${e.cursiva ? ' cursiva' : ''}${e.subrayado ? ' subrayado' : ''}`;
+}
+
+function TrozoVista({ z, abrir }: { z: Trozo; abrir: Abrir }) {
+  const { state } = useRevisionUi();
+  if (z.tipo === 'salto') return <br />;
+  if (z.tipo === 'texto') return <span class={`txt${claseDeEstilo(z)}`} data-p={z.partId} data-i={z.ini}>{z.texto}</span>;
+  if (z.tipo === 'etiqueta') {
+    const d = z.det === undefined ? undefined : state?.detections[z.det];
+    const objetivo: Objetivo | null = z.det !== undefined ? { tipo: 'det', id: z.det } : z.edicion !== undefined ? { tipo: 'edicion', id: z.edicion as SpanEditId } : null;
+    const nombre = d !== undefined ? tf('M-2169', { etiqueta: state?.entities[d.entityId]?.marker ?? t(ROTULOS.sin_marcador), tipo: nombreDeTipo(d.type) }) : tf('M-2172');
+    return (
+      <button
+        type="button"
+        class={`etiqueta ${d === undefined ? 'cat-neutra' : `cat-${categoriaDe(d.type)}`}${d?.confidence === 'baja' ? ' baja' : ''}${claseDeEstilo(z)}`}
+        data-det={z.det}
+        data-edicion={z.edicion}
+        aria-label={nombre}
+        onClick={(e) => { if (objetivo !== null) abrir(objetivo, e.currentTarget); }}
+      >
+        {z.texto}
+      </button>
+    );
+  }
+  if (z.tipo === 'revelado' && z.det !== undefined) {
+    const d = state?.detections[z.det];
+    const det = z.det;
+    return (
+      <button type="button" class={`revelado${claseDeEstilo(z)}`} data-det={det} data-p={z.partId} data-i={z.ini}
+        aria-label={tf('M-2170', { tipo: d === undefined ? '' : nombreDeTipo(d.type) })}
+        onClick={(e) => { abrir({ tipo: 'det', id: det }, e.currentTarget); }}>
+        {z.texto}
+      </button>
+    );
+  }
+  const flag = z.flag as FlagId;
+  const f = state?.flags[flag];
+  return (
+    <button type="button" class={`revisar${claseDeEstilo(z)}`} data-flag={flag} data-p={z.partId} data-i={z.ini}
+      aria-label={tf('M-2171', { tipo: f === undefined ? '' : etiqueta('bandera', f.reason) })}
+      onClick={(e) => { abrir({ tipo: 'flag', id: flag }, e.currentTarget); }}>
+      {z.texto}
+    </button>
+  );
+}
+
+function BloqueVista({ b, abrir }: { b: Bloque; abrir: Abrir }) {
+  const clase = `bloque ${b.tipo}${b.alinear !== undefined ? ` alinear-${b.alinear}` : ''}`;
+  return <p class={clase}>{b.trozos.length === 0 ? <br /> : b.trozos.map((z, i) => <TrozoVista key={`${z.ini}-${i}`} z={z} abrir={abrir} />)}</p>;
+}
+
+/** Selección dentro del texto → tramo de `Part.text` (los dos extremos en texto de la misma parte), sin blancos en los bordes. */
+function tramoSeleccionado(raiz: HTMLElement, partes: ReadonlyMap<PartId, string>): Span | null {
+  const sel = getSelection();
+  if (sel === null || sel.rangeCount === 0 || sel.isCollapsed) return null;
+  const r = sel.getRangeAt(0);
+  if (!raiz.contains(r.startContainer) || !raiz.contains(r.endContainer)) return null;
+  const punto = (nodo: Node, desp: number): { p: string; i: number } | null => {
+    const el = (nodo.nodeType === Node.TEXT_NODE ? nodo.parentElement : nodo as Element)?.closest<HTMLElement>('[data-i]');
+    if (el === null || el === undefined || el.dataset['p'] === undefined) return null;
+    const base = Number(el.dataset['i']);
+    return { p: el.dataset['p'], i: nodo.nodeType === Node.TEXT_NODE ? base + desp : base };
+  };
+  const a = punto(r.startContainer, r.startOffset);
+  const b = punto(r.endContainer, r.endOffset);
+  if (a === null || b === null || a.p !== b.p) return null;
+  const texto = partes.get(a.p as PartId);
+  if (texto === undefined) return null;
+  let ini = Math.min(a.i, b.i);
+  let fin = Math.max(a.i, b.i);
+  while (ini < fin && /\s/u.test(texto.charAt(ini))) ini++;
+  while (fin > ini && /\s/u.test(texto.charAt(fin - 1))) fin--;
+  return fin > ini ? { partId: a.p as PartId, start: ini, end: fin } : null;
+}
+
+function DocumentoVista({ vista, abrir, alSeleccionar }: { vista: Vista; abrir: Abrir; alSeleccionar: (s: Span | null, el: HTMLElement | null) => void }) {
+  const { doc } = useRevisionUi();
+  const raiz = useRef<HTMLDivElement | null>(null);
+  const textos = useMemo(() => new Map((doc?.parts ?? []).map((p) => [p.id, p.text])), [doc]);
+  const revisar = (): void => {
+    const el = raiz.current;
+    if (el === null) return;
+    alSeleccionar(tramoSeleccionado(el, textos), el);
+  };
+  return (
+    <div
+      ref={(el) => { raiz.current = el; atributosDeContenedor(el); }}
+      class="documento-vista"
+      role="region"
+      aria-label={tf('M-2168')}
+      data-prueba="vista-previa"
+      onMouseUp={revisar}
+      onKeyUp={(e) => { if (e.shiftKey || e.key === 'Shift') revisar(); }}
+      onContextMenu={(e) => { e.preventDefault(); }}
+      onDragStart={(e) => { e.preventDefault(); }}
+    >
+      {vista.secciones.map((s) => (
+        <section key={s.partId} class={`seccion-doc parte-${s.kind}`} data-parte={s.partId}>
+          {vista.conTitulos ? <p class="rotulo-parte">{s.etiqueta}</p> : null}
+          {agrupar(s.bloques).map((g, i) => (g.tipo === 'bloque'
+            ? <BloqueVista key={i} b={g.bloque} abrir={abrir} />
+            : (
+              <table key={i} class="tabla-doc">
+                <tbody>
+                  {g.filas.map((fila, f) => (
+                    <tr key={f}>{fila.map((celda, c) => <td key={c}>{celda.map((b, k) => <BloqueVista key={k} b={b} abrir={abrir} />)}</td>)}</tr>
+                  ))}
+                </tbody>
+              </table>
+            )))}
+        </section>
+      ))}
+    </div>
+  );
+}
+
+const MOTIVO: Readonly<Record<MotivoPunto, 'M-2135' | 'M-2136' | 'M-2137' | 'M-2138'>> = {
+  certeza: 'M-2135', ambigua: 'M-2136', bandera: 'M-2137', escapado: 'M-2138',
+};
+
+export function VistaPrevia() {
+  const { doc, state } = useRevisionUi();
+  useRevision();
+  const listo = useListo();
+  useBusquedaAutomatica(state, listo);
+  const [objetivo, setObjetivo] = useState<Objetivo | null>(null);
+  const [seleccion, setSeleccion] = useState<Span | null>(null);
+  const [comoLeer, setComoLeer] = useState(false);
+  const [paginas, setPaginas] = useState(true);
+  const [descartar, setDescartar] = useState(false);
+  const [punto, setPunto] = useState(-1);
+  const [anuncio, setAnuncio] = useState('');
+  const origen = useRef<HTMLElement | null>(null);
+  const ancla = useRef<HTMLDivElement>(null);
+
+  const original = doc === null ? null : originalDe(doc.id);
+  const estructuras = useMemo(() => (doc !== null && original !== null && doc.source === 'docx' ? estructuraDocx(original.bytes, doc) : undefined), [doc, original]);
+  const out = useMemo(() => (doc !== null && state !== null ? render(doc, state) : null), [doc, state]);
+  const vista = useMemo(() => (out !== null && state !== null && doc !== null ? construirVista(out, state, doc.parts, estructuras) : null), [out, state, doc, estructuras]);
+  const escapadas = useMemo(() => new Set(listo.docIdHallazgos === state?.docId ? listo.hallazgos.flatMap((h) => h.detectionId ?? []) : []), [listo.hallazgos, listo.docIdHallazgos, state?.docId]);
+  const puntos = useMemo(() => (state === null ? [] : puntosParaRevisar(state, escapadas)), [state, escapadas]);
+
+  if (doc === null || state === null || out === null || vista === null) {
+    return (
+      <>
+        <h1 tabIndex={-1}>{t(X.revision)}</h1>
+        <p class="ayuda" data-prueba="sin-revision">{t('M-69')}</p>
+        <div class="acciones"><button type="button" onClick={() => { ir('inicio'); }}>{t(X.inicio)}</button></div>
+      </>
+    );
+  }
+
+  const abrir: Abrir = (o, el) => { origen.current = el; setSeleccion(null); setObjetivo(o); };
+  const cerrarMenu = (): void => {
+    setObjetivo(null);
+    const el = origen.current;
+    // El elemento puede haberse vuelto a pintar (la etiqueta cambió): se busca el mismo dato en la vista.
+    if (el !== null && el.isConnected) el.focus();
+  };
+  const siguiente = (): void => {
+    if (puntos.length === 0) return;
+    const i = (punto + 1) % puntos.length;
+    setPunto(i);
+    const p = puntos[i];
+    if (p === undefined) return;
+    const sel = p.det !== undefined ? `[data-det="${p.det}"]` : `[data-flag="${p.flag ?? ''}"]`;
+    const el = document.querySelector<HTMLElement>(`.vista-previa-cuerpo ${sel}`);
+    el?.scrollIntoView({ block: 'center' });
+    el?.focus();
+    const f = p.flag === undefined ? undefined : state.flags[p.flag];
+    setAnuncio(tf('M-2134', { i: i + 1, n: puntos.length, motivo: tf(MOTIVO[p.motivo], { tipo: f === undefined ? '' : etiqueta('bandera', f.reason) }) }));
+  };
+  const enPaginas = doc.source === 'pdf' && original !== null && paginas;
+  const residuo = listo.residuo;
+  const pasa = residuo !== null && residuo.revision === state.revision && residuo.hits.length === 0 && residuo.newDetections === 0;
+
+  return (
+    <div class="vista-previa">
+      <h1 tabIndex={-1}>{t(X.revision)}</h1>
+      <p class="ayuda">{tf('M-2130')}</p>
+      <Banda />
+      <div class="puntos" data-prueba="puntos">
+        <p>{puntos.length === 0 ? tf('M-2133') : tf('M-2131', { n: puntos.length })}</p>
+        {puntos.length > 0 ? <button type="button" class="secundario" data-prueba="siguiente-punto" onClick={siguiente}>{tf('M-2132')}</button> : null}
+        <p class="solo-lectores" role="status" data-prueba="anuncio-punto">{anuncio}</p>
+      </div>
+      <div class="estado-busqueda" role="status" data-prueba="residuos-estado" aria-busy={listo.buscando}>
+        {listo.buscando ? <p>{t('M-76')}</p> : null}
+        {!listo.buscando && pasa ? <p>{t('M-77', { n: residuo.valuesSearched })}</p> : null}
+      </div>
+      {listo.errorBusqueda !== null ? (
+        <div class="acciones">
+          <p role="alert" class="error-campo" data-prueba="error-residuos">{mensajeDeCodigo(listo.errorBusqueda.codigo)}</p>
+          <button type="button" class="secundario" onClick={buscarOtraVez}>{t(ROTULOS.buscar_de_nuevo)}</button>
+        </div>
+      ) : null}
+      <div class="barra-vista" role="toolbar" aria-label={tf('M-2168')}>
+        <button type="button" class="secundario" aria-expanded={comoLeer} aria-controls="como-leer" onClick={() => { setComoLeer(!comoLeer); }}>{t(ROTULOS.leyenda)}</button>
+        {doc.source === 'pdf' && original !== null ? (
+          <button type="button" class="secundario" aria-pressed={!paginas} onClick={() => { setPaginas(!paginas); setObjetivo(null); }}>
+            {paginas ? tf('M-2177') : tf('M-2176')}
+          </button>
+        ) : null}
+      </div>
+      <section id="como-leer" class="como-leer" hidden={!comoLeer} aria-label={t(ROTULOS.leyenda)} data-prueba="como-leer">
+        <ul>
+          <li>{tf('M-2139')}</li>
+          <li>{tf('M-2140')}</li>
+          <li>{tf('M-2141')}</li>
+          <li>{tf('M-2142')}</li>
+          <li>{tf('M-2143')}</li>
+          {doc.source === 'pdf' ? <li>{tf('M-2144')}</li> : null}
+        </ul>
+      </section>
+      <div class="vista-previa-cuerpo" ref={ancla}>
+        {enPaginas
+          ? <PaginasPdf doc={doc} out={out} onAbrir={(id: DetectionId, el) => { abrir({ tipo: 'det', id }, el); }} />
+          : <DocumentoVista vista={vista} abrir={abrir} alSeleccionar={(s) => { setSeleccion(s); if (s !== null) setObjetivo(null); }} />}
+        {seleccion !== null ? (
+          <div class="menu-seleccion" role="group" aria-label={tf('M-2173')} data-prueba="menu-seleccion">
+            <button type="button" onClick={() => { solicitarReemplazo(seleccion); setSeleccion(null); }}>{tf('M-2166')}</button>
+            <button type="button" class="secundario" onClick={() => { solicitarReemplazo(seleccion, true); setSeleccion(null); }}>{tf('M-2167')}</button>
+          </div>
+        ) : null}
+        {objetivo !== null ? <MenuEtiqueta objetivo={objetivo} onCerrar={cerrarMenu} /> : null}
+      </div>
+      <div class="acciones">
+        <button type="button" data-prueba="continuar" onClick={() => { actualizar({ phase: 'listo' }); ir('listo'); }}>{tf('M-2180')}</button>
+        <button type="button" class="secundario" onClick={() => { ir('detalle'); }}>{tf('M-2181')}</button>
+        <button type="button" class="secundario" onClick={() => { setDescartar(true); }}>{t(ROTULOS.descartar_documento)}</button>
+      </div>
+      <AgregarReemplazo />
+      <Dialogo abierto={descartar} titulo={t(ROTULOS.descartar_documento)} onCerrar={() => { setDescartar(false); }}>
+        <p>{t('M-75')}</p>
+        <div class="acciones">
+          <button type="button" onClick={() => { setDescartar(false); descartarAnalisis(); ir('inicio'); }}>{t(ROTULOS.descartar_documento)}</button>
+          <button type="button" class="secundario" onClick={() => { setDescartar(false); }}>{t(ROTULOS.cancelar)}</button>
+        </div>
+      </Dialogo>
+    </div>
+  );
+}

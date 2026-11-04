@@ -10,16 +10,18 @@ import { agregarManual } from './acciones.ts';
 import { limpiarError, solicitarReemplazo, useRevisionUi } from './almacen.ts';
 import { nombreDeTipo, TIPOS_ELEGIBLES } from './presentacion.ts';
 import { tx } from './textos.ts';
+import { obtener } from '../../estado.ts';
+import { reaplicarPropuesta } from '../../flujo/flujo.ts';
 
 const ROLES_PERSONA: readonly Role[] = ['DEMANDANTE', 'DEMANDADO', 'TESTIGO', 'PACIENTE', 'CLIENTE', 'CONTACTO', 'OTRA_PERSONA'];
 
 export function AgregarReemplazo() {
-  const { reemplazo, doc, error } = useRevisionUi();
+  const { reemplazo, propagarReemplazo, doc, error } = useRevisionUi();
   const [tipo, setTipo] = useState<string>('PERSONA');
   const [rol, setRol] = useState<string>('OTRA_PERSONA');
   const [propagar, setPropagar] = useState(false);
   const [local, setLocal] = useState<string | null>(null);
-  useEffect(() => { if (reemplazo !== null) { setLocal(null); limpiarError(); } }, [reemplazo]);
+  useEffect(() => { if (reemplazo !== null) { setLocal(null); setPropagar(propagarReemplazo); limpiarError(); } }, [reemplazo]);
 
   const parte = reemplazo !== null && doc !== null ? doc.parts.find((p) => p.id === reemplazo.partId) : undefined;
   const largo = reemplazo !== null ? reemplazo.end - reemplazo.start : 0;
@@ -27,7 +29,11 @@ export function AgregarReemplazo() {
   const confirmar = (): void => {
     if (reemplazo === null) return;
     const r = tipo === 'PERSONA' ? (rol as Role) : undefined;
-    if (agregarManual(reemplazo, tipo as DetectableType, r, propagar)) cerrar();
+    if (agregarManual(reemplazo, tipo as DetectableType, r, propagar)) {
+      cerrar();
+      // F3 · En la vista previa todo queda oculto: las demás apariciones también (D-24). La revisión dato por dato las deja por revisar.
+      if (obtener().screen === 'revision') reaplicarPropuesta();
+    }
     else setLocal('x');
   };
   return (

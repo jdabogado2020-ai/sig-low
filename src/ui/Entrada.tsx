@@ -1,4 +1,4 @@
-// Pantalla 3 · Entrada (8.2.4): pegar texto o cargar un .txt, .docx o PDF; partes con casillas; aviso de metadatos solo por
+// Carga del documento (8.2.4; F2: va dentro de Inicio = «Cargar documento», D-23): cargar un .docx, PDF o .txt o pegar texto; partes con casillas; aviso de metadatos solo por
 // categoría (INV-D04); avisos de lectura. El nombre del archivo nunca se muestra ni se guarda (V-37): solo se mira su
 // extensión y su tamaño, y el `input` se vacía tras leer (F-08).
 import { useEffect, useRef, useState } from 'preact/hooks';
@@ -6,7 +6,9 @@ import type { DocumentModel, MetadataCategory, ParseWarning, ParseWarningCode } 
 import { renovarActividad } from './bloqueo.ts';
 import { AreaTexto, Casilla, Grupo, useIdNeutro } from './campos.tsx';
 import { actualizarBorrador, useBorrador, type PestanaEntrada } from './documento.ts';
-import { ir, useShell } from './estado.ts';
+import { useShell } from './estado.ts';
+import { asegurarCaso } from './flujo/flujo.ts';
+import { tf } from './flujo/textos.ts';
 import { ATRIBUTO_ZONA_SOLTAR } from './globales.ts';
 import { documentoDeTextoPegado, leerContenido, LecturaCancelada, partesAnalizables } from './lectura.ts';
 import { mensajeDeCodigo, ROTULOS, t, X, type MessageId } from './mensajes.ts';
@@ -86,7 +88,9 @@ function PartesEncontradas({ doc }: { doc: DocumentModel }) {
     actualizarBorrador({ archivo: { ...doc, parts: doc.parts.map((p) => (p.id === id ? { ...p, included: incluida } : p)) } });
   };
   return (
-    <Grupo leyenda={t(E.partesEncontradas)}>
+    <details class="partes" data-prueba="partes">
+      <summary>{tf('M-2125')}</summary>
+      <Grupo leyenda={t(E.partesEncontradas)}>
       <p class="ayuda">{t('M-48')}</p>
       {doc.parts.map((p) => (
         <Casilla
@@ -96,13 +100,14 @@ function PartesEncontradas({ doc }: { doc: DocumentModel }) {
           onCambio={(v) => { alternar(p.id, v); }}
         />
       ))}
-    </Grupo>
+      </Grupo>
+    </details>
   );
 }
 
 function Pestanas({ actual, onCambio, deshabilitado }: { actual: PestanaEntrada; onCambio: (p: PestanaEntrada) => void; deshabilitado: boolean }) {
   const refs = useRef<Record<PestanaEntrada, HTMLButtonElement | null>>({ pegar: null, cargar: null });
-  const orden: readonly PestanaEntrada[] = ['pegar', 'cargar'];
+  const orden: readonly PestanaEntrada[] = ['cargar', 'pegar'];
   const etiquetas: Record<PestanaEntrada, MessageId> = { pegar: ROTULOS.pegar_texto, cargar: ROTULOS.cargar_archivo };
   const alTeclear = (e: KeyboardEvent): void => {
     const i = orden.indexOf(actual);
@@ -140,7 +145,8 @@ function Pestanas({ actual, onCambio, deshabilitado }: { actual: PestanaEntrada;
 
 interface Avance { hecho: number; total: number; unidad: 'KB' | 'paginas' }
 
-export function Entrada() {
+/** Zona de carga, pestaña «Pegar texto», avisos de lectura y «Anonimizar». Al anonimizar abre el caso efímero si no hay uno (D-23). */
+export function CargaDocumento() {
   const b = useBorrador();
   const shell = useShell();
   const [leyendo, setLeyendo] = useState<Avance | null>(null);
@@ -204,13 +210,14 @@ export function Entrada() {
     if (!puedeAnalizar) return;
     const doc = b.pestana === 'pegar' ? documentoDeTextoPegado(b.texto, etiquetaDeDocumento()) : b.archivo;
     if (doc === null) return;
-    iniciarAnalisis({ doc, usarModelo: b.usarModelo && modeloListo });
+    asegurarCaso();
+    // `usarModelo` tal como lo dejó el abogado: sin el modelo descargado, el plan B dice «no descargado», no «desactivado».
+    iniciarAnalisis({ doc, usarModelo: b.usarModelo });
   };
 
   const codigoError = b.errorLectura ?? (shell.error && (shell.error.context === 'procesando' || shell.error.context === 'entrada') ? shell.error.code : null);
   return (
-    <>
-      <h1 tabIndex={-1}>{t(X.entrada)}</h1>
+    <section class="carga" aria-label={t(X.entrada)} data-prueba="carga">
       <Pestanas
         actual={b.pestana}
         deshabilitado={leyendo !== null}
@@ -241,7 +248,7 @@ export function Entrada() {
             onDrop={alSoltar}
           >
             <p>{t(E.zonaSoltar)}</p>
-            <button type="button" disabled={leyendo !== null} onClick={() => { entrada.current?.click(); }}>{t('M-941')}</button>
+            <button type="button" class="secundario" disabled={leyendo !== null} onClick={() => { entrada.current?.click(); }}>{t('M-941')}</button>
             <input
               ref={entrada}
               id={idArchivo}
@@ -280,21 +287,28 @@ export function Entrada() {
       {codigoError !== null ? <p role="alert" class="error-campo" data-prueba="error-entrada">{mensajeDeCodigo(codigoError)}</p> : null}
       {b.analisisCancelado ? <p role="status" data-prueba="analisis-cancelado">{t('M-61')}</p> : null}
 
-      <div class="campo-modelo">
-        <Casilla
-          etiqueta={t('M-943')}
-          marcada={b.usarModelo && modeloListo}
-          onCambio={(v) => { actualizarBorrador({ usarModelo: v }); }}
-          deshabilitado={!modeloListo}
-          ayuda={modeloListo ? t(E.ayudaModelo) : t('M-51')}
-        />
-      </div>
-
       <div class="acciones">
         <button type="button" disabled={!puedeAnalizar} aria-describedby={analizable ? undefined : 'ayuda-analizar'} onClick={analizar}>{t('M-944')}</button>
-        <button type="button" class="secundario" onClick={() => { ir('lista'); }}>{t('M-945')}</button>
       </div>
       {!analizable ? <p id="ayuda-analizar" class="ayuda">{t(E.ayudaAnalizar)}</p> : null}
-    </>
+    </section>
+  );
+}
+
+/** Casilla «Usar el detector de nombres adicional en este documento» (en opciones avanzadas de Inicio). */
+export function CasillaModelo() {
+  const b = useBorrador();
+  const shell = useShell();
+  const modeloListo = shell.model.state === 'listo';
+  return (
+    <div class="campo-modelo">
+      <Casilla
+        etiqueta={t('M-943')}
+        marcada={b.usarModelo && modeloListo}
+        onCambio={(v) => { actualizarBorrador({ usarModelo: v }); }}
+        deshabilitado={!modeloListo}
+        ayuda={modeloListo ? t(E.ayudaModelo) : t('M-51')}
+      />
+    </div>
   );
 }

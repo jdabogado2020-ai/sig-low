@@ -64,7 +64,7 @@ export function Procesando() {
   const v = useAnalisis();
   // Sin análisis en curso (por ejemplo, tras un bloqueo) no hay nada que mostrar aquí.
   useEffect(() => {
-    if (!v.activo && obtener().screen === 'procesando' && obtenerDocumento() === null) ir('entrada');
+    if (!v.activo && obtener().screen === 'procesando' && obtenerDocumento() === null) ir('inicio');
   }, [v.activo]);
   const actual = v.etapas.find((e) => e.estado === 'en_curso') ?? null;
   const textoAnuncio = actual === null ? '' : `${etiqueta('etapa', actual.etapa)}: ${textoDeEstado(actual.estado)}`;

@@ -1,6 +1,8 @@
 // Pantalla 5 · Revisión, parte I (PC-3, 8.2.6): resaltado por tipo (color y abreviatura) y por confianza (borde), panel de texto
 // virtualizado, pestaña «Detecciones» (treegrid por entidad), ficha con aceptar, rechazar, editar, «aceptar todas las menciones de
-// esta entidad» (nunca todo el documento, INV-R06) y reemplazo manual por selección. PC-4 enchufa su parte en `RevisionPestanas`.
+// esta entidad» (nunca todo el documento, INV-R06; la única excepción es `aplicar_propuesta` de la vista previa, D-24) y reemplazo
+// manual por selección. PC-4 enchufa su parte en `RevisionPestanas`. F3: es «Revisar dato por dato», en opciones de la vista previa;
+// «Leyenda» y «Atajos de teclado» son un solo panel, «Cómo leer la vista previa» (F2).
 import './revision-base.css';
 import { useRef, useState } from 'preact/hooks';
 import { actualizar, ir, useShell } from '../../estado.ts';
@@ -17,6 +19,7 @@ import { PanelTexto } from './PanelTexto.tsx';
 import { descartarAnalisis } from '../../analisis.ts';
 import { cambiarVista, useRevisionUi } from './almacen.ts';
 import { tx } from './textos.ts';
+import { tf } from '../../flujo/textos.ts';
 
 if (__SIGLOW_MEDICION__) {
   // Gancho de prueba de la Revisión I: solo existe en el build --mode medicion (check-dist lo prohíbe en dist/).
@@ -27,7 +30,6 @@ export function RevisionBase() {
   const shell = useShell();
   const { doc, state, vista, anuncio } = useRevisionUi();
   const [leyenda, setLeyenda] = useState(false);
-  const [atajos, setAtajos] = useState(false);
   const [descartar, setDescartar] = useState(false);
   const boton = useRef<HTMLButtonElement>(null);
   const aside = useRef<HTMLElement>(null);
@@ -36,14 +38,14 @@ export function RevisionBase() {
     if (e.key === 'Escape' && leyenda) { e.stopPropagation(); setLeyenda(false); boton.current?.focus(); return; }
     if (e.key === '?' && e.target instanceof Element && e.target.closest('.panel-texto, .cuadricula') !== null) {
       e.preventDefault();
-      setAtajos(true);
+      setLeyenda(true);
     }
   };
 
   if (doc === null || state === null) {
     return (
       <>
-        <h1 tabIndex={-1}>{t(X.revision)}</h1>
+        <h1 tabIndex={-1}>{tf('M-2181')}</h1>
         <p class="ayuda" data-prueba="sin-revision">{t('M-69')}</p>
       </>
     );
@@ -53,7 +55,7 @@ export function RevisionBase() {
 
   return (
     <div class="revision" onKeyDown={alTeclear}>
-      <h1 tabIndex={-1}>{t(X.revision)}</h1>
+      <h1 tabIndex={-1}>{tf('M-2181')}</h1>
       <button
         type="button"
         class="salto salto-local"
@@ -74,10 +76,15 @@ export function RevisionBase() {
         >
           {t(ROTULOS.leyenda)}
         </button>
-        <button type="button" class="secundario" onClick={() => { setAtajos(true); }}>{tx('M-1791')}</button>
+        <button type="button" class="secundario" onClick={() => { ir('revision'); }}>{t(X.revision)}</button>
         <button type="button" class="secundario" onClick={() => { setDescartar(true); }}>{t(ROTULOS.descartar_documento)}</button>
       </div>
-      <Leyenda abierta={leyenda} />
+      <Leyenda abierta={leyenda}>
+        <h3>{tx('M-1791')}</h3>
+        <p>{tx('M-1793')}</p>
+        <p class="ayuda">{tx('M-1794')}</p>
+        <Casilla etiqueta={tx('M-1792')} marcada={shell.singleKeyShortcuts} onCambio={(v) => { actualizar({ singleKeyShortcuts: v }); }} />
+      </Leyenda>
       <p class="solo-lectores" role="status" aria-label={tx('M-1707')} data-prueba="anuncio-revision">{anuncio}</p>
       <RevisionBarra />
       {sinDetecciones ? <p class="aviso-vacio" data-prueba="sin-detecciones">{t('M-69')}</p> : null}
@@ -95,16 +102,8 @@ export function RevisionBase() {
       <Dialogo abierto={descartar} titulo={t(ROTULOS.descartar_documento)} onCerrar={() => { setDescartar(false); }}>
         <p>{t('M-75')}</p>
         <div class="acciones">
-          <button type="button" onClick={() => { setDescartar(false); descartarAnalisis(); ir('entrada'); }}>{t(ROTULOS.descartar_documento)}</button>
+          <button type="button" onClick={() => { setDescartar(false); descartarAnalisis(); ir('inicio'); }}>{t(ROTULOS.descartar_documento)}</button>
           <button type="button" class="secundario" onClick={() => { setDescartar(false); }}>{t(ROTULOS.cancelar)}</button>
-        </div>
-      </Dialogo>
-      <Dialogo abierto={atajos} titulo={tx('M-1791')} onCerrar={() => { setAtajos(false); }}>
-        <p>{tx('M-1793')}</p>
-        <p class="ayuda">{tx('M-1794')}</p>
-        <Casilla etiqueta={tx('M-1792')} marcada={shell.singleKeyShortcuts} onCambio={(v) => { actualizar({ singleKeyShortcuts: v }); }} />
-        <div class="acciones">
-          <button type="button" onClick={() => { setAtajos(false); }}>{t(X.cerrar)}</button>
         </div>
       </Dialogo>
     </div>

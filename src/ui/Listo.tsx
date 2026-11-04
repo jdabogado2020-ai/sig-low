@@ -1,27 +1,29 @@
-// Pantalla 6 · Listo (PC-5, 8.2.7): búsqueda de residuos, vista previa de la salida, recordatorio de 3 casillas, motivos de la puerta,
-// copiar (con el área de respaldo si el portapapeles falla), descargar .txt y .docx, informe y vaciar el portapapeles. La puerta
-// (`exportGate`, 6.4.8) se calcula en cada render y cada manejador la vuelve a evaluar; con la puerta cerrada los botones llevan
-// `aria-disabled="true"` (siguen enfocables) y `aria-describedby` hacia la lista de motivos. La vista muestra solo la salida
-// anonimizada, nunca el original.
+// Pantalla 3 · Descargar (PC-5, 8.2.7; F3, D-24): una sola confirmación («Revisé la vista previa…») en lugar de las tres casillas,
+// «Descargar documento (.docx)» (el .docx fiel de F4) y «Descargar PDF» (el tachado de F4 para un PDF; el de texto para lo demás). Lo
+// demás queda plegado: copiar, .txt e informe en «Más formatos»; la llave y la devolución de los datos reales en «Opciones avanzadas».
+// La puerta (`exportGate`, 6.4.8) se calcula en cada render y cada manejador la vuelve a evaluar; con la puerta cerrada los botones
+// llevan `aria-disabled="true"` (siguen enfocables) y `aria-describedby` hacia la lista de motivos. La búsqueda de datos que se
+// escaparon sigue corriendo sola (también aquí).
 import './listo/listo.css';
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { render } from '../core/render.ts';
-import { contarBanderasSinConfirmar, contarPendientes, exportGate } from '../core/review/puerta.ts';
+import './vista/vista.css';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { contarPendientes, exportGate } from '../core/review/puerta.ts';
 import type { GateReason, ReviewState } from '../core/types.ts';
 import { descartarAnalisis } from './analisis.ts';
-import { atributosDeContenido, Casilla, Grupo, useIdNeutro } from './campos.tsx';
+import { pedirLlave } from './Armazon.tsx';
+import { atributosDeContenido, Casilla, useIdNeutro } from './campos.tsx';
 import { Dialogo } from './dialogo.tsx';
 import { obtenerDocumento, useRevision, vaciarTodoElDocumento } from './documento.ts';
 import { actualizar, ir, useShell } from './estado.ts';
+import { useBusquedaAutomatica, buscarOtraVez } from './flujo/busqueda-automatica.ts';
+import { tf } from './flujo/textos.ts';
 import { calcularHuellas } from './huellas.ts';
 import { alterno, mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
 import { quitarAvisoAsunto } from './sesion.ts';
-import { actualizarListo, marcarCasilla, obtenerListo, reiniciarEntrada, useListo } from './listo/almacen.ts';
+import { actualizarListo, marcarConfirmacion, obtenerListo, useListo } from './listo/almacen.ts';
 import type { EstadoListo } from './listo/almacen.ts';
-import { buscarResiduos, textoDeModo } from './listo/busqueda.ts';
-import { copiarConBoton, descargarDocx, descargarInforme, descargarTxt, vaciarPortapapeles } from './listo/salida.ts';
+import { copiarConBoton, descargarDocxFiel, descargarInforme, descargarPdfSalida, descargarTxt, vaciarPortapapeles } from './listo/salida.ts';
 import { L } from './listo/textos.ts';
-import { VistaSalidaPanel } from './listo/VistaSalidaPanel.tsx';
 
 if (__SIGLOW_MEDICION__) {
   // Gancho de prueba de Listo: solo existe en el build --mode medicion (check-dist lo prohíbe en dist/).
@@ -34,7 +36,6 @@ const ID_MOTIVOS = 'motivos-puerta';
 function textoDeMotivo(r: GateReason, state: ReviewState, residuo: EstadoListo['residuo']): string {
   switch (r) {
     case 'PENDIENTES': return t('M-501', { n: contarPendientes(state) });
-    case 'BANDERAS': return t('M-502', { n: contarBanderasSinConfirmar(state) });
     case 'MODELO_EN_CURSO': {
       const m = state.modelo;
       const total = m.kind === 'en_curso' ? m.ventanasTotales : 0;
@@ -74,12 +75,14 @@ export function Listo() {
   const doc = obtenerDocumento();
   const listo = useListo();
   const [confirmarNuevo, setConfirmarNuevo] = useState(false);
+  const [preparandoPdf, setPreparandoPdf] = useState(false);
   const iniciado = useRef(false);
-  // Al entrar desde Revisión las casillas se desmarcan y no se reutiliza un resultado anterior (8.2.7). Antes del primer pintado.
+  // Al llegar, la confirmación se desmarca (D-24): se marca después de mirar la vista previa. El resultado de la búsqueda se conserva.
   if (!iniciado.current) {
     iniciado.current = true;
-    reiniciarEntrada(obtenerListo().compilacion);
+    marcarConfirmacion(false);
   }
+  useBusquedaAutomatica(state, listo);
 
   useEffect(() => {
     quitarAvisoAsunto('M-78');
@@ -92,23 +95,12 @@ export function Listo() {
     return () => { vivo = false; };
   }, [shell.offlineReady]);
 
-  const pendientes = state === null ? 0 : contarPendientes(state);
-  // La búsqueda corre sola al entrar y cada vez que el resultado queda desactualizado, solo con 0 pendientes (7.13.7).
-  useEffect(() => {
-    if (state === null || listo.buscando || pendientes > 0) return;
-    if (listo.residuo !== null && listo.residuo.revision === state.revision) return;
-    if (listo.errorBusqueda !== null && listo.errorBusqueda.revision === state.revision) return;
-    void buscarResiduos();
-  }, [state?.revision, pendientes, listo.buscando, listo.residuo, listo.errorBusqueda]);
-
-  const salida = useMemo(() => (doc !== null && state !== null ? render(doc, state) : null), [doc, state]);
-
-  if (doc === null || state === null || salida === null) {
+  if (doc === null || state === null) {
     return (
-      <div class="listo">
+      <div class="listo descargar">
         <h1 tabIndex={-1}>{t(X.listo)}</h1>
         <p class="ayuda" data-prueba="sin-documento">{t(L.sinDocumento)}</p>
-        <div class="acciones"><button type="button" onClick={() => { ir('entrada'); }}>{t(X.entrada)}</button></div>
+        <div class="acciones"><button type="button" onClick={() => { ir('inicio'); }}>{t(X.inicio)}</button></div>
       </div>
     );
   }
@@ -116,8 +108,7 @@ export function Listo() {
   const puerta = exportGate(state, listo.residuo, listo.recordatorio);
   const abierta = puerta.ok;
   const residuo = listo.residuo;
-  const desactualizado = residuo !== null && residuo.revision !== state.revision;
-  const pasa = residuo !== null && !desactualizado && residuo.hits.length === 0 && residuo.newDetections === 0;
+  const pasa = residuo !== null && residuo.revision === state.revision && residuo.hits.length === 0 && residuo.newDetections === 0;
   const asunto = shell.asunto;
   const informeListo = listo.compilacion !== null;
   const aria = (activo: boolean): Record<string, string> => (activo ? {} : { 'aria-disabled': 'true', 'aria-describedby': ID_MOTIVOS });
@@ -126,99 +117,75 @@ export function Listo() {
     descartarAnalisis();
     vaciarTodoElDocumento();
     actualizar({ phase: 'vacio' });
-    ir('entrada');
+    ir('inicio');
   };
-  const volverARevisar = (): void => { actualizar({ phase: 'revision' }); ir('revision'); };
+  const volver = (): void => { actualizar({ phase: 'revision' }); ir('revision'); };
+  const pdf = (): void => {
+    if (!abierta || preparandoPdf) return;
+    setPreparandoPdf(true);
+    void descargarPdfSalida().finally(() => { setPreparandoPdf(false); });
+  };
 
   return (
-    <div class="listo">
+    <div class="listo descargar">
       <h1 tabIndex={-1}>{t(X.listo)}</h1>
 
-      <section aria-labelledby="h-residuos">
-        <h2 id="h-residuos">{t(L.busqueda)}</h2>
+      <section aria-labelledby="h-antes">
+        <h2 id="h-antes">{tf('M-2188')}</h2>
         <div data-prueba="residuos-estado" role="status" aria-busy={listo.buscando}>
           {listo.buscando ? <p>{t('M-76')}</p> : null}
-          {!listo.buscando && pendientes > 0 ? <p>{t(L.esperaPendientes)}</p> : null}
-          {!listo.buscando && desactualizado ? <p>{t('M-79')}</p> : null}
-          {!listo.buscando && pasa && residuo !== null ? <p>{t('M-77', { n: residuo.valuesSearched })}</p> : null}
+          {!listo.buscando && pasa ? <p>{t('M-77', { n: residuo.valuesSearched })}</p> : null}
         </div>
         {listo.errorBusqueda !== null ? (
-          <p role="alert" class="error-campo" data-prueba="error-residuos">{mensajeDeCodigo(listo.errorBusqueda.codigo)}</p>
-        ) : null}
-        <p class="ayuda">{t('M-122')}</p>
-        <div class="acciones">
-          <button
-            type="button"
-            class="secundario"
-            disabled={listo.buscando || pendientes > 0}
-            onClick={() => { actualizarListo({ errorBusqueda: null }); void buscarResiduos(); }}
-          >
-            {t(ROTULOS.buscar_de_nuevo)}
-          </button>
-        </div>
-        {residuo !== null && listo.hallazgos.length > 0 ? (
-          <div data-prueba="hallazgos">
-            <h3>{t(L.valoresEncontrados)}</h3>
-            <ul class="hallazgos">
-              {listo.hallazgos.map((h, i) => (
-                <li key={i}>
-                  <span>{t(L.hallazgo, { seccion: h.seccion, linea: h.linea, tipo: h.tipo, marcador: h.marcador, modo: textoDeModo(h.modo) })}</span>
-                  <button type="button" class="secundario" onClick={volverARevisar}>{t(L.irARevision)}</button>
-                </li>
-              ))}
-            </ul>
+          <div class="acciones">
+            <p role="alert" class="error-campo" data-prueba="error-residuos">{mensajeDeCodigo(listo.errorBusqueda.codigo)}</p>
+            <button type="button" class="secundario" onClick={buscarOtraVez}>{t(ROTULOS.buscar_de_nuevo)}</button>
           </div>
         ) : null}
-      </section>
-
-      <section aria-labelledby="h-vista">
-        <h2 id="h-vista">{t(L.vistaPrevia)}</h2>
-        <VistaSalidaPanel out={salida} state={state} abierta={abierta} />
-        {!abierta ? <p class="ayuda" data-prueba="aviso-vista">{t('M-73')}</p> : null}
-      </section>
-
-      <section aria-labelledby="h-recordatorio">
-        <h2 id="h-recordatorio">{t(L.recordatorioTitulo)}</h2>
+        <p class="ayuda">{tf('M-2190')}</p>
         <p data-prueba="prueba-final">{t('M-115')}</p>
-        <Grupo leyenda={t('M-80')}>
-          <Casilla etiqueta={t('M-81')} marcada={listo.recordatorio.biometricos} onCambio={(v) => { marcarCasilla('biometricos', v); }} />
-          <Casilla etiqueta={t('M-82')} marcada={listo.recordatorio.reservaLegal} onCambio={(v) => { marcarCasilla('reservaLegal', v); }} />
-          <Casilla etiqueta={t('M-83')} marcada={listo.recordatorio.estrategia} onCambio={(v) => { marcarCasilla('estrategia', v); }} />
-        </Grupo>
+        <div class="confirmacion-unica">
+          <Casilla etiqueta={tf('M-2185')} marcada={listo.recordatorio.revisado} onCambio={(v) => { marcarConfirmacion(v); }} />
+        </div>
       </section>
 
       {!abierta ? (
         <section class="motivos" aria-labelledby="h-motivos" data-prueba="motivos">
-          <h2 id="h-motivos">{t(L.motivos)}</h2>
+          <h2 id="h-motivos">{tf('M-2191')}</h2>
           <ul id={ID_MOTIVOS} data-prueba={ID_MOTIVOS}>
             {puerta.reasons.map((r) => <li key={r} data-motivo={r}>{textoDeMotivo(r, state, residuo)}</li>)}
           </ul>
         </section>
       ) : null}
 
-      <section aria-labelledby="h-copiar">
-        <h2 id="h-copiar">{t(L.copiarYExportar)}</h2>
+      <section aria-labelledby="h-descargar">
+        <h2 id="h-descargar">{t(X.listo)}</h2>
         <div class="acciones">
-          <button type="button" data-prueba="copiar" {...aria(abierta)} onClick={copiarConBoton}>{t(ROTULOS.copiar_texto_anonimizado)}</button>
-          <button type="button" class="secundario" data-prueba="vaciar" disabled={!listo.copiado} onClick={vaciarPortapapeles}>{t(ROTULOS.vaciar_portapapeles)}</button>
+          <button type="button" data-prueba="descargar-docx" {...aria(abierta)} onClick={descargarDocxFiel}>{t(ROTULOS.descargar_docx)}</button>
+          <button type="button" class="secundario" data-prueba="descargar-pdf" {...aria(abierta && !preparandoPdf)} onClick={pdf}>{tf('M-2186')}</button>
         </div>
-        <div class="acciones">
-          <button type="button" class="secundario" data-prueba="descargar-txt" {...aria(abierta)} onClick={descargarTxt}>{t(ROTULOS.descargar_txt)}</button>
-          <button type="button" class="secundario" data-prueba="descargar-docx" {...aria(abierta)} onClick={descargarDocx}>{t(ROTULOS.descargar_docx)}</button>
-        </div>
-        <h3>{t(L.informe)}</h3>
-        {asunto !== null ? (
-          <Casilla etiqueta={t(L.incluirCodigo)} marcada={listo.incluirCodigoAsunto} onCambio={(v) => { actualizarListo({ incluirCodigoAsunto: v }); }} />
-        ) : null}
-        {abierta && !informeListo ? <p class="ayuda" data-prueba="sin-huella">{t(L.sinHuella)}</p> : null}
-        <div class="acciones">
-          <button type="button" class="secundario" data-prueba="informe-txt" {...aria(abierta && informeListo)} onClick={() => { descargarInforme('txt'); }}>
-            {t(ROTULOS.descargar_informe_txt)}
-          </button>
-          <button type="button" class="secundario" data-prueba="informe-json" {...aria(abierta && informeListo)} onClick={() => { descargarInforme('json'); }}>
-            {t(L.informeJson)}
-          </button>
-        </div>
+        {preparandoPdf ? <p role="status" data-prueba="preparando-pdf">{tf('M-2189')}</p> : null}
+        <details class="mas-formatos" data-prueba="mas-formatos">
+          <summary>{tf('M-2187')}</summary>
+          <div class="acciones">
+            <button type="button" class="secundario" data-prueba="copiar" {...aria(abierta)} onClick={copiarConBoton}>{t(ROTULOS.copiar_texto_anonimizado)}</button>
+            <button type="button" class="secundario" data-prueba="vaciar" disabled={!listo.copiado} onClick={vaciarPortapapeles}>{t(ROTULOS.vaciar_portapapeles)}</button>
+            <button type="button" class="secundario" data-prueba="descargar-txt" {...aria(abierta)} onClick={descargarTxt}>{t(ROTULOS.descargar_txt)}</button>
+          </div>
+          <h3>{t(L.informe)}</h3>
+          {asunto !== null && asunto.efimero !== true ? (
+            <Casilla etiqueta={t(L.incluirCodigo)} marcada={listo.incluirCodigoAsunto} onCambio={(v) => { actualizarListo({ incluirCodigoAsunto: v }); }} />
+          ) : null}
+          {abierta && !informeListo ? <p class="ayuda" data-prueba="sin-huella">{t(L.sinHuella)}</p> : null}
+          <div class="acciones">
+            <button type="button" class="secundario" data-prueba="informe-txt" {...aria(abierta && informeListo)} onClick={() => { descargarInforme('txt'); }}>
+              {t(ROTULOS.descargar_informe_txt)}
+            </button>
+            <button type="button" class="secundario" data-prueba="informe-json" {...aria(abierta && informeListo)} onClick={() => { descargarInforme('json'); }}>
+              {t(L.informeJson)}
+            </button>
+          </div>
+        </details>
         {listo.respaldo !== null ? <AreaRespaldo texto={listo.respaldo} /> : null}
         <div class="avisos-listo" role="region" aria-label={t(L.anuncios)} data-prueba="avisos-listo">
           {listo.avisos.map((a) => (
@@ -227,13 +194,23 @@ export function Listo() {
             </p>
           ))}
         </div>
-        {asunto?.mode === 'no_guardar' && state.committed ? <p data-prueba="respaldo-tabla">{alterno('M-90', 0)}</p> : null}
+        {asunto?.mode === 'no_guardar' && asunto.efimero !== true && state.committed ? <p data-prueba="respaldo-tabla">{alterno('M-90', 0)}</p> : null}
       </section>
+
+      <details class="avanzadas" data-prueba="opciones-avanzadas">
+        <summary>{tf('M-2116')}</summary>
+        <p class="ayuda">{tf('M-2121')}</p>
+        <div class="acciones">
+          <button type="button" class="secundario" onClick={() => { pedirLlave('exportar'); }}>{tf('M-2120')}</button>
+          <button type="button" class="secundario" onClick={() => { ir('reinsercion'); }}>{t(ROTULOS.reinsertar_una_respuesta)}</button>
+          <button type="button" class="secundario" onClick={() => { ir('boveda'); }}>{tf('M-2122')}</button>
+        </div>
+      </details>
 
       <section aria-labelledby="h-salir">
         <h2 id="h-salir">{t(L.salir)}</h2>
         <div class="acciones">
-          <button type="button" class="secundario" onClick={volverARevisar}>{t(ROTULOS.volver_a_revisar)}</button>
+          <button type="button" class="secundario" onClick={volver}>{t(ROTULOS.volver_a_revisar)}</button>
           <button
             type="button"
             class="secundario"
@@ -241,7 +218,6 @@ export function Listo() {
           >
             {t(ROTULOS.nuevo_documento_del_asunto)}
           </button>
-          <button type="button" class="secundario" onClick={() => { ir('reinsercion'); }}>{t(ROTULOS.reinsertar_una_respuesta)}</button>
         </div>
       </section>
 

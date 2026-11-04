@@ -11,7 +11,7 @@
 // con texto ilegible) pasan como imagen sin tachar: se devuelven en `avisos` para que la interfaz las señale (vector para P0-6).
 // Corre en el hilo principal (necesita un lienzo); errores solo con ErrorCode. Las anotaciones y los formularios no se dibujan.
 import { SiglowError } from '../core/types';
-import type { DocumentModel, IoLimits, ParseWarning, RenderedOutput } from '../core/types';
+import type { DetectionId, DocumentModel, IoLimits, ParseWarning, RenderedOutput } from '../core/types';
 import { cambiosDe } from './docx-write-fiel';
 import { IO_LIMITS_POR_DEFECTO, LecturaCancelada } from './io-client';
 import { codigoPdf, crearWorkerPdfjs, textoDePagina } from './pdf-read';
@@ -72,8 +72,10 @@ export interface OpcionesTachado {
   deps?: TacharDeps;
 }
 
+/** Zona de un recuadro en píxeles del lienzo, con su detección (F3: el clic sobre el recuadro abre el menú de la etiqueta). */
+export interface ZonaTachada { x: number; y: number; w: number; h: number; det?: DetectionId }
 /** Una página ya tachada en su lienzo (la vista previa de F3 la puede pintar; el lienzo se libera al volver de `alPagina`). */
-export interface PaginaTachada { n: number; total: number; ancho: number; alto: number; lienzo: Lienzo }
+export interface PaginaTachada { n: number; total: number; ancho: number; alto: number; lienzo: Lienzo; zonas: ZonaTachada[] }
 
 export const ESCALA_POR_DEFECTO = 2;
 /** Tope de píxeles por página (≈ 16 MP): una página enorme baja de escala. */
@@ -92,7 +94,7 @@ async function cargarPdfjsReal(): Promise<PdfjsTachado> {
 const esObjeto = (x: unknown): x is Record<string, unknown> => typeof x === 'object' && x !== null && !Array.isArray(x);
 
 type Punto = [number, number];
-interface Recuadro { esquinas: Punto[]; etiqueta: string | null }
+interface Recuadro { esquinas: Punto[]; etiqueta: string | null; det?: DetectionId }
 
 const LETRA_O_CIFRA = /[\p{L}\p{N}]/u;
 
@@ -146,7 +148,7 @@ function esquinasDe(it: Record<string, unknown>, a0: number, b0: number, vista: 
 }
 
 /** Recuadros de una página: por cada reemplazo, uno por pieza que toca; la etiqueta va en el primero. null = cubrir la página. */
-function recuadrosDe(items: ReadonlyArray<unknown>, estilos: unknown, piezas: PiezaPdf[], cambios: Array<{ ini: number; fin: number; nuevo: string }>,
+function recuadrosDe(items: ReadonlyArray<unknown>, estilos: unknown, piezas: PiezaPdf[], cambios: ReadonlyArray<{ ini: number; fin: number; nuevo: string; det?: DetectionId }>,
   vista: VistaPdf, ctx: Contexto2D): Recuadro[] | null {
   const familiaDe = (it: Record<string, unknown>): string => {
     const e = esObjeto(estilos) && typeof it.fontName === 'string' ? estilos[it.fontName] : undefined;
@@ -165,7 +167,7 @@ function recuadrosDe(items: ReadonlyArray<unknown>, estilos: unknown, piezas: Pi
         : [p.desde + Math.max(c.ini, p.ini) - p.ini, p.desde + Math.min(c.fin, p.fin) - p.ini];
       const esquinas = esquinasDe(it, a, b, vista, ctx, familiaDe(it));
       if (esquinas === null) return null;
-      out.push({ esquinas, etiqueta });
+      out.push(c.det === undefined ? { esquinas, etiqueta } : { esquinas, etiqueta, det: c.det });
       etiqueta = null;
     }
   }
@@ -193,6 +195,14 @@ function pintar(ctx: Contexto2D, r: Recuadro): void {
   if (tam < 6) return; // no cabe legible: queda el recuadro solo
   ctx.fillStyle = '#ffffff';
   ctx.fillText(r.etiqueta, (Math.max(...xs) + Math.min(...xs)) / 2, (Math.max(...ys) + Math.min(...ys)) / 2);
+}
+
+function zonaDe(r: Recuadro): ZonaTachada {
+  const xs = r.esquinas.map((p) => p[0]);
+  const ys = r.esquinas.map((p) => p[1]);
+  const z: ZonaTachada = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+  if (r.det !== undefined) z.det = r.det;
+  return z;
 }
 
 function cubrirPagina(l: Lienzo): void {
@@ -246,6 +256,7 @@ export async function tacharPaginas(original: Uint8Array, doc: DocumentModel, ou
         await pagina.render({ canvasContext: lienzo.ctx, canvas: lienzo.canvas, viewport: vista, annotationMode: lib.AnnotationMode.DISABLE }).promise;
         const parte = partes.get(n);
         const sec = parte !== undefined && parte.included ? out.sections.find((s) => s.partId === parte.id) : undefined;
+        const zonas: ZonaTachada[] = [];
         if (parte === undefined) {
           // Sin texto que leer: la página pasa como imagen tal cual (escaneada o en blanco). La interfaz lo advierte.
           avisos.push({ code: 'PAGINA_SIN_TEXTO', page: n, count: 1 });
@@ -258,11 +269,11 @@ export async function tacharPaginas(original: Uint8Array, doc: DocumentModel, ou
           const cambios = cambiosDe(parte, sec);
           const recuadros = leida.piezas === null ? null : recuadrosDe(items, styles, leida.piezas, cambios, vista, lienzo.ctx);
           if (recuadros === null) cubrirPagina(lienzo);
-          else for (const r of recuadros) pintar(lienzo.ctx, r);
+          else for (const r of recuadros) { pintar(lienzo.ctx, r); zonas.push(zonaDe(r)); }
           const ilegible = doc.warnings.find((w) => w.code === 'TEXTO_ILEGIBLE' && w.page === n);
           if (ilegible !== undefined) avisos.push({ code: 'TEXTO_ILEGIBLE', page: n, count: ilegible.count });
         }
-        await alPagina({ n, total, ancho: base.width, alto: base.height, lienzo });
+        await alPagina({ n, total, ancho: base.width, alto: base.height, lienzo, zonas });
       } finally {
         lienzo.liberar();
         pagina.cleanup();

@@ -1,4 +1,6 @@
-// Pantalla 1 · Inicio y asunto (8.2.2): promesa, aviso inicial, crear o abrir un asunto y tarjeta del modelo.
+// Pantalla 1 · Inicio = «Cargar documento» (8.2.2; F2, D-23): promesa, guía de 3 pasos la primera vez, tarjeta «Antes de empezar»,
+// zona de carga y «Pegar texto», y «Opciones avanzadas» plegadas: nombres que siempre deben ocultarse, el detector de nombres
+// adicional (la tarjeta del modelo) y la llave para devolver los datos reales (crear o abrir un caso con contraseña).
 import { useEffect, useLayoutEffect, useState } from 'preact/hooks';
 import { randomIds } from '../io/txt-read.ts';
 import type { AsuntoId } from '../core/types.ts';
@@ -8,7 +10,11 @@ import { evaluarFrase } from './frase.ts';
 import { alterno, mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
 import { tomarPreseleccion } from './boveda/preseleccion.ts';
 import { persistenciaDelModelo } from './modelo-puerto.ts';
-import { agregarAvisoAsunto, fijarListaDelCaso, fijarTabla, registrarLimpieza, tablaVacia, useFraseEscrita } from './sesion.ts';
+import { agregarAvisoAsunto, fijarListaDelCaso, fijarTabla, obtenerListaDelCaso, registrarLimpieza, tablaVacia, useFraseEscrita, useListaDelCaso } from './sesion.ts';
+import { CargaDocumento, CasillaModelo } from './Entrada.tsx';
+import { asegurarCaso } from './flujo/flujo.ts';
+import { Ayuda } from './flujo/Ayuda.tsx';
+import { tf } from './flujo/textos.ts';
 import { codigoDeError, puertos, type AsuntoListado } from './servicios.ts';
 
 const REGEX_CODIGO = /^(?=.*[A-Za-z0-9])[A-Za-z0-9 ._/-]{1,40}$/u;
@@ -31,20 +37,45 @@ function useAvisoInicio() {
 }
 
 const AVISO_INICIAL: ReadonlyArray<`M-${number}`> = ['M-03', 'M-04', 'M-05', 'M-06', 'M-07'];
+const RECOMENDACIONES = ['M-2110', 'M-2111', 'M-2112'] as const;
 
+/** F2 · «Antes de empezar»: tres recomendaciones breves y «Más información» con los avisos completos (M-03 a M-07). */
 function AvisoInicial() {
   const [plegado, setPlegado] = useState(false);
+  const [mas, setMas] = useState(false);
   return (
     <section class="aviso-inicial" aria-labelledby="ai-titulo" data-prueba="aviso-inicial">
       <h2 id="ai-titulo">{t('M-02')}</h2>
       {plegado ? null : (
         <>
           <ul>
-            {AVISO_INICIAL.map((id) => <li key={id}>{t(id)}</li>)}
+            {RECOMENDACIONES.map((id) => <li key={id}>{tf(id)}</li>)}
           </ul>
-          <button type="button" class="secundario" onClick={() => { setPlegado(true); }}>{t('M-08')}</button>
+          {mas ? <ul class="aviso-completo" data-prueba="aviso-completo">{AVISO_INICIAL.map((id) => <li key={id}>{t(id)}</li>)}</ul> : null}
+          <div class="acciones">
+            <button type="button" class="enlace" aria-expanded={mas} onClick={() => { setMas(!mas); }}>{mas ? tf('M-2114') : tf('M-2113')}</button>
+            <button type="button" class="secundario" onClick={() => { setPlegado(true); }}>{t('M-08')}</button>
+          </div>
         </>
       )}
+    </section>
+  );
+}
+
+/** F2 · Guía de 3 pasos la primera vez (en memoria: vuelve a aparecer al recargar, nada se guarda en el navegador). */
+let guiaCerrada = false;
+function GuiaInicial() {
+  const [cerrada, setCerrada] = useState(guiaCerrada);
+  if (cerrada) return null;
+  return (
+    <section class="guia" aria-labelledby="guia-titulo" data-prueba="guia">
+      <h2 id="guia-titulo">{tf('M-2105')}</h2>
+      <ol>
+        <li>{tf('M-2106')}</li>
+        <li>{tf('M-2107')}</li>
+        <li>{tf('M-2108')}</li>
+      </ol>
+      <button type="button" class="secundario" onClick={() => { guiaCerrada = true; setCerrada(true); }}>{tf('M-2109')}</button>
     </section>
   );
 }
@@ -166,7 +197,8 @@ function CrearAsunto({ existentes, ocupado, setOcupado }: { existentes: readonly
       } else {
         asuntoId = randomIds().next('asu') as AsuntoId;
       }
-      fijarListaDelCaso([]);
+      // D-23: los nombres que el abogado ya escribió en el caso efímero pasan al caso nuevo.
+      fijarListaDelCaso(shell.asunto?.efimero === true ? [...obtenerListaDelCaso()] : []);
       fijarTabla(tablaVacia(asuntoId));
       fijarAvisoInicio(null);
       agregarAvisoAsunto(modo === 'guardar' ? { id: persisted ? 'M-21' : 'M-22' } : { id: 'M-14' });
@@ -174,7 +206,6 @@ function CrearAsunto({ existentes, ocupado, setOcupado }: { existentes: readonly
         asunto: { asuntoId, codigo: limpio, mode: modo, persisted, tableRevision: 0, backedUpRevision: modo === 'guardar' ? 0 : null },
         phase: 'vacio',
       });
-      ir('lista');
     } catch (e) {
       // SESION_DESCONOCIDA al crear solo sale de cerrar() durante la derivación o la escritura (B-21): es un bloqueo, que ya
       // mostró M-102 (o la página se fue con pagehide); no es un error del formulario.
@@ -256,7 +287,7 @@ function AbrirAsunto({ asuntos, ocupado, setOcupado }: { asuntos: readonly Asunt
   useFraseEscrita(frase !== '');
   const puede = !ocupado && elegido !== '' && frase !== '' && asuntos.some((a) => a.asuntoId === elegido);
 
-  const abrir = async (destino: 'lista' | 'reinsercion'): Promise<void> => {
+  const abrir = async (destino: 'inicio' | 'reinsercion'): Promise<void> => {
     if (!puede) return;
     setOcupado(true);
     setError(undefined);
@@ -311,11 +342,11 @@ function AbrirAsunto({ asuntos, ocupado, setOcupado }: { asuntos: readonly Asunt
             rotuloMostrar={mostrar ? t(X.ocultar) : t(ROTULOS.mostrar)}
             error={error}
             deshabilitado={ocupado}
-            onEnter={() => { void abrir('lista'); }}
+            onEnter={() => { void abrir('inicio'); }}
           />
           {ocupado ? <p role="status">{t('M-20')}</p> : null}
           <div class="acciones">
-            <button type="button" disabled={!puede} onClick={() => { void abrir('lista'); }}>{t(ROTULOS.abrir_para_anonimizar)}</button>
+            <button type="button" disabled={!puede} onClick={() => { void abrir('inicio'); }}>{t(ROTULOS.abrir_para_anonimizar)}</button>
             <button type="button" class="secundario" disabled={!puede} onClick={() => { void abrir('reinsercion'); }}>{t(ROTULOS.reinsertar_una_respuesta)}</button>
           </div>
         </form>
@@ -324,7 +355,19 @@ function AbrirAsunto({ asuntos, ocupado, setOcupado }: { asuntos: readonly Asunt
   );
 }
 
+/** «Nombres que siempre deben ocultarse»: abre el caso efímero si hace falta y lleva a la lista (D-23). */
+function OpcionLista() {
+  const lista = useListaDelCaso();
+  return (
+    <section class="opcion" aria-labelledby="op-lista" data-prueba="opcion-lista">
+      <h3 id="op-lista">{t(X.lista)} <Ayuda tema={t(X.lista)} texto={tf('M-2117')} /></h3>
+      <button type="button" class="secundario" onClick={() => { asegurarCaso(); ir('lista'); }}>{tf('M-2118', { n: lista.length })}</button>
+    </section>
+  );
+}
+
 export function Inicio() {
+  const shell = useShell();
   const aviso = useAvisoInicio();
   const [asuntos, setAsuntos] = useState<readonly AsuntoListado[]>([]);
   const [ocupado, setOcupado] = useState(false);
@@ -334,25 +377,41 @@ export function Inicio() {
     void puertos.boveda.listar().then((l) => { if (vivo) setAsuntos(l); }).catch(() => { if (vivo) setAsuntos([]); });
     return () => { vivo = false; };
   }, []);
+  const caso = shell.asunto !== null && shell.asunto.efimero !== true ? shell.asunto : null;
   return (
     <>
       <h1 tabIndex={-1}>{t(X.inicio)}</h1>
       <p data-prueba="promesa" class="promesa">{t('M-01')}</p>
+      <p class="ayuda">{tf('M-2115')}</p>
       {aviso ? (
         <div class="aviso-bloqueo" role="status" data-prueba="aviso-bloqueo">
           <p>{t('M-102')}</p>
           {aviso === 'bloqueado_sin_guardar' ? <p>{t('M-103')}</p> : null}
         </div>
       ) : null}
+      <GuiaInicial />
       <AvisoInicial />
-      <div class="dos-columnas">
-        <CrearAsunto key={`crear-${generacion}`} existentes={asuntos} ocupado={ocupado} setOcupado={setOcupado} />
-        <AbrirAsunto key={`abrir-${generacion}`} asuntos={asuntos} ocupado={ocupado} setOcupado={setOcupado} />
-      </div>
-      <TarjetaModelo />
-      <div class="acciones">
-        <button type="button" class="secundario" onClick={() => { ir('boveda'); }}>{t(ROTULOS.boveda)}</button>
-      </div>
+      {caso !== null ? <p role="status" data-prueba="caso-abierto">{tf('M-2124', { codigo: caso.codigo })}</p> : null}
+      <CargaDocumento />
+      <details class="avanzadas" data-prueba="opciones-avanzadas">
+        <summary>{tf('M-2116')}</summary>
+        <OpcionLista />
+        <section class="opcion" aria-labelledby="op-modelo" data-prueba="opcion-modelo">
+          <h3 id="op-modelo">{t(X.modeloDeApoyo)} <Ayuda tema={t(X.modeloDeApoyo)} texto={tf('M-2119', { mb: puertos.modelo.estado().mb ?? 626 })} /></h3>
+          <CasillaModelo />
+          <TarjetaModelo />
+        </section>
+        <section class="opcion" aria-labelledby="op-llave" data-prueba="opcion-llave">
+          <h3 id="op-llave">{tf('M-2120')} <Ayuda tema={tf('M-2120')} texto={tf('M-2121')} /></h3>
+          <div class="dos-columnas">
+            <CrearAsunto key={`crear-${generacion}`} existentes={asuntos} ocupado={ocupado} setOcupado={setOcupado} />
+            <AbrirAsunto key={`abrir-${generacion}`} asuntos={asuntos} ocupado={ocupado} setOcupado={setOcupado} />
+          </div>
+          <div class="acciones">
+            <button type="button" class="secundario" onClick={() => { ir('boveda'); }}>{tf('M-2122')}</button>
+          </div>
+        </section>
+      </details>
     </>
   );
 }

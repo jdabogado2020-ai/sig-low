@@ -156,8 +156,7 @@ export function descargarDocx(): void {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// F4 (D-22) · Salida fiel. F3 conecta estos manejadores a «Descargar documento (.docx)» y «Descargar PDF»; las pantallas no cambian
-// aquí. Usan el original en memoria (`io/original.ts`): sin él (texto pegado, original ya soltado), la salida simple de siempre.
+// F4 (D-22) · Salida fiel. F3 los conecta a «Descargar documento (.docx)» y «Descargar PDF» de la pantalla Descargar. Usan el original en memoria (`io/original.ts`): sin él (texto pegado, original ya soltado), la salida simple de siempre.
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** «Descargar documento (.docx)»: el .docx idéntico al original con solo los datos cambiados; si no se puede, el .docx simple. */
@@ -170,14 +169,16 @@ export function descargarDocxFiel(): void {
     const out = render(v.doc, v.state);
     const tabla = consolidarAhora(v);
     let r: ResultadoExportacion;
+    let fiel = true;
     try {
       r = exportarDocxFiel(original.bytes, v.doc, out);
     } catch (e) {
       // El documento no admite la reescritura fiel (codificación, mapa): el .docx simple, que no lleva nada del original.
       if (!(e instanceof SiglowError) || e.code !== 'FORMATO_NO_ADMITIDO') throw e;
       r = exportarDocx(out);
+      fiel = false;
     }
-    const avisos: AvisoListo[] = [{ id: 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
+    const avisos: AvisoListo[] = [{ id: fiel ? 'M-2192' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
     for (const a of r.avisos) if (a.code === 'CARACTERES_CONTROL') avisos.push({ id: 'M-313', params: { n: a.count ?? 0 }, rol: 'status' });
     ponerAviso(avisos);
     respaldarTabla(tabla);
@@ -198,6 +199,7 @@ export async function descargarPdfSalida(): Promise<void> {
     const tabla = consolidarAhora(v);
     const original = v.doc.source === 'pdf' ? originalDe(v.doc.id) : null;
     let r: ResultadoExportacion;
+    const tachado = original !== null;
     if (original === null) r = exportarPdf(out);
     else {
       // Copia: el original en memoria puede ponerse en cero (bloqueo, `pagehide`) mientras se dibujan las páginas.
@@ -208,7 +210,7 @@ export async function descargarPdfSalida(): Promise<void> {
         copia.fill(0);
       }
     }
-    ponerAviso([{ id: 'M-88', params: { archivo: r.nombre }, rol: 'status' }]);
+    ponerAviso([{ id: tachado ? 'M-2193' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }]);
     respaldarTabla(tabla);
   } catch (e) {
     errorDeAccion(e);

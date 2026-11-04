@@ -7,6 +7,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { cryptoIds, emptyTable, tableIndexOf } from '../core/entities.ts';
 import type { ReviewContext } from '../core/entities.ts';
 import { declararPlanB, incorporarModelo, modeloInicial } from '../core/review/modelo.ts';
+import { applyReviewAction } from '../core/entities.ts';
 import { UMBRALES_MODELO } from '../core/umbrales.ts';
 import type {
   AsuntoId, CaseEntity, DetectOptions, DetectResult, DetectionSet, DocumentModel, ErrorCode, IdSource, MappingTable, NerSpan, PartId,
@@ -17,6 +18,7 @@ import { renovarActividad } from './bloqueo.ts';
 import { actualizarBorrador, fijarDocumento, fijarRevision, obtenerDocumento, obtenerRevision, vaciarDocumento } from './documento.ts';
 import { actualizar, ir } from './estado.ts';
 import { obtenerListaDelCaso, obtenerTabla, registrarLimpieza } from './sesion.ts';
+import { obtenerListo, reiniciarEntrada } from './listo/almacen.ts';
 import { puertos, type NerPuerto } from './servicios.ts';
 
 export const ORDEN_ETAPAS: readonly Stage[] = ['lectura', 'reglas', 'lista', 'generalizacion', 'modelo_carga', 'modelo', 'fusion'];
@@ -198,7 +200,7 @@ function volverAEntrada(motivo: { error: ErrorCode } | { cancelado: true }): voi
   vista = vistaInicial();
   avisarYa();
   actualizarBorrador({ analisisCancelado: 'cancelado' in motivo, errorLectura: null });
-  ir('entrada');
+  ir('inicio');
   actualizar('error' in motivo
     ? { phase: 'error', modelRun: null, error: { code: motivo.error, context: 'procesando' } }
     : { phase: 'vacio', modelRun: null, error: null });
@@ -213,6 +215,8 @@ export function iniciarAnalisis(o: IniciarOpciones): void {
   const conModelo = o.usarModelo && modeloListo && ner !== null;
   fijarDocumento(o.doc);
   fijarRevision(null);
+  // Documento nuevo: ni la búsqueda, ni sus hallazgos, ni la confirmación del anterior valen para este.
+  reiniciarEntrada(obtenerListo().compilacion);
   actualizarBorrador({ analisisCancelado: false, errorLectura: null });
   vista = { activo: true, etapas: etapasIniciales(conModelo), cancelando: false, estuvoOculta: false, modelo: null, conModelo };
   actualizar({ phase: 'procesando', error: null, modelRun: null });
@@ -276,11 +280,21 @@ function alMensaje(s: Sesion, data: unknown): void {
 
 interface DecisionModelo { conModelo: boolean; ner: NerPuerto | null; usarModelo: boolean }
 
-/** `detect` respondió: se crea la revisión con el modelo en curso (o plan B) y se pasa a Revisión (8.3). */
+/**
+ * D-24 (F3) · Todo aplicado de entrada: con el modelo terminado o en plan B, la revisión recibe `aplicar_propuesta` antes de llegar a
+ * la vista previa. Con el modelo en curso no (el reductor la ignora): se aplica cuando termina o pasa a plan B (`ponerRevision`).
+ */
+export function conPropuesta(r: ReviewState, doc: DocumentModel, ids: IdSource): ReviewState {
+  if (r.modelo.kind === 'en_curso') return r;
+  const o = applyReviewAction(r, { kind: 'aplicar_propuesta' }, contextoDelReductor(doc, ids));
+  return o.ok ? o.state : r;
+}
+
+/** `detect` respondió: se crea la revisión con el modelo en curso (o plan B) y se pasa a la vista previa (8.3). */
 function alTerminarReglas(s: Sesion, doc: DocumentModel, set: DetectionSet, d: DecisionModelo): void {
   const causa: PlanBCause = d.usarModelo ? 'no_descargado' : 'desactivado';
   const modelo = d.conModelo ? modeloInicial(false) : { kind: 'plan_b' as const, causa };
-  const estado = estadoDeConjunto(doc, set, modelo);
+  const estado = conPropuesta(estadoDeConjunto(doc, set, modelo), doc, s.ids);
   fijarRevision(estado);
   renovarActividad(true);
   if (s.temporizador !== undefined) { clearTimeout(s.temporizador); s.temporizador = undefined; }
@@ -305,9 +319,12 @@ function alTerminarReglas(s: Sesion, doc: DocumentModel, set: DetectionSet, d: D
 
 // --- Modelo en segundo plano -----------------------------------------------------------------------------------------------
 
+/** Estado nuevo del modelo; si terminó o pasó a plan B, con la propuesta aplicada (D-24). */
 function ponerRevision(r: ReviewState): void {
-  fijarRevision(r);
-  actualizar({ modelRun: r.modelo });
+  const doc = obtenerDocumento();
+  const final = doc === null ? r : conPropuesta(r, doc, cryptoIds);
+  fijarRevision(final);
+  actualizar({ modelRun: final.modelo });
 }
 
 /** Cierra la fusión (`ner: null`), declara el plan B si el modelo seguía en curso y libera la sesión. */
