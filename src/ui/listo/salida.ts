@@ -12,7 +12,9 @@ import { exportarDocxFiel } from '../../io/docx-write-fiel.ts';
 import { originalDe } from '../../io/original.ts';
 import { construirPdfTachado, descargarPdfTachado } from '../../io/pdf-tachar.ts';
 import type { PaginaCubierta, PdfTachado } from '../../io/pdf-tachar.ts';
-import { exportarPdf } from '../../io/pdf-write.ts';
+import { construirPdfConEstilo } from '../../io/pdf-maqueta.ts';
+import type { PdfConEstilo } from '../../io/pdf-maqueta.ts';
+import { descargarPdf, exportarPdf } from '../../io/pdf-write.ts';
 import { descargarBytes, exportarTxt, nombreDescarga, revocarUrlsVivas } from '../../io/txt-write.ts';
 import type { ResultadoExportacion } from '../../io/txt-write.ts';
 import { OPCIONES_DETECCION } from '../analisis.ts';
@@ -245,7 +247,24 @@ export async function descargarPdfSalida(): Promise<ResumenSalidaFiel | null> {
     const original = v.doc.source === 'pdf' ? originalDe(v.doc.id) : null;
     const resumen: ResumenSalidaFiel = { nombre: '', fiel: original !== null, imagenes: 0, paginasConImagenes: [], paginasCubiertas: [], vectorialesQuitadas: 0, sustituidos: 0 };
     const avisos: AvisoListo[] = [];
-    if (original === null) {
+    const docx = v.doc.source === 'docx' ? originalDe(v.doc.id) : null;
+    let conEstilo: PdfConEstilo | null = null;
+    if (docx !== null) {
+      // F7 (v1.1.1): el PDF de un .docx sale con el formato del documento, armado desde el .docx fiel ya anonimizado.
+      try {
+        conEstilo = construirPdfConEstilo(docx.bytes, v.doc, out);
+      } catch (e) {
+        if (!(e instanceof SiglowError) || e.code !== 'FORMATO_NO_ADMITIDO') throw e; // sin .docx fiel: el PDF de texto
+      }
+    }
+    if (conEstilo !== null) {
+      resumen.nombre = nombreDescarga('anonimizado', 'pdf');
+      descargarPdf(conEstilo.bytes, resumen.nombre);
+      conEstilo.bytes.fill(0);
+      resumen.fiel = true;
+      resumen.sustituidos = conEstilo.sustituidos;
+      if (conEstilo.omitidos > 0) avisos.push({ id: 'M-2303', params: { n: conEstilo.omitidos }, rol: 'status' });
+    } else if (original === null) {
       const r = exportarPdf(out);
       resumen.nombre = r.nombre;
       resumen.sustituidos = r.sustituidos;
@@ -272,7 +291,7 @@ export async function descargarPdfSalida(): Promise<ResumenSalidaFiel | null> {
     const cubiertas = (m: PaginaCubierta['motivo']): string => resumen.paginasCubiertas.filter((c) => c.motivo === m).map((c) => c.page).join(', ');
     if (cubiertas('sin_mapa') !== '') avisos.push({ id: 'M-2297', params: { paginas: cubiertas('sin_mapa') }, rol: 'alert' });
     if (cubiertas('excluida') !== '') avisos.push({ id: 'M-2298', params: { paginas: cubiertas('excluida') }, rol: 'status' });
-    ponerAviso([{ id: resumen.fiel ? 'M-2293' : 'M-88', params: { archivo: resumen.nombre }, rol: 'status' }, ...avisos]);
+    ponerAviso([{ id: conEstilo !== null ? 'M-2302' : resumen.fiel ? 'M-2293' : 'M-88', params: { archivo: resumen.nombre }, rol: 'status' }, ...avisos]);
     respaldarTabla(tabla);
     return resumen;
   } catch (e) {

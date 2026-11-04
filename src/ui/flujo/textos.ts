@@ -105,6 +105,9 @@ const TEXTOS = {
   'M-2300': 'Sig-Low se bloqueó y borró de la memoria el documento y sus etiquetas. Para seguir, cárguelo de nuevo.',
   'M-2301': '{n} hechos llamativos u otros datos indirectos sin decidir salen tal cual: revíselos en la vista previa.',
   'M-2294': 'El documento descargado conserva {n} imágenes del original tal como estaban. Sig-Low no revisa imágenes: mírelas antes de compartirlo.',
+  // F7 (v1.1.1): el PDF de un .docx conserva el formato del documento.
+  'M-2302': 'Se descargó {archivo}. Conserva el formato del documento (página, márgenes, letra, alineación y tablas), con los datos ocultos.',
+  'M-2303': 'El PDF no incluye {n} imágenes, dibujos o cuadros de texto del documento. El .docx descargado sí los conserva.',
 } as const satisfies Record<string, string>;
 
 registrarMensajes(TEXTOS);

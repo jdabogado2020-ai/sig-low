@@ -1,7 +1,8 @@
 // F4 · PDF propio (como `docx-write.ts`): un escritor mínimo de PDF 1.4 sin dependencias nuevas (fflate para comprimir).
-//   · `construirPdf`: PDF de texto desde la salida (.docx o texto pegado): Helvetica y Helvetica-Bold con WinAnsiEncoding (las 14
-//     fuentes estándar: nada incrustado), tamaño carta, párrafos con ajuste de línea, rótulos en negrita y filas de tabla (las
-//     líneas con tabuladores) en columnas iguales. Un carácter fuera de WinAnsi se sustituye por «?» y se cuenta.
+//   · `construirPdf`: PDF de texto desde la salida (texto pegado, .txt, o un .docx que no admite el .docx fiel): Helvetica con
+//     WinAnsiEncoding (las 14 fuentes estándar: nada incrustado), tamaño carta, párrafos con ajuste de línea y filas de tabla (las
+//     líneas con tabuladores) en columnas iguales, sin los rótulos «=== … ===» (F7). Un carácter fuera de WinAnsi se sustituye
+//     por «?» y se cuenta. El PDF de un .docx con su formato lo arma `pdf-maqueta.ts` (F7) con los ayudantes de aquí.
 //   · `pdfDeImagenes`: PDF con una imagen RGB por página, del tamaño de la página original (lo usa `pdf-tachar.ts`).
 // Sin /Info, sin /ID, sin XMP, sin fechas: el archivo no lleva metadatos. Errores solo con ErrorCode.
 import { zlibSync } from 'fflate';
@@ -16,7 +17,7 @@ export const MIME_PDF = 'application/pdf';
 // Objetos y estructura del archivo
 // ---------------------------------------------------------------------------------------------------------------------
 
-const ascii = (s: string): Uint8Array => {
+export const ascii = (s: string): Uint8Array => {
   const b = new Uint8Array(s.length);
   for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i) & 0xff;
   return b;
@@ -133,7 +134,7 @@ function equivalente(c: string): string {
 }
 
 /** Texto ya en WinAnsi (un carácter = un byte) y cuántos se sustituyeron. */
-function aWinAnsi(s: string): { texto: string; sustituidos: number } {
+export function aWinAnsi(s: string): { texto: string; sustituidos: number } {
   let out = '';
   let sustituidos = 0;
   for (const c0 of s.normalize('NFC')) {
@@ -148,7 +149,7 @@ function aWinAnsi(s: string): { texto: string; sustituidos: number } {
 }
 
 /** Cadena literal PDF con los bytes WinAnsi: `\`, `(`, `)` escapados y lo no ASCII en octal. */
-function literal(s: string): string {
+export function literal(s: string): string {
   let out = '(';
   for (const c of s) {
     const b = WINANSI_ALTO.get(c) ?? (c.codePointAt(0) ?? 0x3f);
@@ -193,14 +194,16 @@ function ajustar(s: string, ancho: number, negrita: boolean): string[] {
 
 interface Linea { texto: string; negrita: boolean }
 
-/** Las líneas lógicas de la salida, con la misma estructura que `joinOutput` y que `docx-write.ts`. */
+/**
+ * Las líneas lógicas de la salida: las secciones separadas por una línea vacía. F7 (v1.1.1): el PDF nunca imprime los rótulos
+ * «=== … ===» de las secciones (son para pegar el texto en otra herramienta, no parte del documento).
+ */
 function lineasDe(contenido: ContenidoExportable): Linea[] {
   const partir = (s: string): string[] => s.split(/\r\n|\r|\n/u);
   if (typeof contenido === 'string') return partir(contenido).map((texto) => ({ texto, negrita: false }));
   const out: Linea[] = [];
   contenido.sections.forEach((sec, i) => {
     if (i > 0) out.push({ texto: '', negrita: false });
-    if (contenido.withHeadings) out.push({ texto: `=== ${sec.label} ===`, negrita: true });
     for (const l of partir(sec.text)) out.push({ texto: l, negrita: false });
   });
   return out;
