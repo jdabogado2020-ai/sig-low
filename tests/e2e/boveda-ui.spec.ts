@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import { copiarEnListo, crearYAnalizar, FRASE, h1, REALES_REI } from './ayudas-reinsercion';
+import { abrirAvanzadas, editarLista, irACargar } from './lib/flujo';
 
 test.describe.configure({ timeout: 120_000 });
 test.use({ permissions: ['clipboard-read', 'clipboard-write'], acceptDownloads: true });
@@ -19,7 +20,7 @@ const lista = (page: Page) => page.locator('[data-prueba="asunto-guardado"]');
 const dialogo = (page: Page) => page.locator('dialog[open]');
 const aviso = (page: Page, id: string) => page.locator(`[data-prueba="avisos-boveda"] [data-aviso="${id}"]`);
 
-/** Crea el asunto guardado cifrado con su tabla consolidada, bloquea y entra a la Bóveda desde Inicio. */
+/** Crea el caso guardado cifrado con su llave consolidada, bloquea y entra a «Casos guardados» desde Cargar (Opciones avanzadas). */
 async function prepararBoveda(page: Page, codigo = 'PRUEBA-BOV-01'): Promise<void> {
   await crearYAnalizar(page, { codigo, guardar: true });
   await copiarEnListo(page);
@@ -29,7 +30,8 @@ async function prepararBoveda(page: Page, codigo = 'PRUEBA-BOV-01'): Promise<voi
   await abrirBoveda(page);
 }
 async function abrirBoveda(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Casos guardados', exact: true }).click();
+  await abrirAvanzadas(page);
+  await page.getByRole('button', { name: 'Casos guardados en este equipo', exact: true }).click();
   await expect(h1(page, 'Casos guardados')).toBeVisible();
 }
 const sinOriginales = async (page: Page): Promise<void> => {
@@ -41,7 +43,7 @@ const sinOriginales = async (page: Page): Promise<void> => {
 test.describe('Bóveda (PC-6)', () => {
   test('T-BO-01 INV-V01 T-PV-24 @humo la lista muestra solo código y fechas, el estado de persist() y nunca la tabla; Volver y Bloquear ahora', async ({ page }) => {
     await prepararBoveda(page);
-    await expect(page.locator('[data-prueba="solo-codigo"]')).toContainText('el contenido de las tablas no se muestra en ningún momento');
+    await expect(page.locator('[data-prueba="solo-codigo"]')).toContainText('nunca muestra el contenido de las llaves');
     await expect(lista(page)).toHaveCount(1);
     await expect(lista(page).locator('[data-prueba="codigo"]')).toHaveText('PRUEBA-BOV-01');
     await expect(lista(page).locator('[data-prueba="creado"]')).toHaveText(/^Creado: .+\d{4}/);
@@ -53,7 +55,7 @@ test.describe('Bóveda (PC-6)', () => {
     await sinOriginales(page);
     // Acciones por asunto, con el código en el nombre accesible.
     for (const a of ['Abrir', 'Guardar la llave en un archivo', 'Cambiar la contraseña de la llave', 'Borrar']) {
-      await expect(page.getByRole('button', { name: `${a} PRUEBA-BOV-01`, exact: true })).toBeVisible();
+      await expect(page.getByRole('button', { name: `${a}: PRUEBA-BOV-01`, exact: true })).toBeVisible();
     }
     // Borrar todo está habilitado porque hay asuntos; «Quitar el modelo de apoyo» solo existe con el modelo listo.
     await expect(page.getByRole('button', { name: 'Borrar todo', exact: true })).toBeEnabled();
@@ -68,8 +70,7 @@ test.describe('Bóveda (PC-6)', () => {
   });
 
   test('T-BO-01 T-IU-05 sin asuntos guardados: M-106 y «Borrar todo» deshabilitado', async ({ page }) => {
-    await page.goto('/');
-    await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
+    await irACargar(page);
     await abrirBoveda(page);
     await expect(page.locator('[data-prueba="sin-asuntos"]')).toHaveText('No hay casos guardados en este navegador.');
     await expect(page.getByRole('button', { name: 'Borrar todo', exact: true })).toBeDisabled();
@@ -79,9 +80,9 @@ test.describe('Bóveda (PC-6)', () => {
   test('T-BO-01 INV-V01 exportar cifrado pide la frase; importar con conflicto: «Importar con otro código» y «Reemplazar»; borrar con M-108', async ({ page }) => {
     await prepararBoveda(page);
     // Exportar: una frase equivocada da M-201 y no descarga nada; la correcta descarga el .siglow con nombre neutro (M-114).
-    await page.getByRole('button', { name: 'Exportar cifrado PRUEBA-BOV-01', exact: true }).click();
+    await page.getByRole('button', { name: 'Guardar la llave en un archivo: PRUEBA-BOV-01', exact: true }).click();
     const d = dialogo(page);
-    await expect(d).toContainText('Exportar PRUEBA-BOV-01');
+    await expect(d).toContainText('Guardar la llave de PRUEBA-BOV-01 en un archivo');
     await d.getByLabel('Contraseña de la llave del caso', { exact: true }).fill('una frase equivocada ficticia');
     await d.getByRole('button', { name: 'Guardar la llave para devolver los datos reales' }).click();
     await expect(d.getByText('Contraseña de la llave incorrecta o archivo dañado.')).toBeVisible({ timeout: 30_000 });
@@ -106,7 +107,7 @@ test.describe('Bóveda (PC-6)', () => {
     const entrada = page.locator('[data-prueba="archivo-siglow"]');
     await entrada.setInputFiles(ruta);
     await expect(page.locator('[data-prueba="archivo-elegido"]')).toHaveText('Archivo elegido.');
-    const importar = page.getByRole('button', { name: 'Importar', exact: true });
+    const importar = page.locator('[data-prueba="importar"]').getByRole('button', { name: 'Cargar', exact: true });   // «Cargar» la llave (antes «Importar»)
     await expect(importar).toBeDisabled();
     const fraseArchivo = page.getByLabel('Contraseña de la llave del archivo', { exact: true });
     await fraseArchivo.fill('una frase equivocada ficticia');
@@ -120,7 +121,7 @@ test.describe('Bóveda (PC-6)', () => {
     await conflicto.getByRole('button', { name: 'Cargar con otro código' }).click();
     await conflicto.getByLabel('Nuevo código del caso').fill('PRUEBA-BOV-02');
     await conflicto.getByRole('button', { name: 'Cargar con otro código' }).click();
-    await expect(aviso(page, 'M-1561')).toHaveText('Se importó el asunto PRUEBA-BOV-02.', { timeout: 30_000 });
+    await expect(aviso(page, 'M-1561')).toHaveText('Se cargó el caso PRUEBA-BOV-02.', { timeout: 30_000 });
     await expect(lista(page)).toHaveCount(2);
     expect([...await lista(page).locator('[data-prueba="codigo"]').allTextContents()].sort()).toEqual(['PRUEBA-BOV-01', 'PRUEBA-BOV-02']);
     await expect(conflicto).toHaveCount(0);
@@ -132,33 +133,33 @@ test.describe('Bóveda (PC-6)', () => {
     await importar.click();
     await expect(conflicto).toBeVisible({ timeout: 30_000 });
     await conflicto.getByRole('button', { name: 'Reemplazar', exact: true }).click();
-    await expect(aviso(page, 'M-1561')).toHaveText('Se importó el asunto PRUEBA-BOV-01.', { timeout: 30_000 });
+    await expect(aviso(page, 'M-1561')).toHaveText('Se cargó el caso PRUEBA-BOV-01.', { timeout: 30_000 });
     await expect(lista(page)).toHaveCount(2);
 
     // Borrar un asunto: M-108 con el código en el botón; «Cancelar» no borra; M-109 al borrar.
-    await page.getByRole('button', { name: 'Borrar PRUEBA-BOV-02', exact: true }).click();
+    await page.getByRole('button', { name: 'Borrar: PRUEBA-BOV-02', exact: true }).click();
     const borrar = page.getByRole('alertdialog', { name: 'Borrar PRUEBA-BOV-02' });
-    await expect(borrar).toContainText('Se borrará de este navegador la tabla del asunto PRUEBA-BOV-02. No se puede deshacer.');
+    await expect(borrar).toContainText('Se borrará de este navegador la llave del caso PRUEBA-BOV-02. No se puede deshacer.');
     await borrar.getByRole('button', { name: 'Cancelar' }).click();
     await expect(lista(page)).toHaveCount(2);
-    await page.getByRole('button', { name: 'Borrar PRUEBA-BOV-02', exact: true }).click();
+    await page.getByRole('button', { name: 'Borrar: PRUEBA-BOV-02', exact: true }).click();
     await borrar.getByRole('button', { name: 'Borrar PRUEBA-BOV-02' }).click();
-    await expect(aviso(page, 'M-109')).toContainText('La tabla se eliminó del navegador.');
+    await expect(aviso(page, 'M-109')).toContainText('La llave se eliminó del navegador.');
     await expect(lista(page)).toHaveCount(1);
     await expect(lista(page).locator('[data-prueba="codigo"]')).toHaveText('PRUEBA-BOV-01');
   });
 
   test('T-BO-01 cambiar la frase de paso: la anterior deja de abrir el asunto y la nueva lo abre; «Abrir» lo deja elegido en Inicio', async ({ page }) => {
     await prepararBoveda(page);
-    await page.getByRole('button', { name: 'Cambiar frase de paso PRUEBA-BOV-01', exact: true }).click();
+    await page.getByRole('button', { name: 'Cambiar la contraseña de la llave: PRUEBA-BOV-01', exact: true }).click();
     const d = dialogo(page);
-    await expect(d).toContainText('Cambiar la frase de paso de PRUEBA-BOV-01');
+    await expect(d).toContainText('Cambiar la contraseña de la llave de PRUEBA-BOV-01');
     const cambiar = d.getByRole('button', { name: 'Cambiar la contraseña de la llave', exact: true });
     await expect(cambiar).toBeDisabled();
     await d.getByLabel('Contraseña actual de la llave', { exact: true }).fill('una frase equivocada ficticia');
     await d.getByLabel('Contraseña de la llave. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.', { exact: true }).fill(FRASE_NUEVA);
     await d.getByLabel('Repita la contraseña de la llave', { exact: true }).fill(FRASE_NUEVA);
-    await d.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
+    await d.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi contraseña de la llave/ }).check();
     await cambiar.click();
     await expect(d.getByText('Contraseña de la llave incorrecta o archivo dañado.')).toBeVisible({ timeout: 30_000 });
     // M-20 (6.6.5): las tres frases se vacían al terminar el intento, también si falla; se escriben otra vez.
@@ -169,12 +170,13 @@ test.describe('Bóveda (PC-6)', () => {
     await d.getByLabel('Contraseña de la llave. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.', { exact: true }).fill(FRASE_NUEVA);
     await d.getByLabel('Repita la contraseña de la llave', { exact: true }).fill(FRASE_NUEVA);
     await cambiar.click();
-    await expect(aviso(page, 'M-1560')).toContainText('La frase de paso cambió.', { timeout: 30_000 });
+    await expect(aviso(page, 'M-1560')).toContainText('La contraseña de la llave cambió.', { timeout: 30_000 });
     await expect(d).toBeHidden();
 
     // «Abrir» lleva a Inicio con el asunto elegido; la frase anterior ya no abre y la nueva sí.
-    await page.getByRole('button', { name: 'Abrir PRUEBA-BOV-01', exact: true }).click();
+    await page.getByRole('button', { name: 'Abrir: PRUEBA-BOV-01', exact: true }).click();
     await expect(h1(page, 'Cargar documento')).toBeVisible();
+    await abrirAvanzadas(page);   // el formulario de abrir un caso guardado está en «Opciones avanzadas»
     const sel = page.getByLabel('Caso guardado', { exact: true });
     await expect(sel.locator('option:checked')).toContainText('PRUEBA-BOV-01');
     await page.getByLabel('Contraseña de la llave del caso', { exact: true }).fill(FRASE);
@@ -182,14 +184,17 @@ test.describe('Bóveda (PC-6)', () => {
     await expect(page.getByText('Contraseña de la llave incorrecta o archivo dañado.')).toBeVisible({ timeout: 30_000 });
     await page.getByLabel('Contraseña de la llave del caso', { exact: true }).fill(FRASE_NUEVA);
     await page.getByRole('button', { name: 'Abrir el caso' }).click();
-    await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible({ timeout: 30_000 });
-    await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible();     // la tabla y la lista siguen ahí
+    // Abrir un caso se queda en Cargar documento (D-23): el caso aparece abierto y su lista de nombres sigue ahí.
+    await expect(page.locator('[data-prueba="caso-abierto"]')).toContainText('PRUEBA-BOV-01', { timeout: 30_000 });
+    await editarLista(page);
+    await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible();
   });
 
   test('T-BO-01 B-21 M-7 el bloqueo de otra pestaña aborta un «Abrir» en curso aunque no haya asunto abierto: Inicio vacía la frase, muestra M-102 y no M-202', async ({ page }) => {
     await prepararBoveda(page);
     await page.getByRole('button', { name: 'Volver', exact: true }).click();
     await expect(h1(page, 'Cargar documento')).toBeVisible();
+    await abrirAvanzadas(page);
     // La otra pestaña ya está cargada (no se pierde tiempo después del clic): solo envía el mensaje del canal de bloqueo (8.2.10).
     const otra = await page.context().newPage();
     await otra.goto('/');
@@ -217,7 +222,7 @@ test.describe('Bóveda (PC-6)', () => {
     await prepararBoveda(page);
     await page.getByRole('button', { name: 'Borrar todo', exact: true }).click();
     const d = page.getByRole('alertdialog', { name: 'Borrar todos los casos' });
-    await expect(d).toContainText('Se borrarán de este navegador todos los asuntos guardados y sus tablas. No se puede deshacer.');
+    await expect(d).toContainText('Se borrarán de este navegador todos los casos guardados y sus llaves. No se puede deshacer.');
     const confirmar = d.getByRole('button', { name: 'Borrar todo', exact: true });
     await expect(confirmar).toBeDisabled();
     await d.getByLabel('Escriba BORRAR para confirmar').fill('borrar');
@@ -225,12 +230,13 @@ test.describe('Bóveda (PC-6)', () => {
     await d.getByLabel('Escriba BORRAR para confirmar').fill('BORRAR');
     await expect(confirmar).toBeEnabled();
     await confirmar.click();
-    await expect(aviso(page, 'M-111')).toContainText('Los asuntos se eliminaron del navegador.', { timeout: 30_000 });
+    await expect(aviso(page, 'M-111')).toContainText('Los casos se eliminaron del navegador.', { timeout: 30_000 });
     await expect(page.locator('[data-prueba="sin-asuntos"]')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Borrar todo', exact: true })).toBeDisabled();
     expect(await page.evaluate(async () => (await indexedDB.databases()).map((b) => b.name))).not.toContain('siglow-boveda');
-    // Inicio ya no lista el asunto.
+    // Cargar documento ya no lista el caso (el formulario de abrir está en «Opciones avanzadas»).
     await page.getByRole('button', { name: 'Volver', exact: true }).click();
+    await abrirAvanzadas(page);
     await expect(page.locator('[data-prueba="sin-asuntos"]')).toBeVisible();
   });
 });

@@ -5,6 +5,7 @@ import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, wri
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { serializarLista, sha256Hex, type ArchivoPrecache } from '../../vite-plugins/precache.ts';
+import { anonimizar, crearCaso, pegarTexto } from './lib/flujo';
 import { guardarOriginales, type ConNativo } from './lib/originales';
 
 // Ciclo de vida del service worker (10.5.6, 3.2; PD-1): T-SW-01 a T-SW-03 y T-PV-10.
@@ -18,7 +19,7 @@ const DIST = resolve('dist');
 const CAMPOS = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
 const NOMBRE_INSEGURO = 'sig-low.prueba';
 const M35 = 'Sig-Low todavía no puede recibir documentos';
-const M38 = 'Esta dirección no usa conexión cifrada (https)'; // resuelve a 127.0.0.1 solo en el navegador de T-SW-03: http y no localhost
+const M38 = 'Esta dirección no usa conexión protegida (https)'; // resuelve a 127.0.0.1 solo en el navegador de T-SW-03: http y no localhost
 
 interface Peticion { t: number; m: string; u: string }
 interface Servidor { origen: string; peticiones: () => Peticion[]; parar: () => Promise<void> }
@@ -210,7 +211,7 @@ test.describe('T-SW-01 sin controlador', () => {
         controlador: navigator.serviceWorker.controller !== null,
         activo: (await navigator.serviceWorker.getRegistration())?.active?.state ?? null,
       }))).toEqual({ controlador: false, activo: 'activated' });
-      await esperarSinSw(page, 'si recargó con Mayús + F5, recargue de forma normal');
+      await esperarSinSw(page, 'una recarga normal, no forzada');
       // Control negativo (V-13): sin controlador no hay interruptor y un POST al propio origen sí llega al servidor
       // (solo lo frena la CSP si es a otro origen). Por eso la app no acepta documentos en este estado.
       const corte = srv.peticiones().length;
@@ -330,11 +331,8 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
     const page = await abrirControlada(ctx);
     const h1 = (nombre: string) => page.getByRole('heading', { level: 1, name: nombre });
     await expect(h1('Cargar documento')).toBeVisible({ timeout: 25_000 });
-    // Asunto «No guardar» (ficticio): su tabla existe solo en memoria y la recarga la borraría.
-    await page.getByLabel('Código del caso').fill('PRUEBA-SW-02');
-    await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await page.getByRole('button', { name: 'Crear caso' }).click();
-    await expect(h1('Nombres que siempre deben ocultarse')).toBeVisible();
+    // Caso «No guardar» (ficticio, creado en «Opciones avanzadas»): su llave existe solo en memoria y la recarga la borraría.
+    await crearCaso(page, { codigo: 'PRUEBA-SW-02', guardar: false });
     await publicarV2(page);
     const banda = page.locator('[data-prueba="banda-actualizacion"]');
     const ahora = banda.getByRole('button', { name: 'Actualizar ahora' });
@@ -355,6 +353,46 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
     await ctx.close();
   });
 
+  // D-23: en el flujo por defecto Sig-Low abre un caso efímero que el abogado no ve. Con una vista previa en curso, el aviso de versión
+  // nueva aparece, v1 sigue controlando y «Actualizar ahora» exige aceptar que la revisión en curso se perderá (M-105).
+  test('T-SW-02 @cero-red D-23 flujo por defecto (caso efímero): la versión nueva queda en espera con la vista previa en curso y «Actualizar ahora» no se puede usar sin aceptar que se perderá', async ({ browser }) => {
+    const ctx = await browser.newContext({ baseURL: srv.origen });
+    const page = await abrirControlada(ctx);
+    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible({ timeout: 25_000 });
+    await pegarTexto(page, 'Cédula 1.000.000.017.');
+    await anonimizar(page);
+    await publicarV2(page);
+    expect(await servidaPor(page)).toBe('v1');
+    const banda = page.locator('[data-prueba="banda-actualizacion"]');
+    await expect(banda).toContainText('Hay una versión nueva de Sig-Low.');
+    await expect(banda.getByRole('button', { name: 'Actualizar ahora' })).toBeDisabled();
+    await expect(banda.getByRole('checkbox', { name: 'Entiendo que la revisión en curso se perderá al actualizar.' })).toBeVisible();
+    // El caso efímero no se ve, pero «Bloquear» sí: tras bloquear ya no hay nada en memoria y se puede aplicar.
+    await expect(page.locator('[data-prueba="chip-asunto"]')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
+    await expect(banda.getByRole('button', { name: 'Actualizar ahora' })).toBeEnabled();
+    await ctx.close();
+  });
+
+  // DEFECTO DE PRODUCTO (src/ui/Armazon.tsx, `respaldada` de BandaActualizacion): con el caso efímero y una llave aún vacía
+  // (backedUpRevision null frente a tableRevision 0) el aviso pide «guarde la llave» y «Actualizar ahora» sigue deshabilitado aunque se
+  // acepte M-105. Con D-23 el abogado no creó ningún caso ni conoce la llave: aceptar que la revisión en curso se perderá debería bastar.
+  test('T-SW-02 @cero-red D-23 flujo por defecto (caso efímero, llave vacía): aceptar que la revisión en curso se perderá basta para «Actualizar ahora» y no se pide guardar una llave', async ({ browser }) => {
+    const ctx = await browser.newContext({ baseURL: srv.origen });
+    const page = await abrirControlada(ctx);
+    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible({ timeout: 25_000 });
+    await pegarTexto(page, 'Cédula 1.000.000.017.');
+    await anonimizar(page);
+    await publicarV2(page);
+    const banda = page.locator('[data-prueba="banda-actualizacion"]');
+    const ahora = banda.getByRole('button', { name: 'Actualizar ahora' });
+    await banda.getByRole('checkbox', { name: 'Entiendo que la revisión en curso se perderá al actualizar.' }).check();
+    await expect(banda).not.toContainText('Antes de actualizar, guarde la llave');
+    await expect(ahora).toBeEnabled();
+    await ctx.close();
+  });
+
   // B-11 (P0-6a de PD-1): el aviso solo ve la tabla de su pestaña, pero SKIP_WAITING vale para todas. Con otra pestaña
   // de Sig-Low abierta, el SW no lo aplica (ni desde la interfaz ni con el mensaje directo) y el aviso pide cerrarla.
   test('T-SW-02 @cero-red con dos pestañas abiertas, SKIP_WAITING no cambia el controlador y el aviso pide cerrar la otra; con una sola, «Actualizar ahora» aplica v2', async ({ browser }) => {
@@ -364,10 +402,7 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible({ timeout: 25_000 });
     // La otra pestaña tiene un asunto «No guardar» (ficticio): su tabla existe solo en su memoria.
     await expect(otra.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible({ timeout: 25_000 });
-    await otra.getByLabel('Código del caso').fill('PRUEBA-SW-02');
-    await otra.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await otra.getByRole('button', { name: 'Crear caso' }).click();
-    await expect(otra.getByRole('heading', { level: 1, name: 'Nombres que siempre deben ocultarse' })).toBeVisible();
+    await crearCaso(otra, { codigo: 'PRUEBA-SW-02', guardar: false });
     await publicarV2(page);
     expect(await ventanasQueVeLaEspera(ctx)).toBe(2);
     await marcar(page);
@@ -422,10 +457,7 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
     const page = await abrirControlada(ctx);
     const otra = await abrirControlada(ctx);
     await expect(otra.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible({ timeout: 25_000 });
-    await otra.getByLabel('Código del caso').fill('PRUEBA-SW-02');
-    await otra.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await otra.getByRole('button', { name: 'Crear caso' }).click();
-    await expect(otra.getByRole('heading', { level: 1, name: 'Nombres que siempre deben ocultarse' })).toBeVisible();
+    await crearCaso(otra, { codigo: 'PRUEBA-SW-02', guardar: false });
     await publicarV2(page);
     await marcar(page);
     await marcar(otra);
@@ -443,8 +475,8 @@ test.describe('T-SW-02 y T-PV-10 actualización', () => {
       await expect.poll(() => estadoPestana(p)).toEqual({ sinRecarga: true, activo: 'activated', espera: null });
       expect(await servidaPor(p)).toBe('v2');
     }
-    // La tabla «No guardar» de la otra pestaña sigue en memoria, y el aviso ofrece exportarla antes de recargar.
-    await expect(otra.getByRole('heading', { level: 1, name: 'Nombres que siempre deben ocultarse' })).toBeVisible();
+    // La llave «No guardar» de la otra pestaña sigue en memoria, y el aviso ofrece guardarla antes de recargar.
+    await expect(otra.locator('[data-prueba="caso-abierto"]')).toBeVisible();
     await expect(otra.locator('[data-prueba="chip-asunto"]')).toContainText('PRUEBA-SW-02');
     await expect(otra.locator('[data-prueba="aviso-version-cambiada"]').getByRole('button', { name: 'Guardar la llave para devolver los datos reales' })).toBeVisible();
     await page.waitForTimeout(1_000);

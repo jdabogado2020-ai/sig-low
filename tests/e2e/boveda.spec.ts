@@ -15,6 +15,7 @@ import { build } from 'vite';
 import type { AsuntoId } from '../../src/core/types';
 import type { BovedaCompleta } from '../../src/ui/boveda-idb';
 import { iteracionesPara } from '../../src/vault/crypto';
+import { abrirAvanzadas, aDescargar, anonimizar, confirmar, abrirMasFormatos, crearCaso, editarLista, h1 as h1De, irACargar, pegarLista, pegarTexto } from './lib/flujo';
 import { levantarServidor, type Servidor } from './lib/servidores';
 
 const RAIZ = process.cwd();
@@ -925,29 +926,31 @@ test.describe('bóveda en el navegador (arnés)', () => {
 // ===== T-BO-01 en la app real (dist/ servido por server.mjs con _headers): la interfaz de PC-1 con la bóveda conectada =====
 test.describe('bóveda en la app', () => {
   test.describe.configure({ timeout: 120_000 });
+  test.use({ permissions: ['clipboard-read', 'clipboard-write'], acceptDownloads: true });
   const FRASE_APP = 'frase de prueba ficticia ñandú';
   const ETIQUETA_FRASE = 'Contraseña de la llave. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.';
 
-  /** Crea un asunto con «Guardar tabla cifrada», agrega «Ana Ficticia Rojas» a la lista y continúa (la lista se guarda cifrada). */
+  /**
+   * Flujo v1.1 (D-23): en «Opciones avanzadas» de Cargar crea un caso con «Guardar la llave en este equipo» y contraseña, agrega
+   * «Ana Ficticia Rojas» a la lista (que se guarda cifrada) y vuelve a Cargar con el caso abierto.
+   */
   async function crearGuardado(page: Page, codigo: string): Promise<void> {
-    await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
-    await page.getByLabel('Código del caso').fill(codigo);
-    await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
-    await page.getByLabel(ETIQUETA_FRASE, { exact: true }).fill(FRASE_APP);
-    await page.getByLabel('Repita la contraseña de la llave', { exact: true }).fill(FRASE_APP);
-    await page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
-    await page.getByRole('button', { name: 'Crear caso' }).click();
+    await irACargar(page);
+    await crearCaso(page, { codigo, guardar: true, frase: FRASE_APP });
     // Resultado de persist() visible (M-21 concedido o M-22 no concedido).
     await expect(page.locator('[data-prueba="aviso-M-21"], [data-prueba="aviso-M-22"]')).toBeVisible({ timeout: 30_000 });
-    await page.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante');
-    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
-    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
-    await page.getByRole('button', { name: 'Continuar' }).click();
-    await expect(page.getByRole('textbox', { name: 'Texto del documento' })).toBeVisible({ timeout: 30_000 });
+    await editarLista(page);
+    await pegarLista(page, 'Ana Ficticia Rojas; demandante');
+    await expect(page.locator('[data-prueba="caso-abierto"]')).toContainText(codigo);
+  }
+  /** Con el caso abierto, la lista de nombres que siempre deben ocultarse conserva a «Ana Ficticia Rojas» (la llave cifrada se abrió bien). */
+  async function verLista(page: Page): Promise<void> {
+    await editarLista(page);
+    await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
   }
 
   async function abrirGuardado(page: Page, codigo: string, frase: string): Promise<void> {
+    await abrirAvanzadas(page);   // el formulario de abrir un caso guardado está en «Opciones avanzadas» de Cargar documento
     const sel = page.getByLabel('Caso guardado', { exact: true });
     const valor = await sel.locator('option', { hasText: codigo }).getAttribute('value');
     await sel.selectOption(valor!);
@@ -1029,7 +1032,7 @@ test.describe('bóveda en la app', () => {
     await abrirGuardado(page, 'PRUEBA-001', 'frase de prueba ficticia nandu');
     await expect(page.getByText('Contraseña de la llave incorrecta o archivo dañado.')).toBeVisible({ timeout: 30_000 });
     await abrirGuardado(page, 'PRUEBA-001', FRASE_APP.normalize('NFD'));
-    await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
+    await verLista(page);
     expect(await page.title()).toBe('Sig-Low');
   });
 
@@ -1041,10 +1044,10 @@ test.describe('bóveda en la app', () => {
     });
     await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
     await expect(page.getByText(M102)).toBeVisible();
-    await expect(page.getByRole('textbox', { name: 'Texto del documento' })).toHaveCount(0);
+    await expect(page.locator('[data-prueba="caso-abierto"]')).toHaveCount(0);   // sin caso abierto tras el bloqueo
     await expect(page.getByText('Ana Ficticia Rojas')).toHaveCount(0);
     await abrirGuardado(page, 'PRUEBA-002', FRASE_APP);
-    await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
+    await verLista(page);
   });
 
   test('T-BO-01 @humo app: bloqueo por inactividad con reloj simulado: aviso a los 14 min, bloqueo a los 15; se reabre con la frase', async ({ page }) => {
@@ -1056,18 +1059,12 @@ test.describe('bóveda en la app', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
     await expect(page.getByText(M102)).toBeVisible();
     await abrirGuardado(page, 'PRUEBA-003', FRASE_APP);
-    await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
+    await verLista(page);
   });
 
   test('T-BO-01 @humo app M-5: si otra pestaña borra el registro del asunto abierto, el siguiente guardado bloquea (M-102, estado vacío) y el asunto no vuelve', async ({ page, context }) => {
-    await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
-    await page.getByLabel('Código del caso').fill('PRUEBA-005');
-    await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
-    await page.getByLabel(ETIQUETA_FRASE, { exact: true }).fill(FRASE_APP);
-    await page.getByLabel('Repita la contraseña de la llave', { exact: true }).fill(FRASE_APP);
-    await page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
-    await page.getByRole('button', { name: 'Crear caso' }).click();
+    await irACargar(page);
+    await crearCaso(page, { codigo: 'PRUEBA-005', guardar: true, frase: FRASE_APP });
     await expect(page.locator('[data-prueba="aviso-M-21"], [data-prueba="aviso-M-22"]')).toBeVisible({ timeout: 30_000 });
     // Otra pestaña borra el registro directamente en IndexedDB (sin `versionchange` ni aviso del adaptador).
     const otra = await context.newPage();
@@ -1082,16 +1079,15 @@ test.describe('bóveda en la app', () => {
       };
     }));
     await otra.close();
-    // «Continuar» guarda la lista del caso: el registro no se recrea y la pestaña se bloquea.
-    await page.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante');
-    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
-    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
-    await page.getByRole('button', { name: 'Continuar' }).click();
+    // «Continuar» de la lista guarda la lista del caso: el registro no se recrea y la pestaña se bloquea.
+    await editarLista(page);
+    await pegarLista(page, 'Ana Ficticia Rojas; demandante');
     await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible({ timeout: 30_000 });
-    await expect(page.getByText(M102)).toBeVisible();
+    await expect(page.getByText(M102)).toBeVisible({ timeout: 30_000 });
+    await abrirAvanzadas(page);
     await expect(page.locator('[data-prueba="sin-asuntos"]')).toBeVisible();   // M-106: no volvió a la lista
     await expect(page.getByText('Ana Ficticia Rojas')).toHaveCount(0);
-    await expect(page.getByRole('textbox', { name: 'Texto del documento' })).toHaveCount(0);
+    await expect(page.locator('[data-prueba="caso-abierto"]')).toHaveCount(0);
     expect(await page.evaluate(() => new Promise<number>((ok) => {
       const q = indexedDB.open('siglow-boveda');
       q.onsuccess = () => { const g = q.result.transaction('asuntos').objectStore('asuntos').count(); g.onsuccess = () => { q.result.close(); ok(g.result); }; };
@@ -1102,6 +1098,7 @@ test.describe('bóveda en la app', () => {
     await crearGuardado(page, 'PRUEBA-006');
     await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
+    await abrirAvanzadas(page);
     const sel = page.getByLabel('Caso guardado', { exact: true });
     await sel.selectOption((await sel.locator('option', { hasText: 'PRUEBA-006' }).getAttribute('value'))!);
     await page.getByLabel('Contraseña de la llave del caso', { exact: true }).fill(FRASE_APP);
@@ -1123,7 +1120,7 @@ test.describe('bóveda en la app', () => {
     await expect(page.getByRole('textbox', { name: 'Texto de la lista' })).toHaveCount(0);
     // Con la frase, sin salir de la página, sí abre.
     await abrirGuardado(page, 'PRUEBA-006', FRASE_APP);
-    await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
+    await verLista(page);
   });
 
   // ===== PC-6-r2 · M-7: un bloqueo vacía las frases de Inicio (6.6.5, V-19, V-35) =====
@@ -1137,6 +1134,7 @@ test.describe('bóveda en la app', () => {
     const otra = await context.newPage();
     await otra.goto('/');
     await expect(otra.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
+    await abrirAvanzadas(page);
     const sel = page.getByLabel('Caso guardado', { exact: true });
     await sel.selectOption((await sel.locator('option', { hasText: 'PRUEBA-007' }).getAttribute('value'))!);
     await campoAbrir(page).fill(FRASE_APP);
@@ -1163,7 +1161,7 @@ test.describe('bóveda en la app', () => {
     await expect(page.getByText('No se pudo completar la operación.', { exact: false })).toHaveCount(0);
     // Con la frase escrita otra vez, abre.
     await abrirGuardado(page, 'PRUEBA-007', FRASE_APP);
-    await expect(page.getByText('Ana Ficticia Rojas').first()).toBeVisible({ timeout: 30_000 });
+    await verLista(page);
     await otra.close();
   });
 
@@ -1177,23 +1175,24 @@ test.describe('bóveda en la app', () => {
     const otra = await context.newPage();
     await otra.goto('/');
     await expect(otra.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
-    // S11: las dos frases de «Crear asunto» escritas, sin enviar; el bloqueo llega por el canal.
+    // S11: las dos frases de «Crear caso» escritas, sin enviar; el bloqueo llega por el canal.
+    await abrirAvanzadas(page);
     await page.getByLabel('Código del caso').fill('PRUEBA-009');
-    await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
+    await page.getByRole('radio', { name: /^Guardar la llave en este equipo/ }).check();
     await page.getByLabel(ETIQUETA_FRASE, { exact: true }).fill(FRASE_APP);
     await page.getByLabel('Repita la contraseña de la llave', { exact: true }).fill(FRASE_APP);
-    await page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
+    await page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi contraseña de la llave/ }).check();
     await campoAbrir(page).fill(FRASE_APP);
     await bloquearDesde(otra);
     await expect(page.locator('[data-prueba="aviso-bloqueo"]')).toContainText(M102);
     // El formulario se volvió a montar: sin modo elegido (los campos de frase ni existen), sin casilla y sin la frase de «Abrir».
-    await expect(page.getByRole('radio', { name: /^Guardar tabla cifrada/ })).not.toBeChecked();
+    await expect(page.getByRole('radio', { name: /^Guardar la llave en este equipo/ })).not.toBeChecked();
     await expect(page.getByLabel(ETIQUETA_FRASE, { exact: true })).toHaveCount(0);
     await expect(campoAbrir(page)).toHaveValue('');
-    await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
+    await page.getByRole('radio', { name: /^Guardar la llave en este equipo/ }).check();
     await expect(page.getByLabel(ETIQUETA_FRASE, { exact: true })).toHaveValue('');
     await expect(page.getByLabel('Repita la contraseña de la llave', { exact: true })).toHaveValue('');
-    await expect(page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ })).not.toBeChecked();
+    await expect(page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi contraseña de la llave/ })).not.toBeChecked();
     expect(await camposConTexto(page)).toBe(0);
     await otra.close();
     // S10: la frase escrita en «Abrir» y en «Crear asunto»; la página sale y vuelve de la caché de páginas.
@@ -1211,22 +1210,22 @@ test.describe('bóveda en la app', () => {
 
   test('T-BO-01 @humo app M-7 INV-G09: sin asunto abierto, una frase escrita en Inicio hace correr el bloqueo por inactividad (aviso a los 14 min, bloqueo a los 15)', async ({ page }) => {
     await page.clock.install();
-    await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
+    await irACargar(page);
+    await abrirAvanzadas(page);
     // Sin frase escrita no hay nada que bloquear: ni aviso ni M-102.
     await page.clock.fastForward('16:00');
     await expect(page.getByRole('alertdialog')).toHaveCount(0);
     await expect(page.getByText(M102)).toHaveCount(0);
     // Con la frase escrita y olvidada en «Crear asunto».
     await page.getByLabel('Código del caso').fill('PRUEBA-010');
-    await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
+    await page.getByRole('radio', { name: /^Guardar la llave en este equipo/ }).check();
     await page.getByLabel(ETIQUETA_FRASE, { exact: true }).fill(FRASE_APP);
     await page.clock.fastForward('14:05');
     await expect(page.getByRole('button', { name: 'Seguir trabajando' })).toBeVisible();
     await page.clock.fastForward('01:00');
     await expect(page.getByRole('alertdialog')).toHaveCount(0);
     await expect(page.getByText(M102)).toBeVisible();
-    await expect(page.getByRole('radio', { name: /^Guardar tabla cifrada/ })).not.toBeChecked();
+    await expect(page.getByRole('radio', { name: /^Guardar la llave en este equipo/ })).not.toBeChecked();
     await expect(page.getByLabel(ETIQUETA_FRASE, { exact: true })).toHaveCount(0);
     expect(await camposConTexto(page)).toBe(0);
     // Ya sin frase, el reloj vuelve a no contar.
@@ -1236,7 +1235,8 @@ test.describe('bóveda en la app', () => {
 
   // ===== AJ-1 · M-20: la misma regla que M-7 en los diálogos de la Bóveda (Exportar, Cambiar frase, Importar) y en el menú del asunto =====
   const aLaBoveda = async (page: Page): Promise<void> => {
-    await page.getByRole('button', { name: 'Casos guardados', exact: true }).click();
+    await abrirAvanzadas(page);
+    await page.getByRole('button', { name: 'Casos guardados en este equipo', exact: true }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Casos guardados' })).toBeVisible();
   };
   const dialogoAbierto = (page: Page) => page.locator('dialog[open]');
@@ -1255,12 +1255,12 @@ test.describe('bóveda en la app', () => {
     const casos: ReadonlyArray<{ nombre: string; abrir: () => Promise<void>; campo: () => ReturnType<Page['getByLabel']> }> = [
       {
         nombre: 'Guardar la llave en un archivo',
-        abrir: async () => { await page.getByRole('button', { name: 'Exportar cifrado PRUEBA-011', exact: true }).click(); await expect(dialogoAbierto(page)).toBeVisible(); },
+        abrir: async () => { await page.getByRole('button', { name: 'Guardar la llave en un archivo: PRUEBA-011', exact: true }).click(); await expect(dialogoAbierto(page)).toBeVisible(); },
         campo: () => dialogoAbierto(page).getByLabel('Contraseña de la llave del caso', { exact: true }),
       },
       {
         nombre: 'Cambiar la contraseña de la llave',
-        abrir: async () => { await page.getByRole('button', { name: 'Cambiar frase de paso PRUEBA-011', exact: true }).click(); await expect(dialogoAbierto(page)).toBeVisible(); },
+        abrir: async () => { await page.getByRole('button', { name: 'Cambiar la contraseña de la llave: PRUEBA-011', exact: true }).click(); await expect(dialogoAbierto(page)).toBeVisible(); },
         campo: () => dialogoAbierto(page).getByLabel('Contraseña actual de la llave', { exact: true }),
       },
       {
@@ -1305,7 +1305,7 @@ test.describe('bóveda en la app', () => {
     await aLaBoveda(page);
     const ERROR_FRASE = 'Contraseña de la llave incorrecta o archivo dañado.';
     // Exportar cifrado con una frase errónea: M-201 y el campo vacío.
-    await page.getByRole('button', { name: 'Exportar cifrado PRUEBA-012', exact: true }).click();
+    await page.getByRole('button', { name: 'Guardar la llave en un archivo: PRUEBA-012', exact: true }).click();
     const d = dialogoAbierto(page);
     await d.getByLabel('Contraseña de la llave del caso', { exact: true }).fill('una frase equivocada ficticia');
     await d.getByRole('button', { name: 'Guardar la llave para devolver los datos reales' }).click();
@@ -1314,11 +1314,11 @@ test.describe('bóveda en la app', () => {
     expect(await camposConTexto(page)).toBe(0);
     await page.keyboard.press('Escape');
     // Cambiar frase con la actual errónea: M-201 y las tres frases vacías.
-    await page.getByRole('button', { name: 'Cambiar frase de paso PRUEBA-012', exact: true }).click();
+    await page.getByRole('button', { name: 'Cambiar la contraseña de la llave: PRUEBA-012', exact: true }).click();
     await d.getByLabel('Contraseña actual de la llave', { exact: true }).fill('una frase equivocada ficticia');
     await d.getByLabel(ETIQUETA_FRASE, { exact: true }).fill('otra frase ficticia distinta ñandú 2');
     await d.getByLabel('Repita la contraseña de la llave', { exact: true }).fill('otra frase ficticia distinta ñandú 2');
-    await d.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
+    await d.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi contraseña de la llave/ }).check();
     await d.getByRole('button', { name: 'Cambiar la contraseña de la llave', exact: true }).click();
     await expect(d.getByText(ERROR_FRASE)).toBeVisible({ timeout: 30_000 });
     expect(await camposConTexto(page)).toBe(0);
@@ -1354,25 +1354,54 @@ test.describe('bóveda en la app', () => {
 
   test('T-BO-01 @humo app: sin IndexedDB «Guardar» queda deshabilitado con M-208 y «No guardar» sigue disponible', async ({ page }) => {
     await page.addInitScript(() => { Object.defineProperty(globalThis, 'indexedDB', { value: undefined, configurable: true }); });
-    await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
-    await expect(page.getByRole('radio', { name: /^Guardar tabla cifrada/ })).toBeDisabled();
+    await irACargar(page);
+    await abrirAvanzadas(page);
+    await expect(page.getByRole('radio', { name: /^Guardar la llave en este equipo/ })).toBeDisabled();
     await expect(page.locator('[data-prueba="guardar-no-disponible"]')).toContainText('Este navegador no permite guardar datos de Sig-Low');
-    await expect(page.getByRole('radio', { name: /^No guardar la tabla/ })).toBeEnabled();
+    await expect(page.getByRole('radio', { name: /^No guardar la llave/ })).toBeEnabled();
   });
 
+  const bases = (page: Page): Promise<string[]> => page.evaluate(async () => (await indexedDB.databases()).map((d) => d.name ?? ''));
+  const almacenLocal = (page: Page): Promise<[number, number, string]> =>
+    page.evaluate(() => [localStorage.length, sessionStorage.length, document.cookie] as [number, number, string]);
+
   test('T-BO-01 @humo app: «No guardar» (M-14) no escribe nada en IndexedDB, ni una base vacía', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1, name: 'Cargar documento' })).toBeVisible();
+    await irACargar(page);
+    await abrirAvanzadas(page);
     await expect(page.locator('[data-prueba="sin-asuntos"]')).toBeVisible();   // listar() ya corrió
-    await page.getByLabel('Código del caso').fill('PRUEBA-004');
-    await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-    await page.getByRole('button', { name: 'Crear caso' }).click();
-    await page.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante');
-    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
-    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
-    await page.getByRole('button', { name: 'Continuar' }).click();
-    await expect(page.getByRole('textbox', { name: 'Texto del documento' })).toBeVisible();
-    expect(await page.evaluate(async () => (await indexedDB.databases()).map((d) => d.name))).toEqual([]);
+    await crearCaso(page, { codigo: 'PRUEBA-004', guardar: false });
+    await editarLista(page);
+    await pegarLista(page, 'Ana Ficticia Rojas; demandante');
+    await pegarTexto(page, 'La señora Ana Ficticia Rojas firmó el oficio.');
+    await anonimizar(page);
+    expect(await bases(page)).toEqual([]);
+    expect(await almacenLocal(page)).toEqual([0, 0, '']);
+  });
+
+  // D-23: el flujo por defecto abre un caso efímero en memoria («No guardar», código automático). Nada de eso toca el almacenamiento:
+  // ni IndexedDB (ni una base vacía), ni localStorage, ni sessionStorage, ni cookies; tampoco al copiar ni al descargar.
+  test('T-BO-01 @humo INV-V07 app D-23: el flujo por defecto (caso efímero) no escribe nada en IndexedDB ni en el almacenamiento local, ni al analizar, ni al copiar, ni al descargar', async ({ page }) => {
+    await irACargar(page);
+    await pegarTexto(page, 'La señora Ana Ficticia Rojas, con cédula 1.000.000.017, firmó el oficio. Su correo es ana.ficticia@ejemplo.test.');
+    await anonimizar(page);
+    // El caso efímero existe pero no se ve: sin chip ni menú del caso; «Bloquear» sí aparece.
+    await expect(page.locator('[data-prueba="chip-asunto"]')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Opciones del caso', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Bloquear', exact: true })).toBeVisible();
+    expect(await bases(page)).toEqual([]);
+    expect(await almacenLocal(page)).toEqual([0, 0, '']);
+    await aDescargar(page);
+    await confirmar(page);
+    await abrirMasFormatos(page);
+    await page.getByRole('button', { name: 'Copiar texto anonimizado' }).click();
+    await expect(page.locator('[data-aviso="M-84"]')).toBeVisible();
+    const [d] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Descargar documento (.docx)' }).click()]);
+    expect(d.suggestedFilename()).toMatch(/^sig-low-anonimizado-\d{8}-\d{4}\.docx$/);
+    expect(await bases(page)).toEqual([]);
+    expect(await almacenLocal(page)).toEqual([0, 0, '']);
+    // Bloquear vacía el caso efímero y no deja nada guardado.
+    await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
+    await expect(h1De(page, 'Cargar documento')).toBeVisible();
+    expect(await bases(page)).toEqual([]);
   });
 });

@@ -1,8 +1,13 @@
-// Ayudas de las pruebas E2E de Reinserción y Bóveda (PC-6). No es una prueba: lo importan reinsercion.spec.ts, boveda-ui.spec.ts y la
-// fase «reinserción» de zero-network.spec.ts. Llevan la app real (dist/) hasta una tabla consolidada con el flujo de la demo: crear el
-// asunto, pegar la lista, analizar, decidir cada mención con el teclado, pasar por Listo y copiar (la copia consolida la numeración, 6.6.4).
+// Ayudas de las pruebas E2E de «Devolver los datos reales» y «Casos guardados» (PC-6; flujo v1.1). No es una prueba: lo importan
+// reinsercion.spec.ts, boveda-ui.spec.ts, privacy-surface.spec.ts y la fase «reinserción» de zero-network.spec.ts. Llevan la app real
+// (dist/) hasta una llave consolidada con el flujo nuevo: crear el caso en «Opciones avanzadas», pegar la lista, pegar el texto,
+// anonimizar (la vista previa ya trae todo aceptado, D-24), pasar a Descargar y copiar (la copia consolida la numeración, 6.6.4).
 // Datos ficticios evidentes (10.1.5).
 import { expect, type BrowserContext, type Page } from '@playwright/test';
+import {
+  abrirAvanzadas, abrirMasFormatos, aDescargar, anonimizar, confirmar, crearCaso, editarLista, esperarBusqueda, etiquetas, h1, irACargar,
+  pegarLista, pegarTexto,
+} from './lib/flujo';
 
 export const FRASE = 'frase de prueba ficticia ñandú';
 
@@ -12,66 +17,50 @@ export const DOCUMENTO_REI = [
   'Señora Ana Ficticia Rojas, cédula de ciudadanía número 1.000.000.001, correo ana.ficticia@ejemplo.test, teléfono 3000000000.',
   'El demandado Pedro Ejemplo Prueba, con cédula 1.000.000.002, vive en la Calle 100 # 00-00 de Bogotá.',
 ].join('\n');
-/** Lo que Listo muestra para ese documento: los marcadores que la tabla recuerda. */
+/**
+ * Lo que Descargar copia para ese documento: las etiquetas que la llave recuerda. Cambió con D-24 (la vista previa llega con la
+ * propuesta aplicada): el tratamiento «Señora» pasa a la etiqueta de la persona (sugerencia de tramo) y «Bogotá» (bandera con
+ * opción) queda reemplazada por [DEPARTAMENTO_1]. Son 8 etiquetas distintas.
+ */
 export const SALIDA_REI =
-  'Señora [DEMANDANTE_1], cédula de ciudadanía número [CC_1], correo [CORREO_1], teléfono [TELÉFONO_1].\n'
-  + 'El demandado [DEMANDADO_1], con cédula [CC_2], vive en la [DIRECCIÓN_1] de Bogotá.';
-/** Valores reales ficticios de esa tabla (los que la Bóveda y la red no deben ver nunca). */
+  '[DEMANDANTE_1], cédula de ciudadanía número [CC_1], correo [CORREO_1], teléfono [TELÉFONO_1].\n'
+  + 'El demandado [DEMANDADO_1], con cédula [CC_2], vive en la [DIRECCIÓN_1] de [DEPARTAMENTO_1].';
+/** Valores reales ficticios de esa llave (los que los casos guardados y la red no deben ver nunca). */
 export const REALES_REI = ['Ana Ficticia Rojas', 'Pedro Ejemplo Prueba', '1.000.000.001', '1.000.000.002', 'ana.ficticia@ejemplo.test', '3000000000'];
 
-export const h1 = (page: Page, nombre: string) => page.getByRole('heading', { level: 1, name: nombre });
+export { h1 };
 
 export interface OpcionesAsunto { codigo?: string; guardar?: boolean }
 
-/** Crea el asunto (en memoria o guardado cifrado), pega la lista, analiza el documento y decide cada mención una por una. */
+/**
+ * Flujo v1.1 (D-23, D-24): crea el caso con contraseña en «Opciones avanzadas» (en memoria o guardado cifrado), pega la lista de
+ * nombres, pega el documento, anonimiza (la vista previa llega con todo aceptado) y sigue a Descargar con la búsqueda terminada.
+ */
 export async function crearYAnalizar(page: Page, o: OpcionesAsunto = {}): Promise<void> {
-  await page.goto('/');
-  await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
-  await page.getByLabel('Código del caso').fill(o.codigo ?? 'PRUEBA-REI-01');
-  if (o.guardar === true) {
-    await page.getByRole('radio', { name: /^Guardar tabla cifrada/ }).check();
-    await page.getByLabel('Contraseña de la llave. Mínimo 15 caracteres; puede usar varias palabras separadas por espacios.', { exact: true }).fill(FRASE);
-    await page.getByLabel('Repita la contraseña de la llave', { exact: true }).fill(FRASE);
-    await page.getByRole('checkbox', { name: /^Entiendo que Sig-Low no guarda mi frase/ }).check();
-  } else {
-    await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-  }
-  await page.getByRole('button', { name: 'Crear caso' }).click();
-  await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible({ timeout: 30_000 });
-  await page.getByRole('textbox', { name: 'Texto de la lista' }).fill(LISTA_REI);
-  await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
-  await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
-  await page.getByRole('button', { name: 'Continuar' }).click();
-  await page.getByRole('textbox', { name: 'Texto del documento' }).fill(DOCUMENTO_REI);
-  await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
-  await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 30_000 });
-  const marcas = page.getByRole('region', { name: 'Documento con datos encontrados' }).locator('[data-det]');
-  const total = await marcas.count();
-  expect(total).toBeGreaterThan(0);
-  for (let i = 0; i < total; i++) {
-    if (/, pendiente, /.test((await marcas.nth(i).getAttribute('aria-label')) ?? '')) {
-      await marcas.nth(i).focus();
-      await page.keyboard.press('a');
-    }
-  }
-  await page.locator('[data-prueba="continuar"]').click();
-  await expect(h1(page, 'Descargar')).toBeVisible();
+  await irACargar(page);
+  await crearCaso(page, { codigo: o.codigo ?? 'PRUEBA-REI-01', guardar: o.guardar === true, frase: FRASE });
+  await editarLista(page);
+  await pegarLista(page, LISTA_REI);
+  await pegarTexto(page, DOCUMENTO_REI);
+  await anonimizar(page);
+  await expect(etiquetas(page).first()).toBeVisible();
+  await aDescargar(page);
 }
 
-/** En Listo: espera la búsqueda de residuos, marca el recordatorio y copia (la copia consolida la tabla del asunto). */
+/** En Descargar: marca la confirmación única y copia (la copia consolida la tabla del caso, 6.6.4). «Copiar» está en «Más formatos». */
 export async function copiarEnListo(page: Page): Promise<void> {
-  await expect(page.locator('[data-prueba="residuos-estado"]')).toContainText('Búsqueda de residuos: ninguno de los', { timeout: 30_000 });
-  for (const n of ['^Datos biométricos', '^Documentos con reserva legal', '^La estrategia reservada']) {
-    await page.getByRole('checkbox', { name: new RegExp(n) }).check();
-  }
+  await esperarBusqueda(page);
+  await confirmar(page);
+  await abrirMasFormatos(page);
   await page.getByRole('button', { name: 'Copiar texto anonimizado' }).click();
   await expect(page.locator('[data-aviso="M-84"]')).toBeVisible();
 }
 
-/** Del flujo de la demo hasta la pantalla Reinserción con la tabla consolidada del asunto. */
+/** Del flujo de la demo hasta la pantalla «Devolver los datos reales» con la tabla consolidada del caso (Descargar → Opciones avanzadas). */
 export async function llegarAReinsercion(page: Page, o: OpcionesAsunto = {}): Promise<void> {
   await crearYAnalizar(page, o);
   await copiarEnListo(page);
+  await abrirAvanzadas(page);
   await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
   await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
 }

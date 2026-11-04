@@ -4,8 +4,9 @@
 // Datos ficticios evidentes (10.1.5). El resultado con datos reales vive solo en memoria: aquí se comprueba que no sale a ningún lado.
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
+import { abrirAvanzadas, aDescargar, anonimizar, irACargar, pegarTexto } from './lib/flujo';
 import {
-  campoRespuesta, FRASE, h1, leerPortapapeles, llegarAReinsercion, origen, pegarYBuscar, REALES_REI, textoDelResultado,
+  campoRespuesta, copiarEnListo, FRASE, h1, leerPortapapeles, llegarAReinsercion, origen, pegarYBuscar, REALES_REI, textoDelResultado,
   textoDelVolcado, volcarAlmacenamiento,
 } from './ayudas-reinsercion';
 
@@ -35,18 +36,18 @@ test.describe('Reinserción (PC-6)', () => {
       (globalThis as unknown as { __blobsVivos: () => number }).__blobsVivos = () => vivas.size;
     });
     await llegarAReinsercion(page, { guardar: true });
-    await expect(page.locator('[data-prueba="asunto-reinsercion"]')).toHaveText('Asunto: PRUEBA-REI-01. Para trabajar con otro asunto, use «Cambiar de asunto».');
+    await expect(page.locator('[data-prueba="asunto-reinsercion"]')).toHaveText('Caso: PRUEBA-REI-01. Para trabajar con otro caso, use «Cambiar de caso».');
     // Sin documento de origen elegido: M-93 y nada de faltantes (T-RI-04).
     await expect(page.locator('[data-prueba="aviso-origen"]')).toContainText('No eligió el documento de origen');
     await expect(origen(page).locator('option')).toHaveText([/^No sé o son varios$/, /^Documento 1 · Texto pegado · /]);
     await pegarYBuscar(page, RESPUESTA, true);
 
-    // Resumen por clase: 1 alterado, 1 desconocido, 5 faltantes del documento de origen.
-    await expect(page.locator('[data-prueba="resumen-alterados"]')).toContainText('1 marcadores llegaron modificados');
-    await expect(page.locator('[data-prueba="resumen-desconocidos"]')).toContainText('1 marcadores no están en la tabla de este asunto');
-    await expect(page.locator('[data-prueba="resumen-faltantes"]')).toContainText('5 marcadores del documento no aparecen en la respuesta');
+    // Resumen por clase: 1 alterado, 1 desconocido, 6 faltantes del documento de origen (D-24: la vista previa trae 8 etiquetas, con [DEPARTAMENTO_1]).
+    await expect(page.locator('[data-prueba="resumen-alterados"]')).toContainText('1 etiquetas llegaron modificadas');
+    await expect(page.locator('[data-prueba="resumen-desconocidos"]')).toContainText('1 etiquetas no están en la llave de este caso');
+    await expect(page.locator('[data-prueba="resumen-faltantes"]')).toContainText('6 etiquetas del documento no aparecen en la respuesta');
     // INV-N02: mientras haya alertas sin decidir no hay texto con datos reales, ni botón de copiar ni de descargar.
-    await expect(page.locator('[data-prueba="faltan-decisiones"]')).toContainText('Decisiones pendientes: 2.');
+    await expect(page.locator('[data-prueba="faltan-decisiones"]')).toContainText('Decisiones por tomar: 2.');
     await expect(resultado(page)).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Copiar texto con datos reales' })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Descargar texto (.txt)' })).toHaveCount(0);
@@ -63,10 +64,10 @@ test.describe('Reinserción (PC-6)', () => {
 
     await alterados(page).getByRole('button', { name: 'Devolver el dato real' }).click();
     await expect(alterados(page).locator('[data-prueba="estado-alerta"]')).toHaveText('Se reemplazará por el dato real.');
-    await expect(page.locator('[data-prueba="faltan-decisiones"]')).toContainText('Decisiones pendientes: 1.');
+    await expect(page.locator('[data-prueba="faltan-decisiones"]')).toContainText('Decisiones por tomar: 1.');
     await desconocidos(page).getByRole('button', { name: 'Dejar como está' }).click();
     // Con las decisiones tomadas faltan los marcadores faltantes: INV-N02 pide reconocerlos.
-    await expect(page.locator('[data-prueba="faltan-decisiones"]')).toContainText('Falta reconocer los marcadores faltantes');
+    await expect(page.locator('[data-prueba="faltan-decisiones"]')).toContainText('Falta confirmar las etiquetas que faltan');
     await expect(resultado(page)).toHaveCount(0);
     await page.getByRole('checkbox', { name: 'Revisé las etiquetas que faltan.' }).check();
     await expect(resultado(page)).toBeVisible();
@@ -77,7 +78,7 @@ test.describe('Reinserción (PC-6)', () => {
     await expect(page.locator('[data-prueba="resultado-real"] mark[data-dato-real]')).toHaveText(['Ana Ficticia Rojas', 'Ana Ficticia Rojas', '1.000.000.001']);
     await expect(page.locator('[data-prueba="resultado-real"] .insignia-real')).toHaveCount(3);
     await expect(page.locator('[data-prueba="aviso-datos-reales"]')).toContainText('Este texto contiene los datos reales. No lo pegue en herramientas de IA.');
-    await expect(page.locator('[data-prueba="aviso-genero"]')).toContainText('Revise el género y el número');
+    await expect(page.locator('[data-prueba="aviso-genero"]')).toContainText('revise el género y el número');
     const region = page.getByRole('region', { name: 'Texto con los datos reales resaltados' });
     await expect(region).toHaveAttribute('translate', 'no');
     await expect(region).toHaveAttribute('spellcheck', 'false');
@@ -148,7 +149,8 @@ test.describe('Reinserción (PC-6)', () => {
     const cuerpo = (await page.locator('body').innerText()) + (await page.content());
     for (const real of REALES_REI) expect(cuerpo).not.toContain(real);
     expect(cuerpo).not.toContain('tutela');
-    // Sin la frase no hay Reinserción: el botón sigue deshabilitado.
+    // Sin la frase no hay Reinserción: el botón sigue deshabilitado (el formulario de abrir un caso guardado está en «Opciones avanzadas»).
+    await abrirAvanzadas(page);
     const reinsertar = page.getByRole('button', { name: 'Devolver los datos reales a un texto' });
     await expect(reinsertar).toBeDisabled();
     const sel = page.getByLabel('Caso guardado', { exact: true });
@@ -167,7 +169,7 @@ test.describe('Reinserción (PC-6)', () => {
   test('T-RI-10 un marcador de otro asunto es desconocido: solo «Dejar como está» o «Editar», y lo escrito no es dato real', async ({ page }) => {
     await llegarAReinsercion(page);
     await pegarYBuscar(page, 'Declaró [DEMANDANTE_9] y [CC_12].');
-    await expect(page.locator('[data-prueba="resumen-desconocidos"]')).toContainText('2 marcadores no están en la tabla de este asunto');
+    await expect(page.locator('[data-prueba="resumen-desconocidos"]')).toContainText('2 etiquetas no están en la llave de este caso');
     await expect(desconocidos(page)).toHaveCount(2);
     await expect(desconocidos(page).getByRole('button', { name: 'Devolver el dato real' })).toHaveCount(0);
     await expect(resultado(page)).toHaveCount(0);
@@ -220,7 +222,7 @@ test.describe('Reinserción (PC-6)', () => {
     expect(await campo.getAttribute('name')).toMatch(/^c\d+$/);
     await expect(page.getByRole('button', { name: 'Buscar etiquetas' })).toBeDisabled();
     await pegarYBuscar(page, 'Respuesta sin ningún marcador.');
-    await expect(page.locator('[data-prueba="sin-marcadores"]')).toContainText('No se encontraron marcadores en el texto pegado.');
+    await expect(page.locator('[data-prueba="sin-marcadores"]')).toContainText('No se encontraron etiquetas en el texto pegado.');
     await expect(page.locator('[data-prueba="alertas"]')).toHaveCount(0);
     await campo.fill('[DEMANDANTE_1]');
     await expect(page.locator('[data-prueba="sin-marcadores"]')).toHaveCount(0);
@@ -292,7 +294,27 @@ test.describe('Reinserción (PC-6)', () => {
     expect((await leerPortapapeles(context)).texto).toBe('Ficticia');
   });
 
-  test('T-RI-10 salir: M-100 pide confirmar cuando hay resultado y «Salir y borrar» vacía la pantalla; «Nuevo documento del asunto» va a Entrada', async ({ page }) => {
+  // D-23: con el flujo por defecto (sin crear ni abrir un caso) Sig-Low usa un caso efímero en memoria; su llave también sirve para devolver
+  // los datos reales mientras la pestaña siga abierta. «Devolver los datos reales a un texto» está en «Opciones avanzadas» de Descargar.
+  test('T-RI-10 D-23 flujo por defecto (caso efímero): tras copiar, «Opciones avanzadas» de Descargar devuelve los datos reales con la llave en memoria, sin guardar nada', async ({ page }) => {
+    await irACargar(page);
+    await pegarTexto(page, 'Cédula de ciudadanía número 1.000.000.017, correo ana.ficticia@ejemplo.test.');
+    await anonimizar(page);
+    await aDescargar(page);
+    await copiarEnListo(page);
+    await abrirAvanzadas(page);
+    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+    await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
+    await expect(page.locator('[data-prueba="asunto-reinsercion"]')).toContainText('Para trabajar con otro caso, use «Cambiar de caso».');
+    await pegarYBuscar(page, 'La cédula es [CC_1] y el correo [CORREO_1].', true);
+    await expect(resultado(page)).toBeVisible();
+    expect(await textoDelResultado(page)).toBe('La cédula es 1.000.000.017 y el correo ana.ficticia@ejemplo.test.');
+    const volcado = textoDelVolcado(await volcarAlmacenamiento(page));
+    for (const real of ['1.000.000.017', 'ana.ficticia']) expect(volcado).not.toContain(real);
+    expect(await page.evaluate(async () => (await indexedDB.databases()).length)).toBe(0);
+  });
+
+  test('T-RI-10 salir: M-100 pide confirmar cuando hay resultado y «Salir y borrar» vacía la pantalla; «Anonimizar otro documento» vuelve a Cargar documento', async ({ page }) => {
     await llegarAReinsercion(page);
     await pegarYBuscar(page, '[DEMANDANTE_1] firmó.');
     await expect(resultado(page)).toBeVisible();
@@ -304,7 +326,7 @@ test.describe('Reinserción (PC-6)', () => {
     await expect(resultado(page)).toBeVisible();
     await page.getByRole('button', { name: 'Anonimizar otro documento' }).click();
     await page.getByRole('alertdialog', { name: 'Salir de Devolver los datos reales' }).getByRole('button', { name: 'Salir y borrar' }).click();
-    await expect(h1(page, 'Entrada')).toBeVisible();
+    await expect(h1(page, 'Cargar documento')).toBeVisible();
     const cuerpo = (await page.locator('body').innerText()) + (await page.content());
     for (const real of REALES_REI) expect(cuerpo).not.toContain(real);
     // Sin resultado, salir no pide confirmación y la pantalla vuelve vacía.

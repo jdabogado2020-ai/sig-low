@@ -2,9 +2,15 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 import { copiarEnListo, crearYAnalizar, DOCUMENTO_REI, LISTA_REI, REALES_REI, SALIDA_REI, leerPortapapeles } from './ayudas-reinsercion';
+import {
+  abrirAvanzadas, aDescargar, aDetalle, anonimizar, confirmar, crearCaso, editarLista, etiquetas, irACargar, pegarLista, pegarTexto, vistaPrevia,
+} from './lib/flujo';
+import { textoDelVolcado, volcarAlmacenamiento } from './lib/almacenamiento';
 
 // T-IU-03 (atributos de privacidad, título neutro) y T-PV-09 («Acerca de»: versión, SHA-256 y dirección oficial), de PC-1.
 // PC-7 y las demás tareas agregan aquí los casos T-PV-01, T-PV-02, T-PV-11, T-PV-24 sobre el resto de las pantallas.
+// v1.1 (F2/F3, D-23/D-24): el flujo es Cargar documento → Vista previa → Descargar; el caso con contraseña, la llave y «Devolver los
+// datos reales» están en «Opciones avanzadas»; la revisión de la v1.0 es «Revisar dato por dato». Lo que se comprueba no cambia.
 
 const h1 = (page: Page, nombre: string) => page.getByRole('heading', { level: 1, name: nombre });
 
@@ -13,11 +19,9 @@ async function abrirInicio(page: Page): Promise<void> {
   // La primera visita espera el precache del SW (8.1: «sin tiempo límite»; ≈ 1,5 s con el equipo cargado).
   await expect(h1(page, 'Cargar documento')).toBeVisible({ timeout: 30_000 });
 }
+/** «Opciones avanzadas» → crear un caso sin guardar la llave (se queda en Cargar con el caso abierto). */
 async function crearAsunto(page: Page, codigo = 'PRUEBA-001'): Promise<void> {
-  await page.getByLabel('Código del caso').fill(codigo);
-  await page.getByRole('radio', { name: /^No guardar la tabla/ }).check();
-  await page.getByRole('button', { name: 'Crear caso' }).click();
-  await expect(h1(page, 'Nombres que siempre deben ocultarse')).toBeVisible();
+  await crearCaso(page, { codigo, guardar: false });
 }
 
 /** Recorre el DOM y devuelve las infracciones de 8.7 (lista vacía = cumple). */
@@ -71,12 +75,16 @@ test.describe('T-IU-03 atributos de privacidad y título neutro', () => {
     expect(await page.title()).toBe('Sig-Low');
   });
 
-  test('T-IU-03 Inicio y Lista del caso: todo campo de texto cumple 8.7, sin form con envío, botones type=button, sin enlaces', async ({ page }) => {
+  test('T-IU-03 Cargar documento y lista de nombres: todo campo de texto cumple 8.7, sin form con envío, botones type=button, sin enlaces', async ({ page }) => {
     await abrirInicio(page);
     expect(await auditar(page)).toEqual([]);
+    await pegarTexto(page, 'Texto ficticio de prueba.');
+    expect(await auditar(page), 'Pegar texto').toEqual([]);
     // Con «Guardar» elegido (si la bóveda está conectada) aparecen los campos de frase; se auditan con «No guardar» y el diálogo de exportación.
     await crearAsunto(page);
     expect(await auditar(page)).toEqual([]);
+    await editarLista(page);
+    expect(await auditar(page), 'Nombres que siempre deben ocultarse').toEqual([]);
     await page.getByRole('textbox', { name: 'Texto de la lista' }).fill('Ana Ficticia Rojas; demandante');
     await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
     await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
@@ -112,6 +120,7 @@ test.describe('T-IU-03 atributos de privacidad y título neutro', () => {
   test('T-IU-03 INV-G02: la pantalla no usa rutas ni history.state; nada del asunto en el almacenamiento', async ({ page }) => {
     await abrirInicio(page);
     await crearAsunto(page, 'PRUEBA-003');
+    await editarLista(page);
     await page.getByLabel('Nombre', { exact: true }).fill('Ana Ficticia Rojas');
     await page.getByRole('button', { name: 'Agregar', exact: true }).click();
     const r = await page.evaluate(async () => ({
@@ -132,6 +141,25 @@ test.describe('T-IU-03 atributos de privacidad y título neutro', () => {
       expect(texto).not.toContain('Ana Ficticia');
       expect(texto).not.toContain('PRUEBA-003');
     }
+  });
+
+  // D-23: el flujo por defecto abre un caso efímero en memoria (sin contraseña, sin guardar). Con él, tras analizar, nada del documento ni
+  // del caso queda en ningún almacenamiento persistente (IndexedDB, local, sesión, cookies, Cache Storage), en la URL, el historial ni el título.
+  test('T-IU-03 INV-G02 INV-V07 flujo por defecto (caso efímero): nada del documento ni del caso en IndexedDB, localStorage, sessionStorage, cookies, Cache Storage, URL ni título', async ({ page }) => {
+    await abrirInicio(page);
+    await pegarTexto(page, 'Cédula 1.000.000.017, correo ana.ficticia@ejemplo.test, teléfono 3000000017. Firmó la señora Ana Ficticia Rojas.');
+    await anonimizar(page);
+    await expect(etiquetas(page).first()).toBeVisible();
+    const v = await volcarAlmacenamiento(page);
+    for (const secreto of ['Ficticia', 'Rojas', '1.000.000.017', 'ana.ficticia', '3000000017', 'DOC-']) expect(textoDelVolcado(v), secreto).not.toContain(secreto);
+    expect(v.indexedDB).toEqual({});
+    expect(v.localStorage).toEqual({});
+    expect(v.sessionStorage).toEqual({});
+    expect(v.cookies).toEqual([]);
+    expect(v.title).toBe('Sig-Low');
+    expect(new URL(v.url).search + new URL(v.url).hash).toBe('');
+    expect(await page.evaluate(() => JSON.stringify(history.state))).toBe('null');
+    expect(await page.evaluate(async () => (await indexedDB.databases()).length)).toBe(0);
   });
 });
 
@@ -160,9 +188,9 @@ test.describe('T-PV-09 «Acerca de»: versión, SHA-256 y dirección oficial', (
     await sembrarCache(page);
     const esperadoIndex = sha256(readFileSync('dist/index.html'));
     const dialogo = await abrirAcerca(page);
-    await expect(dialogo.locator('[data-prueba="acerca-index"]')).toHaveText(`Código de compilación (SHA-256 de index.html): ${esperadoIndex}`);
+    await expect(dialogo.locator('[data-prueba="acerca-index"]')).toHaveText(`Código de esta versión (SHA-256 de index.html): ${esperadoIndex}`);
     await expect(dialogo.locator('[data-prueba="acerca-precache"]')).toHaveText(
-      `Código de la lista de archivos (SHA-256 de la lista de precache): ${sha256(readFileSync('dist/precache.json'))}`,
+      `Código de la lista de archivos para uso sin conexión (SHA-256): ${sha256(readFileSync('dist/precache.json'))}`,
     );
     await expect(dialogo).toContainText('Versión 1.0.0');
     await expect(dialogo.locator('[data-prueba="acerca-direccion"]')).toHaveText('Dirección oficial: sig-low.vergarameloabogado.site');
@@ -190,9 +218,9 @@ test.describe('T-PV-09 «Acerca de»: versión, SHA-256 y dirección oficial', (
     await abrirInicio(page);
     await page.evaluate(async () => { for (const k of await caches.keys()) await caches.delete(k); });
     const dialogo = await abrirAcerca(page);
-    await expect(dialogo.locator('[data-prueba="acerca-index"]')).toHaveText('Código de compilación (SHA-256 de index.html): No disponible');
+    await expect(dialogo.locator('[data-prueba="acerca-index"]')).toHaveText('Código de esta versión (SHA-256 de index.html): No disponible');
     await expect(dialogo.locator('[data-prueba="acerca-precache"]')).toHaveText(
-      'Código de la lista de archivos (SHA-256 de la lista de precache): No disponible',
+      'Código de la lista de archivos para uso sin conexión (SHA-256): No disponible',
     );
   });
 
@@ -208,27 +236,29 @@ test.describe('T-PV-09 «Acerca de»: versión, SHA-256 y dirección oficial', (
 });
 
 // T-PV-03 (PC-4, V-29): Ctrl+F y F3 abren la búsqueda de la app con `preventDefault`, y buscar no hace ninguna petición. Es el
-// flujo real (pegar → Procesando → Revisión), sin gancho de prueba ni modelo.
-test.describe('T-PV-03 búsqueda propia en Revisión (V-29)', () => {
+// flujo real (pegar → Analizando → Vista previa → «Revisar dato por dato»), sin gancho de prueba ni modelo. v1.1: la búsqueda propia vive en
+// «Revisar dato por dato» (la antigua Revisión).
+test.describe('T-PV-03 búsqueda propia en Revisar dato por dato (V-29)', () => {
   test.describe.configure({ timeout: 60_000 });
+
+  const DOC = 'La señora Ana Ficticia Rojas firmó el oficio. Su correo es ana.ficticia@ejemplo.test.';
+  const registrarTeclas = (page: Page): Promise<void> => page.evaluate(() => {
+    (globalThis as unknown as { __bf: boolean[] }).__bf = [];
+    addEventListener('keydown', (e) => {
+      if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') || e.key === 'F3') (globalThis as unknown as { __bf: boolean[] }).__bf.push(e.defaultPrevented);
+    });
+  });
+  const teclasPrevenidas = (page: Page): Promise<boolean[]> => page.evaluate(() => (globalThis as unknown as { __bf: boolean[] }).__bf);
 
   test('T-PV-03 Ctrl+F y F3 abren la búsqueda de la app (el navegador no las recibe) y buscar no hace peticiones', async ({ page }) => {
     await abrirInicio(page);
-    await crearAsunto(page);
-    await page.getByRole('button', { name: 'Continuar' }).click();
-    await expect(h1(page, 'Entrada')).toBeVisible();
-    await page.getByRole('textbox', { name: 'Texto del documento' }).fill('La señora Ana Ficticia Rojas firmó el oficio. Su correo es ana.ficticia@ejemplo.test.');
-    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
-    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 30_000 });
+    await pegarTexto(page, DOC);
+    await anonimizar(page);
+    await aDetalle(page);
 
     const campo = page.getByRole('textbox', { name: 'Buscar en el documento' });
     await expect(campo).toBeVisible();
-    await page.evaluate(() => {
-      (globalThis as unknown as { __bf: boolean[] }).__bf = [];
-      addEventListener('keydown', (e) => {
-        if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') || e.key === 'F3') (globalThis as unknown as { __bf: boolean[] }).__bf.push(e.defaultPrevented);
-      });
-    });
+    await registrarTeclas(page);
     const peticiones: string[] = [];
     page.on('request', (r) => peticiones.push(r.url()));
 
@@ -245,7 +275,7 @@ test.describe('T-PV-03 búsqueda propia en Revisión (V-29)', () => {
     expect(await campo.evaluate((el) => (el as HTMLInputElement).selectionEnd! - (el as HTMLInputElement).selectionStart!)).toBe('ficticia'.length);
 
     // Los manejadores de la página corren antes que el de la prueba (captura vs. burbuja): ambos eventos ya llegaron prevenidos.
-    expect(await page.evaluate(() => (globalThis as unknown as { __bf: boolean[] }).__bf)).toEqual([true, true]);
+    expect(await teclasPrevenidas(page)).toEqual([true, true]);
     expect(peticiones).toEqual([]);
   });
 });
@@ -255,27 +285,18 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
   test.describe.configure({ timeout: 150_000 });
   test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
 
-  /** Entrada con el texto dado hasta Revisión (sin decidir). */
+  /** Cargar con el texto dado (y la lista de nombres de la demo) hasta la Vista previa, con todo ya aceptado (D-24). */
   async function hastaRevision(page: Page, documento: string, codigo: string): Promise<void> {
     await abrirInicio(page);
     await crearAsunto(page, codigo);
-    await page.getByRole('textbox', { name: 'Texto de la lista' }).fill(LISTA_REI);
-    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
-    await page.getByRole('button', { name: 'Agregar las líneas válidas' }).click();
-    await page.getByRole('button', { name: 'Continuar' }).click();
-    await expect(h1(page, 'Entrada')).toBeVisible();
-    await page.getByRole('textbox', { name: 'Texto del documento' }).fill(documento);
-    await page.getByRole('button', { name: 'Anonimizar', exact: true }).click();
-    await expect(h1(page, 'Revisión')).toBeVisible({ timeout: 60_000 });
+    await editarLista(page);
+    await pegarLista(page, LISTA_REI);
+    await pegarTexto(page, documento);
+    await anonimizar(page);
   }
-  /** Decide cada mención pendiente con el teclado (A) y pasa a Listo. */
+  /** Vista previa → Descargar (nada que decidir: la vista previa ya trae todo aceptado, D-24). */
   async function decidirYContinuar(page: Page): Promise<void> {
-    const marcas = page.getByRole('region', { name: 'Documento con datos encontrados' }).locator('[data-det]');
-    for (let i = 0, n = await marcas.count(); i < n; i++) {
-      if (/, pendiente, /.test((await marcas.nth(i).getAttribute('aria-label')) ?? '')) { await marcas.nth(i).focus(); await page.keyboard.press('a'); }
-    }
-    await page.locator('[data-prueba="continuar"]').click();
-    await expect(h1(page, 'Descargar')).toBeVisible();
+    await aDescargar(page);
   }
   const eventoPrevenido = (page: Page, selector: string, tipo: 'contextmenu' | 'copy'): Promise<{ prevenido: boolean; datos: string }> =>
     page.locator(selector).first().evaluate((el, t) => {
@@ -285,30 +306,44 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
       return { prevenido: ev.defaultPrevented, datos: dt.getData('text/plain') };
     }, tipo);
 
-  test('T-IU-03 cada pantalla del flujo (Entrada, Revisión con ficha, Listo, Reinserción) cumple 8.7: atributos, ids neutros, sin enlaces ni style', async ({ page }) => {
+  test('T-IU-03 cada pantalla del flujo (Cargar, Vista previa con menú, Revisar dato por dato con ficha, Descargar, Devolver los datos reales) cumple 8.7: atributos, ids neutros, sin enlaces ni style', async ({ page }) => {
     await page.addInitScript(() => {
       (globalThis as unknown as { __csp: string[] }).__csp = [];
       addEventListener('securitypolicyviolation', (e) => { (globalThis as unknown as { __csp: string[] }).__csp.push(e.violatedDirective); });
     });
-    // La virtualización de Revisión fija alturas y posiciones con CSSOM (permitido por la CSP, que no admite atributos style escritos en el HTML):
+    // La virtualización de la revisión fija alturas y posiciones con CSSOM (permitido por la CSP, que no admite atributos style escritos en el HTML):
     // el atributo se refleja en el DOM, así que el criterio es 0 violaciones de la CSP, no 0 atributos style.
     const auditarSinStyle = async (): Promise<string[]> => (await auditar(page)).filter((x) => x !== 'atributo style');
     await hastaRevision(page, DOCUMENTO_REI, 'PRUEBA-PV-03');
-    expect(await auditarSinStyle(), 'Revisión').toEqual([]);
+    expect(await auditarSinStyle(), 'Vista previa').toEqual([]);
+    for (const el of await page.locator('[data-prueba="vista-previa"]').all()) {
+      await expect(el).toHaveAttribute('translate', 'no');
+      await expect(el).toHaveAttribute('spellcheck', 'false');
+    }
+    // Menú de una etiqueta: sus campos («Cambiar a…», «Editar el texto…») también cumplen 8.7.
+    await etiquetas(page).first().click();
+    await expect(page.locator('[data-prueba="menu-etiqueta"]')).toBeVisible();
+    expect(await auditarSinStyle(), 'Vista previa con menú de la etiqueta').toEqual([]);
+    await page.getByRole('button', { name: 'Editar el texto de la etiqueta' }).click();
+    await expect(page.getByRole('textbox', { name: 'Texto que reemplaza el dato' })).toBeVisible();
+    expect(await auditarSinStyle(), 'Editar el texto de la etiqueta').toEqual([]);
+    await page.keyboard.press('Escape');
+    // Revisar dato por dato (la Revisión de la v1.0), con la ficha de un dato.
+    await aDetalle(page);
+    expect(await auditarSinStyle(), 'Revisar dato por dato').toEqual([]);
     await page.getByRole('region', { name: 'Documento con datos encontrados' }).locator('[data-det]').first().click();
     await expect(page.getByRole('region', { name: 'Ficha del dato encontrado' })).toBeVisible();
-    expect(await auditarSinStyle(), 'Revisión con ficha').toEqual([]);
+    expect(await auditarSinStyle(), 'Revisar dato por dato con ficha').toEqual([]);
     for (const el of await page.locator('.panel-texto, .ficha, .ficha-entidad, .cuadricula-borde').all()) {
       await expect(el).toHaveAttribute('translate', 'no');
       await expect(el).toHaveAttribute('spellcheck', 'false');
     }
+    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Vista previa' })).toBeVisible();
     await decidirYContinuar(page);
     expect(await auditarSinStyle(), 'Descargar').toEqual([]);
     await copiarEnListo(page);
-    for (const el of await page.locator('[data-prueba="vista-salida"]').all()) {
-      await expect(el).toHaveAttribute('translate', 'no');
-      await expect(el).toHaveAttribute('spellcheck', 'false');
-    }
+    await abrirAvanzadas(page);
     await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
     await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
     expect(await auditar(page), 'Devolver los datos reales').toEqual([]);
@@ -316,7 +351,7 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
     await expect(page.locator('[data-prueba="resultado-real"]')).toBeVisible();
     await expect(page.locator('[data-prueba="resultado-real"]')).toHaveAttribute('translate', 'no');
-    expect(await auditarSinStyle(), 'Reinserción con resultado').toEqual([]);
+    expect(await auditarSinStyle(), 'Devolver los datos reales con resultado').toEqual([]);
     expect(await page.evaluate(() => (globalThis as unknown as { __csp: string[] }).__csp), 'violaciones de la CSP').toEqual([]);
   });
 
@@ -341,9 +376,20 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     await sinEnlaces('Créditos y licencias');
     await page.keyboard.press('Escape');
     await page.keyboard.press('Escape');
-    await crearYAnalizar(page, { codigo: 'PRUEBA-PV-01' });
+    await crearCaso(page, { codigo: 'PRUEBA-PV-01' });
+    await editarLista(page);
+    await sinEnlaces('Nombres que siempre deben ocultarse');
+    await pegarLista(page, LISTA_REI);
+    await pegarTexto(page, DOCUMENTO_REI);
+    await anonimizar(page);
+    await sinEnlaces('Vista previa');
+    await aDetalle(page);
+    await sinEnlaces('Revisar dato por dato');
+    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
+    await aDescargar(page);
     await sinEnlaces('Descargar');
     await copiarEnListo(page);
+    await abrirAvanzadas(page);
     await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
     await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
     await sinEnlaces('Devolver los datos reales');
@@ -353,26 +399,33 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     expect(ventanas).toEqual([]);
   });
 
-  test('T-PV-02 HTML y javascript: pegados quedan literales en Revisión, en la salida y en Reinserción: ningún nodo, ningún script', async ({ page }) => {
+  test('T-PV-02 HTML y javascript: pegados quedan literales en la Vista previa, en Revisar dato por dato, en Descargar y en Devolver los datos reales: ningún nodo, ningún script', async ({ page }) => {
     const HOSTIL = 'Señora Ana Ficticia Rojas, cédula 1.000.000.001. <img src=x onerror="window.__xss=1"> <script>window.__xss=2</script> <a href="javascript:window.__xss=3">enlace</a> javascript:window.__xss=4';
     await hastaRevision(page, HOSTIL, 'PRUEBA-PV-02');
     const peligrosos = () => page.evaluate(() => ({
       nodos: document.querySelectorAll('main img, main iframe, main object, main embed, main a[href], main script, main svg script').length,
       xss: (globalThis as unknown as { __xss?: number }).__xss ?? null,
     }));
+    const vista = vistaPrevia(page);
+    await expect(vista).toContainText('<img src=x onerror="window.__xss=1">');
+    await expect(vista).toContainText('<script>window.__xss=2</script>');
+    await expect(vista).toContainText('javascript:window.__xss=4');
+    expect(await peligrosos(), 'Vista previa').toEqual({ nodos: 0, xss: null });
+    await aDetalle(page);
     const panel = page.getByRole('region', { name: 'Documento con datos encontrados' });
     await expect(panel).toContainText('<img src=x onerror="window.__xss=1">');
     await expect(panel).toContainText('<script>window.__xss=2</script>');
     await expect(panel).toContainText('javascript:window.__xss=4');
-    expect(await peligrosos(), 'Revisión').toEqual({ nodos: 0, xss: null });
+    expect(await peligrosos(), 'Revisar dato por dato').toEqual({ nodos: 0, xss: null });
     await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
     await expect(page.getByRole('region', { name: 'Documento con las etiquetas como fichas' })).toContainText('<script>window.__xss=2</script>');
     expect(await peligrosos(), 'Ver documento anonimizado').toEqual({ nodos: 0, xss: null });
     await page.getByRole('button', { name: 'Ver original' }).click();
+    await page.getByRole('button', { name: 'Vista previa', exact: true }).first().click();
     await decidirYContinuar(page);
-    await expect(page.locator('[data-prueba="vista-salida"]')).toContainText('<img src=x onerror="window.__xss=1">');
     expect(await peligrosos(), 'Descargar').toEqual({ nodos: 0, xss: null });
     await copiarEnListo(page);
+    await abrirAvanzadas(page);
     await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
     await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
     const respuesta = '[DEMANDANTE_1] respondió: <img src=x onerror="window.__xss=5"> <iframe src="javascript:window.__xss=6"></iframe> javascript:window.__xss=7 [CC_1]';
@@ -382,46 +435,92 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     expect(await peligrosos(), 'Devolver los datos reales').toEqual({ nodos: 0, xss: null });
   });
 
-  test('T-PV-11 menú contextual bloqueado en los contenedores de solo lectura y no en los campos; con la puerta cerrada la salida no se selecciona ni se copia', async ({ page }) => {
+  // v1.1 (D-24): la vista de salida de Descargar ya no existe; la salida se selecciona y se copia desde la Vista previa, y Ctrl+C pasa por la
+  // puerta de la descarga (INV-X05): con la puerta cerrada no copia nada y deja el aviso M-73; con la puerta abierta copia solo text/plain.
+  test('T-PV-11 menú contextual bloqueado en los contenedores de solo lectura y no en los campos; con la puerta cerrada la Vista previa no se copia (M-73) y con la puerta abierta copia solo texto plano anonimizado', async ({ page, context }) => {
     await hastaRevision(page, DOCUMENTO_REI, 'PRUEBA-PV-11');
     // Los campos de texto conservan su menú (la persona lo necesita para pegar); los contenedores del documento no.
+    expect((await eventoPrevenido(page, '[data-prueba="vista-previa"]', 'contextmenu')).prevenido, 'vista previa').toBe(true);
+    // Puerta cerrada (la confirmación única sin marcar): copy prevenido, vacío y con el aviso M-73 en Descargar.
+    const copiaCerrada = await eventoPrevenido(page, '[data-prueba="vista-previa"]', 'copy');
+    expect(copiaCerrada.prevenido, 'copy con la puerta cerrada').toBe(true);
+    expect(copiaCerrada.datos, 'la copia con la puerta cerrada no escribe nada').toBe('');
+    await aDescargar(page);
+    await expect(page.locator('[data-aviso="M-73"]')).toBeVisible();
+    // Puerta abierta: se confirma, se vuelve a la Vista previa y se copia un tramo del texto anonimizado con Ctrl+C.
+    await confirmar(page);
+    await page.getByRole('button', { name: 'Volver a la vista previa' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Vista previa' })).toBeVisible();
+    await page.evaluate(() => {
+      const bloque = document.querySelector('[data-prueba="vista-previa"] p.bloque') as HTMLElement;
+      const r = document.createRange();
+      r.selectNodeContents(bloque);
+      const sel = getSelection() as Selection;
+      sel.removeAllRanges();
+      sel.addRange(r);
+    });
+    await page.locator('[data-prueba="vista-previa"]').focus();
+    await page.keyboard.press('Control+C');
+    const copiado = await leerPortapapeles(context);
+    expect(copiado.tipos, 'solo text/plain').toEqual(['text/plain']);
+    for (const real of REALES_REI) expect(copiado.texto, `portapapeles con «${real}»`).not.toContain(real);
+    expect(copiado.texto).toContain('[DEMANDANTE_1]');
+    await page.bringToFront();
+    await aDescargar(page);
+    await copiarEnListo(page);
+    await abrirAvanzadas(page);
+    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
+    await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(SALIDA_REI);
+    await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
+    await expect(page.locator('[data-prueba="resultado-real"]')).toBeVisible();
+    expect((await eventoPrevenido(page, '[data-prueba="resultado-real"]', 'contextmenu')).prevenido, 'resultado de Devolver los datos reales').toBe(true);
+    // El campo de la respuesta no bloquea el menú contextual.
+    expect((await eventoPrevenido(page, 'textarea', 'contextmenu')).prevenido, 'campo de texto').toBe(false);
+  });
+
+  test('T-PV-11 menú contextual bloqueado en los contenedores de Revisar dato por dato (panel de texto, cuadrícula, ficha, vista de salida)', async ({ page }) => {
+    await hastaRevision(page, DOCUMENTO_REI, 'PRUEBA-PV-11B');
+    await aDetalle(page);
     expect((await eventoPrevenido(page, '[data-prueba="panel-texto"]', 'contextmenu')).prevenido, 'panel de texto').toBe(true);
     expect((await eventoPrevenido(page, '[data-prueba="cuadricula"]', 'contextmenu')).prevenido, 'cuadrícula (contexto de menciones)').toBe(true);
     await page.getByRole('region', { name: 'Documento con datos encontrados' }).locator('[data-det]').first().click();
     expect((await eventoPrevenido(page, '[data-prueba="ficha"]', 'contextmenu')).prevenido, 'ficha').toBe(true);
     await page.getByRole('button', { name: 'Ver documento anonimizado' }).click();
-    expect((await eventoPrevenido(page, '[data-prueba="panel-texto"]', 'contextmenu')).prevenido, 'vista de salida de Revisión').toBe(true);
+    expect((await eventoPrevenido(page, '[data-prueba="panel-texto"]', 'contextmenu')).prevenido, 'vista de salida de la revisión').toBe(true);
     const copiaRevisionSalida = await eventoPrevenido(page, '[data-prueba="panel-texto"]', 'copy');
-    expect(copiaRevisionSalida.datos, 'la copia de la salida en Revisión no escribe originales').not.toMatch(/Ficticia|1\.000\.000|ejemplo\.test/);
-    await page.getByRole('button', { name: 'Ver original' }).click();
-    await decidirYContinuar(page);
-    // Listo con la puerta cerrada (recordatorio sin marcar): user-select none, copy prevenido y vacío, menú bloqueado.
-    const vista = page.locator('[data-prueba="vista-salida"]');
-    await expect(vista).toHaveAttribute('data-puerta', 'cerrada');
-    expect(await vista.evaluate((el) => getComputedStyle(el).userSelect)).toBe('none');
-    expect((await eventoPrevenido(page, '[data-prueba="vista-salida"]', 'contextmenu')).prevenido, 'vista de salida de Listo').toBe(true);
-    const copia = await eventoPrevenido(page, '[data-prueba="vista-salida"]', 'copy');
-    expect(copia.prevenido, 'copy con la puerta cerrada').toBe(true);
-    expect(copia.datos).toBe('');
-    await copiarEnListo(page);
-    await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
-    await page.getByRole('textbox', { name: 'Respuesta de la herramienta de IA' }).fill(SALIDA_REI);
-    await page.getByRole('button', { name: 'Buscar etiquetas' }).click();
-    await expect(page.locator('[data-prueba="resultado-real"]')).toBeVisible();
-    expect((await eventoPrevenido(page, '[data-prueba="resultado-real"]', 'contextmenu')).prevenido, 'resultado de Reinserción').toBe(true);
-    // El campo de la respuesta no bloquea el menú contextual.
-    expect((await eventoPrevenido(page, 'textarea', 'contextmenu')).prevenido, 'campo de texto').toBe(false);
+    expect(copiaRevisionSalida.datos, 'la copia de la salida en la revisión no escribe originales').not.toMatch(/Ficticia|1\.000\.000|ejemplo\.test/);
   });
 
-  test('T-PV-24 ni Listo ni Reinserción (antes de pegar) muestran o copian la tabla en claro', async ({ page, context }) => {
-    await crearYAnalizar(page, { codigo: 'PRUEBA-PV-24' });
+  test('T-PV-24 ni la Vista previa, ni Descargar ni Devolver los datos reales (antes de pegar) muestran o copian la llave en claro', async ({ page, context }) => {
     const cuerpo = async (): Promise<string> => page.evaluate(() => document.body.innerText + '\n' + [...document.querySelectorAll('[aria-label],[title]')].map((e) => `${e.getAttribute('aria-label') ?? ''} ${e.getAttribute('title') ?? ''}`).join('\n'));
-    for (const real of REALES_REI) expect(await cuerpo(), `Listo con «${real}»`).not.toContain(real);
+    await hastaRevision(page, DOCUMENTO_REI, 'PRUEBA-PV-24');
+    for (const real of REALES_REI) expect(await cuerpo(), `Vista previa con «${real}»`).not.toContain(real);
+    await aDescargar(page);
+    for (const real of REALES_REI) expect(await cuerpo(), `Descargar con «${real}»`).not.toContain(real);
     await copiarEnListo(page);
     const portapapeles = await leerPortapapeles(context);
     for (const real of REALES_REI) expect(portapapeles.texto, `portapapeles con «${real}»`).not.toContain(real);
+    await abrirAvanzadas(page);
     await page.getByRole('button', { name: 'Devolver los datos reales a un texto' }).click();
     await expect(h1(page, 'Devolver los datos reales')).toBeVisible();
-    for (const real of REALES_REI) expect(await cuerpo(), `Reinserción con «${real}»`).not.toContain(real);
+    for (const real of REALES_REI) expect(await cuerpo(), `Devolver los datos reales con «${real}»`).not.toContain(real);
+  });
+
+  // D-23: con el flujo por defecto (caso efímero, sin lista de nombres) lo que Sig-Low detecta tampoco aparece en la pantalla, en los
+  // nombres accesibles, en los títulos, en la URL ni en el portapapeles.
+  test('T-PV-24 flujo por defecto (caso efímero): lo detectado no aparece en la Vista previa, Descargar, nombres accesibles, título, URL ni portapapeles', async ({ page, context }) => {
+    const detectados = ['1.000.000.017', 'ana.ficticia@ejemplo.test', '3000000017'];
+    const cuerpo = async (): Promise<string> => page.evaluate(() => document.body.innerText + '\n' + [...document.querySelectorAll('[aria-label],[title]')].map((e) => `${e.getAttribute('aria-label') ?? ''} ${e.getAttribute('title') ?? ''}`).join('\n') + '\n' + document.title + '\n' + location.href);
+    await abrirInicio(page);
+    await pegarTexto(page, 'Cédula 1.000.000.017, correo ana.ficticia@ejemplo.test, teléfono 3000000017.');
+    await anonimizar(page);
+    for (const real of detectados) expect(await cuerpo(), `Vista previa con «${real}»`).not.toContain(real);
+    await aDescargar(page);
+    for (const real of detectados) expect(await cuerpo(), `Descargar con «${real}»`).not.toContain(real);
+    await copiarEnListo(page);
+    const portapapeles = await leerPortapapeles(context);
+    for (const real of detectados) expect(portapapeles.texto, `portapapeles con «${real}»`).not.toContain(real);
+    await page.bringToFront();
+    for (const real of detectados) expect(await cuerpo(), `Descargar tras copiar con «${real}»`).not.toContain(real);
   });
 });
