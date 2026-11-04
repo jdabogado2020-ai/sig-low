@@ -6,8 +6,6 @@
  *   no cabe en la cuota (`CUOTA_EXCEDIDA` o espacio libre menor que el modelo), el respaldo. Si tampoco cabe: plan B.
  * - Una descarga con un trozo alterado (`MODELO_INTEGRIDAD`) no prueba el respaldo: se borran los parciales y se declara el
  *   plan B con aviso (V-44). Un fallo de red tampoco.
- * - F11: dentro de un archivo, el reintento sigue donde se cortó si el servidor responde 206 a `Range` (src/sw.ts); con 200,
- *   empieza de cero. El SHA-256 del archivo completo se comprueba igual.
  * - F0: un archivo que falla por la red (`MODELO_NO_DESCARGADO`: corte, respuesta que no es 200 o silencio) se reintenta hasta
  *   `REINTENTOS_POR_ARCHIVO` veces. Si aun así falla, los archivos ya verificados (tamaño y SHA-256 en el service worker) se
  *   conservan: «Reintentar» sigue desde ahí, porque el SW no vuelve a pedir uno guardado y correcto. Con integridad, cuota o
@@ -111,8 +109,7 @@ export async function entregarModelo(p: PuertosEntrega, e: EntradaEntrega): Prom
             }, e.senal);
             break;
           } catch (x) {
-            // Lo recibido en el intento fallido se resta aquí. F11: el siguiente intento lo reanuda en el SW (Range) o vuelve a
-            // empezar; en los dos casos el SW informa los bytes del archivo desde cero, así que el avance vuelve a sumarse entero.
+            // Lo recibido en el intento fallido no cuenta: el siguiente vuelve a empezar ese archivo.
             acumulado -= previo;
             if (esAbort(e.senal) || intento >= REINTENTOS_POR_ARCHIVO || codigoDe(x) !== 'MODELO_NO_DESCARGADO') throw x;
             e.alAvance({ id, hechoBytes: acumulado, totalBytes: total, respaldo });

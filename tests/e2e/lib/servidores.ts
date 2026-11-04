@@ -39,10 +39,6 @@ export interface OpcionesServidor {
   lento?: number;
   /** F0: el primer GET de la ruta que termina así envía un bloque y se queda callado. */
   atascarUnaVez?: string;
-  /** F11: los trozos del modelo ignoran Range y responden 200 con el archivo entero (como Cloudflare Pages hoy). */
-  sinRange?: boolean;
-  /** F11: en un 206 de la ruta que termina así, la parte enviada lleva un byte cambiado. */
-  rangoAlterado?: string;
   /** Archivo del registro (por defecto uno temporal propio, que `parar()` borra). */
   registro?: string;
 }
@@ -79,8 +75,6 @@ export async function levantarServidor(opciones: OpcionesServidor = {}): Promise
   if (opciones.reporteCsp) args.push('--reporte-csp');
   if (opciones.lento !== undefined) args.push('--lento', String(opciones.lento));
   if (opciones.atascarUnaVez !== undefined) args.push('--atascar-una-vez', opciones.atascarUnaVez);
-  if (opciones.sinRange === true) args.push('--sin-range');
-  if (opciones.rangoAlterado !== undefined) args.push('--rango-alterado', opciones.rangoAlterado);
   const hijo: ChildProcess = spawn(process.execPath, args, {
     env: { ...process.env, SIGLOW_REGISTRO_PETICIONES: registro },
     stdio: ['ignore', 'pipe', 'ignore'],
