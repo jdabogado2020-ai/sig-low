@@ -91,12 +91,21 @@ export async function revisarConOraculo(a: ArgsOraculo): Promise<ResultadoOracul
   const banderaCorrecta = (d: Detection): boolean => (negativas.get(clave(d)) ?? []).some((n) => n.bandera_esperada !== undefined
     && solapa(d, n) && Object.values(st.flags).some((f) => f.type === n.bandera_esperada && f.detectionId === d.id));
 
-  /** Decide las detecciones pendientes: verdadera -> aceptar; bandera correcta -> la resuelve la bandera; si no -> falso positivo. */
+  /**
+   * Decide lo que nadie decidió: las detecciones pendientes y las que aceptó `aplicar_propuesta` (D-24). Verdadera -> se queda oculta
+   * (si estaba pendiente, aceptar); bandera correcta -> la resuelve la bandera; si no -> falso positivo: el abogado la muestra.
+   */
   const decidirPendientes = (): void => {
     const hechas = new Set<string>();
     for (const id of [...st.order]) {
       const d = st.detections[id];
-      if (d === undefined || d.status !== 'pendiente') continue;
+      if (d === undefined) continue;
+      const propuesta = d.status === 'aceptada' && d.decidedBy === 'propuesta';
+      if (d.status !== 'pendiente' && !propuesta) continue;
+      if (propuesta) {
+        if (!verdadera(d) && !banderaCorrecta(d)) act({ kind: 'rechazar', detectionId: d.id, reason: 'FALSO_POSITIVO' });
+        continue;
+      }
       if (verdadera(d)) {
         const e = st.entities[d.entityId];
         const todas = e !== undefined && e.mentions.length > 1 && e.mentions.every((m) => {
@@ -135,22 +144,49 @@ export async function revisarConOraculo(a: ArgsOraculo): Promise<ResultadoOracul
   // una forma corta del modelo) se eligen si alguna de sus menciones es de la entidad gold de la mención.
   const deLaEntidadGold = (id: EntityId, d: Detection, g: string | undefined): boolean => g !== undefined
     && (st.entities[id]?.mentions ?? []).some((m) => { const o = st.detections[m]; return o !== undefined && o.id !== d.id && entidadGold(o) === g; });
-  const resolverAmbiguas = (): void => {
+  // D-24 · La interfaz aplica la propuesta antes de que el abogado mire: cada ambigua sale separada con una etiqueta propia. El
+  // oráculo decide antes de aplicarla a quién corresponde cada una (mira las opciones mientras siguen ambiguas) y la corrige después:
+  // la une a la persona elegida («Es la misma que…») o, si el gold la da a otra persona, la separa como antes («Es otra persona»).
+  const planAmbiguas = (): Array<{ detectionId: DetectionId; elegida: EntityId | undefined }> => {
+    const plan: Array<{ detectionId: DetectionId; elegida: EntityId | undefined }> = [];
     for (const x of decisionesAmbiguas(st, dc.caseList, dc.doc)) {
       const d = st.detections[x.detectionId];
       if (d === undefined || decididas.has(d.id) || !verdadera(d)) continue;
       const g = entidadGold(d);
       const elegida = x.opciones.find((id) => { const c = st.entities[id]?.caseEntityId; return c !== undefined && goldDeCaso.get(c) === g; })
         ?? x.fuera.find((id) => deLaEntidadGold(id, d, g));
-      const ok = elegida !== undefined
-        ? act({ kind: 'unir_entidades', fromId: x.entityId, intoId: elegida })
+      plan.push({ detectionId: d.id, elegida });
+    }
+    return plan;
+  };
+  const resolverAmbiguas = (plan: ReturnType<typeof planAmbiguas>): void => {
+    for (const x of plan) {
+      const d = st.detections[x.detectionId];
+      if (d === undefined) continue;
+      const ok = x.elegida !== undefined
+        ? act({ kind: 'unir_entidades', fromId: d.entityId, intoId: x.elegida })
         : act({ kind: 'separar_mencion', detectionId: d.id });
       if (ok) decididas.add(d.id);
     }
   };
+  /** Sugerencias pendientes antes de la propuesta: las que ella aplicó las vuelve a decidir el oráculo, como antes. */
+  let sugerenciasDelRevisor = new Set<string>();
+  const proponer = (): void => {
+    const plan = planAmbiguas();
+    const pendientes = new Set(Object.values(st.suggestions).filter((s) => s.status === 'pendiente').map((s) => s.id));
+    const sinConfirmar = new Set(Object.values(st.flags).filter((f) => !f.acknowledged).map((f) => f.id));
+    if (sugerenciasDelRevisor.size === 0) sugerenciasDelRevisor = pendientes;
+    act({ kind: 'aplicar_propuesta' }, true);
+    // Banderas y sugerencias: el abogado las vuelve a decidir con el gold más abajo. Lo que la propuesta les aplicó se deshace aquí,
+    // antes de mostrar los falsos positivos, para decidirlas en el mismo orden que antes (una edición de tramo de la propuesta no
+    // debe impedir otra que el gold sí pide, ni al revés).
+    for (const f of Object.values(st.flags)) if (sinConfirmar.has(f.id) && f.acknowledged) act({ kind: 'resolver_bandera', flagId: f.id, resolution: 'mantener' });
+    for (const s of Object.values(st.suggestions)) if (pendientes.has(s.id) && s.status === 'aplicada') act({ kind: 'descartar_sugerencia', suggestionId: s.id });
+    resolverAmbiguas(plan);
+    decidirPendientes();
+  };
 
-  resolverAmbiguas();
-  decidirPendientes();
+  proponer();
   // Banderas: la cita se mantiene (rechaza el radicado vinculado), salvo que el gold marque ese expediente como dato positivo del
   // propio caso (7.3.3: quien sigue la guía lo conserva anonimizado; PB-2-r7, A-1): entonces se resuelve como «reemplazar», que
   // acepta la detección vinculada. Con gold `debe_generalizarse` sobre su tramo, las demás banderas se reemplazan con 'o1'.
@@ -168,7 +204,10 @@ export async function revisarConOraculo(a: ArgsOraculo): Promise<ResultadoOracul
   }
   // Sugerencias: aplicar 'o1' (con el primer departamento si hay opciones de lugar) si su tramo solapa gold con `debe_generalizarse`.
   for (const s of Object.values(st.suggestions)) {
-    if (s.status !== 'pendiente') continue;
+    // Las que estaban pendientes antes de la propuesta (aunque ella las aplicara y aquí se deshicieran), salvo las que una bandera
+    // ya decidió.
+    if (!sugerenciasDelRevisor.has(s.id) || s.status === 'aplicada') continue;
+    if (s.status === 'descartada' && Object.values(st.flags).some((f) => f.suggestionId === s.id)) continue;
     const span: (Tramo & { partId: Span['partId'] }) | undefined = s.target.kind === 'tramo' ? s.target.span : (() => {
       const d = st.detections[s.target.detectionId];
       return d === undefined ? undefined : { partId: d.partId, start: d.start, end: d.end };
@@ -199,8 +238,8 @@ export async function revisarConOraculo(a: ArgsOraculo): Promise<ResultadoOracul
     ultima = r;
     if (r.run.result.hits.length === 0 && r.run.nuevas.length === 0) { convergio = true; break; }
     act({ kind: 'incorporar_residuos', residueRevision: r.run.result.revision, candidates: r.run.nuevas });
-    resolverAmbiguas();
-    decidirPendientes();
+    // Como la interfaz: lo que encuentra la búsqueda también se oculta de entrada, y el abogado lo corrige.
+    proponer();
   }
   if (!convergio) {
     // La última vuelta ejecutada dejó cambios sin comprobar: una comprobación final dice si quedó en cero.

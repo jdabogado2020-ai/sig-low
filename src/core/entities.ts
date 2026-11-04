@@ -1843,7 +1843,9 @@ function aplicarPropuesta(s: ReviewState, ctx: ReviewContext, ids: IdSource, par
         const kind = parts.get(d.partId)?.kind ?? 'cuerpo';
         const key = `${tipo === 'PERSONA' ? personKey(d.text, kind) : orgKey(d.text, kind)}~sep:${d.id}`;
         const propia = newEntity(s, ids, key, { ...d, type: tipo }, tipo === 'PERSONA' ? 'OTRA_PERSONA' : e?.role);
-        delete d.caseEntityId; d.canonicalKey = key;
+        // La detección conserva su clave `AMBIGUA:`: si el revisor después la muestra, ese rechazo sigue diciendo que el texto no es
+        // de ninguna de las personas candidatas (S-7.12 en residue.ts, D-18). Solo la entidad es propia.
+        delete d.caseEntityId;
         attach(s, d, propia);
       }
       if (d.status === 'pendiente') setStatus(d, 'aceptada', 'propuesta');
