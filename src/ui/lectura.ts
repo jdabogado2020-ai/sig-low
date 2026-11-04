@@ -101,7 +101,9 @@ export async function leerContenido(o: LecturaOpciones): Promise<ResultadoLectur
     throw new SiglowError(typeof c === 'string' && /^[A-Z][A-Z_]{2,40}$/u.test(c) ? (c as ErrorCode) : 'ERROR_INTERNO');
   }
   if (o.signal.aborted) { copia.fill(0); throw new LecturaCancelada(); }
-  guardarOriginal(doc.id, f.formato, copia);
+  // Minimización (P0-6a): solo .docx y PDF tienen salida fiel; el texto de un .txt ya está entero en el `DocumentModel`.
+  if (f.formato === 'txt') copia.fill(0);
+  else guardarOriginal(doc.id, f.formato, copia);
   return { doc, formato: f.formato, bytes };
 }
 

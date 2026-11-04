@@ -11,6 +11,7 @@ import { exportarDocx } from '../../io/docx-write.ts';
 import { exportarDocxFiel } from '../../io/docx-write-fiel.ts';
 import { originalDe } from '../../io/original.ts';
 import { construirPdfTachado, descargarPdfTachado } from '../../io/pdf-tachar.ts';
+import type { PaginaCubierta, PdfTachado } from '../../io/pdf-tachar.ts';
 import { exportarPdf } from '../../io/pdf-write.ts';
 import { descargarBytes, exportarTxt, nombreDescarga, revocarUrlsVivas } from '../../io/txt-write.ts';
 import type { ResultadoExportacion } from '../../io/txt-write.ts';
@@ -18,7 +19,6 @@ import { OPCIONES_DETECCION } from '../analisis.ts';
 import { obtenerDocumento, obtenerRevision, fijarRevision } from '../documento.ts';
 import { actualizar, obtener } from '../estado.ts';
 import { idDeCodigo } from '../mensajes.ts';
-import { lineasDeAdvertencias } from '../Entrada.tsx';
 import { codigoDeError, puertos } from '../servicios.ts';
 import { fijarTabla, obtenerListaDelCaso, obtenerTabla, registrarLimpieza } from '../sesion.ts';
 import { actualizarListo, obtenerListo, ponerAviso, puertaDe, type AvisoListo } from './almacen.ts';
@@ -157,70 +157,125 @@ export function descargarDocx(): void {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// F4 (D-22) · Salida fiel. F3 los conecta a «Descargar documento (.docx)» y «Descargar PDF» de la pantalla Descargar. Usan el original en memoria (`io/original.ts`): sin él (texto pegado, original ya soltado), la salida simple de siempre.
+// F4 (D-22) · Salida fiel. F3 conecta estos manejadores a «Descargar documento (.docx)» y «Descargar PDF»; las pantallas no cambian
+// aquí. Usan el original en memoria (`io/original.ts`): sin él (texto pegado, original ya soltado), la salida simple de siempre.
 // ---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * Lo que F3 necesita para avisar después de una descarga fiel (M-122): las imágenes que salieron tal cual, las páginas del PDF que
+ * se cubrieron enteras (A-20) y lo que se quitó o se sustituyó. Los textos de esos avisos son de F3; aquí solo se muestran los que
+ * ya existen (M-88, M-313 y M-310).
+ */
+export interface ResumenSalidaFiel {
+  nombre: string;
+  /** false: se descargó la salida simple (.docx mínimo o PDF de texto). */
+  fiel: boolean;
+  imagenes: number;
+  paginasConImagenes: number[];
+  paginasCubiertas: PaginaCubierta[];
+  /** Imágenes EMF, WMF o SVG del .docx que no salieron (llevan su texto como texto, B-132). */
+  vectorialesQuitadas: number;
+  /** Caracteres fuera de WinAnsi sustituidos en el PDF de texto. */
+  sustituidos: number;
+}
+
+/**
+ * B-131 · Época del estado [M]: cada vaciado (bloqueo, «Cerrar asunto», `pagehide`, «Borrar todo») la incrementa y aborta el dibujo
+ * del PDF en curso. Una descarga que empezó en otra época no se entrega.
+ */
+let epoca = 0;
+const dibujos = new Set<AbortController>();
+registrarLimpieza(() => {
+  epoca++;
+  for (const c of dibujos) c.abort();
+  dibujos.clear();
+});
+
 /** «Descargar documento (.docx)»: el .docx idéntico al original con solo los datos cambiados; si no se puede, el .docx simple. */
-export function descargarDocxFiel(): void {
+export function descargarDocxFiel(): ResumenSalidaFiel | null {
   const v = conPuertaAbierta();
-  if (v === null) return;
+  if (v === null) return null;
   const original = v.doc.source === 'docx' ? originalDe(v.doc.id) : null;
-  if (original === null) { descargarDocx(); return; }
+  if (original === null) { descargarDocx(); return null; }
   try {
     const out = render(v.doc, v.state);
     const tabla = consolidarAhora(v);
     let r: ResultadoExportacion;
-    let fiel = true;
+    const resumen: ResumenSalidaFiel = { nombre: '', fiel: true, imagenes: 0, paginasConImagenes: [], paginasCubiertas: [], vectorialesQuitadas: 0, sustituidos: 0 };
     try {
-      r = exportarDocxFiel(original.bytes, v.doc, out);
+      const f = exportarDocxFiel(original.bytes, v.doc, out);
+      r = f;
+      resumen.imagenes = f.imagenes;
+      resumen.vectorialesQuitadas = f.vectorialesQuitadas;
     } catch (e) {
       // El documento no admite la reescritura fiel (codificación, mapa): el .docx simple, que no lleva nada del original.
       if (!(e instanceof SiglowError) || e.code !== 'FORMATO_NO_ADMITIDO') throw e;
       r = exportarDocx(out);
-      fiel = false;
+      resumen.fiel = false;
     }
-    const avisos: AvisoListo[] = [{ id: fiel ? 'M-2292' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
-    // M-122 · Las imágenes pasan sin revisar (V-53): se dice al descargar.
-    const imagenes = 'imagenes' in r && typeof r.imagenes === 'number' ? r.imagenes : 0;
-    if (fiel && imagenes > 0) avisos.push({ id: 'M-2294', params: { n: imagenes }, rol: 'alert' });
+    resumen.nombre = r.nombre;
+    // F3: el .docx fiel conserva el formato (M-2292); el simple, no (M-88). M-122: las imágenes que pasan sin revisar (V-53), M-2294.
+    const avisos: AvisoListo[] = [{ id: resumen.fiel ? 'M-2292' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
+    if (resumen.fiel && resumen.imagenes > 0) avisos.push({ id: 'M-2294', params: { n: resumen.imagenes }, rol: 'alert' });
     for (const a of r.avisos) if (a.code === 'CARACTERES_CONTROL') avisos.push({ id: 'M-313', params: { n: a.count ?? 0 }, rol: 'status' });
     ponerAviso(avisos);
     respaldarTabla(tabla);
+    return resumen;
   } catch (e) {
     errorDeAccion(e);
+    return null;
   }
 }
 
 /**
  * «Descargar PDF»: con un PDF original, el PDF tachado (cada página como imagen, con recuadros); con .docx o texto, el PDF de
- * texto. Asíncrona por el dibujo de las páginas: la puerta se evalúa y la numeración se consolida antes de la primera espera.
+ * texto. Asíncrona por el dibujo de las páginas: la puerta se evalúa y la numeración se consolida antes de la primera espera. Si
+ * el estado [M] se vacía mientras se dibuja (B-131), el dibujo se aborta y no se descarga nada.
  */
-export async function descargarPdfSalida(): Promise<void> {
+export async function descargarPdfSalida(): Promise<ResumenSalidaFiel | null> {
   const v = conPuertaAbierta();
-  if (v === null) return;
+  if (v === null) return null;
+  const inicio = epoca;
+  const control = new AbortController();
+  dibujos.add(control);
   try {
     const out = render(v.doc, v.state);
     const tabla = consolidarAhora(v);
     const original = v.doc.source === 'pdf' ? originalDe(v.doc.id) : null;
-    let r: ResultadoExportacion;
-    const tachado = original !== null;
-    if (original === null) r = exportarPdf(out);
-    else {
+    const resumen: ResumenSalidaFiel = { nombre: '', fiel: original !== null, imagenes: 0, paginasConImagenes: [], paginasCubiertas: [], vectorialesQuitadas: 0, sustituidos: 0 };
+    const avisos: AvisoListo[] = [];
+    if (original === null) {
+      const r = exportarPdf(out);
+      resumen.nombre = r.nombre;
+      resumen.sustituidos = r.sustituidos;
+    } else {
       // Copia: el original en memoria puede ponerse en cero (bloqueo, `pagehide`) mientras se dibujan las páginas.
       const copia = original.bytes.slice();
+      let pdf: PdfTachado;
       try {
-        r = descargarPdfTachado(await construirPdfTachado(copia, v.doc, out));
+        pdf = await construirPdfTachado(copia, v.doc, out, { signal: control.signal });
       } finally {
         copia.fill(0);
       }
+      if (epoca !== inicio || control.signal.aborted) { pdf.bytes.fill(0); return null; }
+      const r = descargarPdfTachado(pdf);
+      pdf.bytes.fill(0);
+      Object.assign(resumen, { nombre: r.nombre, imagenes: pdf.imagenes, paginasConImagenes: pdf.paginasConImagenes, paginasCubiertas: pdf.paginasCubiertas });
+      // A-20: las páginas no analizadas salen cubiertas; M-310 lo dice con sus números.
+      const sinAnalizar = pdf.avisos.filter((a) => a.page !== undefined).map((a) => a.page as number);
+      if (sinAnalizar.length > 0) avisos.push({ id: 'M-310', params: { paginas: [...new Set(sinAnalizar)].sort((a, b) => a - b).join(', ') }, rol: 'alert' });
     }
-    // M-122 · Las páginas que pasaron sin tachar (sin capa de texto o ilegibles, V-56) se dicen con el aviso de lectura de siempre.
-    const avisos: AvisoListo[] = [{ id: tachado ? 'M-2293' : 'M-88', params: { archivo: r.nombre }, rol: 'status' }];
-    for (const l of lineasDeAdvertencias(r.avisos)) avisos.push({ id: l.id, params: l.params, rol: 'alert' });
-    ponerAviso(avisos);
+    // F3: el PDF tachado es imagen con recuadros (M-2293); el de texto, M-88. M-122: imágenes de las páginas que salen (V-56), M-2294.
+    if (resumen.fiel && resumen.imagenes > 0) avisos.push({ id: 'M-2294', params: { n: resumen.imagenes }, rol: 'alert' });
+    ponerAviso([{ id: resumen.fiel ? 'M-2293' : 'M-88', params: { archivo: resumen.nombre }, rol: 'status' }, ...avisos]);
     respaldarTabla(tabla);
+    return resumen;
   } catch (e) {
+    if (epoca !== inicio || control.signal.aborted) return null; // el bloqueo ya vació la pantalla
     errorDeAccion(e);
+    return null;
+  } finally {
+    dibujos.delete(control);
   }
 }
 

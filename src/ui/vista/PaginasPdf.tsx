@@ -81,7 +81,10 @@ export function PaginasPdf({ doc, out, onAbrir }: { doc: DocumentModel; out: Ren
         if (ctrl.signal.aborted) return;
         entregadas = true;
         setPaginas((previas) => { for (const x of previas) vaciar(x.lienzo); return [...nuevas]; });
-        setAvisos(lineasDeAdvertencias(w).map((l) => t(l.id, l.params)));
+        // A-20 y M-122 (F4-r1): las páginas no analizadas salen cubiertas (M-310); las imágenes de las que salen, tal cual.
+        const lineas = lineasDeAdvertencias(w.avisos).map((l) => t(l.id, l.params));
+        if (w.paginasConImagenes.length > 0) lineas.push(tf('M-2295', { paginas: w.paginasConImagenes.join(', ') }));
+        setAvisos(lineas);
         setAvance(null);
       }, (e: unknown) => {
         for (const x of nuevas) vaciar(x.lienzo);

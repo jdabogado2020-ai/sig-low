@@ -7,8 +7,9 @@
 // copiadas y, sin páginas copiadas, en tamaño carta con un 10 % de margen (`#modalPageSize`, `#makeImagePage`): el diseño cambia.
 // El escritor propio conserva el tamaño exacto y no depende de `ImageBitmap` en el worker.
 //
-// Fallas seguras: una página excluida, o cuyo mapa no se pudo armar, se cubre entera. Las páginas sin capa de texto (escaneadas o
-// con texto ilegible) pasan como imagen sin tachar: se devuelven en `avisos` para que la interfaz las señale (vector para P0-6).
+// Fallas seguras (A-20, P0-6a): una página excluida, sin capa de texto (escaneada, o con menos de `pdfMinCharsPerPage` caracteres
+// útiles), con texto ilegible o cuyo mapa no se pudo armar se cubre entera, sin dibujar el original; vuelve en `paginasCubiertas`
+// y, las no analizadas, en `avisos` (M-310). Las imágenes de las páginas que salen se cuentan (`imagenes`, M-122).
 // Corre en el hilo principal (necesita un lienzo); errores solo con ErrorCode. Las anotaciones y los formularios no se dibujan.
 import { SiglowError } from '../core/types';
 import type { DetectionId, DocumentModel, IoLimits, ParseWarning, RenderedOutput } from '../core/types';
@@ -27,6 +28,8 @@ export interface PaginaPdfTachado {
   getViewport(o: { scale: number }): VistaPdf;
   getTextContent(): Promise<{ items: ReadonlyArray<unknown>; styles?: unknown }>;
   render(p: Record<string, unknown>): { promise: Promise<unknown>; cancel?(): void };
+  /** Para contar las imágenes que pinta la página (M-122). */
+  getOperatorList?(o: Record<string, unknown>): Promise<{ fnArray: ArrayLike<number> & Iterable<number> }>;
   cleanup(): unknown;
 }
 export interface DocumentoPdfTachado { numPages: number; getPage(n: number): Promise<PaginaPdfTachado> }
@@ -34,6 +37,7 @@ export interface PdfjsTachado {
   getDocument(params: Record<string, unknown>): { promise: Promise<DocumentoPdfTachado>; destroy(): Promise<void> | void };
   PDFWorker: new (params: { port: unknown }) => { destroy(): void };
   AnnotationMode: { DISABLE: number };
+  OPS?: Readonly<Record<string, number>>;
 }
 /** Contexto 2D: lo que se usa para pintar y leer los píxeles. */
 export interface Contexto2D {
@@ -72,9 +76,9 @@ export interface OpcionesTachado {
   deps?: TacharDeps;
 }
 
+/** Una página ya tachada en su lienzo (la vista previa de F3 la puede pintar; el lienzo se libera al volver de `alPagina`). */
 /** Zona de un recuadro en píxeles del lienzo, con su detección (F3: el clic sobre el recuadro abre el menú de la etiqueta). */
 export interface ZonaTachada { x: number; y: number; w: number; h: number; det?: DetectionId }
-/** Una página ya tachada en su lienzo (la vista previa de F3 la puede pintar; el lienzo se libera al volver de `alPagina`). */
 export interface PaginaTachada { n: number; total: number; ancho: number; alto: number; lienzo: Lienzo; zonas: ZonaTachada[] }
 
 export const ESCALA_POR_DEFECTO = 2;
@@ -197,6 +201,12 @@ function pintar(ctx: Contexto2D, r: Recuadro): void {
   ctx.fillText(r.etiqueta, (Math.max(...xs) + Math.min(...xs)) / 2, (Math.max(...ys) + Math.min(...ys)) / 2);
 }
 
+/** Etiqueta de una página cubierta entera, según el motivo. */
+const ETIQUETA_CUBIERTA: Readonly<Record<MotivoCubierta, string>> = {
+  excluida: '[PÁGINA EXCLUIDA]', sin_texto: '[PÁGINA NO ANALIZADA]', ilegible: '[PÁGINA NO ANALIZADA]', sin_mapa: '[PÁGINA CUBIERTA]',
+};
+
+/** Cubre la página entera (sin haber dibujado el original) con su etiqueta en el centro. */
 function zonaDe(r: Recuadro): ZonaTachada {
   const xs = r.esquinas.map((p) => p[0]);
   const ys = r.esquinas.map((p) => p[1]);
@@ -205,17 +215,50 @@ function zonaDe(r: Recuadro): ZonaTachada {
   return z;
 }
 
-function cubrirPagina(l: Lienzo): void {
+function cubrirPagina(l: Lienzo, motivo: MotivoCubierta): void {
   l.ctx.fillStyle = '#000000';
   l.ctx.fillRect(0, 0, l.ancho, l.alto);
+  const tam = Math.max(8, Math.floor(l.ancho / 28));
+  l.ctx.font = `${tam}px sans-serif`;
+  l.ctx.textAlign = 'center';
+  l.ctx.textBaseline = 'middle';
+  l.ctx.fillStyle = '#ffffff';
+  l.ctx.fillText(ETIQUETA_CUBIERTA[motivo], l.ancho / 2, l.alto / 2);
 }
 
 /**
+ * Por qué una página sale cubierta entera:
+ *   · `excluida`: el abogado excluyó su parte;
+ *   · `sin_texto`: no tiene parte o tiene menos de `pdfMinCharsPerPage` caracteres útiles (escaneada, «Folio 3» sobre una imagen);
+ *   · `ilegible`: el lector avisó `TEXTO_ILEGIBLE` (lo que se ve no es lo que se analizó);
+ *   · `sin_mapa`: no se pudo ubicar el texto en la página.
+ * A-20 (P0-6a): lo que no se analizó no sale; que el abogado incluya una página así a propósito lo decide el dueño (D-22).
+ */
+export type MotivoCubierta = 'excluida' | 'sin_texto' | 'ilegible' | 'sin_mapa';
+export interface PaginaCubierta { page: number; motivo: MotivoCubierta }
+
+export interface ResultadoTachado {
+  /** `PAGINA_SIN_TEXTO` y `TEXTO_ILEGIBLE` de las páginas que se cubrieron por eso (con su página), para M-310. */
+  avisos: ParseWarning[];
+  /** Todas las páginas cubiertas enteras y por qué. */
+  paginasCubiertas: PaginaCubierta[];
+  /** Imágenes dibujadas en las páginas que salen con su contenido (firmas, sellos, documentos pegados): pasan tal cual (V-56). */
+  imagenes: number;
+  paginasConImagenes: number[];
+}
+
+/** Operadores de pdf.js que pintan una imagen (nombres de `OPS`). */
+const OPERADORES_IMAGEN = [
+  'paintImageXObject', 'paintInlineImageXObject', 'paintImageMaskXObject', 'paintImageXObjectRepeat',
+  'paintInlineImageXObjectGroup', 'paintImageMaskXObjectGroup', 'paintImageMaskXObjectRepeat', 'paintSolidColorImageMask',
+] as const;
+
+/**
  * Dibuja cada página del original con sus recuadros y la entrega a `alPagina` (en orden). Rechaza con SiglowError(code) o
- * LecturaCancelada. Devuelve los avisos de páginas que pasan sin tachar (sin capa de texto o con texto ilegible).
+ * LecturaCancelada. Una página que no se analizó, se excluyó o no se pudo mapear se cubre entera sin dibujar el original.
  */
 export async function tacharPaginas(original: Uint8Array, doc: DocumentModel, out: RenderedOutput,
-  alPagina: (p: PaginaTachada) => void | Promise<void>, o: OpcionesTachado = {}): Promise<ParseWarning[]> {
+  alPagina: (p: PaginaTachada) => void | Promise<void>, o: OpcionesTachado = {}): Promise<ResultadoTachado> {
   if (doc.source !== 'pdf' || out.docId !== doc.id) throw new SiglowError('FORMATO_NO_ADMITIDO');
   const limits = o.limits ?? IO_LIMITS_POR_DEFECTO;
   if (original.byteLength === 0 || original.byteLength > limits.maxFileBytes) throw new SiglowError('ARCHIVO_DEMASIADO_GRANDE');
@@ -241,8 +284,11 @@ export async function tacharPaginas(original: Uint8Array, doc: DocumentModel, ou
     tarea = t;
     const pdf = await t.promise;
     const total = pdf.numPages;
-    const avisos: ParseWarning[] = [];
+    const r: ResultadoTachado = { avisos: [], paginasCubiertas: [], imagenes: 0, paginasConImagenes: [] };
     const partes = new Map(doc.parts.filter((p) => p.kind === 'pagina_pdf' && p.page !== undefined).map((p) => [p.page as number, p]));
+    const avisoDe = (code: 'PAGINA_SIN_TEXTO' | 'TEXTO_ILEGIBLE', n: number): ParseWarning | undefined =>
+      doc.warnings.find((w) => w.code === code && w.page === n);
+    const codigosImagen = new Set(OPERADORES_IMAGEN.map((k) => lib.OPS?.[k]).filter((v): v is number => typeof v === 'number'));
     for (let n = 1; n <= total; n++) {
       if (cancelado()) throw new LecturaCancelada();
       const pagina = await pdf.getPage(n);
@@ -253,25 +299,37 @@ export async function tacharPaginas(original: Uint8Array, doc: DocumentModel, ou
       try {
         lienzo.ctx.fillStyle = '#ffffff';
         lienzo.ctx.fillRect(0, 0, lienzo.ancho, lienzo.alto);
-        await pagina.render({ canvasContext: lienzo.ctx, canvas: lienzo.canvas, viewport: vista, annotationMode: lib.AnnotationMode.DISABLE }).promise;
         const parte = partes.get(n);
         const sec = parte !== undefined && parte.included ? out.sections.find((s) => s.partId === parte.id) : undefined;
         const zonas: ZonaTachada[] = [];
-        if (parte === undefined) {
-          // Sin texto que leer: la página pasa como imagen tal cual (escaneada o en blanco). La interfaz lo advierte.
-          avisos.push({ code: 'PAGINA_SIN_TEXTO', page: n, count: 1 });
+        const utiles = parte === undefined ? 0 : parte.text.replace(/\s/gu, '').length;
+        let motivo: MotivoCubierta | null = null;
+        if (parte === undefined || utiles < limits.pdfMinCharsPerPage || avisoDe('PAGINA_SIN_TEXTO', n) !== undefined) {
+          motivo = 'sin_texto';
+          r.avisos.push({ code: 'PAGINA_SIN_TEXTO', page: n, count: 1 });
+        } else if (avisoDe('TEXTO_ILEGIBLE', n) !== undefined) {
+          motivo = 'ilegible';
+          r.avisos.push({ code: 'TEXTO_ILEGIBLE', page: n, count: avisoDe('TEXTO_ILEGIBLE', n)?.count ?? 1 });
         } else if (sec === undefined) {
-          cubrirPagina(lienzo); // parte excluida: su contenido no se exporta
+          motivo = 'excluida';
         } else {
           const { items, styles } = await pagina.getTextContent();
           const leida = textoDePagina(items);
           if (leida.texto !== parte.text) throw new SiglowError('ERROR_INTERNO'); // el original no es el documento analizado
-          const cambios = cambiosDe(parte, sec);
-          const recuadros = leida.piezas === null ? null : recuadrosDe(items, styles, leida.piezas, cambios, vista, lienzo.ctx);
-          if (recuadros === null) cubrirPagina(lienzo);
-          else for (const r of recuadros) { pintar(lienzo.ctx, r); zonas.push(zonaDe(r)); }
-          const ilegible = doc.warnings.find((w) => w.code === 'TEXTO_ILEGIBLE' && w.page === n);
-          if (ilegible !== undefined) avisos.push({ code: 'TEXTO_ILEGIBLE', page: n, count: ilegible.count });
+          const recuadros = leida.piezas === null ? null : recuadrosDe(items, styles, leida.piezas, cambiosDe(parte, sec), vista, lienzo.ctx);
+          if (recuadros === null) motivo = 'sin_mapa';
+          else {
+            await pagina.render({ canvasContext: lienzo.ctx, canvas: lienzo.canvas, viewport: vista, annotationMode: lib.AnnotationMode.DISABLE }).promise;
+            for (const x of recuadros) { pintar(lienzo.ctx, x); zonas.push(zonaDe(x)); }
+            // M-122: las imágenes de una página que sale con su contenido pasan tal cual; se cuentan para que la interfaz avise.
+            const lista = codigosImagen.size > 0 ? await pagina.getOperatorList?.({ annotationMode: lib.AnnotationMode.DISABLE }) : undefined;
+            const imagenes = Array.from(lista?.fnArray ?? []).filter((f) => codigosImagen.has(f)).length;
+            if (imagenes > 0) { r.imagenes += imagenes; r.paginasConImagenes.push(n); }
+          }
+        }
+        if (motivo !== null) {
+          cubrirPagina(lienzo, motivo); // el original de esta página nunca se dibuja
+          r.paginasCubiertas.push({ page: n, motivo });
         }
         await alPagina({ n, total, ancho: base.width, alto: base.height, lienzo, zonas });
       } finally {
@@ -280,7 +338,7 @@ export async function tacharPaginas(original: Uint8Array, doc: DocumentModel, ou
       }
       o.alAvanzar?.(n, total);
     }
-    return avisos;
+    return r;
   } catch (e) {
     throw codigoPdf(e);
   } finally {
@@ -291,7 +349,7 @@ export async function tacharPaginas(original: Uint8Array, doc: DocumentModel, ou
   }
 }
 
-export interface PdfTachado { bytes: Uint8Array; avisos: ParseWarning[] }
+export interface PdfTachado extends ResultadoTachado { bytes: Uint8Array }
 
 /** RGB (3 bytes por píxel) del lienzo, sobre fondo blanco. */
 function rgbDe(l: Lienzo): Uint8Array {
@@ -311,10 +369,10 @@ function rgbDe(l: Lienzo): Uint8Array {
 export async function construirPdfTachado(original: Uint8Array, doc: DocumentModel, out: RenderedOutput, o: OpcionesTachado = {}): Promise<PdfTachado> {
   const paginas: PaginaImagen[] = [];
   try {
-    const avisos = await tacharPaginas(original, doc, out, (p) => {
+    const r = await tacharPaginas(original, doc, out, (p) => {
       paginas.push({ ancho: p.ancho, alto: p.alto, pixAncho: p.lienzo.ancho, pixAlto: p.lienzo.alto, rgb: rgbDe(p.lienzo) });
     }, o);
-    return { bytes: pdfDeImagenes(paginas), avisos };
+    return { ...r, bytes: pdfDeImagenes(paginas) };
   } finally {
     for (const p of paginas) p.rgb.fill(0);
   }

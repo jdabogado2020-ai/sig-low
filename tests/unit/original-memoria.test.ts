@@ -37,6 +37,11 @@ describe('T-OM · original en memoria', () => {
     expect(o?.bytes).toEqual(bytes);
     expect(originalDe('doc_ffffffffffffffffffffffffffffffff' as DocId)).toBeNull();
     soltarOriginal();
+    // Un .txt no deja original: su texto ya está entero en el modelo (minimización, P0-6a).
+    const txt = Object.assign(new Blob([new TextEncoder().encode('Nota de Ana Ficticia Rojas.')]), { name: 'nota.txt' });
+    const rt = await leerContenido({ archivo: txt, label: 'Documento 1', signal: new AbortController().signal, alAvanzar: () => undefined, crearWorker: workerEnProceso });
+    expect(originalDe(rt.doc.id)).toBeNull();
+    expect(docIdDelOriginal()).toBeNull();
   });
 
   it('T-OM-02 INV-D06 queda en cero al cargar otro documento, al quitar el archivo del borrador y al vaciar todo el documento', async () => {

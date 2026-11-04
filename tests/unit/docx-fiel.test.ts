@@ -126,7 +126,7 @@ describe('T-FI-01 a T-FI-05 · .docx fiel sobre un documento con formato, revisi
     const nombres = [...zipSalida.keys()];
     for (const n of nombres) expect(n, n).not.toMatch(/docprops|customxml|comments|people|chart|header9|settings\.xml\.rels/iu);
     expect(nombres).toContain('word/document.xml');
-    expect(nombres).toContain('word/media/image1.png');
+    expect(nombres).toContain('word/media/siglow-imagen1.png');
     expect(imagenes).toBe(1);
   });
 
@@ -153,7 +153,7 @@ describe('T-FI-01 a T-FI-05 · .docx fiel sobre un documento con formato, revisi
     }
     expect(xml).toContain('<mc:Fallback><w:r><w:pict><v:shape><v:textbox><w:txbxContent><w:p><w:r><w:t xml:space="preserve"></w:t></w:r></w:p>');
     expect(xml).toContain('r:embed="rId20"');
-    expect(zipSalida.get('word/media/image1.png')).toEqual(PNG);
+    expect(zipSalida.get('word/media/siglow-imagen1.png')).toEqual(PNG);
     const pie = new TextDecoder().decode(zipSalida.get('word/footer1.xml'));
     expect(pie).toContain('> PAGE </w:instrText>');
     const ajustes = new TextDecoder().decode(zipSalida.get('word/settings.xml'));
@@ -234,6 +234,128 @@ describe('T-FI-07 · partes excluidas, coherencia y errores', () => {
     expect(dn.parts[0]?.text).toBe('José Pérez Ficticio');
     const { bytes } = construirDocxFiel(nfd, dn, reemplazarTodo(dn, { 'José Pérez Ficticio': '[PERSONA_1]' }));
     expect(leer(bytes).parts[0]?.text).toBe('[PERSONA_1]');
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// T-FI-09 a T-FI-12 · Reapertura F4-r1 (P0-6a): las sondas S2 a S13 del revisor. Fallan con `d953d60`.
+// ---------------------------------------------------------------------------------------------------------------------
+const NOMBRES_SONDA = ['Pedro Ejemplo Gómez', 'Carmen Ficticia Rojas', 'Carmen Ficticia', 'Luis Inventado Pardo', 'Luis_Inventado'];
+const plegar = (s: string): string => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+const compactar = (s: string): string => plegar(s).replace(/[^\p{L}\p{N}]/gu, '');
+const utf16 = (s: string): Uint8Array => Uint8Array.from([...s].flatMap((c) => [c.charCodeAt(0) & 0xff, c.charCodeAt(0) >> 8]));
+const M_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/math';
+const imagenEn = (rId: string, tooltip?: string): string =>
+  `<w:r><w:drawing><wp:inline><wp:docPr id="7" name="Imagen 7"${tooltip === undefined ? '' : `><a:hlinkClick xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" r:id="" tooltip="${tooltip}"/></wp:docPr`}${tooltip === undefined ? '/>' : '>'}` +
+  `<a:graphic><a:graphicData uri="${PIC}"><pic:pic xmlns:pic="${PIC}"><pic:nvPicPr><pic:cNvPr id="0" name="foto"/><pic:cNvPicPr/></pic:nvPicPr>` +
+  `<pic:blipFill><a:blip r:embed="${rId}"/></pic:blipFill></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
+
+function fixtureSondas(estiloPropio = true): Uint8Array {
+  const desplegable = '<w:r><w:fldChar w:fldCharType="begin"><w:ffData><w:name w:val="Luis_Inventado"/><w:enabled/><w:ddList>' +
+    '<w:listEntry w:val="Luis Inventado Pardo"/><w:listEntry w:val="Carmen Ficticia Rojas"/></w:ddList></w:ffData></w:fldChar></w:r>' +
+    `<w:r><w:instrText xml:space="preserve"> FORMDROPDOWN </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r>${r('opción')}<w:r><w:fldChar w:fldCharType="end"/></w:r>`;
+  const cuerpo = [
+    `<w:p><w:pPr><w:pStyle w:val="EstiloPedroEjemplo"/></w:pPr><w:bookmarkStart w:id="0" w:name="Pedro_Ejemplo_Gomez"/>${r('Demanda de Pedro Ejemplo Gómez.')}<w:bookmarkEnd w:id="0"/></w:p>`,
+    p(`<w:hyperlink w:anchor="Pedro_Ejemplo_Gomez">${r('ver arriba')}</w:hyperlink>`),
+    p(campo(' REF Pedro_Ejemplo_Gomez \\h ', 'Pedro Ejemplo Gómez')),
+    p(campo(" DATE \\@ \"'Carmen Ficticia,' d/MM/yyyy\" ", '3/11/2026')),
+    p(campo(" DATE \\@ \"d 'de' MMMM 'de' yyyy\" ", '3 de noviembre de 2026')),
+    p(`<m:oMath xmlns:m="${M_NS}"><m:r><m:t>Luis Inventado Pardo</m:t></m:r></m:oMath>`),
+    `<w:sdt><w:sdtPr><w:comboBox w:lastValue="Carmen Ficticia"><w:listItem w:displayText="Carmen Ficticia" w:value="1"/></w:comboBox></w:sdtPr><w:sdtContent>${pt('[elija]')}</w:sdtContent></w:sdt>`,
+    p(desplegable),
+    p(imagenEn('rId30', 'Perfil de Carmen Ficticia'), imagenEn('rId31')),
+    `<w:p><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr>${r('Primer punto.')}</w:p>`,
+  ].join('');
+  const estilos = raiz('styles', '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style>' +
+    `<w:style w:type="paragraph"${estiloPropio ? ' w:customStyle="1"' : ''} w:styleId="EstiloPedroEjemplo"><w:name w:val="Estilo de Pedro Ejemplo Gómez"/><w:aliases w:val="Pedro"/><w:basedOn w:val="Normal"/></w:style>`);
+  const numeracion = raiz('numbering', '<w:abstractNum w:abstractNumId="0"><w:lvl w:ilvl="0"><w:lvlText w:val="Contrato de Carmen %1"/></w:lvl>' +
+    '<w:lvl w:ilvl="1"><w:lvlText w:val="Artículo %2."/></w:lvl></w:abstractNum><w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num>');
+  const ajustes = raiz('settings', '<w:zoom w:percent="100"/><w:documentProtection w:edit="readOnly" w:enforcement="1" w:hash="QUJD" w:salt="REVG"/>' +
+    '<w:rsids><w:rsidRoot w:val="00A1B2C3"/><w:rsid w:val="00D4E5F6"/></w:rsids>' +
+    '<w14:docId xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" w14:val="1A2B3C4D"/>' +
+    '<w15:docId xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" w15:val="{0F0E0D0C-0B0A-0908-0706-050403020100}"/>');
+  const emf = Uint8Array.from([1, 0, 0, 0, ...Array.from({ length: 36 }, () => 0), 0x20, 0x45, 0x4d, 0x46, ...utf16('Luis Inventado Pardo')]);
+  return construirDocx({
+    cuerpo,
+    extras: [
+      { nombre: 'styles.xml', tipo: 'styles', xml: estilos },
+      { nombre: 'numbering.xml', tipo: 'numbering', xml: numeracion },
+      { nombre: 'settings.xml', tipo: 'settings', xml: ajustes },
+    ],
+    relacionesDocumento:
+      `<Relationship Id="rId30" Type="${tipoRel('image')}" Target="media/cedula_Pedro_Ejemplo_Gomez.png"/>` +
+      `<Relationship Id="rId31" Type="${tipoRel('image')}" Target="media/firma_luis.emf"/>`,
+    entradas: { 'word/media/cedula_Pedro_Ejemplo_Gomez.png': PNG, 'word/media/firma_luis.emf': emf },
+  });
+}
+
+describe('T-FI-09 a T-FI-12 · reapertura F4-r1: lo que el lector no lee y los valores ocultos', () => {
+  const original = fixtureSondas();
+  const doc = leer(original);
+  const out = reemplazarTodo(doc, { 'Pedro Ejemplo Gómez': '[DEMANDANTE_1]' });
+  const r = construirDocxFiel(original, doc, out);
+  const zipSalida = entradas(r.bytes);
+  const dec = new TextDecoder();
+  const xml = (k: string): string => dec.decode(zipSalida.get(k));
+
+  it('T-FI-09 ningún nombre de las sondas en ninguna entrada: ni en el nombre, ni en el XML, ni en los binarios; ni plegado ni compacto', () => {
+    for (const [k, v] of zipSalida) {
+      for (const n of NOMBRES_SONDA) {
+        expect(compactar(k).includes(compactar(n)), `${n} en el nombre ${k}`).toBe(false);
+        const texto = dec.decode(v);
+        expect(plegar(texto).includes(plegar(n)), `${n} en ${k}`).toBe(false);
+        expect(compactar(texto).includes(compactar(n)), `${n} compacto en ${k}`).toBe(false);
+        expect(Buffer.from(v).includes(Buffer.from(utf16(n))), `${n} en UTF-16 en ${k}`).toBe(false);
+      }
+    }
+  });
+
+  it('T-FI-10 M-120: ecuación, rótulo de numeración, opciones del desplegable y literales de DATE neutralizados; lo seguro queda', () => {
+    const d = xml('word/document.xml');
+    expect(d).toContain('<m:t></m:t>');
+    expect(d).toContain('<w:listEntry w:val="Opción 1"/><w:listEntry w:val="Opción 2"/>');
+    expect(d).not.toContain("'Carmen");
+    expect(d).toContain("> DATE \\@ \"d 'de' MMMM 'de' yyyy\" </w:instrText>"); // el formato con «de» es seguro
+    expect(d).not.toContain(' REF '); // REF a un marcador del usuario: código vaciado
+    const n = xml('word/numbering.xml');
+    expect(n).toContain('<w:lvlText w:val="Artículo %2."/>');
+    expect(n).not.toContain('Contrato');
+    expect(leer(r.bytes).parts.map((x) => x.text)).toEqual(out.sections.map((s) => s.text));
+  });
+
+  it('T-FI-11 M-121 y B-130: marcadores, ancla, campo de formulario, lastValue, tooltip, estilo propio e imagen con nombres neutros; settings sin docId, rsids ni protección', () => {
+    const d = xml('word/document.xml');
+    expect(d).toContain('w:name="SigLowMarca1"');
+    expect(d).toContain('w:anchor="SigLowMarca1"');
+    expect(d).toContain('<w:name w:val="SigLowMarca2"/>');
+    expect(d).toContain('<w:pStyle w:val="SigLowEstilo1"/>');
+    expect(d).not.toMatch(/lastValue|tooltip|listItem/u);
+    const s = xml('word/styles.xml');
+    expect(s).toContain('w:styleId="SigLowEstilo1"><w:name w:val="Estilo 1"/><w:basedOn w:val="Normal"/>');
+    expect(s).toContain('<w:name w:val="Normal"/>');
+    const rels = xml('word/_rels/document.xml.rels');
+    expect(rels).toContain('Target="/word/media/siglow-imagen1.png"');
+    expect([...zipSalida.keys()]).toContain('word/media/siglow-imagen1.png');
+    expect(zipSalida.get('word/media/siglow-imagen1.png')).toEqual(PNG);
+    expect(xml('[Content_Types].xml')).toContain('<Default Extension="png" ContentType="image/png"/>');
+    expect(r.imagenes).toBe(1);
+    const ajustes = xml('word/settings.xml');
+    expect(ajustes).toContain('<w:zoom w:percent="100"/>');
+    expect(ajustes).not.toMatch(/docId|rsid|documentProtection|w:hash|w:salt/u);
+  });
+
+  it('T-FI-12 B-132: la imagen EMF (texto en UTF-16) no sale y se cuenta; la referencia a ella se quita', () => {
+    expect([...zipSalida.keys()].some((k) => /\.emf$/u.test(k))).toBe(false);
+    expect(r.vectorialesQuitadas).toBe(1);
+    expect(xml('word/_rels/document.xml.rels')).not.toContain('rId31');
+    expect(xml('word/document.xml')).not.toContain('r:embed="rId31"');
+  });
+
+  it('T-FI-12 la verificación final busca las formas plegadas: un estilo integrado con el nombre reemplazado no deja descargar', () => {
+    // Sin `w:customStyle` el estilo no se renombra; su nombre «Estilo de Pedro Ejemplo Gómez» lleva el valor reemplazado.
+    const integrado = fixtureSondas(false);
+    const di = leer(integrado);
+    expect(codigo(() => construirDocxFiel(integrado, di, reemplazarTodo(di, { 'Pedro Ejemplo Gómez': '[DEMANDANTE_1]' })))).toBe('ERROR_INTERNO');
   });
 });
 

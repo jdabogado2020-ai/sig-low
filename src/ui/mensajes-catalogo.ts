@@ -202,7 +202,7 @@ export const CATALOGO: Readonly<Record<string, string>> = {
   "M-307": "El documento tiene una marca de agua o texto artístico ({n}). Revise si contiene nombres o datos.",
   "M-308": "La numeración automática de listas no se copia al documento anonimizado. No afecta los datos ocultados.",
   "M-309": "Este .docx usa una variante estricta del formato (Strict). Revise que el texto leído esté completo.",
-  "M-310": "Las páginas {paginas} no tienen texto seleccionable y no se analizaron. Si contienen datos, revíselas en el original.",
+  "M-310": "Las páginas {paginas} no tienen texto que Sig-Low pueda leer: no se analizan y en el PDF anonimizado salen cubiertas por completo.",
   "M-312": "En este PDF el orden del texto puede no coincidir con el orden visual (por ejemplo, en columnas). Revise el documento anonimizado con cuidado.",
   "M-313": "Se quitarán {n} caracteres invisibles al descargar el documento (.docx).",
   "M-401": "Propiedades del documento (autor, título, fechas)",

@@ -136,8 +136,10 @@ function aplicar(x: string, eds: Edicion[]): string {
 /** U+0000–U+0008, U+000B, U+000C, U+000E–U+001F, U+FFFE, U+FFFF y sustitutos sueltos: no válidos en XML 1.0. */
 const NO_VALIDOS_XML = /[\u0000-\u0008\u000B\u000C\u000E-\u001F￾￿\uD800-\uDFFF]/gu;
 const escapar = (s: string): string => s.replace(/&/gu, '&amp;').replace(/</gu, '&lt;').replace(/>/gu, '&gt;');
+const escaparAtributo = (s: string): string => escapar(s).replace(/"/gu, '&quot;');
 
 const NS_R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+const NS_M = 'http://schemas.openxmlformats.org/officeDocument/2006/math';
 const NS_A = 'http://schemas.openxmlformats.org/drawingml/2006/main';
 const NS_VML = 'urn:schemas-microsoft-com:vml';
 const NS_O = 'urn:schemas-microsoft-com:office:office';
@@ -162,11 +164,33 @@ const W_QUITAR: ReadonlySet<string> = new Set([
   'altChunk', 'control', 'subDoc',
   // configuración: plantilla adjunta (ruta con usuario), variables y combinación de correspondencia
   'attachedTemplate', 'docVars', 'mailMerge',
+  // B-130: identificadores que ligan la salida al original (sesiones de edición) y el hash con sal de la contraseña de protección
+  'rsids', 'documentProtection', 'writeProtection',
+  // M-121: alias de estilos y macros de formularios
+  'aliases', 'entryMacro', 'exitMacro',
 ]);
 /** Se quita la envoltura y se conserva el contenido (lo insertado se acepta). */
 const W_DESENVOLVER: ReadonlySet<string> = new Set(['ins', 'moveTo', 'customXml', 'smartTag']);
-/** Atributos de WordprocessingML con datos de personas o fechas de revisión. */
-const W_ATRIBUTOS_FUERA: ReadonlySet<string> = new Set(['author', 'initials', 'date', 'tooltip', 'docLocation', 'fullDate']);
+/** Atributos de WordprocessingML con datos de personas, fechas de revisión o valores elegidos (M-121: `lastValue`). */
+const W_ATRIBUTOS_FUERA: ReadonlySet<string> = new Set(['author', 'initials', 'date', 'tooltip', 'docLocation', 'fullDate', 'lastValue']);
+/** Elementos (de WordprocessingML) cuyo `w:val` nombra un estilo: se renombran con los estilos propios (M-121). */
+const W_REFERENCIA_ESTILO: ReadonlySet<string> = new Set(['pStyle', 'rStyle', 'tblStyle', 'basedOn', 'next', 'link', 'numStyleLink', 'styleLink']);
+/** Marcadores automáticos de Word (índices, referencias, el de «volver»): no llevan datos y no se renombran. */
+const MARCADOR_AUTOMATICO = /^_(?:Toc|Ref|Hlk|GoBack)\w*$/u;
+/**
+ * M-120 · Palabras que un rótulo de numeración (`w:lvlText`) puede llevar; las demás se quitan del rótulo («Artículo %1.» queda;
+ * «Contrato de Pedro %1» queda « %1»). Se comparan sin tildes y en minúsculas.
+ */
+const PALABRAS_DE_NUMERACION: ReadonlySet<string> = new Set([
+  'articulo', 'art', 'capitulo', 'cap', 'titulo', 'seccion', 'clausula', 'paragrafo', 'par', 'numeral', 'literal', 'anexo', 'hecho',
+  'hechos', 'pretension', 'pretensiones', 'punto', 'inciso', 'item', 'paso', 'nota', 'tabla', 'figura', 'parte', 'libro', 'apartado',
+  'considerando', 'no', 'num', 'n', 'prueba', 'pruebas', 'peticion', 'fundamento', 'article', 'chapter', 'section', 'part', 'step', 'note',
+  'table', 'figure', 'appendix', 'annex', 'clause',
+]);
+const plegar = (s: string): string => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+function neutralizarRotulo(v: string): string {
+  return v.replace(/\p{L}+/gu, (p) => (PALABRAS_DE_NUMERACION.has(plegar(p)) ? p : ''));
+}
 /** Gráficos que se conservan dentro de `w:drawing`; los demás (gráficos, SmartArt) tienen su texto en partes que no se leen. */
 const GRAFICOS_ADMITIDOS: ReadonlySet<string> = new Set([
   'http://schemas.openxmlformats.org/drawingml/2006/picture',
@@ -177,11 +201,40 @@ const GRAFICOS_ADMITIDOS: ReadonlySet<string> = new Set([
 /** Campos cuyo código no lleva datos del caso (número de página, índices, fechas del sistema, referencias internas). */
 const CAMPOS_SEGUROS: ReadonlySet<string> = new Set([
   'PAGE', 'NUMPAGES', 'SECTIONPAGES', 'SECTION', 'SEQ', 'TOC', 'PAGEREF', 'REF', 'NOTEREF', 'STYLEREF', 'DATE', 'TIME',
-  'FORMTEXT', 'FORMCHECKBOX', 'FORMDROPDOWN', 'LISTNUM', 'AUTONUM', 'AUTONUMLGL', 'AUTONUMOUT',
+  'FORMTEXT', 'FORMCHECKBOX', 'FORMDROPDOWN', 'AUTONUM', 'AUTONUMLGL', 'AUTONUMOUT',
 ]);
+const FORMATOS_DE_NUMERO = /^(?:MERGEFORMAT|CHARFORMAT|Arabic|ArabicDash|alphabetic|ALPHABETIC|roman|ROMAN|CardText|OrdText|Ordinal|DollarText|Hex|Upper|Lower|Caps|FirstCap)$/u;
+/** Palabras que un formato de fecha puede llevar entre comillas simples («d 'de' MMMM 'de' yyyy»). */
+const PALABRAS_DE_FECHA: ReadonlySet<string> = new Set(['de', 'del', 'a', 'las', 'los', 'el', 'y', 'en', 'of', 'the']);
+const SECUENCIAS: ReadonlySet<string> = new Set(['tabla', 'figura', 'ilustracion', 'ecuacion', 'grafico', 'table', 'figure', 'equation']);
+function formatoDeFechaSeguro(f: string): boolean {
+  const sinLiterales = f.replace(/'([^']*)'/gu, (_, lit: string) =>
+    (lit.split(/\s+/u).filter((x) => x !== '').every((x) => PALABRAS_DE_FECHA.has(plegar(x))) ? ' ' : '\u0000'));
+  return /^[dMyHhmsAaPp\s/:.,\-–]*$/u.test(sinLiterales);
+}
+/**
+ * M-120 · Un código de campo es seguro si su tipo está en `CAMPOS_SEGUROS` y ningún argumento puede llevar un dato: formatos de
+ * fecha solo con sus letras (y literales como «de»), formatos de número conocidos, marcadores automáticos en las referencias,
+ * secuencias y estilos conocidos. Ante la duda, no es seguro y su código se vacía (el resultado visible se lee y se anonimiza).
+ */
 function campoSeguro(instr: string): boolean {
-  const primera = /^\s*([A-Za-z]+)/u.exec(instr)?.[1]?.toUpperCase();
-  return primera !== undefined && CAMPOS_SEGUROS.has(primera);
+  const toks = instr.match(/"[^"]*"|\\[*@#!]|\\[A-Za-z]|[^\s"\\]+/gu) ?? [];
+  const tipo = toks[0]?.toUpperCase();
+  if (tipo === undefined || !CAMPOS_SEGUROS.has(tipo)) return false;
+  for (let i = 1; i < toks.length; i++) {
+    const t = toks[i] ?? '';
+    if (t.startsWith('\\')) continue;
+    const v = t.startsWith('"') ? t.slice(1, -1) : t;
+    const previo = toks[i - 1];
+    if (previo === '\\*') { if (!FORMATOS_DE_NUMERO.test(v)) return false; continue; }
+    if (previo === '\\@') { if (!formatoDeFechaSeguro(v)) return false; continue; }
+    if (previo === '\\#') { if (!/^[0#.,\-+%$\s;()]*$/u.test(v)) return false; continue; }
+    if (i === 1 && (tipo === 'REF' || tipo === 'PAGEREF' || tipo === 'NOTEREF')) { if (!MARCADOR_AUTOMATICO.test(v)) return false; continue; }
+    if (i === 1 && tipo === 'SEQ') { if (!SECUENCIAS.has(plegar(v))) return false; continue; }
+    if (i === 1 && tipo === 'STYLEREF') { if (!/^(?:\d|heading \d|t[ií]tulo \d)$/iu.test(v)) return false; continue; }
+    if (/\p{L}/u.test(v)) return false; // cualquier otro argumento con letras (estilos del TOC, textos): no
+  }
+  return true;
 }
 
 const esW = (el: Element): boolean => el.namespaceURI !== null && W_NS.has(el.namespaceURI);
@@ -202,9 +255,37 @@ interface Saneo {
   mapeados: Set<Element>;
   /** `r:id` de esta parte cuyas relaciones se descartaron. */
   relacionesFuera: ReadonlySet<string>;
+  /** M-121 · Nombre neutro de un marcador o de un campo de formulario (el mismo en todas las partes); los automáticos no cambian. */
+  nombreNeutro: (n: string) => string;
+  /** M-121 · Estilos propios del documento: `styleId` original → identificador y nombre neutros. */
+  estilos: ReadonlyMap<string, { id: string; nombre: string }>;
+  /** M-120 · Opciones de listas desplegables ya neutralizadas («Opción N»). */
+  opciones: { n: number };
 }
 
-/** Ediciones que sanean una parte XML (cuerpo, encabezado, pie, notas o configuración) y reescriben su texto. */
+const NS_W14_W15 = /^http:\/\/schemas\.microsoft\.com\/office\/word\/20\d\d\/wordml$/u;
+
+/**
+ * Valor neutro de un atributo de WordprocessingML que puede llevar un dato sin ser texto del documento (M-120, M-121), o null si se
+ * deja igual: nombres de marcadores, anclas y campos de formulario; opciones de listas; rótulos de numeración; estilos propios.
+ */
+function valorNeutro(el: Element, w: string, local: string, valor: string, s: Saneo): string | null {
+  const padre = el.parentNode !== null && el.parentNode.nodeType === 1 ? (el.parentNode as Element).localName : '';
+  if ((w === 'bookmarkStart' && local === 'name') || (w === 'hyperlink' && local === 'anchor') || (w === 'name' && padre === 'ffData' && local === 'val')) {
+    return s.nombreNeutro(valor);
+  }
+  if (w === 'listEntry' && local === 'val') return `Opción ${++s.opciones.n}`;
+  if (w === 'lvlText' && local === 'val') return neutralizarRotulo(valor);
+  if (w === 'style' && local === 'styleId') return s.estilos.get(valor)?.id ?? null;
+  if (w === 'name' && padre === 'style' && local === 'val') {
+    const id = atributoLocal(el.parentNode as Element, 'styleId', nsW);
+    return id === null ? null : (s.estilos.get(id)?.nombre ?? null);
+  }
+  if (W_REFERENCIA_ESTILO.has(w) && local === 'val') return s.estilos.get(valor)?.id ?? null;
+  return null;
+}
+
+/** Ediciones que sanean una parte XML (cuerpo, encabezado, pie, notas, configuración, estilos o numeración) y reescriben su texto. */
 function sanear(x: XmlDocx, s: Saneo): string {
   const pares = emparejar(x);
   const indice = new Map<Element, Tok>(pares.map((p) => [p.el, p.tok]));
@@ -246,6 +327,10 @@ function sanear(x: XmlDocx, s: Saneo): string {
     if (w !== null && W_QUITAR.has(w)) { quitar(tok); continue; }
     if (dibujosFuera.has(el)) { quitar(tok); continue; }
     if (el.namespaceURI === NS_O && el.localName === 'OLEObject') { quitar(tok); continue; }
+    // B-130: `w14:docId`/`w15:docId` (un GUID por documento) en `settings`.
+    if (el.localName === 'docId' && el.namespaceURI !== null && NS_W14_W15.test(el.namespaceURI)) { quitar(tok); continue; }
+    // B-132: la variante SVG de una imagen cuya relación se descartó (lleva su texto como texto); queda la imagen de mapa de bits.
+    if (el.localName === 'svgBlip' && [...s.relacionesFuera].some((id) => atributoLocal(el, 'embed', (u) => u === NS_R) === id)) { quitar(tok); continue; }
     if (w === 'sym' && (s.nuevos.get(el) === null || !s.mapeados.has(el))) { quitar(tok); continue; }
     if (w === 'fldSimple' && !campoSeguro(atributoLocal(el, 'instr', nsW) ?? '')) {
       eds.push({ ini: tok.ini, fin: tok.finApertura, texto: '' });
@@ -268,18 +353,23 @@ function sanear(x: XmlDocx, s: Saneo): string {
       const local = at.localName ?? '';
       const fuera =
         (at.namespaceURI !== null && W_NS.has(at.namespaceURI) && W_ATRIBUTOS_FUERA.has(local)) ||
+        local === 'tooltip' || // M-121: también el de DrawingML (`a:hlinkClick`)
         (at.namespaceURI === NS_R && s.relacionesFuera.has(at.value)) ||
         ((el.localName === 'docPr' || el.localName === 'cNvPr') && at.namespaceURI === null && (local === 'descr' || local === 'title')) ||
         ((el.namespaceURI === NS_VML || el.namespaceURI === NS_O) && (local === 'alt' || local === 'title') && at.namespaceURI !== NS_R);
+      const nuevoValor = fuera || !nsW(at.namespaceURI) || w === null ? null : valorNeutro(el, w, local, at.value, s);
       if (fuera) apertura.push({ ini: span.ini, fin: span.fin, texto: '' });
+      else if (nuevoValor !== null && nuevoValor !== at.value) {
+        apertura.push({ ini: span.ini, fin: span.fin, texto: ` ${at.nodeName}="${escaparAtributo(nuevoValor)}"` });
+      }
       else if ((el.localName === 'docPr' || el.localName === 'cNvPr') && at.namespaceURI === null && local === 'name' && at.value !== 'Imagen') {
         apertura.push({ ini: span.ini, fin: span.fin, texto: ' name="Imagen"' });
       } else if (el.namespaceURI === NS_VML && el.localName === 'textpath' && local === 'string' && at.value !== '') {
         apertura.push({ ini: span.ini, fin: span.fin, texto: ' string=""' }); // texto de una marca de agua: no se lee
       }
     }
-    // Texto: `w:t` mapeados con texto nuevo; el resto de `w:t`, `a:t` e instrucciones no seguras se vacían.
-    const esT = (w === 't') || (el.localName === 't' && el.namespaceURI === NS_A);
+    // Texto: `w:t` mapeados con texto nuevo; el resto de `w:t`, `a:t`, `m:t` (ecuaciones, M-120) e instrucciones no seguras se vacían.
+    const esT = (w === 't') || (el.localName === 't' && (el.namespaceURI === NS_A || el.namespaceURI === NS_M));
     if (esT || (w === 'instrText' && instrVaciar.has(el))) {
       const nuevo = w === 't' && s.mapeados.has(el) ? s.nuevos.get(el) : '';
       if (nuevo !== undefined && nuevo !== null) {
@@ -430,16 +520,41 @@ function entradaCopiada(d: Uint8Array, e: EntradaZip): EntradaSalida {
 
 /** Partes con texto que se leen y se reescriben. */
 const TIPOS_TEXTO: ReadonlySet<string> = new Set(['header', 'footer', 'footnotes', 'endnotes']);
-/** Partes que se copian tal cual (`settings` se sanea). Las demás relaciones (comentarios, personas, XML personalizado, glosario,
- * macros, objetos, controles, gráficos, plantilla, combinación de correspondencia…) se descartan. */
+/** Partes de formato que salen. `settings`, estilos y numeración se sanean (B-130, M-120, M-121); las demás se copian tal cual.
+ * Las otras relaciones (comentarios, personas, XML personalizado, glosario, macros, objetos, controles, gráficos, plantilla,
+ * combinación de correspondencia…) se descartan. */
 const TIPOS_COPIA: ReadonlySet<string> = new Set(['styles', 'stylesWithEffects', 'numbering', 'fontTable', 'settings', 'webSettings', 'theme', 'image', 'font']);
+const TIPOS_SANEADOS: ReadonlySet<string> = new Set(['settings', 'styles', 'stylesWithEffects', 'numbering']);
+/** B-132 · Imágenes vectoriales que guardan su texto como texto (EMF y WMF en UTF-16, SVG en claro): no salen. */
+const VECTORIAL = /\.(?:emf|wmf|emz|wmz|svg|svgz)$/iu;
+const TIPO_IMAGEN: Readonly<Record<string, string>> = {
+  png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', jpe: 'image/jpeg', gif: 'image/gif', bmp: 'image/bmp', tif: 'image/tiff',
+  tiff: 'image/tiff', ico: 'image/x-icon', webp: 'image/webp',
+};
 
 export interface DocxFielConstruido {
   bytes: Uint8Array;
   /** `CARACTERES_CONTROL` si se quitaron caracteres no válidos en XML del texto de salida. */
   avisos: ParseWarning[];
-  /** Imágenes que se conservan tal cual (pueden mostrar datos: la interfaz lo advierte). */
+  /** Imágenes que se conservan tal cual (pueden mostrar datos: la interfaz lo advierte, M-122). */
   imagenes: number;
+  /** Imágenes EMF, WMF o SVG que no salieron (B-132; la interfaz lo advierte). */
+  vectorialesQuitadas: number;
+}
+
+/** M-121 · Estilos propios (`w:customStyle`) de una parte de estilos: su nombre puede llevar un dato; se renombran a «Estilo N». */
+function estilosPropios(x: XmlDocx, acumulado: Map<string, { id: string; nombre: string }>): void {
+  const hijos = x.raiz.childNodes;
+  for (let i = 0; i < hijos.length; i++) {
+    const n = hijos.item(i);
+    if (n === null || n.nodeType !== 1 || !esW(n as Element) || (n as Element).localName !== 'style') continue;
+    const el = n as Element;
+    const propio = atributoLocal(el, 'customStyle', nsW);
+    const id = atributoLocal(el, 'styleId', nsW);
+    if (id === null || (propio !== '1' && propio !== 'true' && propio !== 'on') || acumulado.has(id)) continue;
+    const k = acumulado.size + 1;
+    acumulado.set(id, { id: `SigLowEstilo${k}`, nombre: `Estilo ${k}` });
+  }
 }
 
 const normalizarComparacion = (s: string): string => s.normalize('NFC').replace(/[\t\n‑­]/gu, '');
@@ -505,6 +620,18 @@ export function construirDocxFiel(original: Uint8Array, doc: DocumentModel, out:
     if (x.codificacion !== 'utf-8') throw new SiglowError('FORMATO_NO_ADMITIDO');
     salida.set(k, entradaNueva(x.nombre, texto, x.bom));
   };
+  /** M-121 · Nombres neutros de las imágenes (el de la entrada del ZIP y el `Target` de las relaciones): clave original → nombre. */
+  const imagenesNeutras = new Map<string, string>();
+  let vectorialesQuitadas = 0;
+  const vectorialesVistas = new Set<string>();
+  const nombreImagen = (k: string): string => {
+    const ya = imagenesNeutras.get(k);
+    if (ya !== undefined) return ya;
+    const ext = /\.([a-z0-9]{1,5})$/u.exec(k)?.[1] ?? 'bin';
+    const nombre = `word/media/siglow-imagen${imagenesNeutras.size + 1}.${ext}`;
+    imagenesNeutras.set(k, nombre);
+    return nombre;
+  };
   /** Relaciones de una parte: se quitan las externas y las de tipos no admitidos. Devuelve los destinos que siguen. */
   const relaciones = (origen: string, admitir: (tipo: string) => boolean): { fuera: Set<string>; destinos: Array<{ k: string; tipo: string }> } => {
     const kr = clave(rutaRels(nombreDe(origen)));
@@ -520,10 +647,19 @@ export function construirDocxFiel(original: Uint8Array, doc: DocumentModel, out:
       const r = rels.find((q) => q.id === id && q.destino === p.el.getAttribute('Target'));
       const tipo = r === undefined ? '' : ultimoSegmento(r.tipo);
       const k = r === undefined ? '' : clave(resolver(nombreDe(origen), r.destino));
-      if (r === undefined || r.externa || !admitir(tipo) || !m.entradas.has(k)) {
+      const vectorial = tipo === 'image' && VECTORIAL.test(k);
+      if (vectorial && r !== undefined && !r.externa && m.entradas.has(k) && !vectorialesVistas.has(k)) { vectorialesVistas.add(k); vectorialesQuitadas++; }
+      if (r === undefined || r.externa || vectorial || !admitir(tipo) || !m.entradas.has(k)) {
         fuera.add(id);
         eds.push({ ini: p.tok.ini, fin: p.tok.fin, texto: '' });
-      } else destinos.push({ k, tipo });
+      } else {
+        destinos.push({ k, tipo });
+        if (tipo === 'image') {
+          // El destino pasa a un nombre neutro, absoluto desde la raíz del paquete (OPC lo admite desde cualquier parte).
+          const span = p.tok.atributos.find((a) => a.nombre === 'Target');
+          if (span !== undefined) eds.push({ ini: span.ini, fin: span.fin, texto: ` Target="/${nombreImagen(k)}"` });
+        }
+      }
     }
     // Sin ninguna relación que siga (p. ej. la plantilla adjunta de `settings`), el archivo de relaciones no sale.
     if (destinos.length > 0 || origen === '') escribirXml(kr, x, aplicar(x.texto, eds));
@@ -534,40 +670,75 @@ export function construirDocxFiel(original: Uint8Array, doc: DocumentModel, out:
   const paquete = relaciones('', (t) => t === 'officeDocument');
   for (const x of paquete.destinos) if (x.k === m.principal) pendientes.push({ k: x.k, tipo: 'principal' });
   if (pendientes.length === 0) throw new SiglowError('FORMATO_NO_ADMITIDO'); // la principal no se halló por relación
-  let imagenes = 0;
+  // M-121: estilos propios y nombres de marcadores y campos de formulario, neutros y los mismos en todas las partes.
+  const estilos = new Map<string, { id: string; nombre: string }>();
+  const relsPrincipal = abrirXml(clave(rutaRels(nombreDe(m.principal))));
+  for (const r of relsPrincipal === null ? [] : leerRelaciones(relsPrincipal.raiz)) {
+    const t = ultimoSegmento(r.tipo);
+    if (r.externa || (t !== 'styles' && t !== 'stylesWithEffects')) continue;
+    const x = abrirXml(clave(resolver(nombreDe(m.principal), r.destino)));
+    if (x !== null) estilosPropios(x, estilos);
+  }
+  const marcadores = new Map<string, string>();
+  const nombreNeutro = (n: string): string => {
+    if (MARCADOR_AUTOMATICO.test(n)) return n;
+    const ya = marcadores.get(n);
+    if (ya !== undefined) return ya;
+    const nuevo = `SigLowMarca${marcadores.size + 1}`;
+    marcadores.set(n, nuevo);
+    return nuevo;
+  };
+  const opciones = { n: 0 };
   const vistos = new Set<string>();
   while (pendientes.length > 0) {
     const { k, tipo } = pendientes.shift() as { k: string; tipo: string };
     if (vistos.has(k)) continue;
     vistos.add(k);
     const conTexto = tipo === 'principal' || TIPOS_TEXTO.has(tipo);
-    if (conTexto || tipo === 'settings') {
+    if (conTexto || TIPOS_SANEADOS.has(tipo)) {
       const x = abrirXml(k);
       if (x === null) continue;
-      const { fuera, destinos } = relaciones(k, (t) => (tipo === 'principal' ? TIPOS_TEXTO.has(t) || TIPOS_COPIA.has(t) : t === 'image'));
-      escribirXml(k, x, sanear(x, { nuevos, mapeados, relacionesFuera: fuera }));
+      const admitir = tipo === 'principal' ? (t: string): boolean => TIPOS_TEXTO.has(t) || TIPOS_COPIA.has(t) : (t: string): boolean => t === 'image';
+      const { fuera, destinos } = relaciones(k, admitir);
+      escribirXml(k, x, sanear(x, { nuevos, mapeados, relacionesFuera: fuera, nombreNeutro, estilos, opciones }));
       pendientes.push(...destinos);
     } else {
       const e = m.entradas.get(k);
       if (e === undefined) continue;
-      salida.set(k, entradaCopiada(d, e));
-      if (tipo === 'image') imagenes++;
-      // Estilos, numeración, tema y fuentes pueden tener imágenes (viñetas, rellenos) o fuentes incrustadas.
-      if (tipo === 'numbering' || tipo === 'fontTable' || tipo === 'styles' || tipo === 'theme') {
+      const neutra = tipo === 'image' ? imagenesNeutras.get(k) : undefined;
+      salida.set(k, neutra === undefined ? entradaCopiada(d, e) : { ...entradaCopiada(d, e), nombre: neutra });
+      // El tema y las fuentes pueden tener imágenes (rellenos) o fuentes incrustadas.
+      if (tipo === 'fontTable' || tipo === 'theme') {
         const { destinos } = relaciones(k, (t) => t === 'image' || t === 'font');
         pendientes.push(...destinos);
       }
     }
   }
+  const imagenes = [...salida.keys()].filter((k) => imagenesNeutras.has(k)).length;
 
-  // 3. [Content_Types].xml: sin las declaraciones de las partes que no salen.
+  // 3. [Content_Types].xml: sin las declaraciones de las partes que no salen ni de los nombres de imagen originales; con un
+  // `Default` para la extensión de cada imagen renombrada que no lo tenga.
   const kct = clave('[Content_Types].xml');
   const ct = abrirXml(kct);
   if (ct === null) throw new SiglowError('FORMATO_NO_ADMITIDO');
   const edsCt: Edicion[] = [];
+  const conDefault = new Set<string>();
+  const tipoDeOverride = new Map<string, string>();
+  let cierreTypes = -1;
   for (const { el, tok } of emparejar(ct)) {
+    if (el.localName === 'Types') cierreTypes = tok.iniCierre;
+    if (el.localName === 'Default') conDefault.add((el.getAttribute('Extension') ?? '').toLowerCase());
     if (el.localName !== 'Override') continue;
-    if (!salida.has(clave(el.getAttribute('PartName') ?? ''))) edsCt.push({ ini: tok.ini, fin: tok.fin, texto: '' });
+    const kp = clave(el.getAttribute('PartName') ?? '');
+    if (imagenesNeutras.has(kp)) tipoDeOverride.set(/\.([a-z0-9]{1,5})$/u.exec(kp)?.[1] ?? 'bin', el.getAttribute('ContentType') ?? '');
+    if (!salida.has(kp) || imagenesNeutras.has(kp)) edsCt.push({ ini: tok.ini, fin: tok.fin, texto: '' });
+  }
+  const nuevosDefault = [...new Set([...imagenesNeutras.values()].map((n) => /\.([a-z0-9]{1,5})$/u.exec(n)?.[1] ?? 'bin'))]
+    .filter((ext) => !conDefault.has(ext))
+    .map((ext) => `<Default Extension="${ext}" ContentType="${escaparAtributo(tipoDeOverride.get(ext) ?? TIPO_IMAGEN[ext] ?? 'application/octet-stream')}"/>`);
+  if (nuevosDefault.length > 0) {
+    if (cierreTypes < 0) throw new SiglowError('FORMATO_NO_ADMITIDO');
+    edsCt.push({ ini: cierreTypes, fin: cierreTypes, texto: nuevosDefault.join('') });
   }
   escribirXml(kct, ct, aplicar(ct.texto, edsCt));
 
@@ -585,7 +756,27 @@ export function construirDocxFiel(original: Uint8Array, doc: DocumentModel, out:
 
   // 5. Verificación: el resultado se lee como cualquier .docx y da la salida esperada; ningún valor reemplazado queda en el XML.
   verificar(bytes, finales, esperadas, valores, out, limits);
-  return { bytes, avisos: quitados > 0 ? [{ code: 'CARACTERES_CONTROL', count: quitados }] : [], imagenes };
+  return { bytes, avisos: quitados > 0 ? [{ code: 'CARACTERES_CONTROL', count: quitados }] : [], imagenes, vectorialesQuitadas };
+}
+
+/** Forma plegada (sin tildes, en minúsculas, blancos colapsados) y compacta (solo letras y cifras) de un texto. */
+const plegada = (s: string): string => plegar(s).replace(/\s+/gu, ' ');
+const compacta = (s: string): string => plegar(s).replace(/[^\p{L}\p{N}]/gu, '');
+/** UTF-16LE de un texto (EMF, WMF, campos de formatos binarios). */
+function utf16le(s: string): Uint8Array {
+  const b = new Uint8Array(s.length * 2);
+  for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); b[2 * i] = c & 0xff; b[2 * i + 1] = c >> 8; }
+  return b;
+}
+function contieneBytes(h: Uint8Array, n: Uint8Array): boolean {
+  if (n.length === 0 || n.length > h.length) return false;
+  const primero = n[0];
+  for (let i = h.indexOf(primero ?? 0); i >= 0 && i + n.length <= h.length; i = h.indexOf(primero ?? 0, i + 1)) {
+    let k = 1;
+    while (k < n.length && h[i + k] === n[k]) k++;
+    if (k === n.length) return true;
+  }
+  return false;
 }
 
 function verificar(bytes: Uint8Array, entradas: EntradaSalida[], esperadas: Array<{ kind: string; texto: string }>, valores: string[],
@@ -604,25 +795,40 @@ function verificar(bytes: Uint8Array, entradas: EntradaSalida[], esperadas: Arra
     const e = comparables[i];
     if (e === undefined || e.kind !== r.kind || e.texto !== r.texto) throw new SiglowError('ERROR_INTERNO');
   });
-  // Ningún valor reemplazado (de 4 o más caracteres) en ninguna parte XML, salvo que siga a la vista en la salida (el abogado lo
-  // dejó en otra aparición).
-  // Los valores sin letras (números de documento, cuentas) se buscan solo en el texto entre etiquetas: los identificadores
-  // hexadecimales de los atributos (`w:rsid*`, `w14:paraId`) darían falsas alarmas.
-  const visible = out.sections.map((s) => s.text).join('\n').toLowerCase();
-  const buscados = [...new Set(valores.map((v) => v.replace(/\s+/gu, ' ').trim().toLowerCase()))]
-    .filter((v) => v.length >= 4 && !visible.includes(v));
+  // Ningún valor reemplazado (de 4 o más caracteres) en ninguna entrada, salvo que siga a la vista en la salida (el abogado lo dejó
+  // en otra aparición). M-120/M-121: también en sus formas plegada («pedro ejemplo gomez») y compacta («pedroejemplogomez», que
+  // atrapa `Pedro_Ejemplo_Gomez` en un marcador, un estilo o un nombre de archivo), en los nombres de las entradas y, tal cual, en
+  // UTF-8 y UTF-16LE dentro de los binarios. Los valores sin letras (números de documento, cuentas) se buscan solo en el texto
+  // entre etiquetas: los identificadores hexadecimales de los atributos (`w:rsid*`, `w14:paraId`) darían falsas alarmas.
+  const textoVisible = out.sections.map((s) => s.text).join('\n');
+  const visiblePlegado = plegada(textoVisible);
+  const visibleCompacto = compacta(textoVisible);
+  const buscados = [...new Set(valores.map((v) => v.replace(/\s+/gu, ' ').trim()))]
+    .map((v) => ({ crudo: v, plegado: plegada(v), compacto: compacta(v), letras: /\p{L}/u.test(v) }))
+    .filter((v) => v.plegado.length >= 4 && !visiblePlegado.includes(v.plegado) && !visibleCompacto.includes(v.compacto));
   if (buscados.length === 0) return;
   const dec = new TextDecoder('utf-8', { fatal: false });
+  const aparece = (texto: string, v: (typeof buscados)[number]): boolean => {
+    const p = plegada(texto);
+    const donde = v.letras ? p : p.replace(/<[^>]*>/gu, ' ');
+    return donde.includes(v.plegado) || donde.includes(plegada(escapar(v.crudo))) ||
+      (v.compacto.length >= 6 && compacta(donde).includes(v.compacto));
+  };
   for (const e of entradas) {
-    if (!/\.(xml|rels)$/iu.test(e.nombre)) continue;
+    for (const v of buscados) if (aparece(e.nombre, v)) throw new SiglowError('ERROR_INTERNO');
     // Entradas que este módulo escribió o copió de un original ya leído con tope: se inflan sin tope.
     const crudo = e.metodo === 8 ? inflateSync(e.comprimido) : e.comprimido.slice();
-    const texto = dec.decode(crudo).toLowerCase();
-    crudo.fill(0);
-    const entreEtiquetas = texto.replace(/<[^>]*>/gu, ' ');
-    for (const v of buscados) {
-      const donde = /\p{L}/u.test(v) ? texto : entreEtiquetas;
-      if (donde.includes(v) || donde.includes(escapar(v))) throw new SiglowError('ERROR_INTERNO');
+    try {
+      if (/\.(xml|rels)$/iu.test(e.nombre)) {
+        const texto = dec.decode(crudo);
+        for (const v of buscados) if (aparece(texto, v)) throw new SiglowError('ERROR_INTERNO');
+      } else {
+        for (const v of buscados) {
+          if (contieneBytes(crudo, strToU8(v.crudo)) || contieneBytes(crudo, utf16le(v.crudo))) throw new SiglowError('ERROR_INTERNO');
+        }
+      }
+    } finally {
+      crudo.fill(0);
     }
   }
 }
@@ -632,9 +838,10 @@ function verificar(bytes: Uint8Array, entradas: EntradaSalida[], esperadas: Arra
  * Exporta y descarga el .docx fiel con nombre neutro (6.9). Síncrona: F3 la llama en el manejador del clic de «Descargar documento
  * (.docx)», detrás de la puerta, con el original de `originalDe(doc.id)`. Si lanza `FORMATO_NO_ADMITIDO`, se ofrece el .docx simple.
  */
-export function exportarDocxFiel(original: Uint8Array, doc: DocumentModel, out: RenderedOutput, opciones: OpcionesExportacion = {}): ResultadoExportacion & { imagenes: number } {
-  const { bytes, avisos, imagenes } = construirDocxFiel(original, doc, out);
+export function exportarDocxFiel(original: Uint8Array, doc: DocumentModel, out: RenderedOutput, opciones: OpcionesExportacion = {}):
+  ResultadoExportacion & { imagenes: number; vectorialesQuitadas: number } {
+  const { bytes, avisos, imagenes, vectorialesQuitadas } = construirDocxFiel(original, doc, out);
   const nombre = nombreDescarga(opciones.clase ?? 'anonimizado', 'docx', opciones.ahora);
   descargarBytes(bytes, MIME_DOCX, nombre);
-  return { nombre, bytes: bytes.length, avisos, imagenes };
+  return { nombre, bytes: bytes.length, avisos, imagenes, vectorialesQuitadas };
 }
