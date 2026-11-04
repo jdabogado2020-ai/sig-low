@@ -184,7 +184,10 @@ describe.concurrent('T-CD-02 un canario por regla de contenido: check-dist sale 
     const ns = ['Shape', 'Group', 'Canvas'].map((x) => `"http://schemas.microsoft.com/office/word/2010/wordprocessing${x}"`).join(',');
     expect((await correr(chunkUi(`var n=[${ns}];`))).salida).toBe(0);
     for (const parecida of ['http://schemas.microsoft.com/office/word/2010/wordprocessingInk', 'http://schemas.microsoft.com/office/word/2012/wordml',
-      'https://schemas.microsoft.com/office/word/2010/wordprocessingShapes/x', 'http://schemas.microsoft.com.ejemplo.test/office/word/2010/wordprocessingShape']) {
+      'https://schemas.microsoft.com/office/word/2010/wordprocessingShapes/x', 'http://schemas.microsoft.com.ejemplo.test/office/word/2010/wordprocessingShape',
+      // B-151: exactas; nada después del nombre.
+      'http://schemas.microsoft.com/office/word/2010/wordprocessingShape/x?y=1', 'http://schemas.microsoft.com/office/word/2010/wordprocessingShape#a',
+      'http://schemas.microsoft.com/office/word/2010/wordprocessingGroup-x', 'http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas.ejemplo.test/']) {
       await falla(chunkUi(`var u="${parecida}";`), 'assets/ui-Cx0Prueba.js: http-externo ×');
     }
   });

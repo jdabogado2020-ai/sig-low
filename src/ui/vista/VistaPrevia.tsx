@@ -6,16 +6,16 @@
 // etiquetas y tipos.
 import './vista.css';
 import '../review/base/revision-base.css';
-import { useMemo, useRef, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { render } from '../../core/render.ts';
 import type { DetectionId, FlagId, PartId, Span, SpanEditId } from '../../core/types.ts';
 import { originalDe } from '../../io/original.ts';
-import { descartarAnalisis } from '../analisis.ts';
 import { atributosDeContenedor } from '../campos.tsx';
 import { Dialogo } from '../dialogo.tsx';
 import { useRevision } from '../documento.ts';
 import { actualizar, ir } from '../estado.ts';
 import { useBusquedaAutomatica, buscarOtraVez } from '../flujo/busqueda-automatica.ts';
+import { cerrarDocumento } from '../flujo/flujo.ts';
 import { tf } from '../flujo/textos.ts';
 import { useListo } from '../listo/almacen.ts';
 import { copiarSeleccion } from '../listo/salida.ts';
@@ -41,7 +41,7 @@ function claseDeEstilo(z: Trozo): string {
 function TrozoVista({ z, abrir }: { z: Trozo; abrir: Abrir }) {
   const { state } = useRevisionUi();
   if (z.tipo === 'salto') return <br />;
-  if (z.tipo === 'texto') return <span class={`txt${claseDeEstilo(z)}`} data-p={z.partId} data-i={z.ini}>{z.texto}</span>;
+  if (z.tipo === 'texto') return <span class={`txt${claseDeEstilo(z)}`} data-z="t" data-p={z.partId} data-i={z.ini}>{z.texto}</span>;
   if (z.tipo === 'etiqueta') {
     const d = z.det === undefined ? undefined : state?.detections[z.det];
     const objetivo: Objetivo | null = z.det !== undefined ? { tipo: 'det', id: z.det } : z.edicion !== undefined ? { tipo: 'edicion', id: z.edicion as SpanEditId } : null;
@@ -50,6 +50,7 @@ function TrozoVista({ z, abrir }: { z: Trozo; abrir: Abrir }) {
       <button
         type="button"
         class={`etiqueta ${d === undefined ? 'cat-neutra' : `cat-${categoriaDe(d.type)}`}${d?.confidence === 'baja' ? ' baja' : ''}${claseDeEstilo(z)}`}
+        data-z="e"
         data-det={z.det}
         data-edicion={z.edicion}
         aria-label={nombre}
@@ -63,7 +64,7 @@ function TrozoVista({ z, abrir }: { z: Trozo; abrir: Abrir }) {
     const d = state?.detections[z.det];
     const det = z.det;
     return (
-      <button type="button" class={`revelado${claseDeEstilo(z)}`} data-det={det} data-p={z.partId} data-i={z.ini}
+      <button type="button" class={`revelado${claseDeEstilo(z)}`} data-z="t" data-det={det} data-p={z.partId} data-i={z.ini}
         aria-label={tf('M-2270', { tipo: d === undefined ? '' : nombreDeTipo(d.type) })}
         onClick={(e) => { abrir({ tipo: 'det', id: det }, e.currentTarget); }}>
         {z.texto}
@@ -73,7 +74,7 @@ function TrozoVista({ z, abrir }: { z: Trozo; abrir: Abrir }) {
   const flag = z.flag as FlagId;
   const f = state?.flags[flag];
   return (
-    <button type="button" class={`revisar${claseDeEstilo(z)}`} data-flag={flag} data-p={z.partId} data-i={z.ini}
+    <button type="button" class={`revisar${claseDeEstilo(z)}`} data-z="t" data-flag={flag} data-p={z.partId} data-i={z.ini}
       aria-label={tf('M-2271', { tipo: f === undefined ? '' : etiqueta('bandera', f.reason) })}
       onClick={(e) => { abrir({ tipo: 'flag', id: flag }, e.currentTarget); }}>
       {z.texto}
@@ -110,14 +111,45 @@ function tramoSeleccionado(raiz: HTMLElement, partes: ReadonlyMap<PartId, string
   return fin > ini ? { partId: a.p as PartId, start: ini, end: fin } : null;
 }
 
-function DocumentoVista({ vista, abrir, alSeleccionar }: { vista: Vista; abrir: Abrir; alSeleccionar: (s: Span | null, el: HTMLElement | null) => void }) {
+/**
+ * A-30 y M-142 · El texto de la salida que cubre un rango: solo los trozos de la vista (`[data-z]`) que el rango toca, con los
+ * extremos recortados en el texto que sigue a la vista y las etiquetas siempre enteras; un párrafo por línea. Nunca el texto de
+ * la página (ayudas, botones) ni un dato oculto: es lo que pintó el modelo de la vista.
+ */
+export function textoDeSeleccion(raiz: HTMLElement, r: Range): string {
+  const lineas: string[] = [];
+  for (const bloque of raiz.querySelectorAll<HTMLElement>('p.bloque')) {
+    if (!r.intersectsNode(bloque)) continue;
+    let linea = '';
+    for (const el of bloque.querySelectorAll<HTMLElement>('[data-z], br')) {
+      if (!r.intersectsNode(el)) continue;
+      if (el.tagName === 'BR') { linea += '\n'; continue; }
+      let texto = el.textContent ?? '';
+      if (el.dataset['z'] === 't') {
+        let fin = texto.length;
+        if (el.contains(r.endContainer) && r.endContainer.nodeType === Node.TEXT_NODE) fin = r.endOffset;
+        let ini = 0;
+        if (el.contains(r.startContainer) && r.startContainer.nodeType === Node.TEXT_NODE) ini = r.startOffset;
+        texto = texto.slice(ini, Math.max(ini, fin));
+      }
+      linea += texto;
+    }
+    lineas.push(linea);
+  }
+  return lineas.join('\n');
+}
+
+function DocumentoVista({ vista, abrir, alSeleccionar }: { vista: Vista; abrir: Abrir; alSeleccionar: (s: Span | null, texto: string) => void }) {
   const { doc } = useRevisionUi();
   const raiz = useRef<HTMLDivElement | null>(null);
   const textos = useMemo(() => new Map((doc?.parts ?? []).map((p) => [p.id, p.text])), [doc]);
   const revisar = (): void => {
     const el = raiz.current;
     if (el === null) return;
-    alSeleccionar(tramoSeleccionado(el, textos), el);
+    const tramo = tramoSeleccionado(el, textos);
+    const sel = getSelection();
+    // M-142: el diálogo muestra el texto de la salida (con las etiquetas), nunca el original de un dato ya oculto.
+    alSeleccionar(tramo, tramo === null || sel === null || sel.rangeCount === 0 ? '' : textoDeSeleccion(el, sel.getRangeAt(0)).trim());
   };
   return (
     <div
@@ -128,11 +160,6 @@ function DocumentoVista({ vista, abrir, alSeleccionar }: { vista: Vista; abrir: 
       data-prueba="vista-previa"
       onMouseUp={revisar}
       onKeyUp={(e) => { if (e.shiftKey || e.key === 'Shift') revisar(); }}
-      onContextMenu={(e) => { e.preventDefault(); }}
-      onDragStart={(e) => { e.preventDefault(); }}
-      onCut={(e) => { e.preventDefault(); }}
-      // INV-X05: Ctrl+C lo atiende el manejador de la descarga, detrás de la puerta (con la puerta cerrada no copia y avisa M-73).
-      onCopy={(e) => { copiarSeleccion(e, getSelection()?.toString() ?? null); }}
     >
       {vista.secciones.map((s) => (
         <section key={s.partId} class={`seccion-doc parte-${s.kind}`} data-parte={s.partId}>
@@ -164,7 +191,7 @@ export function VistaPrevia() {
   const listo = useListo();
   useBusquedaAutomatica(state, listo);
   const [objetivo, setObjetivo] = useState<Objetivo | null>(null);
-  const [seleccion, setSeleccion] = useState<Span | null>(null);
+  const [seleccion, setSeleccion] = useState<{ tramo: Span; texto: string } | null>(null);
   const [comoLeer, setComoLeer] = useState(false);
   const [paginas, setPaginas] = useState(true);
   const [descartar, setDescartar] = useState(false);
@@ -172,6 +199,29 @@ export function VistaPrevia() {
   const [anuncio, setAnuncio] = useState('');
   const origen = useRef<HTMLElement | null>(null);
   const ancla = useRef<HTMLDivElement>(null);
+
+  // A-30 (INV-X05): copiar o cortar con una selección que toque la vista previa (también Ctrl+A, o una que empiece fuera) lo atiende
+  // siempre este manejador, en captura sobre el documento, como el panel de la v1.0: con la puerta cerrada no copia nada (M-73); con
+  // la puerta abierta copia solo `text/plain` con el texto de la vista (nunca el de la página) y consolida, como «Copiar».
+  useEffect(() => {
+    const alCopiar = (e: ClipboardEvent): void => {
+      const cuerpo = ancla.current;
+      const sel = getSelection();
+      if (cuerpo === null) return;
+      const r = sel !== null && sel.rangeCount > 0 && !sel.isCollapsed ? sel.getRangeAt(0) : null;
+      const toca = r !== null && r.intersectsNode(cuerpo);
+      const dentro = cuerpo.contains(document.activeElement) || (e.target instanceof Node && cuerpo.contains(e.target));
+      if (!toca && !dentro) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.type === 'cut') return;
+      const documento = cuerpo.querySelector<HTMLElement>('.documento-vista');
+      copiarSeleccion(e, documento === null || r === null || !toca ? null : textoDeSeleccion(documento, r));
+    };
+    document.addEventListener('copy', alCopiar, true);
+    document.addEventListener('cut', alCopiar, true);
+    return () => { document.removeEventListener('copy', alCopiar, true); document.removeEventListener('cut', alCopiar, true); };
+  }, []);
 
   const original = doc === null ? null : originalDe(doc.id);
   const estructuras = useMemo(() => (doc !== null && original !== null && doc.source === 'docx' ? estructuraDocx(original.bytes, doc) : undefined), [doc, original]);
@@ -254,14 +304,15 @@ export function VistaPrevia() {
           {doc.source === 'pdf' ? <li>{tf('M-2244')}</li> : null}
         </ul>
       </section>
-      <div class="vista-previa-cuerpo" ref={ancla}>
+      {/* A-30: ni menú contextual («Copiar imagen», «Guardar imagen como» en los lienzos del PDF) ni arrastre. */}
+      <div class="vista-previa-cuerpo" ref={ancla} onContextMenu={(e) => { e.preventDefault(); }} onDragStart={(e) => { e.preventDefault(); }}>
         {enPaginas
           ? <PaginasPdf doc={doc} out={out} onAbrir={(id: DetectionId, el) => { abrir({ tipo: 'det', id }, el); }} />
-          : <DocumentoVista vista={vista} abrir={abrir} alSeleccionar={(s) => { setSeleccion(s); if (s !== null) setObjetivo(null); }} />}
+          : <DocumentoVista vista={vista} abrir={abrir} alSeleccionar={(s, texto) => { setSeleccion(s === null ? null : { tramo: s, texto }); if (s !== null) setObjetivo(null); }} />}
         {seleccion !== null ? (
           <div class="menu-seleccion" role="group" aria-label={tf('M-2273')} data-prueba="menu-seleccion">
-            <button type="button" onClick={() => { solicitarReemplazo(seleccion); setSeleccion(null); }}>{tf('M-2266')}</button>
-            <button type="button" class="secundario" onClick={() => { solicitarReemplazo(seleccion, true); setSeleccion(null); }}>{tf('M-2267')}</button>
+            <button type="button" onClick={() => { solicitarReemplazo(seleccion.tramo, false, seleccion.texto); setSeleccion(null); }}>{tf('M-2266')}</button>
+            <button type="button" class="secundario" onClick={() => { solicitarReemplazo(seleccion.tramo, true, seleccion.texto); setSeleccion(null); }}>{tf('M-2267')}</button>
           </div>
         ) : null}
         {objetivo !== null ? <MenuEtiqueta objetivo={objetivo} onCerrar={cerrarMenu} /> : null}
@@ -275,7 +326,7 @@ export function VistaPrevia() {
       <Dialogo abierto={descartar} titulo={t(ROTULOS.descartar_documento)} onCerrar={() => { setDescartar(false); }}>
         <p>{t('M-75')}</p>
         <div class="acciones">
-          <button type="button" onClick={() => { setDescartar(false); descartarAnalisis(); ir('inicio'); }}>{t(ROTULOS.descartar_documento)}</button>
+          <button type="button" onClick={() => { setDescartar(false); cerrarDocumento(); }}>{t(ROTULOS.descartar_documento)}</button>
           <button type="button" class="secundario" onClick={() => { setDescartar(false); }}>{t(ROTULOS.cancelar)}</button>
         </div>
       </Dialogo>

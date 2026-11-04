@@ -29,6 +29,8 @@ interface EstadoPantalla {
   reemplazo: Span | null;
   /** F3 · «Ocultar todas las apariciones»: el diálogo abre con «Aplicar a todas las apariciones idénticas» marcada. */
   propagarReemplazo: boolean;
+  /** M-142: el texto de la salida que cubre la selección de la vista previa (con las etiquetas); null fuera de ella. */
+  reemplazoTexto: string | null;
   /** Mención cuyo reemplazo se pidió editar (tecla E o botón «Editar»); la ficha abre el campo. */
   edicion: DetectionId | null;
   /** Una edición de reemplazo está abierta: los anuncios del modelo esperan (8.6.3). */
@@ -46,7 +48,7 @@ export interface InstantaneaRevision extends EstadoPantalla {
 
 const VACIA: EstadoPantalla = {
   vista: 'original', seleccion: null, entidadSeleccion: null, expandidas: new Set(), nuevas: new Set(),
-  reemplazo: null, propagarReemplazo: false, edicion: null, editando: false, anuncio: '', error: null, enfoque: null,
+  reemplazo: null, propagarReemplazo: false, reemplazoTexto: null, edicion: null, editando: false, anuncio: '', error: null, enfoque: null,
 };
 
 let ui: EstadoPantalla = VACIA;
@@ -181,8 +183,9 @@ export function solicitarEdicion(id: DetectionId): void {
 export function terminarEdicion(): void {
   if (ui.edicion !== null || ui.editando) poner({ edicion: null, editando: false });
 }
-export function solicitarReemplazo(span: Span | null, propagar = false): void {
-  poner({ reemplazo: span, propagarReemplazo: propagar });
+/** `textoVisible` (F3, M-142): lo que el diálogo muestra en lugar del original, cuando la selección viene de la vista previa. */
+export function solicitarReemplazo(span: Span | null, propagar = false, textoVisible: string | null = null): void {
+  poner({ reemplazo: span, propagarReemplazo: propagar, reemplazoTexto: textoVisible });
 }
 
 /** Selecciona una mención (abre su ficha), despliega su entidad en la cuadrícula y la quita de las recién llegadas. */

@@ -25,6 +25,8 @@ export interface EstadoListo {
   recordatorio: ReminderConfirmation;
   /** Cuándo se marcó la confirmación (6.8, `recordatorio.confirmado`). */
   recordatorioConfirmado: Date | null;
+  /** B-150: la `revision` sobre la que se marcó la confirmación; un cambio posterior la deja sin valor. */
+  revisionConfirmada: number | null;
   /** Hallazgos de la última búsqueda con resultados, para mostrarlos con «Ir a la revisión». */
   hallazgos: readonly Hallazgo[];
   /** Documento al que pertenecen los hallazgos: la banda de Revisión no los muestra para otro documento. */
@@ -44,7 +46,7 @@ export interface EstadoListo {
 
 const SIN_CASILLAS: ReminderConfirmation = { revisado: false };
 const inicial = (): EstadoListo => ({
-  residuo: null, buscando: false, recordatorio: SIN_CASILLAS, recordatorioConfirmado: null, hallazgos: [], docIdHallazgos: null,
+  residuo: null, buscando: false, recordatorio: SIN_CASILLAS, recordatorioConfirmado: null, revisionConfirmada: null, hallazgos: [], docIdHallazgos: null,
   copiado: false, avisos: [], respaldo: null, errorBusqueda: null, incluirCodigoAsunto: false, compilacion: null,
 });
 
@@ -76,10 +78,11 @@ export function reiniciarEntrada(compilacion: string | null): void {
 }
 
 /** D-24 · Marca o desmarca la confirmación única «Revisé la vista previa…»; la fecha se fija al marcarla. */
-export function marcarConfirmacion(valor: boolean, ahora: Date = new Date()): void {
+export function marcarConfirmacion(valor: boolean, revision: number | null = null, ahora: Date = new Date()): void {
   actualizarListo({
     recordatorio: { revisado: valor },
-    recordatorioConfirmado: valor ? (estado.recordatorioConfirmado ?? ahora) : null,
+    recordatorioConfirmado: valor ? ahora : null,
+    revisionConfirmada: valor ? revision : null,
   });
 }
 
@@ -89,7 +92,12 @@ export function ponerAviso(avisos: readonly AvisoListo[]): void {
 
 /** La puerta con lo vigente: estado de revisión, último resultado de residuos y confirmación. */
 export function puertaDe(state: ReviewState): ExportGate {
-  return exportGate(state, estado.residuo, estado.recordatorio);
+  return exportGate(state, estado.residuo, confirmacionVigente(state));
+}
+
+/** B-150 · La confirmación vale solo para la revisión en la que se marcó: si después cambió algo, hay que volver a confirmar. */
+export function confirmacionVigente(state: ReviewState, e: EstadoListo = estado): ReminderConfirmation {
+  return { revisado: e.recordatorio.revisado && e.revisionConfirmada === state.revision };
 }
 
 registrarLimpieza(() => {

@@ -94,7 +94,7 @@ export function fijarArranque(a: Arranque): void {
   avisar();
 }
 /** Aviso persistente de Inicio tras un bloqueo (M-102, M-103) o una restauración desde la caché de páginas. */
-export type AvisoInicio = 'bloqueado' | 'bloqueado_sin_guardar' | null;
+export type AvisoInicio = 'bloqueado' | 'bloqueado_sin_guardar' | 'bloqueado_efimero' | null;
 let avisoInicio: AvisoInicio = null;
 export function obtenerAvisoInicio(): AvisoInicio {
   return avisoInicio;

@@ -7,8 +7,9 @@ import { randomIds } from '../../io/txt-read.ts';
 import { sello } from '../../core/report.ts';
 import type { AsuntoId } from '../../core/types.ts';
 import { contarPendientes } from '../../core/review/puerta.ts';
-import { obtenerRevision } from '../documento.ts';
-import { actualizar, obtener } from '../estado.ts';
+import { descartarAnalisis } from '../analisis.ts';
+import { obtenerRevision, vaciarTodoElDocumento } from '../documento.ts';
+import { actualizar, ir, obtener } from '../estado.ts';
 import { despachar } from '../review/base/almacen.ts';
 import { fijarListaDelCaso, fijarTabla, tablaVacia } from '../sesion.ts';
 
@@ -29,4 +30,23 @@ export function reaplicarPropuesta(): void {
   const st = obtenerRevision();
   if (st === null || st.modelo.kind === 'en_curso' || contarPendientes(st) === 0) return;
   despachar({ kind: 'aplicar_propuesta' });
+}
+
+/**
+ * M-140 y B-154 (P0-6a de F2+F3) · «Descartar este documento» y «Anonimizar otro documento»: el documento, la revisión, el borrador y
+ * el original retenido quedan en cero (`vaciarTodoElDocumento`), como al bloquear. El caso efímero no pasa al documento siguiente: su
+ * llave (con los originales ya consolidados) se cambia por una vacía; se conservan los nombres que el abogado escribió en la lista.
+ * Un caso abierto a propósito (con código o contraseña) sigue abierto, con su llave.
+ */
+export function cerrarDocumento(): void {
+  descartarAnalisis();
+  vaciarTodoElDocumento();
+  const a = obtener().asunto;
+  if (a?.efimero === true) {
+    const asuntoId = randomIds().next('asu') as AsuntoId;
+    fijarTabla(tablaVacia(asuntoId));
+    actualizar({ asunto: { ...a, asuntoId, tableRevision: 0, backedUpRevision: null } });
+  }
+  actualizar({ phase: 'vacio' });
+  ir('inicio');
 }

@@ -16,7 +16,7 @@ import { reaplicarPropuesta } from '../../flujo/flujo.ts';
 const ROLES_PERSONA: readonly Role[] = ['DEMANDANTE', 'DEMANDADO', 'TESTIGO', 'PACIENTE', 'CLIENTE', 'CONTACTO', 'OTRA_PERSONA'];
 
 export function AgregarReemplazo() {
-  const { reemplazo, propagarReemplazo, doc, error } = useRevisionUi();
+  const { reemplazo, propagarReemplazo, reemplazoTexto, doc, error } = useRevisionUi();
   const [tipo, setTipo] = useState<string>('PERSONA');
   const [rol, setRol] = useState<string>('OTRA_PERSONA');
   const [propagar, setPropagar] = useState(false);
@@ -41,7 +41,7 @@ export function AgregarReemplazo() {
       {reemplazo !== null ? (
         <>
           <p class="ayuda">{tx('M-1795', { n: largo })}</p>
-          <p class="dato-texto" data-prueba="reemplazo-texto" ref={atributosDeContenedor}>{parte?.text.slice(reemplazo.start, reemplazo.end) ?? ''}</p>
+          <p class="dato-texto" data-prueba="reemplazo-texto" ref={atributosDeContenedor}>{reemplazoTexto ?? parte?.text.slice(reemplazo.start, reemplazo.end) ?? ''}</p>
           {local !== null && error !== null ? <p class="error-campo" role="alert">{mensajeDeCodigo(error)}</p> : null}
           <Seleccion
             etiqueta={tx('M-1796')}

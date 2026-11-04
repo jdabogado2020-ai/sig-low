@@ -478,6 +478,78 @@ test.describe('PC-7 superficie de privacidad del flujo integrado', () => {
     expect((await eventoPrevenido(page, 'textarea', 'contextmenu')).prevenido, 'campo de texto').toBe(false);
   });
 
+  /** Escribe en el portapapeles del sistema desde una página auxiliar de otro origen (la de `leerPortapapeles`). */
+  async function escribirPortapapeles(context: import('@playwright/test').BrowserContext, texto: string): Promise<void> {
+    const origenAux = 'https://auxiliar.ejemplo.test';
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: origenAux });
+    await context.route(`${origenAux}/**`, (r) => r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>auxiliar</title><p>auxiliar</p>' }));
+    const aux = await context.newPage();
+    try {
+      await aux.goto(`${origenAux}/`);
+      await aux.bringToFront();
+      await aux.evaluate(async (t) => { await navigator.clipboard.writeText(t); }, texto);
+    } finally {
+      await aux.close();
+    }
+  }
+
+  test('T-PV-11 INV-X05 A-30: Ctrl+A y Ctrl+C, o una selección que empieza fuera de la vista previa, pasan por la puerta: cerrada no copian nada; abierta, solo el texto de la vista en text/plain', async ({ page, context }) => {
+    await hastaRevision(page, DOCUMENTO_REI, 'PRUEBA-PV-A30');
+    // Puerta cerrada (confirmación sin marcar). Ctrl+A con el foco en la página: el evento va a la página, no al documento.
+    await escribirPortapapeles(context, 'VACIO');
+    await page.bringToFront();
+    await page.getByRole('heading', { level: 1, name: 'Vista previa' }).click();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Control+C');
+    expect((await leerPortapapeles(context)).texto, 'Ctrl+A y Ctrl+C con la puerta cerrada').toBe('VACIO');
+    // Una selección que empieza en la ayuda de arriba y termina dentro del documento.
+    await page.bringToFront();
+    await page.evaluate(() => {
+      const ayuda = document.querySelector('.vista-previa > p.ayuda') as HTMLElement;
+      const bloque = document.querySelector('[data-prueba="vista-previa"] p.bloque') as HTMLElement;
+      const r = document.createRange();
+      r.setStart(ayuda.firstChild as Node, 0);
+      r.setEnd(bloque, bloque.childNodes.length);
+      const sel = getSelection() as Selection;
+      sel.removeAllRanges();
+      sel.addRange(r);
+      (document.querySelector('h1') as HTMLElement).focus();
+    });
+    await page.keyboard.press('Control+C');
+    expect((await leerPortapapeles(context)).texto, 'selección que empieza fuera, con la puerta cerrada').toBe('VACIO');
+    // Puerta abierta: Ctrl+A copia solo el texto de la vista previa (nunca la ayuda ni los botones), en text/plain.
+    await page.bringToFront();
+    await aDescargar(page);
+    await confirmar(page);
+    await page.getByRole('button', { name: 'Volver a la vista previa' }).click();
+    await page.getByRole('heading', { level: 1, name: 'Vista previa' }).click();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Control+C');
+    const abierta = await leerPortapapeles(context);
+    expect(abierta.tipos, 'solo text/plain').toEqual(['text/plain']);
+    expect(abierta.texto).toContain('[DEMANDANTE_1]');
+    expect(abierta.texto, 'sin la ayuda de la pantalla').not.toContain('Así quedará su documento');
+    expect(abierta.texto, 'sin los botones').not.toContain('Continuar a descargar');
+    for (const real of REALES_REI) expect(abierta.texto, `portapapeles con «${real}»`).not.toContain(real);
+  });
+
+  test('T-PV-11 A-30: en las páginas de un PDF el lienzo no ofrece menú contextual ni se arrastra (ni «Copiar imagen» ni «Guardar imagen como»)', async ({ page }) => {
+    await abrirInicio(page);
+    await page.locator('input[type=file]').setInputFiles('corpus/docs/C03.pdf');
+    await expect(page.locator('[data-prueba="archivo-cargado"]')).toBeVisible({ timeout: 60_000 });
+    await anonimizar(page);
+    const lienzo = page.locator('[data-prueba="paginas-pdf"] canvas').first();
+    await expect(lienzo).toBeAttached({ timeout: 60_000 });
+    for (const tipo of ['contextmenu', 'dragstart'] as const) {
+      const prevenido = await lienzo.evaluate((el, t) => {
+        const ev = t === 'contextmenu' ? new MouseEvent('contextmenu', { bubbles: true, cancelable: true }) : new DragEvent('dragstart', { bubbles: true, cancelable: true });
+        el.dispatchEvent(ev);
+        return ev.defaultPrevented;
+      }, tipo);
+      expect(prevenido, `${tipo} sobre el lienzo`).toBe(true);
+    }
+  });
+
   test('T-PV-11 menú contextual bloqueado en los contenedores de Revisar dato por dato (panel de texto, cuadrícula, ficha, vista de salida)', async ({ page }) => {
     await hastaRevision(page, DOCUMENTO_REI, 'PRUEBA-PV-11B');
     await aDetalle(page);

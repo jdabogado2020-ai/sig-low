@@ -152,8 +152,8 @@ const PROHIBIDOS = [
   ['data-url-script', /data:(?:text|application)\/(?:javascript|ecmascript)/g],
   // Identificadores de espacio de nombres de XML (W3C, OOXML y su variante Strict): se comparan como cadenas en el
   // lector .docx y en Preact; nunca se piden por red (la CSP y el interruptor del SW lo impedirían igual). F4-r1 (M-121): los tres de
-  // dibujo de Office 2010 (wps, wpg, wpc) que el .docx fiel reconoce para sanear sus nombres; también solo cadenas.
-  ['http-externo', /https?:\/\/(?!schemas\.microsoft\.com\/office\/word\/2010\/wordprocessing(?:Shape|Group|Canvas)\b|www\.w3\.org\/(1998|1999|2000|XML\/1998)\/|schemas\.openxmlformats\.org\/(wordprocessingml|markup-compatibility|officeDocument|package|drawingml|spreadsheetml|presentationml)\/|purl\.oclc\.org\/ooxml\/)[a-z0-9.-]+\.[a-z]{2,}/gi],
+  // dibujo de Office 2010 (wps, wpg, wpc) que el .docx fiel reconoce para sanear sus nombres; también solo cadenas, y exactas (B-151).
+  ['http-externo', /https?:\/\/(?!schemas\.microsoft\.com\/office\/word\/2010\/wordprocessing(?:Shape|Group|Canvas)(?![\w/.#?-])|www\.w3\.org\/(1998|1999|2000|XML\/1998)\/|schemas\.openxmlformats\.org\/(wordprocessingml|markup-compatibility|officeDocument|package|drawingml|spreadsheetml|presentationml)\/|purl\.oclc\.org\/ooxml\/)[a-z0-9.-]+\.[a-z]{2,}/gi],
   // URL que `http-externo` no ve: a una IP o a localhost (sin dominio de primer nivel), y WebSocket.
   ['url-ip-local', /\b(?:https?|wss?):\/\/(?:\d{1,3}(?:\.\d{1,3}){3}|\[[0-9a-f:.]*\]|localhost\b)/gi],
   ['url-ws', /\bwss?:\/\//g],

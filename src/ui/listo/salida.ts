@@ -21,7 +21,7 @@ import { actualizar, obtener } from '../estado.ts';
 import { idDeCodigo } from '../mensajes.ts';
 import { codigoDeError, puertos } from '../servicios.ts';
 import { fijarTabla, obtenerListaDelCaso, obtenerTabla, registrarLimpieza } from '../sesion.ts';
-import { actualizarListo, obtenerListo, ponerAviso, puertaDe, type AvisoListo } from './almacen.ts';
+import { actualizarListo, confirmacionVigente, obtenerListo, ponerAviso, puertaDe, type AvisoListo } from './almacen.ts';
 
 // Las URL `blob:` vivas se revocan al bloquear y en `pagehide` (V-48, INV-X06); `descargarBytes` ya revoca en el mismo manejador.
 registrarLimpieza(revocarUrlsVivas);
@@ -296,7 +296,7 @@ export function descargarInforme(ext: 'txt' | 'json'): void {
     const avance = m.kind === 'plan_b' && m.ventanas !== undefined && m.ventanasTotales !== undefined
       ? { ventanas: m.ventanas, ventanasTotales: m.ventanasTotales } : undefined;
     const informe = buildReport({
-      doc: v.doc, state: v.state, residue: l.residuo, reminder: l.recordatorio, caseList: obtenerListaDelCaso(),
+      doc: v.doc, state: v.state, residue: l.residuo, reminder: confirmacionVigente(v.state, l), caseList: obtenerListaDelCaso(),
       app: { version: __SIGLOW_VERSION__, compilacion: l.compilacion }, rulesVersion: OPCIONES_DETECCION.rulesVersion, now: new Date(),
       ...(l.recordatorioConfirmado !== null ? { recordatorioConfirmado: l.recordatorioConfirmado } : {}),
       ...(avance !== undefined ? { avanceDelModelo: avance } : {}),

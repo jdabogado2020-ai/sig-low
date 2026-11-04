@@ -44,7 +44,7 @@ const TEXTOS = {
   'M-2239': 'Las etiquetas entre corchetes, como [DEMANDANTE_1], reemplazan un dato. El mismo número es la misma persona en todo el documento.',
   'M-2240': 'El color de cada etiqueta indica el tipo de dato, y su nombre lo dice en palabras.',
   'M-2241': 'Un texto subrayado con puntos es un dato que usted decidió dejar a la vista. Púlselo para volver a ocultarlo.',
-  'M-2242': 'Un texto con fondo de aviso es un dato indirecto para revisar, como un cargo, un diagnóstico o una mención de un menor de edad.',
+  'M-2242': 'Un texto con fondo de aviso es un dato indirecto que sale tal cual porque Sig-Low no tiene con qué reemplazarlo, como un hecho llamativo («caso mediático», «ataque con ácido»). Púlselo para ocultarlo o dejarlo como está.',
   'M-2243': 'Con el teclado: Tab lleva de una etiqueta a la siguiente; Intro abre sus opciones y Escape las cierra.',
   'M-2244': 'Las páginas de un PDF se muestran como quedarán: con recuadros negros sobre los datos.',
 
@@ -102,6 +102,8 @@ const TEXTOS = {
   'M-2297': 'Las páginas {paginas} salen cubiertas por completo: Sig-Low no pudo ubicar su texto en la página.',
   'M-2298': 'Las páginas {paginas}, que usted dejó fuera del análisis, salen cubiertas por completo.',
   'M-2299': 'El documento tiene {n} imágenes que se conservan tal cual en el .docx descargado. Sig-Low no revisa imágenes: mírelas antes de compartirlo.',
+  'M-2300': 'Sig-Low se bloqueó y borró de la memoria el documento y sus etiquetas. Para seguir, cárguelo de nuevo.',
+  'M-2301': '{n} hechos llamativos u otros datos indirectos sin decidir salen tal cual: revíselos en la vista previa.',
   'M-2294': 'El documento descargado conserva {n} imágenes del original tal como estaban. Sig-Low no revisa imágenes: mírelas antes de compartirlo.',
 } as const satisfies Record<string, string>;
 

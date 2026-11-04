@@ -58,8 +58,8 @@ export function bloquear(difundirAOtras: boolean): void {
   vaciarEstadoM();
   puertos.boveda.cerrar();
   actualizar({ asunto: null, phase: 'vacio', screen: obtener().screen === 'sin_sw' ? 'sin_sw' : 'inicio', dialog: null, modelRun: null, error: null });
-  // El caso efímero (D-23) no tenía una llave que el abogado haya pedido guardar: basta M-102, sin M-103.
-  fijarAvisoInicio(previo?.mode === 'no_guardar' && previo.efimero !== true ? 'bloqueado_sin_guardar' : 'bloqueado');
+  // B-153: el caso efímero (D-23) no tiene contraseña que pedir: su aviso dice que el documento se borró y hay que cargarlo de nuevo.
+  fijarAvisoInicio(previo?.efimero === true ? 'bloqueado_efimero' : previo?.mode === 'no_guardar' ? 'bloqueado_sin_guardar' : 'bloqueado');
   if (difundirAOtras) difundir({ tipo: 'bloquear' });
 }
 

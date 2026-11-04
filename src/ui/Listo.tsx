@@ -9,21 +9,22 @@ import './vista/vista.css';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { contarPendientes, exportGate } from '../core/review/puerta.ts';
 import type { GateReason, ReviewState } from '../core/types.ts';
-import { descartarAnalisis } from './analisis.ts';
 import { pedirLlave } from './Armazon.tsx';
 import { atributosDeContenido, Casilla, useIdNeutro } from './campos.tsx';
 import { Dialogo } from './dialogo.tsx';
-import { obtenerDocumento, useRevision, vaciarTodoElDocumento } from './documento.ts';
+import { obtenerDocumento, useRevision } from './documento.ts';
 import { actualizar, ir, useShell } from './estado.ts';
 import { useBusquedaAutomatica, buscarOtraVez } from './flujo/busqueda-automatica.ts';
+import { cerrarDocumento } from './flujo/flujo.ts';
 import { tf } from './flujo/textos.ts';
 import { calcularHuellas } from './huellas.ts';
 import { alterno, mensajeDeCodigo, ROTULOS, t, X } from './mensajes.ts';
 import { quitarAvisoAsunto } from './sesion.ts';
-import { actualizarListo, marcarConfirmacion, obtenerListo, useListo } from './listo/almacen.ts';
+import { actualizarListo, confirmacionVigente, marcarConfirmacion, obtenerListo, useListo } from './listo/almacen.ts';
 import type { EstadoListo } from './listo/almacen.ts';
 import { copiarConBoton, descargarDocxFiel, descargarInforme, descargarPdfSalida, descargarTxt, vaciarPortapapeles } from './listo/salida.ts';
 import { L } from './listo/textos.ts';
+import { indirectosATalCual } from './vista/puntos.ts';
 
 if (__SIGLOW_MEDICION__) {
   // Gancho de prueba de Listo: solo existe en el build --mode medicion (check-dist lo prohíbe en dist/).
@@ -105,7 +106,7 @@ export function Listo() {
     );
   }
 
-  const puerta = exportGate(state, listo.residuo, listo.recordatorio);
+  const puerta = exportGate(state, listo.residuo, confirmacionVigente(state, listo));
   const abierta = puerta.ok;
   const residuo = listo.residuo;
   const pasa = residuo !== null && residuo.revision === state.revision && residuo.hits.length === 0 && residuo.newDetections === 0;
@@ -113,12 +114,7 @@ export function Listo() {
   const informeListo = listo.compilacion !== null;
   const aria = (activo: boolean): Record<string, string> => (activo ? {} : { 'aria-disabled': 'true', 'aria-describedby': ID_MOTIVOS });
 
-  const nuevoDocumento = (): void => {
-    descartarAnalisis();
-    vaciarTodoElDocumento();
-    actualizar({ phase: 'vacio' });
-    ir('inicio');
-  };
+  const nuevoDocumento = cerrarDocumento;
   const volver = (): void => { actualizar({ phase: 'revision' }); ir('revision'); };
   const pdf = (): void => {
     if (!abierta || preparandoPdf) return;
@@ -146,8 +142,9 @@ export function Listo() {
         <p class="ayuda">{t('M-122')}</p>
         <p class="ayuda">{tf('M-2290')}</p>
         <p data-prueba="prueba-final">{t('M-115')}</p>
+        {indirectosATalCual(state) > 0 ? <p role="note" class="aviso-indirectos" data-prueba="indirectos-tal-cual">{tf('M-2301', { n: indirectosATalCual(state) })}</p> : null}
         <div class="confirmacion-unica">
-          <Casilla etiqueta={tf('M-2285')} marcada={listo.recordatorio.revisado} onCambio={(v) => { marcarConfirmacion(v); }} />
+          <Casilla etiqueta={tf('M-2285')} marcada={confirmacionVigente(state, listo).revisado} onCambio={(v) => { marcarConfirmacion(v, state.revision); }} />
         </div>
       </section>
 

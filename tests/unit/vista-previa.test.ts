@@ -3,10 +3,12 @@
 // «a la vista» y «para revisar» solo van sobre texto que ya está a la vista. Datos ficticios evidentes.
 import { describe, expect, it } from 'vitest';
 import { render } from '../../src/core/render';
-import type { Detection, DocumentModel, Entity, Flag, PartId, ReviewState } from '../../src/core/types';
+import type { Detection, DocumentModel, Entity, Flag, PartId, ResidueResult, ReviewState } from '../../src/core/types';
+import { exportGate } from '../../src/core/review/puerta';
+import { confirmacionVigente, marcarConfirmacion, obtenerListo } from '../../src/ui/listo/almacen';
 import { agrupar, construirVista, type EstructuraParte } from '../../src/ui/vista/modelo-vista';
 import { estructuraDocx } from '../../src/ui/vista/estructura-docx';
-import { puntosParaRevisar } from '../../src/ui/vista/puntos';
+import { indirectosATalCual, puntosParaRevisar } from '../../src/ui/vista/puntos';
 import { leerDocxMapeado } from '../../src/io/docx-read';
 import { IO_LIMITS_POR_DEFECTO } from '../../src/io/io-client';
 import { construirDocx } from '../fixtures/docx/docx-builder';
@@ -103,5 +105,35 @@ describe('F3 · vista previa: el documento ya anonimizado, partido en bloques y 
     // Lo que el revisor mostró no es un punto.
     (s.detections as Record<string, Detection>)['det_1'] = { ...baja, status: 'rechazada' };
     expect(puntosParaRevisar(s, new Set()).map((p) => p.det)).toEqual(['det_2']);
+  });
+});
+
+describe('B-150 (P0-6a de F2+F3) · la confirmación vale para la revisión en la que se marcó', () => {
+  it('INV-G06 confirmar y después cambiar algo deja la puerta cerrada con RECORDATORIO hasta confirmar de nuevo', () => {
+    const s = estado([det('det_1', '1.000.000.017', 'CC', 'aceptada')]);
+    marcarConfirmacion(true, s.revision);
+    expect(confirmacionVigente(s, obtenerListo())).toEqual({ revisado: true });
+    const cambiado = { ...s, revision: s.revision + 1 } as ReviewState;
+    expect(confirmacionVigente(cambiado, obtenerListo())).toEqual({ revisado: false });
+    const residuo = { revision: cambiado.revision, ranAt: '2026-11-03T21:00:00-05:00', valuesSearched: 1, modes: ['literal'], hits: [], newDetections: 0 } as ResidueResult;
+    expect(exportGate(cambiado, residuo, confirmacionVigente(cambiado, obtenerListo())).reasons).toEqual(['RECORDATORIO']);
+    marcarConfirmacion(true, cambiado.revision);
+    expect(exportGate(cambiado, residuo, confirmacionVigente(cambiado, obtenerListo())).ok).toBe(true);
+    marcarConfirmacion(false);
+  });
+});
+
+describe('M-141 (P0-6a de F2+F3) · un hecho llamativo sin decidir no cierra la puerta, pero se cuenta', () => {
+  it('INV-G06 D-24 el hecho llamativo sin opción sale tal cual: es punto para revisar y Descargar lo cuenta; oculto encima, ya no', () => {
+    const i = TEXTO.indexOf('gerente');
+    const hecho = { id: 'flg_2', type: 'HECHO_LLAMATIVO', span: { partId: P, start: i, end: i + 7 }, text: 'gerente', reason: 'LISTA_LLAMATIVOS', options: [], acknowledged: false } as unknown as Flag;
+    const s = estado([det('det_2', '1.000.000.017', 'CC', 'aceptada')], [hecho]);
+    expect(indirectosATalCual(s)).toBe(1);
+    expect(puntosParaRevisar(s, new Set()).map((p) => p.motivo)).toEqual(['bandera']);
+    const residuo = { revision: s.revision, ranAt: '2026-11-03T21:00:00-05:00', valuesSearched: 1, modes: ['literal'], hits: [], newDetections: 0 } as ResidueResult;
+    expect(exportGate(s, residuo, { revisado: true }).ok).toBe(true);
+    const oculto = estado([det('det_2', '1.000.000.017', 'CC', 'aceptada'), det('det_3', 'gerente', 'PERSONA', 'aceptada', { source: 'manual' })], [hecho]);
+    expect(indirectosATalCual(oculto)).toBe(0);
+    expect(puntosParaRevisar(oculto, new Set())).toEqual([]);
   });
 });

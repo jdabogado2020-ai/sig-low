@@ -8,7 +8,7 @@ import { ORG_CLASSES, type DetectableType, type DetectionId, type EntityId, type
 import { CampoTexto, Seleccion } from '../campos.tsx';
 import { t, ROTULOS } from '../mensajes.ts';
 import { aceptar, cambiarTipo, editar, rechazar, rechazarEntidad, separar, unir } from '../review/base/acciones.ts';
-import { despachar, useRevisionUi } from '../review/base/almacen.ts';
+import { despachar, solicitarReemplazo, useRevisionUi } from '../review/base/almacen.ts';
 import { nombreDeTipo, TIPOS_ELEGIBLES } from '../review/base/presentacion.ts';
 import { etiqueta } from '../mensajes.ts';
 import { tf } from '../flujo/textos.ts';
@@ -102,6 +102,8 @@ export function MenuEtiqueta({ objetivo, onCerrar }: { objetivo: Objetivo; onCer
             {tf('M-2264', { texto: o.template })}
           </button>
         ))}
+        {/* M-141: el hecho llamativo no trae reemplazo; se oculta con el diálogo de siempre, mostrando el texto que ya está a la vista. */}
+        <button type="button" onClick={() => { onCerrar(); solicitarReemplazo(f.span, false, f.text); }}>{tf('M-2266')}</button>
         <button type="button" onClick={() => { hecho(despachar({ kind: 'resolver_bandera', flagId: f.id, resolution: 'mantener' }).ok); }}>{tf('M-2265')}</button>
       </>
     );

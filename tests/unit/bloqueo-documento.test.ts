@@ -43,7 +43,7 @@ describe('M-123 bloqueo por inactividad con un documento en memoria y sin caso (
     expect(obtenerAvisoInicio()).toBeNull();
   });
 
-  it('INV-G09 el caso efímero también se bloquea y avisa solo M-102 (no M-103: el abogado no pidió guardar una llave)', () => {
+  it('INV-G09 el caso efímero también se bloquea y avisa que el documento se borró (B-153: sin pedir una contraseña que no existe)', () => {
     asegurarCaso(new Date('2026-11-03T20:00:00Z'));
     expect(obtener().asunto).toMatchObject({ mode: 'no_guardar', efimero: true });
     actualizarBorrador({ texto: 'Demanda de Ana Ficticia Rojas.' });
@@ -52,6 +52,6 @@ describe('M-123 bloqueo por inactividad con un documento en memoria y sin caso (
     evaluar();
     expect(obtener().asunto).toBeNull();
     expect(obtenerBorrador().texto).toBe('');
-    expect(obtenerAvisoInicio()).toBe('bloqueado');
+    expect(obtenerAvisoInicio()).toBe('bloqueado_efimero');
   });
 });

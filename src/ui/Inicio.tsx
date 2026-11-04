@@ -388,7 +388,7 @@ export function Inicio() {
       <p class="ayuda">{tf('M-2215')}</p>
       {aviso ? (
         <div class="aviso-bloqueo" role="status" data-prueba="aviso-bloqueo">
-          <p>{t('M-102')}</p>
+          <p>{aviso === 'bloqueado_efimero' ? tf('M-2300') : t('M-102')}</p>
           {aviso === 'bloqueado_sin_guardar' ? <p>{t('M-103')}</p> : null}
         </div>
       ) : null}
