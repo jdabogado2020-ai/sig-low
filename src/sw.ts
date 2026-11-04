@@ -223,7 +223,7 @@ const ID_MODELO = /^(gliner-x-large|gliner-x-base)$/;
 const RUTA_MODELO = /^\/models\/(gliner-x-large|gliner-x-base)\/(tokenizer\.json|tokenizer_config\.json|onnx\/model_quantized\.onnx)$/;
 const RUTA_AUXILIAR = /^(tokenizer|tokenizer_config|gliner_config)\.json$/;
 const RUTA_TROZO = /^onnx\/model_quantized\.onnx\.part\d{3}$/;
-const MAX_TROZO = 25_165_824;
+const MAX_TROZO = 8_388_608;   // 8 MiB (F11), igual que src/core/ner/manifest.ts
 const ONNX = 'onnx/model_quantized.onnx';
 
 interface ArchivoModelo { ruta: string; tamano: number; sha256: string }
@@ -275,7 +275,7 @@ async function servirModelo(id: string, rel: string, v: Version): Promise<Respon
     return r ? new Response(r.body, { status: 200, statusText: 'OK', headers: cabeceras }) : Response.error();
   }
   // Reensamblado (3.3): se emite un trozo por vez. Quien recibe escribe en su búfer preasignado de `tamano` bytes; aquí solo
-  // hay un trozo en memoria (≤ 24 MiB), sin Blob encadenados ni concatenaciones. El SHA-256 del conjunto lo comprueba
+  // hay un trozo en memoria (≤ 8 MiB), sin Blob encadenados ni concatenaciones. El SHA-256 del conjunto lo comprueba
   // quien lo recibe (fetchVerificado) antes de entregarlo a ORT.
   let i = 0;
   const flujo = new ReadableStream<Uint8Array>({

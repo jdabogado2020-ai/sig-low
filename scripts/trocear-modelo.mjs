@@ -1,4 +1,4 @@
-// Trocea el modelo (3.3, 6.11.3; PF-2): parte `onnx/model_quantized.onnx` en trozos de 24 MiB (el alojamiento admite 25 MiB por
+// Trocea el modelo (3.3, 6.11.3; PF-2): parte `onnx/model_quantized.onnx` en trozos de 8 MiB (el alojamiento admite 25 MiB por
 // archivo), calcula el SHA-256 de cada trozo y del archivo entero y escribe `manifest.json`. Sin red: lee de h0/modelos.
 //
 //   node scripts/trocear-modelo.mjs [--id gliner-x-large|gliner-x-base|todos] [--origen <modelos>] [--salida <dir>]
@@ -17,7 +17,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const TROZO = 25_165_824; // 24 MiB
+const TROZO = 8_388_608; // 8 MiB (F11: un corte cuesta como mucho 8 MiB; antes, 24 MiB)
 const ONNX = 'onnx/model_quantized.onnx';
 
 // Huellas fijadas en H0-5, H0-6 y H0-8 (h0/huellas.txt, sección 4.2 del plan).
@@ -102,7 +102,7 @@ function construir(id, a) {
     trozos: onnx.trozos.map((t, i) => ({ ruta: nombreTrozo(i), tamano: t.tamano, sha256: t.sha256 })),
     auxiliares, licencia: 'Apache-2.0', memoria: cfg.memoria,
   };
-  if (manifiesto.trozos.some((t) => t.tamano > TROZO)) throw new Error(`${id}: un trozo pasa de 24 MiB`);
+  if (manifiesto.trozos.some((t) => t.tamano > TROZO)) throw new Error(`${id}: un trozo pasa de 8 MiB`);
   return { manifiesto, destino };
 }
 

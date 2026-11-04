@@ -161,7 +161,7 @@ export function decidirFallo(codigo: ErrorCode, esRespaldo: boolean): DecisionDe
 /**
  * Los trozos en orden, uno a la vez. El reensamblado del service worker (3.3) los entrega así: quien recibe el modelo
  * (`ner.worker.ts`) escribe cada trozo en SU búfer preasignado de `tamano` bytes, y en la caché solo se lee un trozo
- * por vez (≤ 24 MiB). Nunca se encadenan `Blob` ni se concatenan arreglos (eso duplicaría el modelo en memoria).
+ * por vez (≤ 8 MiB). Nunca se encadenan `Blob` ni se concatenan arreglos (eso duplicaría el modelo en memoria).
  * `leer` devuelve los bytes del trozo o null si falta.
  */
 export async function* trozosEnOrden(

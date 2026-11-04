@@ -246,7 +246,7 @@ describe('T-AB-05 · GlinerEngine: configuración sin red, integridad y humo (V-
 // PF-2 · entrega del modelo (3.3): manifiestos, trozos, cuota, respaldo automático, integridad y reensamblado
 // ---------------------------------------------------------------------------
 
-describe('T-PV-07 · manifiestos del modelo versionados (principal: 25 trozos; respaldo: 13)', () => {
+describe('T-PV-07 · manifiestos del modelo versionados (F11, trozos de 8 MiB: principal 73; respaldo 37)', () => {
   const leer = (id: string): ModelManifest => JSON.parse(readFileSync(join('public', 'models', id, 'manifest.json'), 'utf8')) as ModelManifest;
   const GRANDE = leer('gliner-x-large');
   const BASE = leer('gliner-x-base');
@@ -255,25 +255,25 @@ describe('T-PV-07 · manifiestos del modelo versionados (principal: 25 trozos; r
     expect(esManifiesto(GRANDE) && validarEntrega(GRANDE)).toBe(true);
     expect(esManifiesto(BASE) && validarEntrega(BASE)).toBe(true);
   });
-  it('T-PV-07 principal: 25 trozos (24 de 25.165.824 B y uno de 6.142.624 B), 610.122.400 B, SHA-256 fijado en H0-5/H0-6', () => {
-    expect(GRANDE.trozos).toHaveLength(25);
-    expect(GRANDE.trozos.slice(0, 24).every((t) => t.tamano === 25_165_824)).toBe(true);
-    expect(GRANDE.trozos[24]!.tamano).toBe(6_142_624);
+  it('T-PV-07 principal: 73 trozos (72 de 8.388.608 B y uno de 6.142.624 B), 610.122.400 B, SHA-256 fijado en H0-5/H0-6', () => {
+    expect(GRANDE.trozos).toHaveLength(73);
+    expect(GRANDE.trozos.slice(0, 72).every((t) => t.tamano === 8_388_608)).toBe(true);
+    expect(GRANDE.trozos[72]!.tamano).toBe(6_142_624);
     expect(GRANDE.tamano).toBe(610_122_400);
     expect(GRANDE.sha256).toBe('90a7d3b8bf985da65748f0b1972bd6696bab34f375f23ad4f4a60ac14842ad2c');
     expect(GRANDE.auxiliares.map((a) => a.ruta)).toEqual(['tokenizer.json', 'tokenizer_config.json']);
     expect(GRANDE.auxiliares[0]).toMatchObject({ tamano: 16_350_298, sha256: '644a91650f64b0fe5974cefcd293bafa754f014f8f72503ae7940ae652d22b2f' });
     expect(mbDelManifiesto(GRANDE)).toBe(626);
   });
-  it('T-PV-07 respaldo: 13 trozos (12 de 25.165.824 B y uno de 656.414 B), 302.646.302 B', () => {
-    expect(BASE.trozos).toHaveLength(13);
-    expect(BASE.trozos.slice(0, 12).every((t) => t.tamano === 25_165_824)).toBe(true);
-    expect(BASE.trozos[12]!.tamano).toBe(656_414);
+  it('T-PV-07 respaldo: 37 trozos (36 de 8.388.608 B y uno de 656.414 B), 302.646.302 B', () => {
+    expect(BASE.trozos).toHaveLength(37);
+    expect(BASE.trozos.slice(0, 36).every((t) => t.tamano === 8_388_608)).toBe(true);
+    expect(BASE.trozos[36]!.tamano).toBe(656_414);
     expect(BASE.tamano).toBe(302_646_302);
     expect(BASE.sha256).toBe('9850feb5ecd7ccfa3e4f1802b7c7d404f1b357cb7b6198cc014fb441e91ace43');
     expect(mbDelManifiesto(BASE)).toBe(319);
   });
-  it('T-PV-07 ningún archivo de public/models ni trozo pasa de 25 MiB; los trozos son de ≤ 24 MiB', () => {
+  it('T-PV-07 ningún archivo de public/models ni trozo pasa de 25 MiB; los trozos son de ≤ 8 MiB', () => {
     for (const m of [GRANDE, BASE]) {
       for (const t of m.trozos) expect(t.tamano).toBeLessThanOrEqual(MAX_TROZO);
       for (const a of m.auxiliares) expect(a.tamano).toBeLessThanOrEqual(MAX_ARCHIVO_DIST);
@@ -423,21 +423,21 @@ describe('T-AB-05 · entrega del modelo: variantes, cuota y respaldo automático
     expect(ordenDeVariantes(8)).toEqual(['gliner-x-large', 'gliner-x-base']);
     expect(ordenDeVariantes(null)).toEqual(['gliner-x-large', 'gliner-x-base']);
   });
-  it('T-AB-05 principal: pide los 2 auxiliares y los 25 trozos, uno tras otro, y al final pide persist()', async () => {
+  it('T-AB-05 principal: pide los 2 auxiliares y los 73 trozos, uno tras otro, y al final pide persist()', async () => {
     const { p, r } = puertosSimulados();
     const res = await entregarModelo(p, ENTRADA(16, r));
     expect(res).toEqual({ tipo: 'listo', id: 'gliner-x-large', respaldo: false, persistido: true });
-    expect(r.descargas).toHaveLength(27);
+    expect(r.descargas).toHaveLength(75);
     expect(r.descargas.slice(0, 2)).toEqual(['gliner-x-large/tokenizer.json', 'gliner-x-large/tokenizer_config.json']);
-    expect(r.descargas[26]).toBe('gliner-x-large/onnx/model_quantized.onnx.part024');
+    expect(r.descargas[74]).toBe('gliner-x-large/onnx/model_quantized.onnx.part072');
     expect(r.persistencias).toBe(1);
     expect(r.borrados).toEqual([]);
   });
-  it('T-AB-05 deviceMemory < 8 elige el respaldo desde el principio (13 trozos + 2 auxiliares) y lo avisa', async () => {
+  it('T-AB-05 deviceMemory < 8 elige el respaldo desde el principio (37 trozos + 2 auxiliares) y lo avisa', async () => {
     const { p, r } = puertosSimulados();
     const res = await entregarModelo(p, ENTRADA(4, r));
     expect(res).toMatchObject({ tipo: 'listo', id: 'gliner-x-base', respaldo: true });
-    expect(r.descargas).toHaveLength(15);
+    expect(r.descargas).toHaveLength(39);
     expect(r.descargas.every((d) => d.startsWith('gliner-x-base/'))).toBe(true);
     expect(r.respaldos).toEqual(['memoria_del_equipo']);
   });
@@ -523,7 +523,7 @@ describe('F0 · descarga robusta: reintentos por archivo y reanudación', () => 
     const res = await entregarModelo(p, ENTRADA(16, r));
     expect(res).toEqual({ tipo: 'listo', id: 'gliner-x-large', respaldo: false, persistido: true });
     expect(vistas.get('onnx/model_quantized.onnx.part005')).toBe(2);
-    expect(r.descargas).toHaveLength(27);
+    expect(r.descargas).toHaveLength(75);
     expect(r.borrados).toEqual([]);
     const total = [...m.auxiliares, ...m.trozos].reduce((s, x) => s + x.tamano, 0);
     expect(r.avances.at(-1)).toBe(total);

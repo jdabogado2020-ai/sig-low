@@ -666,7 +666,7 @@ export interface ModelManifest {
   tokenizador: { prefijo: number; sufijo: number; cls: boolean };          // mT5: 0 / 1 / false (parche, 7.10.2)
   archivo: 'onnx/model_quantized.onnx';
   tamano: number; sha256: string;  // del archivo reensamblado
-  trozos: Array<{ ruta: string; tamano: number; sha256: string }>;   // cada uno ≤ 24 MiB (25.165.824 B); el límite de Cloudflare es 25 MiB por archivo
+  trozos: Array<{ ruta: string; tamano: number; sha256: string }>;   // cada uno ≤ 8 MiB (8.388.608 B, F11); el límite de Cloudflare es 25 MiB por archivo
   auxiliares: Array<{ ruta: 'tokenizer.json' | 'tokenizer_config.json' | 'gliner_config.json'; tamano: number; sha256: string }>;
   licencia: 'Apache-2.0';
   memoria: { wasmMb: number; jsMb: number; minimoDispositivoGb: number };   // 1474 / 586 / 8 en x-large [calibrar en PF-3]

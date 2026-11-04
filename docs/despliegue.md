@@ -37,8 +37,8 @@ node scripts/check-dist.mjs        # lista permitida del build y tope de 25 MiB 
 
 Notas:
 
-- `scripts/trocear-modelo.mjs` parte el modelo en trozos de 24 MiB (el alojamiento admite 25 MiB por archivo) y escribe los manifiestos. Comprueba el SHA-256 de cada modelo contra las huellas fijadas (`LICENSES.md`, sección 2) y aborta si no coinciden. Los trozos no se guardan en Git (solo los manifiestos): se regeneran en cada despliegue.
-- `dist/` debe contener, además de `index.html`, `sw.js`, `precache.json` y `_headers`: `assets/` (código y workers), `ort/ort-wasm-simd-threaded.{mjs,wasm}` (solo esos dos archivos), `tt-policy.js` y `models/<id>/` con el manifiesto, los trozos de `onnx/` y los dos auxiliares (`tokenizer.json` y `tokenizer_config.json`) de cada modelo: 25 trozos el principal y 13 el respaldo, según sus manifiestos.
+- `scripts/trocear-modelo.mjs` parte el modelo en trozos de 8 MiB (F11: un corte de la red cuesta como mucho 8 MiB; el alojamiento admite 25 MiB por archivo) y escribe los manifiestos. Comprueba el SHA-256 de cada modelo contra las huellas fijadas (`LICENSES.md`, sección 2) y aborta si no coinciden. Los trozos no se guardan en Git (solo los manifiestos): se regeneran en cada despliegue.
+- `dist/` debe contener, además de `index.html`, `sw.js`, `precache.json` y `_headers`: `assets/` (código y workers), `ort/ort-wasm-simd-threaded.{mjs,wasm}` (solo esos dos archivos), `tt-policy.js` y `models/<id>/` con el manifiesto, los trozos de `onnx/` y los dos auxiliares (`tokenizer.json` y `tokenizer_config.json`) de cada modelo: 73 trozos el principal y 37 el respaldo, según sus manifiestos (F11; antes, 25 y 13 de 24 MiB).
 - Límites del alojamiento de carga directa: 25 MiB por archivo, 20.000 archivos por despliegue y, en `_headers`, 100 reglas y 2.000 caracteres por línea [VERIFICAR los límites vigentes en la documentación de Cloudflare antes de cada publicación].
 
 ### 2.1 Huellas SHA-256 de la versión

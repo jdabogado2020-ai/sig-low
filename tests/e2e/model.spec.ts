@@ -919,8 +919,8 @@ test.describe('PF-2 · entrega del modelo en el build real', () => {
 test.describe('PF-2 · modelo real en la app', () => {
   test.describe.configure({ timeout: 900_000 });
   for (const v of [
-    { id: 'gliner-x-base' as const, ultimo: 'part012', archivos: 15, mb: '319 MB', memoria: 4, grande: false },
-    { id: 'gliner-x-large' as const, ultimo: 'part024', archivos: 27, mb: '626 MB', memoria: 16, grande: true },
+    { id: 'gliner-x-base' as const, ultimo: 'part036', archivos: 39, mb: '319 MB', memoria: 4, grande: false },
+    { id: 'gliner-x-large' as const, ultimo: 'part072', archivos: 75, mb: '626 MB', memoria: 16, grande: true },
   ]) {
   const TROZOS = resolve(process.env['SIGLOW_TROZOS'] ?? '../h0/trozos', v.id);
   const hay = existsSync(join(TROZOS, 'onnx', `model_quantized.onnx.${v.ultimo}`)) && existsSync(join(TROZOS, 'tokenizer.json'));

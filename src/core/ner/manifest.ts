@@ -10,8 +10,8 @@ import type { ModelManifest } from '../types';
 export const IDS_MODELO = ['gliner-x-large', 'gliner-x-base'] as const;
 export type IdModelo = (typeof IDS_MODELO)[number];
 
-/** Límite por trozo: 24 MiB. El alojamiento admite 25 MiB por archivo (3.3). */
-export const MAX_TROZO = 25_165_824;
+/** Límite por trozo: 8 MiB (F11: un corte cuesta como mucho 8 MiB; antes, 24 MiB). El alojamiento admite 25 MiB por archivo (3.3). */
+export const MAX_TROZO = 8_388_608;
 /** Ningún archivo de `dist/` ni de `public/models/` pasa de 25 MiB (9.3, PF-2). */
 export const MAX_ARCHIVO_DIST = 26_214_400;
 export const RUTA_ONNX = 'onnx/model_quantized.onnx';
@@ -64,7 +64,7 @@ export const esManifiesto = (x: unknown): x is ModelManifest =>
 
 /**
  * Manifiesto apto para descargar y servir: además de `esManifiesto`, trozos numerados 000, 001, … sin huecos, cada uno de
- * ≤ 24 MiB, cuya suma es `tamano`; los dos auxiliares que el motor necesita
+ * ≤ 8 MiB, cuya suma es `tamano`; los dos auxiliares que el motor necesita
  * (`tokenizer.json` y `tokenizer_config.json`); y la base de mT5 que corresponde al id.
  */
 export function validarEntrega(m: ModelManifest): boolean {
