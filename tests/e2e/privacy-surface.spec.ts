@@ -192,14 +192,14 @@ test.describe('T-PV-09 «Acerca de»: versión, SHA-256 y dirección oficial', (
     await expect(dialogo.locator('[data-prueba="acerca-precache"]')).toHaveText(
       `Código de la lista de archivos para uso sin conexión (SHA-256): ${sha256(readFileSync('dist/precache.json'))}`,
     );
-    await expect(dialogo).toContainText('Versión 1.1.3');
+    await expect(dialogo).toContainText('Versión 1.1.4');
     await expect(dialogo.locator('[data-prueba="acerca-direccion"]')).toHaveText('Dirección oficial: sig-low.vergarameloabogado.site');
     await expect(dialogo).toContainText('Esta misma copia de Sig-Low calcula estos códigos');
     await page.keyboard.press('Escape');
     await page.reload();
     await expect(h1(page, 'Cargar documento')).toBeVisible();
     // El pie muestra la compilación de 12 hexadecimales (igual a app.compilacion de 6.8).
-    await expect(page.locator('[data-prueba="version"]')).toHaveText('Versión 1.1.3 · compilación ' + esperadoIndex.slice(0, 12), { timeout: 5000 });
+    await expect(page.locator('[data-prueba="version"]')).toHaveText('Versión 1.1.4 · compilación ' + esperadoIndex.slice(0, 12), { timeout: 5000 });
   });
 
   test('T-PV-09 @humo «Acerca de» trae el aviso de privacidad de los registros del alojamiento, como texto y sin enlaces (D-09)', async ({ page }) => {
