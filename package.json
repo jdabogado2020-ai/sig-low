@@ -1,6 +1,6 @@
 {
   "name": "sig-low",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "Anonimizador local para equipos jurídicos (Colombia).",
   "license": "Apache-2.0",
