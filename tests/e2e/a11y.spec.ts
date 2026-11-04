@@ -489,7 +489,8 @@ testMedicion.describe('Vista previa · accesibilidad (F3, D-24)', () => {
     await page.keyboard.press('Enter');
     await expect(menuEtiqueta(page)).toBeVisible();
     await expect(menuEtiqueta(page)).toHaveAccessibleName(/^Opciones de la etiqueta \[[^\]]+\]$/);
-    expect(await focoEn(page, '[data-prueba="menu-etiqueta"]'), 'el foco entra al menú').toBe(true);
+    // El menú mueve el foco en un efecto, después de pintar: se espera a que llegue.
+    await expect.poll(() => focoEn(page, '[data-prueba="menu-etiqueta"]'), { message: 'el foco entra al menú' }).toBe(true);
     await page.keyboard.press('Escape');
     await expect(menuEtiqueta(page)).toHaveCount(0);
     await expect(primera).toBeFocused();
@@ -501,7 +502,7 @@ testMedicion.describe('Vista previa · accesibilidad (F3, D-24)', () => {
       await siguiente.focus();
       await page.keyboard.press('Enter');
       await expect(anuncio).toHaveText(new RegExp(`^Punto ${i} de 3: .+`));
-      expect(await focoEn(page, '[data-prueba="vista-previa"]'), `el foco va al punto ${i}`).toBe(true);
+      await expect.poll(() => focoEn(page, '[data-prueba="vista-previa"]'), { message: `el foco va al punto ${i}` }).toBe(true);
     }
     // «Cómo leer la vista previa» se abre y se cierra con Enter, sin mover el foco.
     const comoLeer = page.getByRole('button', { name: 'Cómo leer la vista previa' });
