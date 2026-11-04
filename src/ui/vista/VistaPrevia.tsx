@@ -18,6 +18,7 @@ import { actualizar, ir } from '../estado.ts';
 import { useBusquedaAutomatica, buscarOtraVez } from '../flujo/busqueda-automatica.ts';
 import { tf } from '../flujo/textos.ts';
 import { useListo } from '../listo/almacen.ts';
+import { copiarSeleccion } from '../listo/salida.ts';
 import { etiqueta, mensajeDeCodigo, ROTULOS, t, X } from '../mensajes.ts';
 import { solicitarReemplazo, useRevisionUi } from '../review/base/almacen.ts';
 import { AgregarReemplazo } from '../review/base/AgregarReemplazo.tsx';
@@ -129,6 +130,9 @@ function DocumentoVista({ vista, abrir, alSeleccionar }: { vista: Vista; abrir: 
       onKeyUp={(e) => { if (e.shiftKey || e.key === 'Shift') revisar(); }}
       onContextMenu={(e) => { e.preventDefault(); }}
       onDragStart={(e) => { e.preventDefault(); }}
+      onCut={(e) => { e.preventDefault(); }}
+      // INV-X05: Ctrl+C lo atiende el manejador de la descarga, detrás de la puerta (con la puerta cerrada no copia y avisa M-73).
+      onCopy={(e) => { copiarSeleccion(e, getSelection()?.toString() ?? null); }}
     >
       {vista.secciones.map((s) => (
         <section key={s.partId} class={`seccion-doc parte-${s.kind}`} data-parte={s.partId}>
